@@ -35,6 +35,15 @@ namespace Mer
 		Token *op;
 		AST *right;
 	};
+	class UnaryOp :public AST
+	{
+	public:
+		UnaryOp(Token *t, AST* e) :op(t), expr(e) {}
+		Value get_value()override;
+	private:
+		Token *op;
+		AST* expr;
+	};
 	class Num :public AST
 	{
 	public:
@@ -54,6 +63,7 @@ namespace Mer
 		{
 			return tree->get_value();
 		}
+		AST *root() { return tree; }
 	private:
 		AST* expr();
 		AST* term();

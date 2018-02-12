@@ -1,6 +1,5 @@
 #pragma once
-#include "lexer.hpp"
-#include "expr.hpp"
+#include "parser.hpp"
 #include <iostream>
 namespace Mer
 {
@@ -12,8 +11,9 @@ namespace Mer
             }
             void run()
             {
-				Expr expr;
-				std::cout << expr.get_value();
+				Parser::parse()->get_value();
+				std::cout << std::endl;
+				Parser::print_var_list();
             }
         private:
     };

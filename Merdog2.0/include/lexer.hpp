@@ -8,10 +8,11 @@ namespace Mer
 {
     enum Tag
     {
+		VAR,BEGIN,END,SEMI,DOT,
         ID,INTEGER,
-		PLUS,MINUS,MUL,DIV,
+		PLUS,MINUS,MUL,DIV,ASSIGN,
 		LPAREN,RPAREN,
-		END,ENDL,
+		ENDOF,ENDL,
     };
     extern std::map<Tag,std::string> TagStr;
     class Token
@@ -137,7 +138,7 @@ namespace Mer
             size_t pos=0;
     };
     Token* parse_interger(const std::string &str,size_t &pos);
-    Token* parse_id(const std::string &str,size_t &pos);
+    Token* parse_word(const std::string &str,size_t &pos);
     void build_token_stream(const std::string &content);
     extern TokenStream token_stream;
 }
