@@ -1,34 +1,50 @@
 #pragma once
 #include "lexer.hpp"
+#include "type.hpp"
 namespace Mer
 {
-	using Value = int;
 	class AST
 	{
 	public:
 		virtual ~AST() {}
-		virtual Value get_value() { return 0; }
+		virtual Mem::Raw get_value() { return Mem::Raw(nullptr); }
 	private:
 	};
 	class BinOp :public AST
 	{
 	public:
 		BinOp(AST *l, Token *o, AST* r) :left(l), op(o), right(r) {}
-		Value get_value()override
+		Mem::Raw get_value()override
 		{
+			auto left_v = left->get_value();
+			auto right_v = right->get_value();
+			Mem::Value* ret=nullptr;
 			switch (op->get_tag())
 			{
 			case PLUS:
-				return left->get_value() + right->get_value();
+			{
+				ret = left_v->operator+(&(*right_v));
+				break;
+			}
 			case MINUS:
-				return left->get_value() - right->get_value();
+			{
+				ret = left_v->operator-(&(*right_v));
+				break;
+			}
 			case MUL:
-				return left->get_value()*right->get_value();
+			{
+				ret = left_v->operator*(&(*right_v));
+				break;
+			}
 			case DIV:
-				return left->get_value() / right->get_value();
+			{
+				ret = left_v->operator/(&(*right_v));
+				break;
+			}
 			default:
 				break;
 			}
+			return Mem::Raw(ret);
 		}
 	private:
 		AST *left;
@@ -39,7 +55,7 @@ namespace Mer
 	{
 	public:
 		UnaryOp(Token *t, AST* e) :op(t), expr(e) {}
-		Value get_value()override;
+		Mem::Raw get_value()override;
 	private:
 		Token *op;
 		AST* expr;
@@ -48,9 +64,12 @@ namespace Mer
 	{
 	public:
 		Num(Token *t) :tok(t) {}
-		Value get_value()override
+		Mem::Raw get_value()override
 		{
-			return Integer::get_value(tok);
+			if (tok->get_tag() == INTEGER)
+				return std::shared_ptr<Mem::Value>(new Mem::Int(Integer::get_value(tok)));
+			else
+				return std::shared_ptr<Mem::Value>(new Mem::Double(Real::get_value(tok)));
 		}
 	private:
 		Token *tok;
@@ -59,7 +78,7 @@ namespace Mer
 	{
 	public:
 		Expr() :tree(expr()){}
-		int get_value()
+		Mem::Raw get_value()
 		{
 			return tree->get_value();
 		}

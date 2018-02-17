@@ -2,7 +2,6 @@
 #include "../include/parser.hpp"
 Mer::AST * Mer::Expr::expr()
 {
-
 	auto result = term();
 
 	while (token_stream.this_token()->get_tag() == PLUS || token_stream.this_token()->get_tag() == MINUS)
@@ -46,6 +45,11 @@ Mer::AST * Mer::Expr::factor()
 		token_stream.match(RPAREN);
 		return v;
 	}
+	else if (result->get_tag() == REAL)
+	{
+		token_stream.match(REAL);
+		return new Num(result);
+	}
 	else if (result->get_tag() == INTEGER)
 	{
 		token_stream.match(INTEGER);
@@ -71,10 +75,14 @@ Mer::AST * Mer::Expr::factor()
 
 }
 
-Mer::Value Mer::UnaryOp::get_value()
+Mer::Mem::Raw Mer::UnaryOp::get_value()
 {
 	if (op->get_tag() == MINUS)
-		return -expr->get_value();
+	{
+		auto tmp = expr->get_value();
+		auto ret = tmp->get_negation();
+		return Mem::Raw(ret);
+	}
 	else
 		return expr->get_value();
 	//return Value();

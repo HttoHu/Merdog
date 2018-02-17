@@ -1,0 +1,6 @@
+program I_AM_A_PIG;
+begin	
+	int a:=23;
+	a:=12;
+	print a;
+end.
