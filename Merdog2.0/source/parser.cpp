@@ -1,17 +1,7 @@
 #include "../include/parser.hpp"
 #include "../include/memory.hpp"
 using namespace Mer;
-std::unordered_map<std::string, Mer::Mem::Raw> Mer::glo_mem;
 
-void Mer::Parser::print_var_list()
-{
-	std::cout << "{";
-	for (const auto &a : glo_mem)
-	{
-		std::cout << "\'" + a.first + "\'" + ":" << a.second->to_string() << ", ";
-	}
-	std::cout << "}";
-}
 
 AST * Mer::Parser::parse()
 {
@@ -29,12 +19,6 @@ Program * Mer::Parser::program()
 	auto blo = block();
 	token_stream.match(DOT);
 	return new Program(name, blo);
-
-	/*
-	auto node = compound_statement();
-	token_stream.match(DOT);
-	return node;
-	*/
 }
 
 Block * Mer::Parser::block()
@@ -77,10 +61,14 @@ VarDecl * Mer::Parser::variable_declaration()
 AST * Mer::Parser::type_spec()
 {
 	auto tmp = token_stream.this_token();
-	if (tmp->get_tag() == INTEGER_DECL)
-		token_stream.match(INTEGER_DECL);
-	else
-		token_stream.match(REAL_DECL);
+	switch (tmp->get_tag())
+	{
+	case INTEGER_DECL:token_stream.match(INTEGER_DECL); break;
+	case REAL_DECL:token_stream.match(REAL_DECL); break;
+	case STRING_DECL:token_stream.match(STRING_DECL); break;
+	default:
+		throw Error("not matched type " + tmp->to_string());
+	}
 	return new Type(tmp);
 }
 
@@ -112,16 +100,26 @@ std::vector<AST*> Mer::Parser::statemnet_list()
 AST * Mer::Parser::statement()
 {
 	AST *node = nullptr;
-	if (token_stream.this_token()->get_tag() == BEGIN)
+	switch (token_stream.this_token()->get_tag())
+	{
+	case BEGIN:
 		node = compound_statement();
-	else if (token_stream.this_token()->get_tag() == ID)
+		break;
+	case ID:
 		node = assignment_statement();
-	else if (token_stream.this_token()->get_tag() == INTEGER_DECL || token_stream.this_token()->get_tag() == REAL_DECL)
+		break;
+	case INTEGER_DECL:
+	case REAL_DECL:
+	case STRING_DECL:
 		node = variable_declaration();
-	else if (token_stream.this_token()->get_tag() == PRINT)
-		node=print_statement();
-	else
+		break;
+	case PRINT:
+		node = print_statement();
+		break;
+	default:
 		node = empty();
+		break;
+	}
 	return node;
 }
 
@@ -157,24 +155,24 @@ AST * Mer::Parser::empty()
 	return new NoOp;
 }
 
-Mem::Raw Mer::Assign::get_value()
+Mem::Object Mer::Assign::get_value()
 {
 	auto ret = _mem[left]->operator=(&*right->get_value());
 	return std::shared_ptr<Mem::Value>(ret);
 }
 
-Mem::Raw Mer::Block::get_value()
+Mem::Object Mer::Block::get_value()
 {
 	return compound_list->get_value();
 }
 
-Mem::Raw Mer::VarDecl::get_value()
+Mem::Object Mer::VarDecl::get_value()
 {
 	for (const auto &a : var_list)
 	{
 		if (a.second != nullptr)
 		{
-			_mem[a.first] = a.second->get_value();
+			_mem[a.first] = type->adapt_value(a.second->get_value());
 		}
 		else
 			_mem[a.first] = type->emit_var();
@@ -197,12 +195,12 @@ Mer::Var::Var(Token * t)
 	pos = find_pos(t);
 }
 
-Mem::Raw Mer::Var::get_value()
+Mem::Object Mer::Var::get_value()
 {
 	return _mem[pos];
 }
 
-Mem::Raw Mer::Print::get_value()
+Mem::Object Mer::Print::get_value()
 {
 	if (tok->get_tag() == STRING)
 		std::cout << String::get_value(tok);

@@ -3,7 +3,8 @@ using namespace Mer;
 
 std::map<Tag, std::string> Mer::TagStr{
 	{VAR,"VAR"},{PROGRAM,"PROGRAME"},{COMMA,"COMMA"},{COLON,"COLON"},
-	{ID,"ID"},{INTEGER,"INTEGER"},{ REAL,"REAL" } ,{INTEGER_DECL,"INTEGER_DECL"},{REAL_DECL,"REAL_DECL"},
+	{ID,"ID"},{INTEGER,"INTEGER"},{ REAL,"REAL" } ,
+	{INTEGER_DECL,"INTEGER_DECL"},{REAL_DECL,"REAL_DECL"}, {STRING_DECL,"STRING_DECL"},
 	{PLUS,"PLUS"},{MINUS,"MINUS"},{MUL,"MUL"},{DIV,"DIV"},
 	{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},
 	{DOT,"DOT"},{BEGIN,"BEGIN"},{END,"END"},
@@ -12,6 +13,7 @@ std::map<Tag, std::string> Mer::TagStr{
 };
 std::map<std::string, Token*> Mer::KeyWord{
 	{"print",new Token(PRINT)},
+	{"string",new Token(STRING_DECL)},
 	{"var",new Token(VAR)},{"begin",new Token(BEGIN)},
 	{"end",new Token(END)},{"real",new Token(REAL_DECL)},
 	{"int",new Token(INTEGER_DECL)},{"program",new Token(PROGRAM)}

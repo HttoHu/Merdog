@@ -38,50 +38,57 @@ Mer::AST * Mer::Expr::term()
 Mer::AST * Mer::Expr::factor()
 {
 	auto result = token_stream.this_token();
-	if (result->get_tag() == LPAREN)
+	switch (result->get_tag())
+	{
+	case LPAREN:
 	{
 		token_stream.match(LPAREN);
 		AST* v = expr();
 		token_stream.match(RPAREN);
 		return v;
 	}
-	else if (result->get_tag() == REAL)
+	case REAL:
 	{
 		token_stream.match(REAL);
 		return new Num(result);
 	}
-	else if (result->get_tag() == INTEGER)
+	case STRING:
+	{
+		token_stream.match(STRING);
+		return new Num(result);
+	}
+	case INTEGER:
 	{
 		token_stream.match(INTEGER);
 		return new Num(result);
 	}
-	else if (result->get_tag() == MINUS)
+	case MINUS:
 	{
 		token_stream.match(MINUS);
 		AST *n = new UnaryOp(result, factor());
 		return n;
 	}
-	else if (result->get_tag() == PLUS)
+	case PLUS:
 	{
 		token_stream.match(PLUS);
 		AST* n = new UnaryOp(result, factor());
 		return n;
 	}
-	else
+	default:
 	{
 		auto node = Parser::variable();
 		return node;
 	}
-
+	}
 }
 
-Mer::Mem::Raw Mer::UnaryOp::get_value()
+Mer::Mem::Object Mer::UnaryOp::get_value()
 {
 	if (op->get_tag() == MINUS)
 	{
 		auto tmp = expr->get_value();
 		auto ret = tmp->get_negation();
-		return Mem::Raw(ret);
+		return Mem::Object(ret);
 	}
 	else
 		return expr->get_value();

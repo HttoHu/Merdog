@@ -8,7 +8,7 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 		return "int";
 	case Mer::Mem::DOUBLE:
 		return "double";
-	case Mer::Mem::STRIHG:
+	case Mer::Mem::STRING:
 		return "string";
 	default:
 		break;

@@ -10,7 +10,7 @@ namespace Mer
 	public:
 		Memory()
 		{
-			_mem = new Mem::Raw[capacity];
+			_mem = new Mem::Object[capacity];
 		}
 		size_t new_block() {
 			block_flag.push_back(current);
@@ -24,7 +24,7 @@ namespace Mer
 			current = block_flag.back();
 			block_flag.pop_back();
 		}
-		Mem::Raw& operator[] (size_t index)
+		Mem::Object& operator[] (size_t index)
 		{
 			return _mem[index];
 		}
@@ -37,7 +37,7 @@ namespace Mer
 		void alloc()
 		{
 			capacity *= 2;
-			Mem::Raw *tmp = new Mem::Raw[capacity];
+			Mem::Object *tmp = new Mem::Object[capacity];
 			for (int i = 0; i < current; i++)
 			{
 				tmp[i] = _mem[i];
@@ -48,7 +48,7 @@ namespace Mer
 		size_t current=0;
 		size_t capacity = 128;
 		std::vector<size_t> block_flag;
-		Mem::Raw *_mem;
+		Mem::Object *_mem;
 	};
 	extern Memory _mem;
 	extern std::list<std::map<Mer::Token*, size_t>> id_pos_table;

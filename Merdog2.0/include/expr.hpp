@@ -7,18 +7,18 @@ namespace Mer
 	{
 	public:
 		virtual ~AST() {}
-		virtual Mem::Raw get_value() { return Mem::Raw(nullptr); }
+		virtual Mem::Object get_value() { return Mem::Object(nullptr); }
 	private:
 	};
 	class BinOp :public AST
 	{
 	public:
 		BinOp(AST *l, Token *o, AST* r) :left(l), op(o), right(r) {}
-		Mem::Raw get_value()override
+		Mem::Object get_value()override
 		{
 			auto left_v = left->get_value();
 			auto right_v = right->get_value();
-			Mem::Value* ret=nullptr;
+			Mem::Value* ret = nullptr;
 			switch (op->get_tag())
 			{
 			case PLUS:
@@ -44,7 +44,7 @@ namespace Mer
 			default:
 				break;
 			}
-			return Mem::Raw(ret);
+			return Mem::Object(ret);
 		}
 	private:
 		AST *left;
@@ -55,7 +55,7 @@ namespace Mer
 	{
 	public:
 		UnaryOp(Token *t, AST* e) :op(t), expr(e) {}
-		Mem::Raw get_value()override;
+		Mem::Object get_value()override;
 	private:
 		Token *op;
 		AST* expr;
@@ -64,12 +64,19 @@ namespace Mer
 	{
 	public:
 		Num(Token *t) :tok(t) {}
-		Mem::Raw get_value()override
+		Mem::Object get_value()override
 		{
-			if (tok->get_tag() == INTEGER)
-				return std::shared_ptr<Mem::Value>(new Mem::Int(Integer::get_value(tok)));
-			else
-				return std::shared_ptr<Mem::Value>(new Mem::Double(Real::get_value(tok)));
+			switch (tok->get_tag())
+			{
+			case INTEGER:
+				return std::make_shared<Mem::Int>(Integer::get_value(tok));
+			case REAL:
+				return std::make_shared < Mem::Double >(Real::get_value(tok));
+			case STRING:
+				return std::make_shared<Mem::String>(String::get_value(tok));
+			default:
+				throw Error("syntax error");
+			}
 		}
 	private:
 		Token *tok;
@@ -77,8 +84,8 @@ namespace Mer
 	class Expr
 	{
 	public:
-		Expr() :tree(expr()){}
-		Mem::Raw get_value()
+		Expr() :tree(expr()) {}
+		Mem::Object get_value()
 		{
 			return tree->get_value();
 		}

@@ -3,7 +3,6 @@
 #include <unordered_map>
 namespace Mer
 {
-	extern std::unordered_map<std::string, Mem::Raw> glo_mem;
 	class Block;
 	class Compound;
 	class VarDecl;
@@ -11,14 +10,14 @@ namespace Mer
 	{
 	public:
 		Block() {}
-		Mem::Raw get_value();
+		Mem::Object get_value();
 		Compound *compound_list;
 	};
 	class Program :public AST
 	{
 	public:
 		Program(const std::string &str, Block *blok) :name(str), block(blok) {}
-		Mem::Raw get_value()
+		Mem::Object get_value()
 		{
 			return block->get_value();
 		}
@@ -29,23 +28,47 @@ namespace Mer
 	class Type :public AST
 	{
 	public:
-		Type(Token *t) :type(t) {}
-		Mem::Raw emit_var()
+		Type(Token *t) {
+			switch (t->get_tag())
+			{
+			case INTEGER_DECL:
+				type_v = Mem::BasicType::INT;
+				break;
+			case REAL_DECL:
+				type_v = Mem::BasicType::DOUBLE;
+				break;
+			case STRING_DECL:
+				type_v = Mem::BasicType::STRING;
+				break;
+			default:
+				break;
+			}
+		}
+		Mem::Object emit_var()
 		{
-			if (type->get_tag() == INTEGER_DECL)
-				return Mem::Raw(new Mem::Int(0));
-			else if (type->get_tag() == REAL_DECL)
-				return Mem::Raw(new Mem::Double(0));
-			else
+			switch (type_v)
+			{
+			case Mer::Mem::INT:
+				return Mem::Object(new Mem::Int(0));
+			case Mer::Mem::DOUBLE:
+				return Mem::Object(new Mem::Double(0));
+			case Mer::Mem::STRING:
+				return Mem::Object(new Mem::String(""));
+			default:
 				throw Error("create var failed");
+			}
+		}
+		Mem::Object adapt_value(Mem::Object &value)
+		{
+			return Mem::Object(value->Convert(type_v));
 		}
 	private:
-		Token *type;
+		Mem::BasicType type_v;
 	};
 	class VarDecl :public AST
 	{
 	public:
-		Mem::Raw get_value();
+		Mem::Object get_value();
 		void init_var_list(const std::map<Token*,Expr*> &v);
 		std::map<size_t,Expr*> var_list;
 		//std::vector<Token*> var_list;
@@ -55,7 +78,7 @@ namespace Mer
 	{
 	public:
 		Print(Token *t) :tok(t) {}
-		Mem::Raw get_value()override;
+		Mem::Object get_value()override;
 	private:
 		Token *tok;
 	};
@@ -63,7 +86,7 @@ namespace Mer
 	{
 	public:
 		Compound() {}
-		Mem::Raw get_value()override
+		Mem::Object get_value()override
 		{
 			for (auto &a : children)
 			{
@@ -77,7 +100,7 @@ namespace Mer
 	{
 	public:
 		Assign(size_t l, Token* o, AST* r) :left(l), op(o), right(r) {}
-		Mem::Raw get_value()override;
+		Mem::Object get_value()override;
 	private:
 		size_t left;
 		Token *op;
@@ -87,7 +110,7 @@ namespace Mer
 	{
 	public:
 		Var(Token *t);
-		Mem::Raw get_value()override;
+		Mem::Object get_value()override;
 		size_t get_pos()
 		{
 			return pos;
@@ -99,7 +122,6 @@ namespace Mer
 	{};
 	namespace Parser
 	{
-		void print_var_list();
 		AST *parse();
 		Program *program();
 		Block *block();
