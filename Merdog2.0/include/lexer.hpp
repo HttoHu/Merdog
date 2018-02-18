@@ -9,11 +9,15 @@ namespace Mer
 	enum Tag
 	{
 		PRINT,
-		INTEGER_DECL, REAL_DECL,STRING_DECL,
+		INTEGER_DECL, REAL_DECL,STRING_DECL,BOOL_DECL,
 		PROGRAM,
+		GE,LE,GT,LT,NE,EQ,
+		IF,ELSE_IF,ELSE,WHILE,FOR,BREAK,CONTINUE,
+		NOT,AND,OR,
 		VAR, BEGIN, END, SEMI, DOT, COMMA,
 		ID, INTEGER, REAL, COLON,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
+		TRUE,FALSE,
 		LPAREN, RPAREN,
 		ENDOF, ENDL,
 		STRING,
@@ -77,7 +81,7 @@ namespace Mer
 	{
 	public:
 		Integer(int64_t n) :Token(INTEGER), value(n) {}
-		static int get_value(Token *tok)
+		static int64_t get_value(Token *tok)
 		{
 			if (tok->check(INTEGER))
 				return static_cast<Integer*>(tok)->value;
@@ -119,9 +123,13 @@ namespace Mer
 		}
 		Token* this_token()
 		{
-			if (content[pos]->get_tag() == ENDL)
+			while (content[pos]->get_tag() == ENDL)
 				advance();
 			return content[pos];
+		}
+		Tag this_tag()
+		{
+			return this_token()->get_tag();
 		}
 		Token* get_next_token()
 		{
@@ -136,6 +144,15 @@ namespace Mer
 			{
 				content.push_back(END_TOKEN);
 			}
+		}
+		void next()
+		{
+			if (this_token()->get_tag() == ENDL)
+			{
+				advance();
+				next();
+			}
+			advance();
 		}
 		void match(Tag t)
 		{

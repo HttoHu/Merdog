@@ -1,5 +1,7 @@
 #include "../include/parser.hpp"
 #include "../include/memory.hpp"
+#include "../include/branch_statement.hpp"
+#include "../include/loop_statement.hpp"
 using namespace Mer;
 
 
@@ -25,7 +27,6 @@ Block * Mer::Parser::block()
 {
 	Block *ret = new Block();
 	ret->compound_list = static_cast<Compound*>(compound_statement());
-	
 	return ret;
 }
 
@@ -41,6 +42,10 @@ VarDecl * Mer::Parser::variable_declaration()
 		auto exp= new Expr();
 		var_list.insert({ id,exp });
 	}
+	else
+	{
+		var_list.insert({ id,nullptr });
+	}
 	while (token_stream.this_token()->get_tag() == COMMA)
 	{
 		auto id = token_stream.this_token();
@@ -50,6 +55,10 @@ VarDecl * Mer::Parser::variable_declaration()
 			token_stream.match(ASSIGN);
 			auto exp = new Expr();
 			var_list.insert({ id,exp });
+		}
+		else
+		{
+			var_list.insert({ id,nullptr });
 		}
 	}
 	VarDecl *ret = new VarDecl();
@@ -66,8 +75,9 @@ AST * Mer::Parser::type_spec()
 	case INTEGER_DECL:token_stream.match(INTEGER_DECL); break;
 	case REAL_DECL:token_stream.match(REAL_DECL); break;
 	case STRING_DECL:token_stream.match(STRING_DECL); break;
+	case BOOL_DECL:token_stream.match(BOOL_DECL); break;
 	default:
-		throw Error("not matched type " + tmp->to_string());
+		throw Error("no matched type " + tmp->to_string());
 	}
 	return new Type(tmp);
 }
@@ -102,12 +112,25 @@ AST * Mer::Parser::statement()
 	AST *node = nullptr;
 	switch (token_stream.this_token()->get_tag())
 	{
+	case BREAK:
+		node = new Word(Word::Type::Break);
+		break;
+	case CONTINUE:
+		node = new Word(Word::Type::Continue);
+		break;
+	case WHILE:
+		node = while_statement();
+		break;
+	case IF:
+		node = if_statement();
+		break;
 	case BEGIN:
 		node = compound_statement();
 		break;
 	case ID:
 		node = assignment_statement();
 		break;
+	case BOOL_DECL:
 	case INTEGER_DECL:
 	case REAL_DECL:
 	case STRING_DECL:
@@ -127,7 +150,7 @@ AST * Mer::Parser::print_statement()
 {
 	token_stream.match(PRINT);
 	auto node = new Print(token_stream.this_token());
-	token_stream.advance();
+	token_stream.next();
 	return node;
 }
 
@@ -144,12 +167,14 @@ AST * Mer::Parser::assignment_statement()
 	delete expr;
 	return node;
 }
+
 AST * Mer::Parser::variable()
 {
 	auto node = new Var(token_stream.this_token());
 	token_stream.match(ID);
 	return node;
 }
+
 AST * Mer::Parser::empty()
 {
 	return new NoOp;
@@ -157,8 +182,7 @@ AST * Mer::Parser::empty()
 
 Mem::Object Mer::Assign::get_value()
 {
-	auto ret = _mem[left]->operator=(&*right->get_value());
-	return std::shared_ptr<Mem::Value>(ret);
+	return _mem[left]->operator=(right->get_value());
 }
 
 Mem::Object Mer::Block::get_value()
@@ -175,7 +199,9 @@ Mem::Object Mer::VarDecl::get_value()
 			_mem[a.first] = type->adapt_value(a.second->get_value());
 		}
 		else
+		{
 			_mem[a.first] = type->emit_var();
+		}
 	}
 	return nullptr;
 }

@@ -18,6 +18,30 @@ Mer::AST * Mer::Expr::expr()
 	return result;
 }
 
+Mer::AST * Mer::Expr::nexpr()
+{
+	auto result = expr();
+	while (1)
+	{
+		auto tok = token_stream.this_token();
+		switch (token_stream.this_token()->get_tag())
+		{
+		case EQ:
+		case NE:
+		case GE:
+		case GT:
+		case LE:
+		case LT:
+			token_stream.next();
+			break;
+		default:
+			return result;
+		}
+		result = new BinOp(result, tok, expr());
+	}
+	return result;
+}
+
 Mer::AST * Mer::Expr::term()
 {
 	auto result = factor();
@@ -40,6 +64,16 @@ Mer::AST * Mer::Expr::factor()
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
+	case TRUE:
+	{
+		token_stream.match(TRUE);
+		return new Num(result);
+	}
+	case FALSE:
+	{
+		token_stream.match(FALSE);
+		return new Num(result);
+	}
 	case LPAREN:
 	{
 		token_stream.match(LPAREN);
@@ -74,11 +108,13 @@ Mer::AST * Mer::Expr::factor()
 		AST* n = new UnaryOp(result, factor());
 		return n;
 	}
-	default:
+	case ID:
 	{
 		auto node = Parser::variable();
 		return node;
 	}
+	default:
+		return nullptr;
 	}
 }
 

@@ -29,7 +29,10 @@ int main()
 		std::string input_content = get_file_content("good.pas");
 		//std::cout << input_content<<std::endl;
 		Mer::build_token_stream(input_content);
+		time_t t = clock();
 		Mer::Interpreter().run();
+		time_t e = clock();
+		std::cout << "\nTime:" << (double)(e - t) / CLK_TCK;
 	}
 	catch (std::exception &e)
 	{
@@ -58,18 +61,18 @@ int model()
 	Sleep(100000);
 	return 0;
 }
-int t1()
+int main2()
 {
 	try
 	{
 		{
 			using namespace Mer::Mem;
-			Int *a = new Int(3);
-			Double *d = new Double(2.3);
+			auto a = std::make_shared<Int>(3);
+			auto d = std::make_shared<Double>(2.3);
 			time_t s = clock();
 			for (int i = 0; i < 100000000; i++)
 			{
-				delete(*a + d);
+				a->operator+(d);
 			}
 			time_t e = clock();
 			std::cout << double(e - s) / CLK_TCK<<std::endl;

@@ -4,16 +4,24 @@ using namespace Mer;
 std::map<Tag, std::string> Mer::TagStr{
 	{VAR,"VAR"},{PROGRAM,"PROGRAME"},{COMMA,"COMMA"},{COLON,"COLON"},
 	{ID,"ID"},{INTEGER,"INTEGER"},{ REAL,"REAL" } ,
-	{INTEGER_DECL,"INTEGER_DECL"},{REAL_DECL,"REAL_DECL"}, {STRING_DECL,"STRING_DECL"},
+	{IF,"IF"},{ELSE_IF,"ELSE_IF"},{ELSE,"ELSE"},{WHILE,"WHILE"},{FOR,"FOR"},{BREAK,"BREAK"},{CONTINUE,"CONTINUE"},
+	{INTEGER_DECL,"INTEGER_DECL"},{REAL_DECL,"REAL_DECL"}, {STRING_DECL,"STRING_DECL"},{BOOL_DECL,"BOOL_DECL"},
 	{PLUS,"PLUS"},{MINUS,"MINUS"},{MUL,"MUL"},{DIV,"DIV"},
+	{GE,"GE"},{GT,"GT"},{LE,"LE"},{LT,"LT"},{EQ,"EQ"},{NE,"NE"},
+	{AND,"AND"},{OR,"OR"},{NOT,"NOT"},
 	{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},
 	{DOT,"DOT"},{BEGIN,"BEGIN"},{END,"END"},
 	{SEMI,"SEMI"},{ASSIGN,"ASSIGN"},
-	{ENDL,"ENDL"},{PRINT,"PRINT"}
+	{ENDL,"ENDL"},{PRINT,"PRINT"},
+	{TRUE,"TRUE"}, {FALSE,"FALSE"},
 };
 std::map<std::string, Token*> Mer::KeyWord{
-	{"print",new Token(PRINT)},
-	{"string",new Token(STRING_DECL)},
+	{"if",new Token(IF)},{"elif",new Token(ELSE_IF)},{"else",new Token(ELSE)},
+	{"while",new Token(WHILE)},{"break",new Token(BREAK)},{"for",new Token(FOR)},
+	{"continue",new Token(CONTINUE)},
+	{"print",new Token(PRINT)},{"true",new Token(TRUE)},
+	{"false",new Token(FALSE)},
+	{"string",new Token(STRING_DECL)},{"bool",new Token(BOOL_DECL)},
 	{"var",new Token(VAR)},{"begin",new Token(BEGIN)},
 	{"end",new Token(END)},{"real",new Token(REAL_DECL)},
 	{"int",new Token(INTEGER_DECL)},{"program",new Token(PROGRAM)}
@@ -136,6 +144,27 @@ void Mer::build_token_stream(const std::string &content)
 	{
 		switch (content[i])
 		{
+		case '\\':
+			if (i + 1 < content.size() && content[i + 1] == '\\')
+			{
+				while (i+1 < content.size() && content[++i] != '\n')
+					continue;
+			}
+			else if(i + 1 < content.size() && content[i + 1] == '*')
+			{ 
+				i+=2;
+				while (i < content.size())
+				{
+					i++;
+					if (content[i] == '*')
+					{
+						i++;
+						if (i<content.size()&&content[i] == '\\')
+							goto end;
+					}
+				}
+			}
+			end:break;
 		case '\'':
 			token_stream.push_back(parse_string(content,i));
 			break;
@@ -143,16 +172,65 @@ void Mer::build_token_stream(const std::string &content)
 			token_stream.push_back(new Endl());
 			break;
 		case '{':
-			while (true)
-			{
-				if (i + 1 >= content.size())
-					throw Mer::Error("{} not matched");
-				else if (content[++i] == '}')
-					break;
-			}
+			token_stream.push_back(new Token(BEGIN));
+			break;
+		case '}':
+			token_stream.push_back(new Token(END));
 			break;
 		case ',':
 			token_stream.push_back(new Token(COMMA));
+			break;
+		case '&':
+			if (i + 1 < content.size() && content[i + 1] == '&')
+			{
+				token_stream.push_back(new Token(AND));
+				i++;
+			}
+			else
+				throw Error("invalid token '&'");
+		case '|':
+			if (i + 1 < content.size() && content[i + 1] == '|')
+			{
+				token_stream.push_back(new Token(OR));
+				i++;
+			}
+			else
+				throw Error("invalid token '|'");
+		case '<':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(LE));
+				i++;
+			}
+			else
+				token_stream.push_back(new Token(LT));
+			break;
+		case '>':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(GE));
+				i++;
+			}
+			else
+				token_stream.push_back(new Token(GT));
+			break;
+		case '=':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(EQ));
+				i++;
+				break;
+			}
+			else
+				throw Error("invalid token '='");
+		case '!':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(NE));
+				i++;
+			}
+			else
+				token_stream.push_back(new Token(NOT));
 			break;
 		case ':':
 			if (i + 1 < content.size() && content[i + 1] == '=')

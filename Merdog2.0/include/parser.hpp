@@ -31,6 +31,9 @@ namespace Mer
 		Type(Token *t) {
 			switch (t->get_tag())
 			{
+			case BOOL_DECL:
+				type_v = Mem::BasicType::BOOL;
+				break;
 			case INTEGER_DECL:
 				type_v = Mem::BasicType::INT;
 				break;
@@ -48,12 +51,14 @@ namespace Mer
 		{
 			switch (type_v)
 			{
+			case Mer::Mem::BOOL:
+				return std::make_shared<Mem::Bool>(false);
 			case Mer::Mem::INT:
-				return Mem::Object(new Mem::Int(0));
+				return std::make_shared<Mem::Int>(0);
 			case Mer::Mem::DOUBLE:
-				return Mem::Object(new Mem::Double(0));
+				return std::make_shared<Mem::Double>(0.0);
 			case Mer::Mem::STRING:
-				return Mem::Object(new Mem::String(""));
+				return std::make_shared<Mem::String>("");
 			default:
 				throw Error("create var failed");
 			}

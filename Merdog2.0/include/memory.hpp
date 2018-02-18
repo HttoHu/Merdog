@@ -28,6 +28,10 @@ namespace Mer
 		{
 			return _mem[index];
 		}
+		~Memory()
+		{
+			delete[] _mem;
+		}
 	private:
 		void check()
 		{
