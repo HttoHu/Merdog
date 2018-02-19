@@ -40,6 +40,11 @@ namespace Mer
 		Expr *condition;
 		Block *blo;
 	};
+	class For :public AST
+	{
+	public:
+	private:
+	};
 	namespace Parser
 	{
 		While *while_statement();

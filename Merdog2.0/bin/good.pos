@@ -1,6 +1,11 @@
-program I_AM_A_PIG;
-begin	
-	int a:=23;
-	a:=12;
-	print a;
-end.
+program brain_fucker;
+{
+	int a:=0;
+	int sum:=0;
+	while (a<1000000)
+	{
+		a:=a+1;
+		sum:=sum+a;
+	};
+	print sum;
+}.

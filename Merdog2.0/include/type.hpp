@@ -21,6 +21,22 @@ namespace Mer
 			{
 				return nullptr;
 			}
+			virtual Object operator+=(Object v)
+			{
+				throw Error("syntax error");
+			}
+			virtual Object operator-=(Object v)
+			{
+				throw Error("syntax error");
+			}
+			virtual Object operator*=(Object v)
+			{
+				throw Error("syntax error");
+			}
+			virtual Object operator/=(Object v)
+			{
+				throw Error("syntax error");
+			}
 			virtual Object operator+ (Object v) { throw Error("syntax error"); }
 			virtual Object operator- (Object v) { throw Error("syntax error"); }
 			virtual Object operator* (Object v) { throw Error("syntax error"); }
@@ -92,6 +108,22 @@ namespace Mer
 				value = std::static_pointer_cast<Int>(v)->value;
 				return tmp;
 			}
+			Object operator+=(Object v)override
+			{
+				return std::make_shared<Int>(value += std::static_pointer_cast<Int>(v->Convert(INT))->value);
+			}
+			Object operator-=(Object v)override
+			{
+				return std::make_shared<Int>(value -= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+			}
+			Object operator*=(Object v)override
+			{
+				return std::make_shared<Int>(value *= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+			}
+			Object operator/=(Object v)override
+			{
+				return std::make_shared<Int>(value /= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+			}
 			Object operator+ (Object v)override
 			{
 				return std::make_shared<Int>(value + std::static_pointer_cast<Int>(v->Convert(INT))->value);
@@ -156,6 +188,26 @@ namespace Mer
 			{
 				value = std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value;
 				return Object(this);
+			}
+			Object operator+=(Object v)override
+			{
+				return std::make_shared<Double>(value +=
+					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+			}
+			Object operator-=(Object v)override
+			{
+				return std::make_shared<Double>(value -=
+					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+			}
+			Object operator*=(Object v)override
+			{
+				return std::make_shared<Double>(value *=
+					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+			}
+			Object operator/=(Object v)override
+			{
+				return std::make_shared<Double>(value /=
+					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
 			}
 			Object operator+(Object v)override
 			{

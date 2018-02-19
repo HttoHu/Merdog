@@ -63,7 +63,7 @@ namespace Mer
 				throw Error("create var failed");
 			}
 		}
-		Mem::Object adapt_value(Mem::Object &value)
+		Mem::Object adapt_value(const Mem::Object &value)
 		{
 			return Mem::Object(value->Convert(type_v));
 		}
@@ -111,6 +111,47 @@ namespace Mer
 		Token *op;
 		AST* right;
 	};
+	class AssignPlus :public AST
+	{
+	public:
+		AssignPlus(size_t l, Token* o, AST* r) :left(l), op(o), right(r) {}
+		Mem::Object get_value()override;
+	private:
+		size_t left;
+		Token *op;
+		AST* right;
+	};
+	class AssignMinus :public AST
+	{
+	public:
+		AssignMinus(size_t l, Token* o, AST* r) :left(l), op(o), right(r) {}
+		Mem::Object get_value()override;
+	private:
+		size_t left;
+		Token *op;
+		AST* right;
+	};
+	class AssignMul :public AST
+	{
+	public:
+		AssignMul(size_t l, Token* o, AST* r) :left(l), op(o), right(r) {}
+		Mem::Object get_value()override;
+	private:
+		size_t left;
+		Token *op;
+		AST* right;
+	};
+	class AssignDiv :public AST
+	{
+	public:
+		AssignDiv(size_t l, Token* o, AST* r) :left(l), op(o), right(r) {}
+		Mem::Object get_value()override;
+	private:
+		size_t left;
+		Token *op;
+		AST* right;
+	};
+
 	class Var :public AST
 	{
 	public:

@@ -22,10 +22,13 @@ std::string get_file_content(const std::string & filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-int main()
+int main(int argc,char* argv[])
 {
 	try
 	{
+
+		//if (argc != 2)
+			//throw std::runtime_error("argument error");
 		std::string input_content = get_file_content("good.pas");
 		//std::cout << input_content<<std::endl;
 		Mer::build_token_stream(input_content);

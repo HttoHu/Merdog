@@ -188,6 +188,7 @@ void Mer::build_token_stream(const std::string &content)
 			}
 			else
 				throw Error("invalid token '&'");
+			break;
 		case '|':
 			if (i + 1 < content.size() && content[i + 1] == '|')
 			{
@@ -196,6 +197,7 @@ void Mer::build_token_stream(const std::string &content)
 			}
 			else
 				throw Error("invalid token '|'");
+			break;
 		case '<':
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
@@ -258,15 +260,35 @@ void Mer::build_token_stream(const std::string &content)
 			token_stream.push_back(new Token(RPAREN));
 			break;
 		case '*':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(SMUL));
+				i++;
+			}
 			token_stream.push_back(new Token(MUL));
 			break;
 		case '/':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(SDIV));
+				i++;
+			}
 			token_stream.push_back(new Token(DIV));
 			break;
 		case '+':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(SPLUS));
+				i++;
+			}
 			token_stream.push_back(new Token(PLUS));
 			break;
 		case '-':
+			if (i + 1 < content.size() && content[i + 1] == '=')
+			{
+				token_stream.push_back(new Token(SMINUS));
+				i++;
+			}
 			token_stream.push_back(new Token(MINUS));
 			break;
 		case '0':case '1':case '2':case '3':case '4':case '5':case '6':

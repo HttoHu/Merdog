@@ -17,7 +17,6 @@ Program * Mer::Parser::program()
 	auto tmp = token_stream.this_token();
 	token_stream.match(ID);
 	std::string name = Id::get_value(tmp);
-	token_stream.match(SEMI);
 	auto blo = block();
 	token_stream.match(DOT);
 	return new Program(name, blo);
@@ -32,14 +31,14 @@ Block * Mer::Parser::block()
 
 VarDecl * Mer::Parser::variable_declaration()
 {
-	std::map<Token*,Expr*> var_list;
+	std::map<Token*, Expr*> var_list;
 	auto type = type_spec();
 	auto id = token_stream.this_token();
 	token_stream.match(ID);
-	if (token_stream.this_token()->get_tag()== ASSIGN)
+	if (token_stream.this_token()->get_tag() == ASSIGN)
 	{
 		token_stream.match(ASSIGN);
-		auto exp= new Expr();
+		auto exp = new Expr();
 		var_list.insert({ id,exp });
 	}
 	else
@@ -114,9 +113,11 @@ AST * Mer::Parser::statement()
 	{
 	case BREAK:
 		node = new Word(Word::Type::Break);
+		token_stream.match(BREAK);
 		break;
 	case CONTINUE:
 		node = new Word(Word::Type::Continue);
+		token_stream.match(CONTINUE);
 		break;
 	case WHILE:
 		node = while_statement();
@@ -158,12 +159,32 @@ AST * Mer::Parser::assignment_statement()
 {
 	auto left = variable();
 	auto token = token_stream.this_token();
-	token_stream.match(ASSIGN);
+	token_stream.next();
 	token_stream.this_token()->to_string();
 	auto expr = new Expr();
-
+	auto node = new AST();
 	//{a:=4}.
-	auto node = new Assign(static_cast<Var*>(left)->get_pos(), token, expr->root());
+	switch (token->get_tag())
+	{
+	case ASSIGN:
+		node = new Assign(static_cast<Var*>(left)->get_pos(), token, expr->root());
+		break;
+	case SPLUS:
+		node = new AssignPlus(static_cast<Var*>(left)->get_pos(), token, expr->root());
+		break;
+	case SMINUS:
+		node = new AssignMinus(static_cast<Var*>(left)->get_pos(), token, expr->root());
+		break;
+	case SMUL:
+		node = new AssignMul(static_cast<Var*>(left)->get_pos(), token, expr->root());
+		break;
+	case SDIV:
+		node = new AssignDiv(static_cast<Var*>(left)->get_pos(), token, expr->root());
+		break;
+	default:
+		break;
+	}
+
 	delete expr;
 	return node;
 }
@@ -197,6 +218,8 @@ Mem::Object Mer::VarDecl::get_value()
 		if (a.second != nullptr)
 		{
 			_mem[a.first] = type->adapt_value(a.second->get_value());
+			//invalid initialization of non-const reference of type 
+			//'Mer::Mem::Object& {aka std::shared_ptr<Mer::Mem::Value>&}' from an rvalue of type 'Mer::Mem::Object {aka std::shared_ptr<Mer::Mem::Value>}'
 		}
 		else
 		{
@@ -206,7 +229,7 @@ Mem::Object Mer::VarDecl::get_value()
 	return nullptr;
 }
 
-void Mer::VarDecl::init_var_list(const std::map<Token*,Expr*>& v)
+void Mer::VarDecl::init_var_list(const std::map<Token*, Expr*>& v)
 {
 	for (const auto &a : v)
 	{
@@ -236,4 +259,24 @@ Mem::Object Mer::Print::get_value()
 		std::cout << _mem[tmp]->to_string();
 	}
 	return nullptr;
+}
+
+Mem::Object Mer::AssignPlus::get_value()
+{
+	return _mem[left]->operator+=(right->get_value());
+}
+
+Mem::Object Mer::AssignMinus::get_value()
+{
+	return _mem[left]->operator-=(right->get_value());
+}
+
+Mem::Object Mer::AssignMul::get_value()
+{
+	return _mem[left]->operator*=(right->get_value());
+}
+
+Mem::Object Mer::AssignDiv::get_value()
+{
+	return _mem[left]->operator/=(right->get_value());
 }

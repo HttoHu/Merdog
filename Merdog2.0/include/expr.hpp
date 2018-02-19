@@ -21,6 +21,12 @@ namespace Mer
 			Mem::Object ret = nullptr;
 			switch (op->get_tag())
 			{
+			case AND:
+				ret = left_v->operator&&(right_v);
+				break;
+			case OR:
+				ret = left_v->operator||(right_v);
+				break;
 			case PLUS:
 				ret = left_v->operator+(right_v);
 				break;
@@ -98,13 +104,14 @@ namespace Mer
 	class Expr
 	{
 	public:
-		Expr() :tree(nexpr()) {}
+		Expr() :tree(and_or()) {}
 		Mem::Object get_value()
 		{
 			return tree->get_value();
 		}
 		AST *root() { return tree; }
 	private:
+		AST *and_or();
 		AST* expr();
 		AST* nexpr();
 		AST* term();

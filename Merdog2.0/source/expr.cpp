@@ -1,5 +1,18 @@
 #include "../include/expr.hpp"
 #include "../include/parser.hpp"
+Mer::AST * Mer::Expr::and_or()
+{
+	auto result = nexpr();
+	while (token_stream.this_tag() == AND || token_stream.this_tag() == OR)
+	{
+		auto tok = token_stream.this_token();
+		token_stream.next();
+		std::cout << token_stream.this_token()->to_string();
+		result = new BinOp(result, tok, nexpr());
+	}
+	return result;
+
+}
 Mer::AST * Mer::Expr::expr()
 {
 	auto result = term();
@@ -77,7 +90,7 @@ Mer::AST * Mer::Expr::factor()
 	case LPAREN:
 	{
 		token_stream.match(LPAREN);
-		AST* v = expr();
+		AST* v = and_or();
 		token_stream.match(RPAREN);
 		return v;
 	}
@@ -96,9 +109,10 @@ Mer::AST * Mer::Expr::factor()
 		token_stream.match(INTEGER);
 		return new Num(result);
 	}
+	case NOT:
 	case MINUS:
 	{
-		token_stream.match(MINUS);
+		token_stream.next();
 		AST *n = new UnaryOp(result, factor());
 		return n;
 	}
@@ -120,13 +134,18 @@ Mer::AST * Mer::Expr::factor()
 
 Mer::Mem::Object Mer::UnaryOp::get_value()
 {
-	if (op->get_tag() == MINUS)
+	switch (op->get_tag())
+	{
+	case NOT:
+	case MINUS:
 	{
 		auto tmp = expr->get_value();
 		auto ret = tmp->get_negation();
 		return Mem::Object(ret);
 	}
-	else
+	case PLUS:
 		return expr->get_value();
-	//return Value();
+	default:
+		throw Error("no matched operator");
+	}
 }
