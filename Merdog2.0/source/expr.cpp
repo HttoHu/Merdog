@@ -7,7 +7,6 @@ Mer::AST * Mer::Expr::and_or()
 	{
 		auto tok = token_stream.this_token();
 		token_stream.next();
-		std::cout << token_stream.this_token()->to_string();
 		result = new BinOp(result, tok, nexpr());
 	}
 	return result;
@@ -80,12 +79,12 @@ Mer::AST * Mer::Expr::factor()
 	case TRUE:
 	{
 		token_stream.match(TRUE);
-		return new Num(result);
+		return new Unit(result);
 	}
 	case FALSE:
 	{
 		token_stream.match(FALSE);
-		return new Num(result);
+		return new Unit(result);
 	}
 	case LPAREN:
 	{
@@ -97,17 +96,17 @@ Mer::AST * Mer::Expr::factor()
 	case REAL:
 	{
 		token_stream.match(REAL);
-		return new Num(result);
+		return new Unit(result);
 	}
 	case STRING:
 	{
 		token_stream.match(STRING);
-		return new Num(result);
+		return new Unit(result);
 	}
 	case INTEGER:
 	{
 		token_stream.match(INTEGER);
-		return new Num(result);
+		return new Unit(result);
 	}
 	case NOT:
 	case MINUS:
@@ -124,8 +123,9 @@ Mer::AST * Mer::Expr::factor()
 	}
 	case ID:
 	{
-		auto node = Parser::variable();
-		return node;
+		if (token_stream.next_token()->get_tag() == LPAREN)
+			return Parser::func_call();
+		 return Parser::variable();
 	}
 	default:
 		return nullptr;
@@ -136,6 +136,10 @@ Mer::Mem::Object Mer::UnaryOp::get_value()
 {
 	switch (op->get_tag())
 	{
+	case GET_ADD:
+	{
+		
+	}
 	case NOT:
 	case MINUS:
 	{

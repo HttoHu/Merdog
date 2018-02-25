@@ -312,6 +312,35 @@ namespace Mer
 		private:
 			std::string str;
 		};
-
+		class Ref :public Value
+		{
+		public:
+			Ref(size_t p) :pos(p)
+			{
+			}
+			Object operator=(Object obj)override;
+			Object operator+(Object obj)override;
+			Object operator-(Object obj)override;
+			Object operator*(Object obj)override;
+			Object operator/(Object obj)override;
+			Object operator+=(Object obj)override;
+			Object operator-=(Object obj)override;
+			Object operator*=(Object obj)override;
+			Object operator/=(Object obj)override;
+			Object operator==(Object obj)override;
+			Object operator>=(Object obj)override;
+			Object operator<=(Object obj)override;
+			Object operator>(Object obj)override;
+			Object operator<(Object obj)override;
+			Object operator!=(Object obj)override;
+			Object operator&&(Object obj)override;
+			Object operator||(Object obj)override;
+			Object operator[](Object obj)override;
+			Object  Convert(int type)override;
+			Object  get_negation()override;
+			std::string to_string()const override;
+		private:
+			size_t pos;
+		};
 	}
 }

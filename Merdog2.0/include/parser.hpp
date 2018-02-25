@@ -10,6 +10,8 @@ namespace Mer
 	{
 	public:
 		Block() {}
+		void new_block();
+		void end_block();
 		Mem::Object get_value();
 		Compound *compound_list;
 	};
@@ -70,6 +72,15 @@ namespace Mer
 	private:
 		Mem::BasicType type_v;
 	};
+	class CallFunc :public AST
+	{
+	public:
+		CallFunc(Token *fun, std::vector<Expr*> &vec);
+		Mem::Object get_value()override;
+	private:
+		size_t func;
+		std::vector<AST*> args;
+	};
 	class VarDecl :public AST
 	{
 	public:
@@ -77,6 +88,14 @@ namespace Mer
 		void init_var_list(const std::map<Token*,Expr*> &v);
 		std::map<size_t,Expr*> var_list;
 		//std::vector<Token*> var_list;
+		Type *type;
+	};
+	class RefDecl :public AST
+	{
+	public:
+		Mem::Object get_value();
+		void init_var_list(const std::map<Token*, Token*> &v);
+		std::map<size_t, Token*> var_list;
 		Type *type;
 	};
 	class Print:public AST
@@ -99,7 +118,7 @@ namespace Mer
 			}
 			return nullptr;
 		}
-		std::vector<AST*> children;
+		std::deque<AST*> children;
 	};
 	class Assign :public AST
 	{
@@ -151,7 +170,20 @@ namespace Mer
 		Token *op;
 		AST* right;
 	};
-
+	class Return :public AST
+	{
+	public:
+		Return(Expr* expr) :ret_value(expr) {}
+		Mem::Object get_value()override {
+			throw this;
+		}
+		Mem::Object get_ret_value()
+		{
+			return ret_value->get_value();
+		}
+	private:
+		Expr * ret_value;
+	};
 	class Var :public AST
 	{
 	public:
@@ -169,13 +201,17 @@ namespace Mer
 	namespace Parser
 	{
 		AST *parse();
+
 		Program *program();
 		Block *block();
+		RefDecl *ref_declaration();
 		VarDecl *variable_declaration();
-		AST *type_spec();
+		Type *type_spec();
 		AST *compound_statement();
 		std::vector<AST*> statemnet_list();
+		CallFunc *func_call();
 		AST *statement();
+		AST *id_event();
 		AST *print_statement();
 		AST *assignment_statement();
 		AST *variable();

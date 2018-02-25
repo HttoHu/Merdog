@@ -1,4 +1,5 @@
 #include "../include/branch_statement.hpp"
+#include "../include/memory.hpp"
 namespace Mer
 {
 	namespace Parser
@@ -28,5 +29,22 @@ namespace Mer
 			}
 			return ret;
 		}
+	}
+	Mem::Object If::get_value()
+	{
+		_mem.new_block();
+		for (auto &a : if_block)
+		{
+			if (std::static_pointer_cast<Mem::Bool>(a.first->get_value())->_value())
+			{
+				a.second->get_value();
+				_mem.end_block();
+				return nullptr;
+			}
+		}
+		if (else_block != nullptr)
+			else_block->get_value();
+		_mem.end_block();
+		return nullptr;
 	}
 }

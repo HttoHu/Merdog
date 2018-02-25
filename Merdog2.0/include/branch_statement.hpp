@@ -5,20 +5,7 @@ namespace Mer
 	class If :public AST
 	{
 	public:
-		Mem::Object get_value()
-		{
-			for (auto &a : if_block)
-			{
-				if (std::static_pointer_cast<Mem::Bool>(a.first->get_value())->_value())
-				{
-					a.second->get_value();
-					return nullptr;
-				}
-			}
-			if (else_block != nullptr)
-				else_block->get_value();
-			return nullptr;
-		}
+		Mem::Object get_value();
 		std::vector<std::pair<Expr*, Block*>> if_block;
 		Block* else_block;
 	};

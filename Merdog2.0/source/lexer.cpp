@@ -2,13 +2,13 @@
 using namespace Mer;
 
 std::map<Tag, std::string> Mer::TagStr{
-	{VAR,"VAR"},{PROGRAM,"PROGRAME"},{COMMA,"COMMA"},{COLON,"COLON"},
-	{ID,"ID"},{INTEGER,"INTEGER"},{ REAL,"REAL" } ,
+	{REF,"REF"},{PROGRAM,"PROGRAME"},{COMMA,"COMMA"},{COLON,"COLON"},
+	{ID,"ID"},{INTEGER,"INTEGER"},{ REAL,"REAL" } ,{FUNCTION,"FUNCTION"},{RETURN,"RETURN"},
 	{IF,"IF"},{ELSE_IF,"ELSE_IF"},{ELSE,"ELSE"},{WHILE,"WHILE"},{FOR,"FOR"},{BREAK,"BREAK"},{CONTINUE,"CONTINUE"},
 	{INTEGER_DECL,"INTEGER_DECL"},{REAL_DECL,"REAL_DECL"}, {STRING_DECL,"STRING_DECL"},{BOOL_DECL,"BOOL_DECL"},
 	{PLUS,"PLUS"},{MINUS,"MINUS"},{MUL,"MUL"},{DIV,"DIV"},
 	{GE,"GE"},{GT,"GT"},{LE,"LE"},{LT,"LT"},{EQ,"EQ"},{NE,"NE"},
-	{AND,"AND"},{OR,"OR"},{NOT,"NOT"},
+	{AND,"AND"},{OR,"OR"},{NOT,"NOT"},{GET_ADD,"GET_ADD"},
 	{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},
 	{DOT,"DOT"},{BEGIN,"BEGIN"},{END,"END"},
 	{SEMI,"SEMI"},{ASSIGN,"ASSIGN"},
@@ -19,10 +19,11 @@ std::map<std::string, Token*> Mer::KeyWord{
 	{"if",new Token(IF)},{"elif",new Token(ELSE_IF)},{"else",new Token(ELSE)},
 	{"while",new Token(WHILE)},{"break",new Token(BREAK)},{"for",new Token(FOR)},
 	{"continue",new Token(CONTINUE)},
+	{"function",new Token(FUNCTION)},{"return",new Token(RETURN)},
 	{"print",new Token(PRINT)},{"true",new Token(TRUE)},
 	{"false",new Token(FALSE)},
 	{"string",new Token(STRING_DECL)},{"bool",new Token(BOOL_DECL)},
-	{"var",new Token(VAR)},{"begin",new Token(BEGIN)},
+	{"ref",new Token(REF)},{"begin",new Token(BEGIN)},
 	{"end",new Token(END)},{"real",new Token(REAL_DECL)},
 	{"int",new Token(INTEGER_DECL)},{"program",new Token(PROGRAM)}
 };
@@ -35,12 +36,12 @@ Token * Mer::parse_number(const std::string &str, size_t &pos)
 	{
 		if (isdigit(str[pos]))
 			ret = ret * 10 + (str[pos] - 48);
-		else 
+		else
 		{
 			break;
 		}
 	}
-	double tmp=0.0;
+	double tmp = 0.0;
 	double tmp2 = 1;
 	if (str[pos] == '.')
 	{
@@ -50,11 +51,11 @@ Token * Mer::parse_number(const std::string &str, size_t &pos)
 			if (isdigit(str[pos]))
 			{
 				tmp2 /= 10;
-				tmp = tmp + tmp2*(str[pos] - 48);
+				tmp = tmp + tmp2 * (str[pos] - 48);
 			}
 			else
 			{
-				return new Real((double)ret+tmp);
+				return new Real((double)ret + tmp);
 			}
 		}
 	}
@@ -91,7 +92,7 @@ Token *Mer::parse_word(const std::string &str, size_t &pos)
 	{
 		return result->second;
 	}
-	auto id_result=Id::find(ret);
+	auto id_result = Id::find(ret);
 	if (id_result != nullptr)
 		return id_result;
 	else
@@ -147,34 +148,36 @@ void Mer::build_token_stream(const std::string &content)
 		case '\\':
 			if (i + 1 < content.size() && content[i + 1] == '\\')
 			{
-				while (i+1 < content.size() && content[++i] != '\n')
+				while (i + 1 < content.size() && content[++i] != '\n')
 					continue;
 			}
-			else if(i + 1 < content.size() && content[i + 1] == '*')
-			{ 
-				i+=2;
+			else if (i + 1 < content.size() && content[i + 1] == '*')
+			{
+				i += 2;
 				while (i < content.size())
 				{
 					i++;
 					if (content[i] == '*')
 					{
 						i++;
-						if (i<content.size()&&content[i] == '\\')
+						if (i < content.size() && content[i] == '\\')
 							goto end;
 					}
 				}
 			}
-			end:break;
+		end:break;
 		case '\'':
-			token_stream.push_back(parse_string(content,i));
+			token_stream.push_back(parse_string(content, i));
 			break;
 		case '\n':
 			token_stream.push_back(new Endl());
 			break;
 		case '{':
+			Id::id_table().push_front(std::map<std::string, Id*>());
 			token_stream.push_back(new Token(BEGIN));
 			break;
 		case '}':
+			Id::id_table().pop_front();
 			token_stream.push_back(new Token(END));
 			break;
 		case ',':
@@ -187,7 +190,7 @@ void Mer::build_token_stream(const std::string &content)
 				i++;
 			}
 			else
-				throw Error("invalid token '&'");
+				token_stream.push_back(new Token(GET_ADD));
 			break;
 		case '|':
 			if (i + 1 < content.size() && content[i + 1] == '|')
@@ -236,7 +239,7 @@ void Mer::build_token_stream(const std::string &content)
 			break;
 		case ':':
 			if (i + 1 < content.size() && content[i + 1] == '=')
-			{ 
+			{
 				token_stream.push_back(new Token(ASSIGN));
 				i++;
 			}
@@ -301,4 +304,5 @@ void Mer::build_token_stream(const std::string &content)
 			break;
 		}
 	}
+	token_stream.push_back(END_TOKEN);
 }

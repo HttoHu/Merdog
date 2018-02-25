@@ -1,4 +1,5 @@
 #pragma once
+#include <deque>
 #include <vector>
 #include <map>
 #include <string>
@@ -9,13 +10,14 @@ namespace Mer
 	enum Tag
 	{
 		PRINT,
-		SPLUS,SMINUS,SMUL,SDIV,
+		SPLUS,SMINUS,SMUL,SDIV,GET_ADD,
 		INTEGER_DECL, REAL_DECL,STRING_DECL,BOOL_DECL,
 		PROGRAM,
 		GE,LE,GT,LT,NE,EQ,
+		FUNCTION,RETURN,
 		IF,ELSE_IF,ELSE,WHILE,FOR,BREAK,CONTINUE,
 		NOT,AND,OR,
-		VAR, BEGIN, END, SEMI, DOT, COMMA,
+		REF, BEGIN, END, SEMI, DOT, COMMA,
 		ID, INTEGER, REAL, COLON,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
 		TRUE,FALSE,
@@ -56,14 +58,14 @@ namespace Mer
 				return static_cast<Id*>(tok)->id_name;
 			throw Mer::Error("type-convert failed(Token can't convert to Id).");
 		}
-		static std::vector<std::map<std::string, Id*>> &id_table()
+		static std::deque<std::map<std::string, Id*>> &id_table()
 		{
-			static std::vector<std::map<std::string, Id*>> ret(1);
+			static std::deque<std::map<std::string, Id*>> ret(1);
 			return ret;
 		}
 		static Id* find(std::string str)
 		{
-			for (int i = (int)id_table().size() - 1; i >= 0; i--)
+			for (size_t i = 0; i <id_table().size() ; i++)
 			{
 				auto result = id_table()[i].find(str);
 				if (result == id_table()[i].end())
@@ -74,6 +76,21 @@ namespace Mer
 		}
 		std::string to_string()const override {
 			return "<Id:" + id_name + ">";
+		}
+		static void print()
+		{
+			int index = 0;
+			for (const auto &a : id_table())
+			{
+				std::cout << "No " << index<<" ";
+				for (const auto &b : a)
+				{
+					std::cout << b.first<<"  ";
+				}
+				std::cout << std::endl;
+				index++;
+			}
+			std::cout << "------------------------------------\n";
 		}
 	private:
 		std::string id_name;
@@ -131,6 +148,13 @@ namespace Mer
 		Tag this_tag()
 		{
 			return this_token()->get_tag();
+		}
+		Token *next_token()
+		{
+			if (pos + 1 < content.size())
+				return content[pos + 1];
+			else
+				throw Error("token_stream out of range");
 		}
 		Token* get_next_token()
 		{

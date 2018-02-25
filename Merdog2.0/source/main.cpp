@@ -29,7 +29,7 @@ int main(int argc,char* argv[])
 
 		//if (argc != 2)
 			//throw std::runtime_error("argument error");
-		std::string input_content = get_file_content("good.pas");
+		std::string input_content = get_file_content("./good.pas");
 		//std::cout << input_content<<std::endl;
 		Mer::build_token_stream(input_content);
 		time_t t = clock();

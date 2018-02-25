@@ -76,10 +76,10 @@ namespace Mer
 		Token *op;
 		AST* expr;
 	};
-	class Num :public AST
+	class Unit :public AST
 	{
 	public:
-		Num(Token *t) :tok(t) {}
+		Unit(Token *t) :tok(t) {}
 		Mem::Object get_value()override
 		{
 			switch (tok->get_tag())
@@ -91,7 +91,7 @@ namespace Mer
 			case INTEGER:
 				return std::make_shared<Mem::Int>(Integer::get_value(tok));
 			case REAL:
-				return std::make_shared <Mem::Double >(Real::get_value(tok));
+				return std::make_shared<Mem::Double >(Real::get_value(tok));
 			case STRING:
 				return std::make_shared<Mem::String>(String::get_value(tok));
 			default:

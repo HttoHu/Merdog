@@ -1,4 +1,5 @@
 #include "../include/type.hpp"
+#include "../include/memory.hpp"
 using namespace Mer::Mem;
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
@@ -57,4 +58,38 @@ Object Mer::Mem::Bool::Convert(int type)
 	default:
 		throw Error("type-convert error");
 	}
+}
+
+Object Mer::Mem::Ref::operator=(Object obj){return _mem[pos]->operator=(obj);}
+Object Mer::Mem::Ref::operator+(Object obj) { return _mem[pos]->operator+(obj); }
+Object Mer::Mem::Ref::operator-(Object obj) { return _mem[pos]->operator-(obj); }
+Object Mer::Mem::Ref::operator*(Object obj) { return _mem[pos]->operator*(obj); }
+Object Mer::Mem::Ref::operator/(Object obj) { return _mem[pos]->operator/(obj); }
+Object Mer::Mem::Ref::operator+=(Object obj) { return _mem[pos]->operator+=(obj); }
+Object Mer::Mem::Ref::operator-=(Object obj) { return _mem[pos]->operator-=(obj); }
+Object Mer::Mem::Ref::operator*=(Object obj) { return _mem[pos]->operator*=(obj); }
+Object Mer::Mem::Ref::operator/=(Object obj) { return _mem[pos]->operator/=(obj); }
+Object Mer::Mem::Ref::operator==(Object obj) { return _mem[pos]->operator==(obj); }
+Object Mer::Mem::Ref::operator!=(Object obj) { return _mem[pos]->operator!=(obj); }
+Object Mer::Mem::Ref::operator<=(Object obj) { return _mem[pos]->operator<=(obj); }
+Object Mer::Mem::Ref::operator>=(Object obj) { return _mem[pos]->operator=(obj); }
+Object Mer::Mem::Ref::operator<(Object obj) { return _mem[pos]->operator<(obj); }
+Object Mer::Mem::Ref::operator>(Object obj) { return _mem[pos]->operator>(obj); }
+Object Mer::Mem::Ref::operator&&(Object obj) { return _mem[pos]->operator&&(obj); }
+Object Mer::Mem::Ref::operator||(Object obj) { return _mem[pos]->operator||(obj); }
+Object Mer::Mem::Ref::operator[](Object obj) { return _mem[pos]->operator[](obj); }
+
+Object Mer::Mem::Ref::Convert(int type)
+{
+	return _mem[pos]->Convert(type);
+}
+
+Object Mer::Mem::Ref::get_negation()
+{
+	return _mem[pos]->get_negation();
+}
+
+std::string Mer::Mem::Ref::to_string() const
+{
+	return _mem[pos]->to_string();
 }

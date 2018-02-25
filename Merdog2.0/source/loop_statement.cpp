@@ -13,5 +13,19 @@ namespace Mer
 			ret->blo = block();
 			return ret;
 		}
+		For * for_statement()
+		{
+			For *ret = new For();
+			token_stream.match(FOR);
+			token_stream.match(LPAREN);
+			ret->init = variable_declaration();
+			token_stream.match(SEMI);
+			ret->condition = new Expr();
+			token_stream.match(SEMI);
+			ret->step_action = statement();
+			token_stream.match(RPAREN);
+			ret->blo = block();
+			return ret;
+		}
 	}
 }
