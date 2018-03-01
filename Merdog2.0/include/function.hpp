@@ -6,7 +6,7 @@ namespace Mer
 	class ParVar :public AST
 	{
 	public:
-		ParVar(size_t p,Expr*e) :pos(p),expr(e) {}
+		ParVar(size_t p, Expr*e);
 		Mem::Object get_value();
 	private:
 		size_t pos;
@@ -20,35 +20,32 @@ namespace Mer
 		size_t pos;
 		Type *t;
 	};
-
 	class Param
 	{
 	public:
 		std::deque <AST*> generate_statement(std::vector<Expr*> &v);
 		std::vector <ParamPart*> param;
-
-	};
-	class FunctionBase
-	{
-	public:
-		virtual Mem::Object call(std::vector<AST*> &arg)=0;
-		virtual std::vector<size_t> get_param()=0;
-		virtual ~FunctionBase() = default;
-	};
-	class Function:public FunctionBase
-	{
-	public:
-		Mem::Object call(std::vector<AST*> &arg)override;
-		std::vector<size_t> get_param()override
+		std::vector<size_t> get_param()
 		{
 			std::vector<size_t> ret;
-			for (auto &a : param->param)
+			for (auto &a :param)
 			{
 				ret.push_back(a->pos);
 			}
 			return ret;
 		}
-		Param * param;
+	};
+	class FunctionBase
+	{
+	public:
+		virtual Mem::Object call(std::vector<Mem::Object> &arg,int reserve_size)=0;
+		virtual ~FunctionBase() = default;
+	};
+	class Function:public FunctionBase
+	{
+	public:
+		Mem::Object call(std::vector<Mem::Object> &arg,int reserve_size)override;
+		std::vector<size_t> param;
 		Block *blo;
 	};
 	extern std::map<std::string, size_t> function_map;
@@ -56,13 +53,13 @@ namespace Mer
 	class SystemFunction :public FunctionBase
 	{
 	public:
-		SystemFunction(std::function<Mem::Object(std::vector<AST*>&)>& fun) :func(fun) {}
-		Mem::Object call(std::vector<AST*>&arg)override
+		SystemFunction(const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :func(fun) {}
+		Mem::Object call(std::vector<Mem::Object>&arg,int reserve_size)override
 		{
 			return func(arg);
 		}
 	private:
-		std::function<Mem::Object(std::vector<AST*>&)>func;
+		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
 	namespace Parser
 	{

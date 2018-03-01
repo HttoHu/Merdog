@@ -14,6 +14,7 @@ namespace Mer
 		void end_block();
 		Mem::Object get_value();
 		Compound *compound_list;
+
 	};
 	class Program :public AST
 	{
@@ -78,8 +79,9 @@ namespace Mer
 		CallFunc(Token *fun, std::vector<Expr*> &vec);
 		Mem::Object get_value()override;
 	private:
+		size_t rvs;
 		size_t func;
-		std::vector<AST*> args;
+		std::vector<Expr*> args;
 	};
 	class VarDecl :public AST
 	{
@@ -179,7 +181,10 @@ namespace Mer
 		}
 		Mem::Object get_ret_value()
 		{
-			return ret_value->get_value();
+			auto ret= ret_value->get_value();
+			if (ret == nullptr)
+				std::cout << "FUCKER";
+			return ret;
 		}
 	private:
 		Expr * ret_value;

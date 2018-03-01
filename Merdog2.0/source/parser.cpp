@@ -5,7 +5,6 @@
 #include "../include/function.hpp"
 using namespace Mer;
 
-
 AST * Mer::Parser::parse()
 {
 	auto node = program();
@@ -29,7 +28,9 @@ Program * Mer::Parser::program()
 			auto tmp = token_stream.this_token();
 			token_stream.match(ID);
 			std::string name = Id::get_value(tmp);
+			_mem.new_block();
 			auto blo = block();
+			_mem.end_block();
 			token_stream.match(DOT);
 			ret = new Program(Id::get_value(tmp), blo);
 			programe_num++;
@@ -202,7 +203,7 @@ AST * Mer::Parser::statement()
 		break;
 	case RETURN:
 		token_stream.match(RETURN);
-		if (token_stream.next_token()->get_tag() == SEMI)
+		if (token_stream.this_tag() == SEMI)
 			return new Return(nullptr);
 		else
 			return new Return(new Expr());
@@ -320,6 +321,7 @@ void Mer::Block::end_block()
 {
 	_mem.end_block();
 }
+
 Mem::Object Mer::Block::get_value()
 {
 	return compound_list->get_value();
@@ -421,23 +423,21 @@ void Mer::RefDecl::init_var_list(const std::map<Token*, Token*>& v)
 	}
 }
 
-Mer::CallFunc::CallFunc(Token * fun, std::vector<Expr*>& vec)
+Mer::CallFunc::CallFunc(Token * fun, std::vector<Expr*>& vec):args(vec)
 {
+	rvs = _mem.get_index();
 	auto result = function_map.find(Id::get_value(fun));
 	if (result == function_map.end())
 		throw Error("function "+fun->to_string() + " no found");
 	func = result->second;
-	auto pos = function_list[func]->get_param();
-	if (pos.size() != vec.size())
-		throw Error("param not matched");
-	for (size_t i=0;i<pos.size();i++)
-	{
-		args.push_back(new ParVar(pos[i], vec[i]));
-	}
 }
 
 Mem::Object Mer::CallFunc::get_value()
 {
-	 auto ret= function_list[func]->call(args);
-	 return ret;
+	std::vector<Mem::Object> tmp;
+	for (const auto &a : args)
+	{
+		tmp.push_back(a->get_value());
+	}
+	return function_list[func]->call(tmp, rvs);
 }

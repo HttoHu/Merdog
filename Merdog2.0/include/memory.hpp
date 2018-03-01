@@ -18,15 +18,13 @@ namespace Mer
 			block_flag.push_back(index);
 			return index;
 		}
-		void new_func()
+		void new_func(int size_t)
 		{
+			current += size_t;
 			call_stack.push(current);
-			current = index;
-			index = 0;
 		}
 		void end_func()
 		{
-			index = current;
 			current = call_stack.top();
 			call_stack.pop();
 		}
@@ -47,6 +45,9 @@ namespace Mer
 		~Memory()
 		{
 			delete[] _mem;
+		}
+		size_t& get_index(){
+			return index;
 		}
 	private:
 		void check()

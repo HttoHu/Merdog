@@ -3,6 +3,7 @@
 #include "type.hpp"
 namespace Mer
 {
+	class CallFunc;
 	class AST
 	{
 	public:
@@ -58,6 +59,7 @@ namespace Mer
 				ret = left_v->operator<(right_v);
 				break;
 			default:
+				throw Error("unknow operator");
 				break;
 			}
 			return Mem::Object(ret);
@@ -98,6 +100,7 @@ namespace Mer
 				throw Error("syntax error");
 			}
 		}
+		virtual ~Unit(){}
 	private:
 		Token *tok;
 	};

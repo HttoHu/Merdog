@@ -27,6 +27,7 @@ std::map<std::string, Token*> Mer::KeyWord{
 	{"end",new Token(END)},{"real",new Token(REAL_DECL)},
 	{"int",new Token(INTEGER_DECL)},{"program",new Token(PROGRAM)}
 };
+bool is_function_args = false;
 Token* Mer::END_TOKEN = new Token(ENDOF);
 TokenStream Mer::token_stream;
 Token * Mer::parse_number(const std::string &str, size_t &pos)
@@ -88,6 +89,8 @@ Token *Mer::parse_word(const std::string &str, size_t &pos)
 		}
 	}
 	auto result = KeyWord.find(ret);
+	if (ret == "function")
+		is_function_args = true;
 	if (result != KeyWord.end())
 	{
 		return result->second;
@@ -173,7 +176,10 @@ void Mer::build_token_stream(const std::string &content)
 			token_stream.push_back(new Endl());
 			break;
 		case '{':
-			Id::id_table().push_front(std::map<std::string, Id*>());
+			if (!is_function_args)
+				Id::id_table().push_front(std::map<std::string, Id*>());
+			else
+				is_function_args = false;
 			token_stream.push_back(new Token(BEGIN));
 			break;
 		case '}':
@@ -257,6 +263,8 @@ void Mer::build_token_stream(const std::string &content)
 		case ' ':
 			break;
 		case '(':
+			if (is_function_args)
+				Id::id_table().push_back(std::map<std::string, Id*>());
 			token_stream.push_back(new Token(LPAREN));
 			break;
 		case ')':
@@ -291,6 +299,7 @@ void Mer::build_token_stream(const std::string &content)
 			{
 				token_stream.push_back(new Token(SMINUS));
 				i++;
+				break;
 			}
 			token_stream.push_back(new Token(MINUS));
 			break;

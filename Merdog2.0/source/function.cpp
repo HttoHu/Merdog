@@ -2,7 +2,10 @@
 #include "../include/memory.hpp"
 using namespace Mer;
 std::map<std::string, size_t> Mer::function_map;
+
 std::vector<FunctionBase*> Mer::function_list;
+
+//==============================================================
 Param * Mer::Parser::build_param()
 {
 	Param *ret = new Param();
@@ -43,32 +46,37 @@ void Mer::Parser::build_function()
 	auto test = function_map.find(id);
 	if (test != function_map.end())
 	{
-		func->param = build_param();
-		func->blo = block();
+		auto param = build_param();
+		func->param = param->get_param();
+		delete param;
 		function_list[test->second] = func;
+		func->blo = block();
 		return;
 	}
 	function_map.insert({ id,function_list.size() });
-	func->param = build_param();
-	func->blo = block();
+	auto param = build_param();
+	func->param = param->get_param();
+	delete param;
 	function_list.push_back(func);
+	func->blo = block();
 }
 
-Mem::Object Mer::Function::call(std::vector<AST*>& arg)
+Mem::Object Mer::Function::call(std::vector<Mem::Object>& arg,int reserve_size)
 {
-	_mem.new_func();
 	try
 	{
-		for (auto &a : arg)
+		_mem.new_func(reserve_size);
+		for (size_t i = 0; i < param.size(); i++)
 		{
-			a->get_value();
+			_mem[param[i]] = arg[i];
 		}
 		blo->get_value();
 	}
 	catch (Return *r)
 	{
+		auto ret = r->get_ret_value();
 		_mem.end_func();
-		return r->get_ret_value();
+		return ret;
 	}
 	_mem.end_func();
 }
@@ -76,7 +84,6 @@ Mem::Object Mer::Function::call(std::vector<AST*>& arg)
 std::deque<AST*> Mer::Param::generate_statement(std::vector<Expr*>& v)
 {
 	std::deque<AST*> ret;
-	std::cout << v.size();
 	for (int i = 0; i < v.size(); i++)
 	{
 		ret.push_back(param[i]->create_var(v[i]));
@@ -88,13 +95,17 @@ Mer::ParamPart::ParamPart(Type * type, Token * tok)
 {
 	t = type;
 	pos = _mem.push();
-
 	id_pos_table.front().insert({ tok,pos });
 }
 
 ParVar * Mer::ParamPart::create_var(Expr *exp)
 {
 	return new ParVar(pos, exp);
+}
+
+Mer::ParVar::ParVar(size_t p, Expr * e)
+{
+	expr = e;
 }
 
 Mem::Object Mer::ParVar::get_value()

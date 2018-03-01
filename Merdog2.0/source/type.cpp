@@ -60,6 +60,11 @@ Object Mer::Mem::Bool::Convert(int type)
 	}
 }
 
+BasicType Mer::Mem::Ref::get_type_code()
+{
+	return _mem[pos]->get_type_code();
+}
+
 Object Mer::Mem::Ref::operator=(Object obj){return _mem[pos]->operator=(obj);}
 Object Mer::Mem::Ref::operator+(Object obj) { return _mem[pos]->operator+(obj); }
 Object Mer::Mem::Ref::operator-(Object obj) { return _mem[pos]->operator-(obj); }

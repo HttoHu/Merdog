@@ -4,6 +4,7 @@
 	* Ruslan's Blog
 	* C++ Version.
 */
+#include "../include/syslib/system.hpp"
 #include "../include/interpreter.hpp"
 #include "../include/type.hpp"
 #include <string>
@@ -26,7 +27,7 @@ int main(int argc,char* argv[])
 {
 	try
 	{
-
+		Mer::Sys::import_io();
 		//if (argc != 2)
 			//throw std::runtime_error("argument error");
 		std::string input_content = get_file_content("./good.pas");
