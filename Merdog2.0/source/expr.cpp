@@ -1,5 +1,6 @@
 #include "../include/expr.hpp"
 #include "../include/parser.hpp"
+#include "../include/memory.hpp"
 Mer::AST * Mer::Expr::and_or()
 {
 	auto result = nexpr();
@@ -108,6 +109,13 @@ Mer::AST * Mer::Expr::factor()
 		token_stream.match(INTEGER);
 		return new Unit(result);
 	}
+	case GET_ADD:
+	{
+		token_stream.next();
+		auto tok = token_stream.this_token();
+		token_stream.match(ID);
+		return new GetAdd(tok);
+	}
 	case NOT:
 	case MINUS:
 	{
@@ -136,10 +144,6 @@ Mer::Mem::Object Mer::UnaryOp::get_value()
 {
 	switch (op->get_tag())
 	{
-	case GET_ADD:
-	{
-		
-	}
 	case NOT:
 	case MINUS:
 	{
@@ -152,4 +156,14 @@ Mer::Mem::Object Mer::UnaryOp::get_value()
 	default:
 		throw Error("no matched operator");
 	}
+}
+
+Mer::GetAdd::GetAdd(Token * t)
+{
+	sz=find_pos(t);
+}
+
+Mer::Mem::Object Mer::GetAdd::get_value()
+{
+	return std::make_shared<Mem::Ref>(_mem[sz]);
 }

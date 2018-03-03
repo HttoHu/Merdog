@@ -1,8 +1,8 @@
-#include "../include/parser.hpp"
 #include "../include/memory.hpp"
 #include "../include/branch_statement.hpp"
 #include "../include/loop_statement.hpp"
 #include "../include/function.hpp"
+#include "../include/environment.hpp"
 using namespace Mer;
 
 AST * Mer::Parser::parse()
@@ -24,6 +24,7 @@ Program * Mer::Parser::program()
 			break;
 		case PROGRAM:
 		{
+			symbol_table.push();
 			token_stream.match(PROGRAM);
 			auto tmp = token_stream.this_token();
 			token_stream.match(ID);
@@ -34,6 +35,7 @@ Program * Mer::Parser::program()
 			token_stream.match(DOT);
 			ret = new Program(Id::get_value(tmp), blo);
 			programe_num++;
+			symbol_table.pop();
 			break;
 		}
 		case ENDOF:
@@ -49,46 +51,10 @@ Program * Mer::Parser::program()
 
 Block * Mer::Parser::block()
 {
+
 	Block *ret = new Block();
 	ret->compound_list = static_cast<Compound*>(compound_statement());
-	return ret;
-}
 
-RefDecl * Mer::Parser::ref_declaration()
-{
-	token_stream.match(REF);
-	std::map<Token*, Token*> var_list;
-	auto type = type_spec();
-	auto id = token_stream.this_token();
-	token_stream.match(ID);
-	if (token_stream.this_token()->get_tag() == ASSIGN)
-	{
-		token_stream.match(ASSIGN);
-		var_list.insert({ id, token_stream.this_token()});
-		token_stream.match(ID);
-	}
-	else
-	{
-		throw Error("ref must init");
-	}
-	while (token_stream.this_token()->get_tag() == COMMA)
-	{
-		auto id = token_stream.this_token();
-		token_stream.match(ID);
-		if (token_stream.this_token()->get_tag() == ASSIGN)
-		{
-			token_stream.match(ASSIGN);
-			var_list.insert({ id, token_stream.this_token() });
-			token_stream.match(ID);
-		}
-		else
-		{
-			throw Error("ref must init");
-		}
-	}
-	RefDecl *ret = new RefDecl();
-	ret->type = static_cast<Type*>(type);
-	ret->init_var_list(var_list);
 	return ret;
 }
 
@@ -134,6 +100,7 @@ Type * Mer::Parser::type_spec()
 	auto tmp = token_stream.this_token();
 	switch (tmp->get_tag())
 	{
+	case REF:token_stream.match(REF); break;
 	case INTEGER_DECL:token_stream.match(INTEGER_DECL); break;
 	case REAL_DECL:token_stream.match(REAL_DECL); break;
 	case STRING_DECL:token_stream.match(STRING_DECL); break;
@@ -195,9 +162,7 @@ AST * Mer::Parser::statement()
 	AST *node = nullptr;
 	switch (token_stream.this_token()->get_tag())
 	{
-	case REF:
-		node = ref_declaration();
-		break;
+
 	case FOR:
 		node = for_statement();
 		break;
@@ -227,6 +192,7 @@ AST * Mer::Parser::statement()
 	case ID:
 		node = id_event();
 		break;
+	case REF:
 	case BOOL_DECL:
 	case INTEGER_DECL:
 	case REAL_DECL:
@@ -352,6 +318,8 @@ void Mer::VarDecl::init_var_list(const std::map<Token*, Expr*>& v)
 		auto pos = _mem.push();
 		id_pos_table.back().insert({ a.first,pos });
 		var_list.insert({ pos, a.second });
+		symbol_table.insert_basic(a.first, IdType::TVar);
+		symbol_table.insert_type(a.first, type->get_type());
 	}
 }
 
@@ -395,32 +363,6 @@ Mem::Object Mer::AssignMul::get_value()
 Mem::Object Mer::AssignDiv::get_value()
 {
 	return _mem[left]->operator/=(right->get_value());
-}
-
-Mem::Object Mer::RefDecl::get_value()
-{
-	for (const auto &a : var_list)
-	{
-		if (a.second != nullptr)
-		{
-			_mem[a.first] = std::make_shared<Mem::Ref>(find_pos(a.second));
-		}
-		else
-		{
-			throw Error("ref must init");
-		}
-	}
-	return nullptr;
-}
-
-void Mer::RefDecl::init_var_list(const std::map<Token*, Token*>& v)
-{
-	for (const auto &a : v)
-	{
-		auto pos = _mem.push();
-		id_pos_table.back().insert({ a.first,pos });
-		var_list.insert({ pos, a.second });
-	}
 }
 
 Mer::CallFunc::CallFunc(Token * fun, std::vector<Expr*>& vec):args(vec)

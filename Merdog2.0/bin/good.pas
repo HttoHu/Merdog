@@ -1,8 +1,9 @@
-function say_hello(int x,int y)
+function int sum(ref x,ref y)
 {
-	print x;
+	return x+y;
 }
-program silly_hu
+program main
 {
-	say_hello(3,7);
+	int a:=sum(1,2);
+	cout(a,'hello','world');
 }.

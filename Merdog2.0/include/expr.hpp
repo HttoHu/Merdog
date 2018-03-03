@@ -78,6 +78,14 @@ namespace Mer
 		Token *op;
 		AST* expr;
 	};
+	class GetAdd :public AST
+	{
+	public:
+		GetAdd(Token *t);
+		Mem::Object get_value()override;
+	private:
+		size_t sz;
+	};
 	class Unit :public AST
 	{
 	public:

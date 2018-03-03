@@ -194,6 +194,7 @@ void Mer::build_token_stream(const std::string &content)
 			{
 				token_stream.push_back(new Token(AND));
 				i++;
+				break;
 			}
 			else
 				token_stream.push_back(new Token(GET_ADD));

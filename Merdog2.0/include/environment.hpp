@@ -4,7 +4,7 @@ namespace Mer
 {
 	enum IdType
 	{
-		Var,Function
+		TVar,TFunction,TNamespace
 	};
 	class Symbol
 	{
@@ -53,4 +53,5 @@ namespace Mer
 		std::deque<std::map<Token*, IdType>> basic_map;
 		std::deque<std::map<Token*, size_t>> type_map;
 	};
+	extern Symbol symbol_table;
 }

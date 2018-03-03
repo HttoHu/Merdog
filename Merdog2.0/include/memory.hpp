@@ -21,11 +21,11 @@ namespace Mer
 		void new_func(int size_t)
 		{
 			current += size_t;
-			call_stack.push(current);
+			call_stack.push(size_t);
 		}
 		void end_func()
 		{
-			current = call_stack.top();
+			current -= call_stack.top();
 			call_stack.pop();
 		}
 		size_t push()

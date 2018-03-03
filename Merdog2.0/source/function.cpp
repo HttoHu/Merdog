@@ -1,5 +1,6 @@
 #include "../include/function.hpp"
 #include "../include/memory.hpp"
+#include "../include/environment.hpp"
 using namespace Mer;
 std::map<std::string, size_t> Mer::function_map;
 
@@ -41,7 +42,11 @@ void Mer::Parser::build_function()
 {
 	Function *func = new Function();
 	token_stream.match(FUNCTION);
+	func->type = type_spec();
 	auto id = Id::get_value(token_stream.this_token());
+	symbol_table.push();
+	symbol_table.insert_basic(token_stream.this_token(), IdType::TFunction);
+	symbol_table.insert_type(token_stream.this_token(), func->type->get_type());
 	token_stream.match(ID);
 	auto test = function_map.find(id);
 	if (test != function_map.end())
@@ -51,6 +56,7 @@ void Mer::Parser::build_function()
 		delete param;
 		function_list[test->second] = func;
 		func->blo = block();
+		symbol_table.pop();
 		return;
 	}
 	function_map.insert({ id,function_list.size() });
@@ -59,6 +65,7 @@ void Mer::Parser::build_function()
 	delete param;
 	function_list.push_back(func);
 	func->blo = block();
+	symbol_table.pop();
 }
 
 Mem::Object Mer::Function::call(std::vector<Mem::Object>& arg,int reserve_size)

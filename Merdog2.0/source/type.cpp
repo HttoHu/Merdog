@@ -62,39 +62,39 @@ Object Mer::Mem::Bool::Convert(int type)
 
 BasicType Mer::Mem::Ref::get_type_code()
 {
-	return _mem[pos]->get_type_code();
+	return raw->get_type_code();
 }
 
-Object Mer::Mem::Ref::operator=(Object obj){return _mem[pos]->operator=(obj);}
-Object Mer::Mem::Ref::operator+(Object obj) { return _mem[pos]->operator+(obj); }
-Object Mer::Mem::Ref::operator-(Object obj) { return _mem[pos]->operator-(obj); }
-Object Mer::Mem::Ref::operator*(Object obj) { return _mem[pos]->operator*(obj); }
-Object Mer::Mem::Ref::operator/(Object obj) { return _mem[pos]->operator/(obj); }
-Object Mer::Mem::Ref::operator+=(Object obj) { return _mem[pos]->operator+=(obj); }
-Object Mer::Mem::Ref::operator-=(Object obj) { return _mem[pos]->operator-=(obj); }
-Object Mer::Mem::Ref::operator*=(Object obj) { return _mem[pos]->operator*=(obj); }
-Object Mer::Mem::Ref::operator/=(Object obj) { return _mem[pos]->operator/=(obj); }
-Object Mer::Mem::Ref::operator==(Object obj) { return _mem[pos]->operator==(obj); }
-Object Mer::Mem::Ref::operator!=(Object obj) { return _mem[pos]->operator!=(obj); }
-Object Mer::Mem::Ref::operator<=(Object obj) { return _mem[pos]->operator<=(obj); }
-Object Mer::Mem::Ref::operator>=(Object obj) { return _mem[pos]->operator=(obj); }
-Object Mer::Mem::Ref::operator<(Object obj) { return _mem[pos]->operator<(obj); }
-Object Mer::Mem::Ref::operator>(Object obj) { return _mem[pos]->operator>(obj); }
-Object Mer::Mem::Ref::operator&&(Object obj) { return _mem[pos]->operator&&(obj); }
-Object Mer::Mem::Ref::operator||(Object obj) { return _mem[pos]->operator||(obj); }
-Object Mer::Mem::Ref::operator[](Object obj) { return _mem[pos]->operator[](obj); }
+Object Mer::Mem::Ref::operator=(Object obj){return raw->operator=(obj);}
+Object Mer::Mem::Ref::operator+(Object obj) { return raw->operator+(obj); }
+Object Mer::Mem::Ref::operator-(Object obj) { return raw->operator-(obj); }
+Object Mer::Mem::Ref::operator*(Object obj) { return raw->operator*(obj); }
+Object Mer::Mem::Ref::operator/(Object obj) { return raw->operator/(obj); }
+Object Mer::Mem::Ref::operator+=(Object obj) { return raw->operator+=(obj); }
+Object Mer::Mem::Ref::operator-=(Object obj) { return raw->operator-=(obj); }
+Object Mer::Mem::Ref::operator*=(Object obj) { return raw->operator*=(obj); }
+Object Mer::Mem::Ref::operator/=(Object obj) { return raw->operator/=(obj); }
+Object Mer::Mem::Ref::operator==(Object obj) { return raw->operator==(obj); }
+Object Mer::Mem::Ref::operator!=(Object obj) { return raw->operator!=(obj); }
+Object Mer::Mem::Ref::operator<=(Object obj) { return raw->operator<=(obj); }
+Object Mer::Mem::Ref::operator>=(Object obj) { return raw->operator=(obj); }
+Object Mer::Mem::Ref::operator<(Object obj) { return raw->operator<(obj); }
+Object Mer::Mem::Ref::operator>(Object obj) { return raw->operator>(obj); }
+Object Mer::Mem::Ref::operator&&(Object obj) { return raw->operator&&(obj); }
+Object Mer::Mem::Ref::operator||(Object obj) { return raw->operator||(obj); }
+Object Mer::Mem::Ref::operator[](Object obj) { return raw->operator[](obj); }
 
 Object Mer::Mem::Ref::Convert(int type)
 {
-	return _mem[pos]->Convert(type);
+	return raw->Convert(type);
 }
 
 Object Mer::Mem::Ref::get_negation()
 {
-	return _mem[pos]->get_negation();
+	return raw->get_negation();
 }
 
 std::string Mer::Mem::Ref::to_string() const
 {
-	return _mem[pos]->to_string();
+	return raw->to_string();
 }

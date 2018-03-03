@@ -1,7 +1,0 @@
-int main()
-{
-	int a=12;
-	console.print(a);
-	long b=123L;
-	string str="hey merdog";
-}

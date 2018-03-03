@@ -342,7 +342,7 @@ namespace Mer
 		{
 		public:
 			BasicType get_type_code()override;
-			Ref(size_t p) :pos(p)
+			Ref(const Object &o):raw(o)
 			{
 			}
 			Object operator=(Object obj)override;
@@ -367,7 +367,7 @@ namespace Mer
 			Object  get_negation()override;
 			std::string to_string()const override;
 		private:
-			size_t pos;
+			Object raw;
 		};
 	}
 }

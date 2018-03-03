@@ -47,7 +47,9 @@ namespace Mer
 		Mem::Object call(std::vector<Mem::Object> &arg,int reserve_size)override;
 		std::vector<size_t> param;
 		Block *blo;
-	};
+		Type *type;
+	};             
+
 	extern std::map<std::string, size_t> function_map;
 	extern std::vector<FunctionBase*> function_list;
 	class SystemFunction :public FunctionBase
