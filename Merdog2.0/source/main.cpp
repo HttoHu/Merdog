@@ -1,5 +1,5 @@
 /*
-	* Learned by
+	* Inspired by
 	* https://ruslanspivak.com/lsbasi-part10/
 	* Ruslan's Blog
 	* C++ Version.
@@ -42,48 +42,7 @@ int main(int argc,char* argv[])
 	{
 		std::cout << e.what();
 	}
-	std::cout << "\nThe program has exited";
-	std::cin.get();
-	std::cin.get();
-	Sleep(100000);
-	return 0;
-}
-int model()
-{
-	try
-	{
-		void *b = new int(23);
-		std::cout << (b == static_cast<int*>(b));
-	}
-	catch (std::exception &e)
-	{
-		std::cout << e.what();
-	}
-	std::cout << "\nThe program has exited";
-	std::cin.get();
-	std::cin.get();
-	Sleep(100000);
-	return 0;
-}
-int main2()
-{
-	try
-	{
-		{
-			using namespace Mer::Mem;
-			auto a = std::make_shared<Int>(3);
-			auto d = std::make_shared<Double>(2.3);
-			time_t s = clock();
-			for (int i = 0; i < 100000000; i++)
-			{
-				a->operator+(d);
-			}
-			time_t e = clock();
-			std::cout << double(e - s) / CLK_TCK<<std::endl;
-		}
-
-	}
-	catch (std::exception &e)
+	catch (Mer::Error &e)
 	{
 		std::cout << e.what();
 	}

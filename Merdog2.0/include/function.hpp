@@ -40,14 +40,24 @@ namespace Mer
 	public:
 		virtual Mem::Object call(std::vector<Mem::Object> &arg,int reserve_size)=0;
 		virtual ~FunctionBase() = default;
+		virtual size_t get_type()
+		{
+			return 0;
+		}
 	};
 	class Function:public FunctionBase
 	{
 	public:
+		Function(size_t t):type_code(t) {}
 		Mem::Object call(std::vector<Mem::Object> &arg,int reserve_size)override;
+		size_t get_type()override
+		{
+			return type_code;
+		}
 		std::vector<size_t> param;
 		Block *blo;
-		Type *type;
+	private:
+		size_t type_code;
 	};             
 
 	extern std::map<std::string, size_t> function_map;

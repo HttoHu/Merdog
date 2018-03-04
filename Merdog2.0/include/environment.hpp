@@ -29,26 +29,8 @@ namespace Mer
 		{
 			type_map.front().insert({ tok,v });
 		}
-		IdType find_basic(Token *tok)
-		{
-			for (const auto a : basic_map)
-			{
-				auto result = a.find(tok);
-				if (result != a.end())
-					return result->second;
-			}
-			throw Error("id " + tok->to_string() + "no found");
-		}
-		size_t find_type(Token *tok)
-		{
-			for (const auto a : type_map)
-			{
-				auto result = a.find(tok);
-				if (result != a.end())
-					return result->second;
-			}
-			throw Error("id " + tok->to_string() + "no found");
-		}
+		IdType find_basic(Token *tok);
+		size_t find_type(Token *tok);
 	private:
 		std::deque<std::map<Token*, IdType>> basic_map;
 		std::deque<std::map<Token*, size_t>> type_map;

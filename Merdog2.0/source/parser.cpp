@@ -236,6 +236,10 @@ AST * Mer::Parser::assignment_statement()
 	auto expr = new Expr();
 	auto node = new AST();
 	//{a:=4}.
+	if (expr->get_type() != left->get_type())
+	{
+		throw Error("type not matched");
+	}
 	switch (token->get_tag())
 	{
 	case ASSIGN:
@@ -315,17 +319,24 @@ void Mer::VarDecl::init_var_list(const std::map<Token*, Expr*>& v)
 {
 	for (const auto &a : v)
 	{
+		if (type->get_type() == Mem::BasicType::TREF)
+		{ }
+		else if (a.second->get_type() != type->get_type()&&type->get_type()!=Mem::BasicType::TREF)
+			throw Error(Mem::type_to_string(Mem::BasicType(type->get_type())) 
+				+" type not matched with "+ Mem::type_to_string(Mem::BasicType(a.second->get_type()))
+			);
 		auto pos = _mem.push();
 		id_pos_table.back().insert({ a.first,pos });
 		var_list.insert({ pos, a.second });
 		symbol_table.insert_basic(a.first, IdType::TVar);
-		symbol_table.insert_type(a.first, type->get_type());
+		symbol_table.insert_type(a.first, a.second->get_type());
 	}
 }
 
 Mer::Var::Var(Token * t)
 {
 	pos = find_pos(t);
+	type = symbol_table.find_type(t);
 }
 
 Mem::Object Mer::Var::get_value()
@@ -382,4 +393,9 @@ Mem::Object Mer::CallFunc::get_value()
 		tmp.push_back(a->get_value());
 	}
 	return function_list[func]->call(tmp, rvs);
+}
+
+size_t Mer::CallFunc::get_type()
+{
+	return function_list[func]->get_type();
 }

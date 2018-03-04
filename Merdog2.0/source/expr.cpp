@@ -1,6 +1,7 @@
 #include "../include/expr.hpp"
 #include "../include/parser.hpp"
 #include "../include/memory.hpp"
+#include "../include/environment.hpp"
 Mer::AST * Mer::Expr::and_or()
 {
 	auto result = nexpr();
@@ -114,7 +115,7 @@ Mer::AST * Mer::Expr::factor()
 		token_stream.next();
 		auto tok = token_stream.this_token();
 		token_stream.match(ID);
-		return new GetAdd(tok);
+		return new GetAdd(tok,symbol_table.find_type(tok));
 	}
 	case NOT:
 	case MINUS:
@@ -158,12 +159,17 @@ Mer::Mem::Object Mer::UnaryOp::get_value()
 	}
 }
 
-Mer::GetAdd::GetAdd(Token * t)
+Mer::GetAdd::GetAdd(Token * tok,size_t t):type(t)
 {
-	sz=find_pos(t);
+	sz=find_pos(tok);
 }
 
 Mer::Mem::Object Mer::GetAdd::get_value()
 {
 	return std::make_shared<Mem::Ref>(_mem[sz]);
+}
+
+size_t Mer::GetAdd::get_type()
+{
+	return type;
 }

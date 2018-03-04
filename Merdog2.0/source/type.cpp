@@ -13,6 +13,8 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 		return "double";
 	case Mer::Mem::STRING:
 		return "string";
+	case Mer::Mem::TREF:
+		return "ref";
 	default:
 		break;
 	}

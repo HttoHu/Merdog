@@ -9,12 +9,16 @@ namespace Mer
 	public:
 		virtual ~AST() {}
 		virtual Mem::Object get_value() { return Mem::Object(nullptr); }
-	private:
+		virtual size_t get_type() { return 0; }
 	};
 	class BinOp :public AST
 	{
 	public:
-		BinOp(AST *l, Token *o, AST* r) :left(l), op(o), right(r) {}
+		BinOp(AST *l, Token *o, AST* r) :left(l), op(o), right(r) 
+		{
+			if (left->get_type() != right->get_type())
+				throw Error("type not matched");
+		}
 		Mem::Object get_value()override
 		{
 			auto left_v = left->get_value();
@@ -64,6 +68,9 @@ namespace Mer
 			}
 			return Mem::Object(ret);
 		}
+		size_t get_type()override {
+			return left->get_type();
+		}
 	private:
 		AST *left;
 		Token *op;
@@ -74,6 +81,10 @@ namespace Mer
 	public:
 		UnaryOp(Token *t, AST* e) :op(t), expr(e) {}
 		Mem::Object get_value()override;
+		size_t get_type()override
+		{
+			return expr->get_type();
+		}
 	private:
 		Token *op;
 		AST* expr;
@@ -81,44 +92,61 @@ namespace Mer
 	class GetAdd :public AST
 	{
 	public:
-		GetAdd(Token *t);
+		GetAdd(Token *tok,size_t t);
 		Mem::Object get_value()override;
+		size_t get_type()override;
 	private:
+		size_t type;
 		size_t sz;
 	};
 	class Unit :public AST
 	{
 	public:
-		Unit(Token *t) :tok(t) {}
-		Mem::Object get_value()override
+		Unit(Token *t) 
 		{
-			switch (tok->get_tag())
+			switch (t->get_tag())
 			{
 			case TRUE:
-				return std::make_shared<Mem::Bool>(true);
+				value= std::make_shared<Mem::Bool>(true);
+				break;
 			case FALSE:
-				return std::make_shared<Mem::Bool>(false);
+				value= std::make_shared<Mem::Bool>(false);
+				break;
 			case INTEGER:
-				return std::make_shared<Mem::Int>(Integer::get_value(tok));
+				value= std::make_shared<Mem::Int>(Integer::get_value(t));
+				break;
 			case REAL:
-				return std::make_shared<Mem::Double >(Real::get_value(tok));
+				value= std::make_shared<Mem::Double >(Real::get_value(t));
+				break;
 			case STRING:
-				return std::make_shared<Mem::String>(String::get_value(tok));
+				value= std::make_shared<Mem::String>(String::get_value(t));
+				break;
 			default:
-				throw Error("syntax error");
+				throw Error("type error");
 			}
+		}
+		Mem::Object get_value()override
+		{
+			return value;
+		}
+		size_t get_type()override {
+			return value->get_type_code();
 		}
 		virtual ~Unit(){}
 	private:
-		Token *tok;
+		Mem::Object value;
 	};
-	class Expr
+	class Expr:public AST
 	{
 	public:
 		Expr() :tree(and_or()) {}
-		Mem::Object get_value()
+		Mem::Object get_value()override
 		{
 			return tree->get_value();
+		}
+		size_t get_type()override
+		{
+			return tree->get_type();
 		}
 		AST *root() { return tree; }
 	private:

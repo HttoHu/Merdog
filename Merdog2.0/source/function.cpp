@@ -33,6 +33,8 @@ ParamPart * Mer::Parser::build_param_part()
 		return nullptr;
 	auto type = type_spec();
 	auto name = token_stream.this_token();
+	symbol_table.insert_basic(name, IdType::TVar);
+	symbol_table.insert_type(name, type->get_type());
 	ParamPart *ret = new ParamPart(type,name );
 	token_stream.match(ID);
 	return ret;
@@ -40,13 +42,14 @@ ParamPart * Mer::Parser::build_param_part()
 
 void Mer::Parser::build_function()
 {
-	Function *func = new Function();
 	token_stream.match(FUNCTION);
-	func->type = type_spec();
+	auto type = type_spec();
+	Function *func = new Function(type->get_type());
+	delete type;
 	auto id = Id::get_value(token_stream.this_token());
 	symbol_table.push();
 	symbol_table.insert_basic(token_stream.this_token(), IdType::TFunction);
-	symbol_table.insert_type(token_stream.this_token(), func->type->get_type());
+	symbol_table.insert_type(token_stream.this_token(), func->get_type());
 	token_stream.match(ID);
 	auto test = function_map.find(id);
 	if (test != function_map.end())

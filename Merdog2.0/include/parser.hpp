@@ -34,6 +34,9 @@ namespace Mer
 		Type(Token *t) {
 			switch (t->get_tag())
 			{
+			case REF:
+				type_v = Mem::BasicType::TREF;
+				break;
 			case BOOL_DECL:
 				type_v = Mem::BasicType::BOOL;
 				break;
@@ -70,7 +73,7 @@ namespace Mer
 		{
 			return Mem::Object(value);
 		}
-		Mem::BasicType get_type()
+		size_t get_type()override
 		{
 			return type_v;
 		}
@@ -82,6 +85,7 @@ namespace Mer
 	public:
 		CallFunc(Token *fun, std::vector<Expr*> &vec);
 		Mem::Object get_value()override;
+		size_t get_type()override;
 	private:
 		size_t rvs;
 		size_t func;
@@ -93,7 +97,6 @@ namespace Mer
 		Mem::Object get_value();
 		void init_var_list(const std::map<Token*,Expr*> &v);
 		std::map<size_t,Expr*> var_list;
-		//std::vector<Token*> var_list;
 		Type *type;
 	};
 	class Print:public AST
@@ -194,7 +197,9 @@ namespace Mer
 		{
 			return pos;
 		}
+		size_t get_type()override { return type; }
 	private:
+		size_t type;
 		size_t pos;
 	};
 	class NoOp :public AST
