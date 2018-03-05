@@ -42,33 +42,50 @@ ParamPart * Mer::Parser::build_param_part()
 
 void Mer::Parser::build_function()
 {
+	_mem.get_index() = 0;
 	token_stream.match(FUNCTION);
 	auto type = type_spec();
 	Function *func = new Function(type->get_type());
 	delete type;
 	auto id = Id::get_value(token_stream.this_token());
 	symbol_table.push();
+	/**do something record**/
 	symbol_table.insert_basic(token_stream.this_token(), IdType::TFunction);
 	symbol_table.insert_type(token_stream.this_token(), func->get_type());
 	token_stream.match(ID);
 	auto test = function_map.find(id);
+	id_pos_table.push_front(std::map<Mer::Token*, std::size_t>());
+	// if the function has been declared.
 	if (test != function_map.end())
 	{
 		auto param = build_param();
 		func->param = param->get_param();
 		delete param;
-		function_list[test->second] = func;
-		func->blo = block();
+		func = static_cast<Function*>(function_list[test->second]);
+		func->blo= new Block();
+		func->blo->compound_list = static_cast<Compound*>(compound_statement());
+		id_pos_table.pop_front();
 		symbol_table.pop();
 		return;
 	}
+	//else create a new function;
 	function_map.insert({ id,function_list.size() });
 	auto param = build_param();
 	func->param = param->get_param();
 	delete param;
+	// to test whether the it is a function.
+	if (token_stream.this_tag() == SEMI)
+	{
+		token_stream.match(SEMI);
+		function_list.push_back(func);
+		return;
+	}
 	function_list.push_back(func);
-	func->blo = block();
+	func->blo = new Block();
+	func->blo->compound_list = static_cast<Compound*>(compound_statement());
+	// delete id_pos_table
 	symbol_table.pop();
+	id_pos_table.pop_front();
 }
 
 Mem::Object Mer::Function::call(std::vector<Mem::Object>& arg,int reserve_size)

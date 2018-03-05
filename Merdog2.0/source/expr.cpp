@@ -136,6 +136,19 @@ Mer::AST * Mer::Expr::factor()
 			return Parser::func_call();
 		 return Parser::variable();
 	}
+	case CAST:
+	{
+		token_stream.match(CAST);
+		token_stream.match(LT);
+		auto tmp_type = Parser::type_spec();
+		size_t type = tmp_type->get_type();
+		delete tmp_type;
+		token_stream.match(GT);
+		token_stream.match(LPAREN);
+		auto tmp_expr = new Expr();
+		token_stream.match(RPAREN);
+		return new Cast(type, tmp_expr);
+	}
 	default:
 		return nullptr;
 	}

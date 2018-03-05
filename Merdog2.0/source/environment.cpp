@@ -3,6 +3,18 @@
 using namespace Mer;
 Symbol Mer::symbol_table;
 
+void Mer::Symbol::push()
+{
+	//Mer::id_pos_table.push_front(std::map<Mer::Token*, size_t>());
+	basic_map.push_front(std::map<Token*, IdType>());
+	type_map.push_front(std::map<Token*, size_t>());
+}
+void Mer::Symbol::pop()
+{
+	basic_map.pop_front();
+	type_map.pop_front();
+	//id_pos_table.pop_front();
+}
 IdType Mer::Symbol::find_basic(Token * tok)
 {
 	for (const auto a : basic_map)

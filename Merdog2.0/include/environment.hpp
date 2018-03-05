@@ -12,15 +12,8 @@ namespace Mer
 		Symbol() {
 			push();
 		}
-		void push() {
-			basic_map.push_front(std::map<Token*, IdType>());
-			type_map.push_front(std::map<Token*, size_t>());
-		}
-		void pop()
-		{
-			basic_map.pop_front();
-			type_map.pop_front();
-		}
+		void push();
+		void pop();
 		void insert_basic(Token *tok, IdType v)
 		{
 			basic_map.front().insert({ tok,v });

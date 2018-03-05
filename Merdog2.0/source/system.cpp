@@ -2,22 +2,29 @@
 //#include "../include/type.hpp"
 void Mer::Sys::import_io()
 {
-	import_function(console_input,"cin");
-	import_function(console_output, "cout");
+	import_function(-1,console_input,"cin");
+	import_function(-1,console_output, "cout");
 }
 
-void Mer::Sys::import_function(const std::function<Mem::Object(std::vector<Mem::Object>&)>& func, std::string name)
+void Mer::Sys::import_function(size_t type,const std::function<Mem::Object(std::vector<Mem::Object>&)>& func, std::string name)
 {
 	auto tmp_pos = function_list.size();
 	function_map.insert({ name,tmp_pos });
-	function_list.push_back(new SystemFunction(func));
+	function_list.push_back(new SystemFunction(type,func));
 }
 
 Mer::Mem::Object Mer::Sys::console_output(std::vector<Mer::Mem::Object>& args)
 {
 	for (auto &a:args)
 	{
-		std::cout << a->to_string();
+		if(a!=nullptr&&(a->get_type_code()==Mem::INT
+			||a->get_type_code()==Mem::DOUBLE||a->get_type_code()==Mem::BOOL
+			||a->get_type_code()==Mem::STRING))
+			std::cout << a->to_string();
+		else
+		{
+			throw Error("param error");
+		}
 	}
 	return nullptr;
 }

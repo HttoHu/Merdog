@@ -16,8 +16,8 @@ namespace Mer
 	public:
 		BinOp(AST *l, Token *o, AST* r) :left(l), op(o), right(r) 
 		{
-			if (left->get_type() != right->get_type())
-				throw Error("type not matched");
+			if (!Mem::type_check(left->get_type(),right->get_type()))
+				throw Error(Mem::type_to_string(Mem::BasicType(left->get_type()))+" type not matched with " + Mem::type_to_string(Mem::BasicType(right->get_type())));
 		}
 		Mem::Object get_value()override
 		{
@@ -156,6 +156,22 @@ namespace Mer
 		AST* term();
 		AST *factor();
 		AST *tree;
+	};
+	class Cast :public AST
+	{
+	public:
+		Cast(size_t t, Expr *e) :type(t), expr(e) {}
+		Mem::Object get_value()override
+		{
+			return expr->get_value()->Convert(type);
+		}
+		size_t get_type()override
+		{
+			return type;
+		}
+	private:
+		Expr * expr;
+		size_t type;
 	};
 }
 /*

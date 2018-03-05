@@ -51,10 +51,10 @@ Program * Mer::Parser::program()
 
 Block * Mer::Parser::block()
 {
-
+	id_pos_table.push_front(std::map<Mer::Token*, std::size_t>());
 	Block *ret = new Block();
 	ret->compound_list = static_cast<Compound*>(compound_statement());
-
+	id_pos_table.pop_front();
 	return ret;
 }
 
@@ -326,7 +326,7 @@ void Mer::VarDecl::init_var_list(const std::map<Token*, Expr*>& v)
 				+" type not matched with "+ Mem::type_to_string(Mem::BasicType(a.second->get_type()))
 			);
 		auto pos = _mem.push();
-		id_pos_table.back().insert({ a.first,pos });
+		id_pos_table.front().insert({ a.first,pos });
 		var_list.insert({ pos, a.second });
 		symbol_table.insert_basic(a.first, IdType::TVar);
 		symbol_table.insert_type(a.first, a.second->get_type());

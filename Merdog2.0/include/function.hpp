@@ -65,12 +65,17 @@ namespace Mer
 	class SystemFunction :public FunctionBase
 	{
 	public:
-		SystemFunction(const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :func(fun) {}
+		SystemFunction(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t),func(fun) {}
 		Mem::Object call(std::vector<Mem::Object>&arg,int reserve_size)override
 		{
 			return func(arg);
 		}
+		size_t get_type()override
+		{
+			return type;
+		}
 	private:
+		size_t type;
 		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
 	namespace Parser

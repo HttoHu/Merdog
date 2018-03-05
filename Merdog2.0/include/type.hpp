@@ -8,7 +8,7 @@ namespace Mer
 	{
 		enum BasicType
 		{
-			INT = 0, DOUBLE = 2, STRING = 4, BOOL = 6, COMPOUND = 8, ERROR = -1,
+			INT = 0, DOUBLE = 2, STRING = 4, BOOL = 6, COMPOUND = 8, VOID = -1,
 			TREF = 10
 		};
 		class Value;
@@ -297,7 +297,7 @@ namespace Mer
 			Object operator+(Object v)override
 			{
 				return std::make_shared<String>(str +
-					std::static_pointer_cast<String>(v->Convert(INT))->str);
+					std::static_pointer_cast<String>(v->Convert(STRING))->str);
 			}
 			Object Convert(int type)override
 			{
@@ -370,5 +370,6 @@ namespace Mer
 		private:
 			Object raw;
 		};
+		bool type_check(size_t p1,size_t p2);
 	}
 }

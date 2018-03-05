@@ -20,6 +20,13 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	}
 }
 
+bool Mer::Mem::type_check(size_t p1,size_t p2)
+{
+	if (p1 == TREF)
+		return true;
+	return p1 == p2;
+}
+
 Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
 {
 	switch (type)

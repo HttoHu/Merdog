@@ -12,7 +12,7 @@ std::map<Tag, std::string> Mer::TagStr{
 	{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},
 	{DOT,"DOT"},{BEGIN,"BEGIN"},{END,"END"},
 	{SEMI,"SEMI"},{ASSIGN,"ASSIGN"},
-	{ENDL,"ENDL"},{PRINT,"PRINT"},
+	{ENDL,"ENDL"},{PRINT,"PRINT"},{CAST,"CAST"},
 	{TRUE,"TRUE"}, {FALSE,"FALSE"},
 };
 std::map<std::string, Token*> Mer::KeyWord{
@@ -20,7 +20,7 @@ std::map<std::string, Token*> Mer::KeyWord{
 	{"while",new Token(WHILE)},{"break",new Token(BREAK)},{"for",new Token(FOR)},
 	{"continue",new Token(CONTINUE)},
 	{"function",new Token(FUNCTION)},{"return",new Token(RETURN)},
-	{"print",new Token(PRINT)},{"true",new Token(TRUE)},
+	{"print",new Token(PRINT)},{"cast",new Token(CAST)}, {"true",new Token(TRUE)},
 	{"false",new Token(FALSE)},
 	{"string",new Token(STRING_DECL)},{"bool",new Token(BOOL_DECL)},
 	{"ref",new Token(REF)},{"begin",new Token(BEGIN)},
