@@ -1,9 +1,22 @@
-#include "..\include\syslib\system.hpp"
-//#include "../include/type.hpp"
+/*
+* Inspired by
+* https://ruslanspivak.com/lsbasi-part10/
+* Ruslan's Blog
+* C++ Version.
+* Yuantao Hu 2018 
+* Email Huyuantao@outlook.com
+*/
+#include "../include/syslib/system.hpp"
+#include <cmath>
 void Mer::Sys::import_io()
 {
 	import_function(-1,console_input,"cin");
 	import_function(-1,console_output, "cout");
+}
+
+void Mer::Sys::import_math()
+{
+	import_function(Mem::DOUBLE, m_sqrt, "sqrt");
 }
 
 void Mer::Sys::import_function(size_t type,const std::function<Mem::Object(std::vector<Mem::Object>&)>& func, std::string name)
@@ -59,4 +72,27 @@ Mer::Mem::Object Mer::Sys::console_input(std::vector<Mer::Mem::Object>& args)
 	}
 	}
 	return tmp;
+}
+
+Mer::Mem::Object Mer::Sys::m_sqrt(std::vector<Mer::Mem::Object>&args)
+{
+	if (args.size() != 1)
+	{
+		throw Error("m_sqrt args not matched with param");
+	}
+	switch (args.front()->get_type_code())
+	{
+	case Mem::INT:
+	{
+		return std::make_shared<Mem::Int>
+			(std::sqrt(std::static_pointer_cast<Mem::Int>(args.front())->value));
+	}
+	case Mem::DOUBLE:
+	{
+		return std::make_shared<Mem::Double>
+			(std::sqrt(std::static_pointer_cast<Mem::Double>(args.front())->value));
+	}
+	default:
+		throw Error("m_sqrt args not matched with param ");
+	}
 }

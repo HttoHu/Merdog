@@ -3,6 +3,8 @@
 	* https://ruslanspivak.com/lsbasi-part10/
 	* Ruslan's Blog
 	* C++ Version.
+	* Yuantao Hu 2018
+	* Email Huyuantao@outlook.com
 */
 #include "../include/syslib/system.hpp"
 #include "../include/interpreter.hpp"
@@ -27,16 +29,16 @@ int main(int argc,char* argv[])
 {
 	try
 	{
+		Mer::Sys::import_math();
 		Mer::Sys::import_io();
-		//if (argc != 2)
-			//throw std::runtime_error("argument error");
-		std::string input_content = get_file_content("./good.pas");
-		//std::cout << input_content<<std::endl;
+		if (argc != 2)
+			throw std::runtime_error("argument error");
+		std::string input_content = get_file_content(argv[1]);
+		time_t s = clock();
 		Mer::build_token_stream(input_content);
-		time_t t = clock();
 		Mer::Interpreter().run();
 		time_t e = clock();
-		std::cout << "\nTime:" << (double)(e - t) / CLK_TCK;
+		std::cout << (double)(e - s) / CLK_TCK;
 	}
 	catch (std::exception &e)
 	{
@@ -47,8 +49,6 @@ int main(int argc,char* argv[])
 		std::cout << e.what();
 	}
 	std::cout << "\nThe program has exited";
-	std::cin.get();
-	std::cin.get();
 	Sleep(100000);
 	return 0;
 }

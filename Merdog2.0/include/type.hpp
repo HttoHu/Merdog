@@ -1,3 +1,11 @@
+/*
+*		Inspired by
+*		https://ruslanspivak.com/lsbasi-part10/
+*		Ruslan's Blog
+*		C++ Version.
+*		Yuantao Hu 2018 
+*		Email :Huyuantao@outlook.com
+*/
 #pragma once
 #include <string>
 #include <memory>
@@ -189,7 +197,7 @@ namespace Mer
 			Object Convert(int type) override;
 			Object operator[](Object v) { throw Error("int doesn't have a member <operator[](int)>"); }
 			void reset_value(int64_t v) { value = v; }
-		private:
+		//private:
 			int64_t value;
 		};
 		class Double :public Value
@@ -282,7 +290,7 @@ namespace Mer
 			Object Convert(int type)override;
 
 			void reset_value(double v) { value = v; }
-		private:
+		//private:
 			double value;
 		};
 		class String :public Value

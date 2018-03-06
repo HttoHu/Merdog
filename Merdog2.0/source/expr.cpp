@@ -1,7 +1,15 @@
+/*
+	* Inspired by
+	* https://ruslanspivak.com/lsbasi-part10/
+	* Ruslan's Blog
+	* C++ Version.
+	* Yuantao Hu 2018
+	* Email Huyuantao@outlook.com
+*/
 #include "../include/expr.hpp"
 #include "../include/parser.hpp"
-#include "../include/memory.hpp"
 #include "../include/environment.hpp"
+#include "../include/memory.hpp"
 Mer::AST * Mer::Expr::and_or()
 {
 	auto result = nexpr();

@@ -1,3 +1,10 @@
+/*
+	* Inspired by
+	* https://ruslanspivak.com/lsbasi-part10/
+	* Ruslan's Blog
+	* C++ Version.
+	* Yuantao Hu 2018
+*/
 #include "../include/environment.hpp"
 #include "../include/memory.hpp"
 using namespace Mer;
