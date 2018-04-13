@@ -1,39 +1,37 @@
-/*
-*		Inspired by
-*		https://ruslanspivak.com/lsbasi-part10/
-*		Ruslan's Blog
-*		C++ Version.
-*		Yuantao Hu 2018
-*		Email :Huyuantao@outlook.com
-*/
 #pragma once
+#include "parser_node.hpp"
 #include "lexer.hpp"
-#include "type.hpp"
 namespace Mer
 {
-	class CallFunc;
-	class AST
+	class BinOp :public ParserNode
 	{
 	public:
-		virtual ~AST() {}
-		virtual Mem::Object get_value() { return Mem::Object(nullptr); }
-		virtual size_t get_type() { return 0; }
-	};
-	class BinOp :public AST
-	{
-	public:
-		BinOp(AST *l, Token *o, AST* r) :left(l), op(o), right(r) 
+		BinOp(ParserNode *l, Token *o, ParserNode* r) :left(l), op(o), right(r) 
 		{
-			if (!Mem::type_check(left->get_type(),right->get_type()))
-				throw Error(Mem::type_to_string(Mem::BasicType(left->get_type()))+" type not matched with " + Mem::type_to_string(Mem::BasicType(right->get_type())));
+
 		}
-		Mem::Object get_value()override
+		Mem::Object execute()override
 		{
-			auto left_v = left->get_value();
-			auto right_v = right->get_value();
+			auto left_v = left->execute();
+			auto right_v = right->execute();
 			Mem::Object ret = nullptr;
 			switch (op->get_tag())
 			{
+			case SADD:
+				ret = left_v->operator+=(right_v);
+				break;
+			case SSUB:
+				ret = left_v->operator-=(right_v);
+				break;
+			case SDIV:
+				ret = left_v->operator/=(right_v);
+				break;
+			case SMUL:
+				ret = left_v->operator*=(right_v);
+				break;
+			case ASSIGN:
+				ret = left_v->operator=(right_v);
+				break;
 			case AND:
 				ret = left_v->operator&&(right_v);
 				break;
@@ -71,117 +69,55 @@ namespace Mer
 				ret = left_v->operator<(right_v);
 				break;
 			default:
-				throw Error("unknow operator");
 				break;
 			}
 			return Mem::Object(ret);
 		}
-		size_t get_type()override {
-			return left->get_type();
-		}
 	private:
-		AST *left;
+		ParserNode *left;
 		Token *op;
-		AST *right;
+		ParserNode *right;
 	};
-	class UnaryOp :public AST
+	class UnaryOp :public ParserNode
 	{
 	public:
-		UnaryOp(Token *t, AST* e) :op(t), expr(e) {}
-		Mem::Object get_value()override;
-		size_t get_type()override
-		{
-			return expr->get_type();
-		}
+		UnaryOp(Token *t, ParserNode* e) :op(t), expr(e) {}
+		Mem::Object execute()override;
 	private:
 		Token *op;
-		AST* expr;
+		ParserNode* expr;
 	};
-	class GetAdd :public AST
-	{
-	public:
-		GetAdd(Token *tok,size_t t);
-		Mem::Object get_value()override;
-		size_t get_type()override;
-	private:
-		size_t type;
-		size_t sz;
-	};
-	class Unit :public AST
-	{
-	public:
-		Unit(Token *t) 
-		{
-			switch (t->get_tag())
-			{
-			case TRUE:
-				value= std::make_shared<Mem::Bool>(true);
-				break;
-			case FALSE:
-				value= std::make_shared<Mem::Bool>(false);
-				break;
-			case INTEGER:
-				value= std::make_shared<Mem::Int>(Integer::get_value(t));
-				break;
-			case REAL:
-				value= std::make_shared<Mem::Double >(Real::get_value(t));
-				break;
-			case STRING:
-				value= std::make_shared<Mem::String>(String::get_value(t));
-				break;
-			default:
-				throw Error("type error");
-			}
-		}
-		Mem::Object get_value()override
-		{
-			return value;
-		}
-		size_t get_type()override {
-			return value->get_type_code();
-		}
-		virtual ~Unit(){}
-	private:
-		Mem::Object value;
-	};
-	class Expr:public AST
+	class Expr:public ParserNode
 	{
 	public:
 		Expr() :tree(and_or()) {}
-		Mem::Object get_value()override
+		Mem::Object execute()override
 		{
-			return tree->get_value();
+			return tree->execute();
 		}
-		size_t get_type()override
-		{
-			return tree->get_type();
-		}
-		AST *root() { return tree; }
+		ParserNode *root() { return tree; }
 	private:
-		AST *and_or();
-		AST* expr();
-		AST* nexpr();
-		AST* term();
-		AST *factor();
-		AST *tree;
+		ParserNode *and_or();
+		ParserNode *expr();
+		ParserNode *nexpr();
+		ParserNode *term();
+		ParserNode *factor();
+		ParserNode *tree;
 	};
-	class Cast :public AST
+	class Assign :public ParserNode
 	{
 	public:
-		Cast(size_t t, Expr *e) :type(t), expr(e) {}
-		Mem::Object get_value()override
+		enum AssignType
 		{
-			return expr->get_value()->Convert(type);
-		}
-		size_t get_type()override
-		{
-			return type;
-		}
+			None,
+			Add,Sub,Div,Mul,
+		};
+		Assign(AssignType a,size_t l, Token* o, ParserNode* r) :asType(a),left(l), op(o), right(r) {}
+		Mem::Object execute()override;
 	private:
-		Expr * expr;
-		size_t type;
+		AssignType asType;
+		size_t left;
+		Token *op;
+		ParserNode* right;
 	};
 }
-/*
-
-*/

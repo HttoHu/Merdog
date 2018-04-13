@@ -1,16 +1,8 @@
-/*
-*		Inspired by
-*		https://ruslanspivak.com/lsbasi-part10/
-*		Ruslan's Blog
-*		C++ Version.
-*		Yuantao Hu 2018
-*		Email :Huyuantao@outlook.com
-*/
 #pragma once
 #include "parser.hpp"
 namespace Mer
 {
-	class Word :public AST
+	class Word :public ParserNode
 	{
 	public:
 		enum Type
@@ -18,23 +10,23 @@ namespace Mer
 			Break, Continue
 		};
 		Word(Type v) :type(v) {}
-		Mem::Object get_value()override
+		Mem::Object execute()override
 		{
 			throw *this;
 		}
 		Type type;
 	};
-	class While :public AST
+	class While :public ParserNode
 	{
 	public:
-		Mem::Object get_value()override
+		Mem::Object execute()override
 		{
 			blo->new_block();
-			while (std::static_pointer_cast<Mem::Bool>(condition->get_value())->_value())
+			while (std::static_pointer_cast<Mem::Bool>(condition->execute())->_value())
 			{
 				try
 				{
-					blo->get_value();
+					blo->execute();
 				}
 				catch (Word c)
 				{
@@ -50,19 +42,19 @@ namespace Mer
 		Expr *condition;
 		Block *blo;
 	};
-	class For :public AST
+	class For :public ParserNode
 	{
 	public:
-		Mem::Object get_value()override
+		Mem::Object execute()override
 		{
 			blo->new_block();
-			for (init->get_value();
-				std::static_pointer_cast<Mem::Bool>(condition->get_value())->_value();
-				step_action->get_value())
+			for (init->execute();
+				std::static_pointer_cast<Mem::Bool>(condition->execute())->_value();
+				step_action->execute())
 			{
 				try
 				{
-					blo->get_value();
+					blo->execute();
 				}
 				catch (Word c)
 				{
@@ -78,7 +70,7 @@ namespace Mer
 
 		VarDecl * init;
 		Expr *condition;
-		AST *step_action;
+		ParserNode *step_action;
 		Block *blo;
 	};
 	namespace Parser

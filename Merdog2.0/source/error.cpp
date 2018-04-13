@@ -1,10 +1,3 @@
-/*
-	* Inspired by
-	* https://ruslanspivak.com/lsbasi-part10/
-	* Ruslan's Blog
-	* C++ Version.
-	* Yuantao Hu 2018
-*/
 #include "../include/error.hpp"
 #include "../include/lexer.hpp"
 using namespace Mer;

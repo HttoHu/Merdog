@@ -10,7 +10,7 @@ function int sum (int x, int y)
 {
   return x+y;
 }
-pragram main
+program main
 {
    cout(sum(1,2));
 }.

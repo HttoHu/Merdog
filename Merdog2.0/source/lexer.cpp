@@ -1,39 +1,41 @@
 /*
-	* Inspired by
-	* https://ruslanspivak.com/lsbasi-part10/
-	* Ruslan's Blog
-	* C++ Version.
-	* Yuantao Hu 2018
-	* Email Huyuantao@outlook.com
+* Inspired by
+* https://ruslanspivak.com/lsbasi-part10/
+* Ruslan's Blog
+* C++ Version.
+* Yuantao Hu 2018
+* Email Huyuantao@outlook.com
 */
 #include "../include/lexer.hpp"
 using namespace Mer;
 
 std::map<Tag, std::string> Mer::TagStr{
-	{REF,"REF"},{PROGRAM,"PROGRAME"},{COMMA,"COMMA"},{COLON,"COLON"},
-	{ID,"ID"},{INTEGER,"INTEGER"},{ REAL,"REAL" } ,{FUNCTION,"FUNCTION"},{RETURN,"RETURN"},
-	{IF,"IF"},{ELSE_IF,"ELSE_IF"},{ELSE,"ELSE"},{WHILE,"WHILE"},{FOR,"FOR"},{BREAK,"BREAK"},{CONTINUE,"CONTINUE"},
-	{INTEGER_DECL,"INTEGER_DECL"},{REAL_DECL,"REAL_DECL"}, {STRING_DECL,"STRING_DECL"},{BOOL_DECL,"BOOL_DECL"},
-	{PLUS,"PLUS"},{MINUS,"MINUS"},{MUL,"MUL"},{DIV,"DIV"},
-	{GE,"GE"},{GT,"GT"},{LE,"LE"},{LT,"LT"},{EQ,"EQ"},{NE,"NE"},
-	{AND,"AND"},{OR,"OR"},{NOT,"NOT"},{GET_ADD,"GET_ADD"},
-	{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},
-	{DOT,"DOT"},{BEGIN,"BEGIN"},{END,"END"},
-	{SEMI,"SEMI"},{ASSIGN,"ASSIGN"},
-	{ENDL,"ENDL"},{PRINT,"PRINT"},{CAST,"CAST"},
-	{TRUE,"TRUE"}, {FALSE,"FALSE"},
+	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },
+	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
+	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
+	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },
+	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },
+	{ PLUS,"PLUS" },{ MINUS,"MINUS" },{ MUL,"MUL" },{ DIV,"DIV" },
+	{ GE,"GE" },{ GT,"GT" },{ LE,"LE" },{ LT,"LT" },{ EQ,"EQ" },{ NE,"NE" },
+	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
+	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },
+	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
+	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{SADD,"SADD"},
+	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
+	{ TRUE,"TRUE" },{ FALSE,"FALSE" },
 };
 std::map<std::string, Token*> Mer::KeyWord{
-	{"if",new Token(IF)},{"elif",new Token(ELSE_IF)},{"else",new Token(ELSE)},
-	{"while",new Token(WHILE)},{"break",new Token(BREAK)},{"for",new Token(FOR)},
-	{"continue",new Token(CONTINUE)},
-	{"function",new Token(FUNCTION)},{"return",new Token(RETURN)},
-	{"print",new Token(PRINT)},{"cast",new Token(CAST)}, {"true",new Token(TRUE)},
-	{"false",new Token(FALSE)},
-	{"string",new Token(STRING_DECL)},{"bool",new Token(BOOL_DECL)},
-	{"ref",new Token(REF)},{"begin",new Token(BEGIN)},
-	{"end",new Token(END)},{"real",new Token(REAL_DECL)},
-	{"int",new Token(INTEGER_DECL)},{"program",new Token(PROGRAM)}
+	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },
+	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },
+	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
+	{ "continue",new Token(CONTINUE) },
+	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
+	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TRUE) },
+	{ "false",new Token(FALSE) },
+	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
+	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
+	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },
+	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) }
 };
 bool is_function_args = false;
 Token* Mer::END_TOKEN = new Token(ENDOF);
@@ -185,13 +187,16 @@ void Mer::build_token_stream(const std::string &content)
 			break;
 		case '{':
 			if (!is_function_args)
+			{
 				Id::id_table().push_front(std::map<std::string, Id*>());
+			}
 			else
 				is_function_args = false;
 			token_stream.push_back(new Token(BEGIN));
 			break;
 		case '}':
 			Id::id_table().pop_front();
+
 			token_stream.push_back(new Token(END));
 			break;
 		case ',':
@@ -292,21 +297,23 @@ void Mer::build_token_stream(const std::string &content)
 			{
 				token_stream.push_back(new Token(SDIV));
 				i++;
+				break;
 			}
 			token_stream.push_back(new Token(DIV));
 			break;
 		case '+':
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
-				token_stream.push_back(new Token(SPLUS));
+				token_stream.push_back(new Token(SADD));
 				i++;
+				break;
 			}
 			token_stream.push_back(new Token(PLUS));
 			break;
 		case '-':
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
-				token_stream.push_back(new Token(SMINUS));
+				token_stream.push_back(new Token(SSUB));
 				i++;
 				break;
 			}
@@ -324,3 +331,4 @@ void Mer::build_token_stream(const std::string &content)
 	}
 	token_stream.push_back(END_TOKEN);
 }
+

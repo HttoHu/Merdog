@@ -1,11 +1,4 @@
-/*
-    * Inspired by
-    * https://ruslanspivak.com/lsbasi-part10/
-    * Ruslan's Blog
-    * C++ Version.
-    * Yuantao Hu 2018
-*/
-#include "../include/branch_statement.hpp"
+#include "../include/if.hpp"
 #include "../include/memory.hpp"
 namespace Mer
 {
@@ -18,6 +11,7 @@ namespace Mer
 			token_stream.match(LPAREN);
 			auto expr = new Expr();
 			token_stream.match(RPAREN);
+			stack_memory.new_block();
 			auto blo = Parser::block();
 			ret->if_block.push_back({ expr,blo });
 			while (token_stream.this_tag() == ELSE_IF)
@@ -37,21 +31,21 @@ namespace Mer
 			return ret;
 		}
 	}
-	Mem::Object If::get_value()
+	Mem::Object If::execute()
 	{
-		_mem.new_block();
+		stack_memory.new_block();
 		for (auto &a : if_block)
 		{
-			if (std::static_pointer_cast<Mem::Bool>(a.first->get_value())->_value())
+			if (std::static_pointer_cast<Mem::Bool>(a.first->execute())->_value())
 			{
-				a.second->get_value();
-				_mem.end_block();
+				a.second->execute();
+				stack_memory.end_block();
 				return nullptr;
 			}
 		}
 		if (else_block != nullptr)
-			else_block->get_value();
-		_mem.end_block();
+			else_block->execute();
+		stack_memory.end_block();
 		return nullptr;
 	}
 }

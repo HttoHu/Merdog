@@ -17,18 +17,19 @@ namespace Mer
 {
 	enum Tag
 	{
-		PRINT,CAST,
-		SPLUS,SMINUS,SMUL,SDIV,GET_ADD,
-		INTEGER_DECL, REAL_DECL,STRING_DECL,BOOL_DECL,
+		IMPORT, NAMESPACE,
+		PRINT, CAST,
+		SADD, SSUB, SMUL, SDIV, GET_ADD,
+		INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
 		PROGRAM,
-		GE,LE,GT,LT,NE,EQ,
-		FUNCTION,RETURN,
-		IF,ELSE_IF,ELSE,WHILE,FOR,BREAK,CONTINUE,
-		NOT,AND,OR,
+		GE, LE, GT, LT, NE, EQ,
+		FUNCTION, RETURN,
+		IF, ELSE_IF, ELSE, WHILE, FOR, BREAK, CONTINUE,
+		NOT, AND, OR,
 		REF, BEGIN, END, SEMI, DOT, COMMA,
 		ID, INTEGER, REAL, COLON,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
-		TRUE,FALSE,
+		TRUE, FALSE,
 		LPAREN, RPAREN,
 		ENDOF, ENDL,
 		STRING,
@@ -73,7 +74,7 @@ namespace Mer
 		}
 		static Id* find(std::string str)
 		{
-			for (size_t i = 0; i <id_table().size() ; i++)
+			for (size_t i = 0; i <id_table().size(); i++)
 			{
 				auto result = id_table()[i].find(str);
 				if (result == id_table()[i].end())
@@ -90,10 +91,10 @@ namespace Mer
 			int index = 0;
 			for (const auto &a : id_table())
 			{
-				std::cout << "No " << index<<" ";
+				std::cout << "No " << index << " ";
 				for (const auto &b : a)
 				{
-					std::cout << b.first<<"  ";
+					std::cout << b.first << "  ";
 				}
 				std::cout << std::endl;
 				index++;
@@ -250,7 +251,7 @@ namespace Mer
 		{
 			return static_cast<String*>(tok)->value;
 		}
-		String(const std::string&str):Token(STRING),value(str) {}
+		String(const std::string&str) :Token(STRING), value(str) {}
 		std::string to_string()const override
 		{
 			return "<str:" + value + ">";
@@ -258,9 +259,10 @@ namespace Mer
 	private:
 		std::string value;
 	};
-    Token* parse_number(const std::string &str,size_t &pos);
-    Token* parse_word(const std::string &str,size_t &pos);
+	Token* parse_number(const std::string &str, size_t &pos);
+	Token* parse_word(const std::string &str, size_t &pos);
 	Token* parse_string(const std::string &str, size_t &pos);
-    void build_token_stream(const std::string &content);
-    extern TokenStream token_stream;
+	void build_token_stream(const std::string &content);
+	extern TokenStream token_stream;
+	size_t get_line_no();
 }

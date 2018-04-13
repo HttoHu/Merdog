@@ -1,18 +1,8 @@
-/*
-	* Inspired by
-	* https://ruslanspivak.com/lsbasi-part10/
-	* Ruslan's Blog
-	* C++ Version.
-	* Yuantao Hu 2018
-	* Email Huyuantao@outlook.com
-*/
-#include "../include/syslib/system.hpp"
-#include "../include/interpreter.hpp"
-#include "../include/type.hpp"
 #include <string>
+#include <iostream>
+#include "../include/parser.hpp"
 #include <Windows.h>
 #include <fstream>
-#include <iostream>
 #include <time.h>
 std::string get_file_content(const std::string & filename)
 {
@@ -25,20 +15,16 @@ std::string get_file_content(const std::string & filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-int main(int argc,char* argv[])
+int main()
 {
 	try
 	{
-		Mer::Sys::import_math();
-		Mer::Sys::import_io();
-		if (argc != 2)
-			throw std::runtime_error("argument error");
-		std::string input_content = get_file_content(argv[1]);
+		std::string input_content = get_file_content("test.mer");
 		time_t s = clock();
 		Mer::build_token_stream(input_content);
-		Mer::Interpreter().run();
+		Mer::Parser::program()->execute();
 		time_t e = clock();
-		std::cout << (double)(e - s) / CLK_TCK;
+		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK << std::endl;
 	}
 	catch (std::exception &e)
 	{
@@ -52,3 +38,14 @@ int main(int argc,char* argv[])
 	Sleep(100000);
 	return 0;
 }
+#ifndef _DEBUG
+int main()
+{
+	std::string str;
+	std::cin >> str;
+	Mer::build_token_stream(str);
+	auto a=Mer::Expr();
+	std::cout << a.execute()->to_string();
+	Sleep(1000000);
+}
+#endif

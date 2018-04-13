@@ -1,34 +1,23 @@
-/*
-*		Inspired by
-*		https://ruslanspivak.com/lsbasi-part10/
-*		Ruslan's Blog
-*		C++ Version.
-*		Yuantao Hu 2018 
-*		Email :Huyuantao@outlook.com
-*/
 #pragma once
 #include <string>
 #include <memory>
 #include "error.hpp"
 namespace Mer
 {
+	class Token;
 	namespace Mem
 	{
 		enum BasicType
 		{
-			INT = 0, DOUBLE = 2, STRING = 4, BOOL = 6, COMPOUND = 8, VOID = -1,
-			TREF = 10
+			INT=1, DOUBLE=3, STRING=5, BOOL=7
 		};
 		class Value;
 		std::string type_to_string(BasicType bt);
+		size_t get_type_code(Token *tok);
 		using Object = std::shared_ptr<Value>;
 		class Value
 		{
 		public:
-			virtual BasicType get_type_code()
-			{
-				return BasicType(-1);
-			}
 			virtual std::string to_string()const { return ""; }
 			virtual Object operator=(Object v)
 			{
@@ -75,10 +64,6 @@ namespace Mer
 		class Bool :public Value
 		{
 		public:
-			BasicType get_type_code()override
-			{
-				return BOOL;
-			}
 			Bool(bool b) :value(b) {}
 			std::string to_string()const override
 			{
@@ -91,19 +76,19 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(!value);
 			}
-			Object operator==(Object v)override
+			Object operator==(Object v)
 			{
 				return std::make_shared<Bool>(value == std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
-			Object operator!=(Object v)override
+			Object operator!=(Object v)
 			{
 				return std::make_shared<Bool>(value != std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
-			Object operator&& (Object v)override
+			Object operator&& (Object v)
 			{
 				return std::make_shared<Bool>(value && std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
-			Object operator||(Object v)override
+			Object operator||(Object v)
 			{
 				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
@@ -115,12 +100,6 @@ namespace Mer
 		{
 		public:
 			Int(int64_t v) :value(v) {}
-			BasicType get_type_code()override
-			{
-				return INT;
-			}
-
-			//========================================
 			std::string to_string()const override
 			{
 				return std::to_string(value);
@@ -133,62 +112,62 @@ namespace Mer
 			}
 			Object operator+=(Object v)override
 			{
-				return std::make_shared<Int>(value += std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Int>(value += std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator-=(Object v)override
 			{
-				return std::make_shared<Int>(value -= std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Int>(value -= std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator*=(Object v)override
 			{
-				return std::make_shared<Int>(value *= std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Int>(value *= std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator/=(Object v)override
 			{
-				return std::make_shared<Int>(value /= std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Int>(value /= std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator+ (Object v)override
 			{
-				return std::make_shared<Int>(value + std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Int>(value + std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator- (Object v)override
 			{
 				return std::make_shared<Int>(value -
-					std::static_pointer_cast<Int>(v)->value);
+					std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator* (Object v)override
 			{
 				return std::make_shared<Int>(value *
-					std::static_pointer_cast<Int>(v)->value);
+					std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator/ (Object v)override
 			{
 				return std::make_shared<Int>(value /
-					std::static_pointer_cast<Int>(v)->value);
+					std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator> (Object v)override
 			{
-				return std::make_shared < Bool > (value > std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared < Bool >(value > std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator>= (Object v)override
 			{
-				return std::make_shared<Bool>(value >= std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Bool>(value >= std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator< (Object v)override
 			{
-				return std::make_shared<Bool>(value < std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Bool>(value < std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator<= (Object v)override
 			{
-				return std::make_shared<Bool>(value <= std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Bool>(value <= std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator== (Object v)override
 			{
-				return std::make_shared<Bool>(value == std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Bool>(value == std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object operator!= (Object v)override
 			{
-				return std::make_shared<Bool>(value != std::static_pointer_cast<Int>(v)->value);
+				return std::make_shared<Bool>(value != std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
 			Object get_negation()override
 			{
@@ -196,17 +175,12 @@ namespace Mer
 			}
 			Object Convert(int type) override;
 			Object operator[](Object v) { throw Error("int doesn't have a member <operator[](int)>"); }
-			void reset_value(int64_t v) { value = v; }
-		//private:
+		private:
 			int64_t value;
 		};
 		class Double :public Value
 		{
 		public:
-			BasicType get_type_code()override
-			{
-				return DOUBLE;
-			}
 			Double(double v) :value(v) {}
 			std::string to_string()const override
 			{
@@ -279,7 +253,7 @@ namespace Mer
 			}
 			Object operator!=(Object v)override
 			{
-				return std::make_shared<Bool>(value!=std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value != std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
 			}
 			Object get_negation()override
 			{
@@ -288,18 +262,12 @@ namespace Mer
 			Object operator[](Object v) { throw Error("double doesn't have a member <operator[](int)>"); }
 
 			Object Convert(int type)override;
-
-			void reset_value(double v) { value = v; }
-		//private:
+		private:
 			double value;
 		};
 		class String :public Value
 		{
 		public:
-			BasicType get_type_code()override
-			{
-				return STRING;
-			}
 			String(const std::string &v) :str(v) {  }
 			String(char ch) :str(std::string(1, ch)) {}
 			Object operator+(Object v)override
@@ -343,41 +311,8 @@ namespace Mer
 			{
 				return str;
 			}
-			void reset_value(const std::string &v) { str = v; }
 		private:
 			std::string str;
 		};
-		class Ref :public Value
-		{
-		public:
-			BasicType get_type_code()override;
-			Ref(const Object &o):raw(o)
-			{
-			}
-			Object operator=(Object obj)override;
-			Object operator+(Object obj)override;
-			Object operator-(Object obj)override;
-			Object operator*(Object obj)override;
-			Object operator/(Object obj)override;
-			Object operator+=(Object obj)override;
-			Object operator-=(Object obj)override;
-			Object operator*=(Object obj)override;
-			Object operator/=(Object obj)override;
-			Object operator==(Object obj)override;
-			Object operator>=(Object obj)override;
-			Object operator<=(Object obj)override;
-			Object operator>(Object obj)override;
-			Object operator<(Object obj)override;
-			Object operator!=(Object obj)override;
-			Object operator&&(Object obj)override;
-			Object operator||(Object obj)override;
-			Object operator[](Object obj)override;
-			Object  Convert(int type)override;
-			Object  get_negation()override;
-			std::string to_string()const override;
-		private:
-			Object raw;
-		};
-		bool type_check(size_t p1,size_t p2);
 	}
 }
