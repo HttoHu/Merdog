@@ -2,18 +2,42 @@
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
 #include "../include/if.hpp"
+#include "../include/function.hpp"
 #include "../include/loop_statement.hpp"
 using namespace Mer;
 
 Program* Mer::Parser::program()
 {
-	token_stream.match(PROGRAM);
-	auto tmp = token_stream.this_token();
-	token_stream.match(ID);
-	std::string name = Id::get_value(tmp);
-	auto blo = block();
-	token_stream.match(DOT);
-	return new Program(tmp, blo);
+	Program *ret = nullptr;
+	int programe_num = 0;
+	while (1)
+	{
+		switch (token_stream.this_tag())
+		{
+		case FUNCTION:
+			build_function();
+			break;
+		case PROGRAM:
+		{
+			token_stream.match(PROGRAM);
+			auto tmp = token_stream.this_token();
+			token_stream.match(ID);
+			std::string name = Id::get_value(tmp);
+			auto blo = block();
+			token_stream.match(DOT);
+			ret = new Program(tmp, blo);
+			programe_num++;
+			break;
+		}
+		case ENDOF:
+			if (programe_num != 1)
+				throw Error("The program must have a program as an entry");
+			return ret;
+		default:
+			break;
+		}
+	}
+
 }
 
 Block * Mer::Parser::block()
@@ -97,6 +121,10 @@ ParserNode * Mer::Parser::statement()
 	case REAL_DECL:
 	case STRING_DECL:
 		node = var_decl();
+		break;
+	case RETURN:
+		token_stream.match(RETURN);
+		node = new Return(new Expr());
 		break;
 	case BREAK:
 		node = new Word(Word::Type::Break);

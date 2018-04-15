@@ -39,6 +39,15 @@ namespace Mer
 		size_t pos;
 		Token * content;
 	};
+	class Return :public ParserNode
+	{
+	public:
+		Return(Expr* e) :expr(e) {}
+		Mem::Object execute()override { throw this; }
+		Expr* get_expr() { return expr; }
+	private:
+		Expr *expr;
+	};
 	namespace Parser
 	{
 		Program* program();
