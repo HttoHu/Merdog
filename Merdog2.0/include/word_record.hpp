@@ -17,9 +17,10 @@ namespace Mer
 	struct VarIdRecorder :public WordRecorder
 	{
 	public:
-		VarIdRecorder( int type,size_t p,bool is_c=false) 
-			:WordRecorder(SVAR),pos(p),is_const(is_c){}
+		VarIdRecorder(size_t type,size_t p,bool is_c=false) 
+			:WordRecorder(SVAR),type_code(type),pos(p),is_const(is_c){}
 		size_t pos;
+		size_t type_code;
 		bool known()
 		{
 			return is_const;
@@ -35,6 +36,13 @@ namespace Mer
 	private:
 		bool is_const;
 		Mem::Object obj;
+	};
+	struct FuncIdRecorder :public WordRecorder
+	{
+	public:
+		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN),type_code(type){}
+		size_t type_code;
+	private:
 	};
 	class SymbolTable
 	{
