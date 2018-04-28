@@ -20,7 +20,7 @@ std::map<Tag, std::string> Mer::TagStr{
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
 	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
-	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{SADD,"SADD"},
+	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TRUE,"TRUE" },{ FALSE,"FALSE" },
 };

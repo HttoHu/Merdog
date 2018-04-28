@@ -32,12 +32,4 @@ namespace Mer
 	private:
 		Token *tok;
 	};
-	class Variable :public ParserNode
-	{
-	public:
-		Variable(Token *tok);
-		Mem::Object execute()override;
-	private:
-		size_t pos;
-	};
 }

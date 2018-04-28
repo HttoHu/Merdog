@@ -3,17 +3,14 @@
 #include "parser_node.hpp"
 namespace Mer
 {
-	class Block:public ParserNode
+	class Block
 	{
 	public:
 		std::vector<ParserNode*>ins_table;
-		void new_block();
-		void end_block();
-		Mem::Object execute()override
+		void run()
 		{
 			for (const auto &a : ins_table)
 				a->execute();
-			return nullptr;
 		}
 	private:
 

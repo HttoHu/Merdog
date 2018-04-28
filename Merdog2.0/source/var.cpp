@@ -1,6 +1,5 @@
 #include "../include/var.hpp"
 #include "../include/memory.hpp"
-#include "../include/lexer.hpp"
 using namespace Mer::Mem;
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
@@ -16,23 +15,6 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 		return "string";
 	default:
 		break;
-	}
-}
-
-size_t Mer::Mem::get_type_code(Token * tok)
-{
-	switch(tok->get_tag())
-	{
-	case INTEGER_DECL:
-		return INT;
-	case REAL_DECL:
-		return DOUBLE;
-	case BOOL_DECL:
-		return BOOL;
-	case STRING_DECL:
-		return STRING;
-	case ID:
-		throw Error("not finished yet");
 	}
 }
 
