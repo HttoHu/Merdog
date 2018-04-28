@@ -3,7 +3,8 @@
 #include "../include/memory.hpp"
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"
-using namespace Mer;
+using namespace Mer; 
+std::map<std::string, Function*> Mer::function_table;
 Param * Mer::Parser::build_param()
 {
 	Param *ret = new Param();
@@ -23,6 +24,7 @@ Param * Mer::Parser::build_param()
 			break;
 	}
 	token_stream.match(RPAREN);
+	return ret;
 }
 void Mer::Parser::build_function()
 {

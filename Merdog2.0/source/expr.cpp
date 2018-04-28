@@ -1,5 +1,6 @@
 #include "../include/expr.hpp"
 #include "../include/value.hpp"
+#include "../include/memory.hpp"
 using namespace Mer;
 Mer::ParserNode * Mer::Expr::and_or()
 {
@@ -126,8 +127,8 @@ Mer::ParserNode * Mer::Expr::factor()
 	}
 	case ID:
 	{
-		//auto node = Parser::variable();
-		//return node;
+		auto node = Parser::parse_id();
+		return node;
 	}
 	default:
 		return nullptr;
@@ -149,5 +150,24 @@ Mer::Mem::Object Mer::UnaryOp::execute()
 		return expr->execute();
 	default:
 		throw Error("no matched operator");
+	}
+}
+
+Mem::Object Mer::Assign::execute()
+{
+	switch (asType)
+	{
+	case Mer::Assign::None:
+		return stack_memory[left]->operator=(right->execute());
+	case Mer::Assign::Add:
+		return stack_memory[left]->operator+=(right->execute());
+	case Mer::Assign::Sub:
+		return stack_memory[left]->operator-=(right->execute());
+	case Mer::Assign::Div:
+		return stack_memory[left]->operator/=(right->execute());
+	case Mer::Assign::Mul:
+		return stack_memory[left]->operator*=(right->execute());
+	default:
+		throw Error("unkonwn assignment type");
 	}
 }

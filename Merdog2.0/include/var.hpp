@@ -4,14 +4,16 @@
 #include "error.hpp"
 namespace Mer
 {
+	class Token;
 	namespace Mem
 	{
 		enum BasicType
 		{
-			INT, DOUBLE, STRING, BOOL, REF
+			INT=1, DOUBLE=3, STRING=5, BOOL=7
 		};
 		class Value;
 		std::string type_to_string(BasicType bt);
+		size_t get_type_code(Token *tok);
 		using Object = std::shared_ptr<Value>;
 		class Value
 		{

@@ -104,5 +104,20 @@ namespace Mer
 		ParserNode *factor();
 		ParserNode *tree;
 	};
-
+	class Assign :public ParserNode
+	{
+	public:
+		enum AssignType
+		{
+			None,
+			Add,Sub,Div,Mul,
+		};
+		Assign(AssignType a,size_t l, Token* o, ParserNode* r) :asType(a),left(l), op(o), right(r) {}
+		Mem::Object execute()override;
+	private:
+		AssignType asType;
+		size_t left;
+		Token *op;
+		ParserNode* right;
+	};
 }

@@ -20,7 +20,7 @@ std::map<Tag, std::string> Mer::TagStr{
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
 	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
-	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },
+	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{SADD,"SADD"},
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TRUE,"TRUE" },{ FALSE,"FALSE" },
 };
@@ -150,35 +150,13 @@ Token * Mer::parse_string(const std::string & str, size_t & pos)
 	}
 	return new String(value);
 }
-void Mer::build_token_stream(const std::string &content)
-{
+void Mer::build_token_stream(const std::string &content) {
 	std::string tmp_str;
 	token_stream.push_back(new Endl());
 	for (size_t i = 0; i < content.size(); i++)
 	{
 		switch (content[i])
 		{
-		case '\\':
-			if (i + 1 < content.size() && content[i + 1] == '\\')
-			{
-				while (i + 1 < content.size() && content[++i] != '\n')
-					continue;
-			}
-			else if (i + 1 < content.size() && content[i + 1] == '*')
-			{
-				i += 2;
-				while (i < content.size())
-				{
-					i++;
-					if (content[i] == '*')
-					{
-						i++;
-						if (i < content.size() && content[i] == '\\')
-							goto end;
-					}
-				}
-			}
-		end:break;
 		case '\'':
 			token_stream.push_back(parse_string(content, i));
 			break;
@@ -293,7 +271,28 @@ void Mer::build_token_stream(const std::string &content)
 			token_stream.push_back(new Token(MUL));
 			break;
 		case '/':
-			if (i + 1 < content.size() && content[i + 1] == '=')
+			if (i + 1 < content.size() && content[i + 1] == '/')
+			{
+				while (i + 1 < content.size() && content[++i] != '\n')
+					continue;
+				break;
+			}
+			else if (i + 1 < content.size() && content[i + 1] == '*')
+			{
+				i += 2;
+				while (i < content.size())
+				{
+					i++;
+					if (content[i] == '*')
+					{
+						i++;
+						if (i < content.size() && content[i] == '\\')
+							break;
+					}
+				}
+				break;
+			}
+			else if (i + 1 < content.size() && content[i + 1] == '=')
 			{
 				token_stream.push_back(new Token(SDIV));
 				i++;
@@ -331,4 +330,5 @@ void Mer::build_token_stream(const std::string &content)
 	}
 	token_stream.push_back(END_TOKEN);
 }
+
 

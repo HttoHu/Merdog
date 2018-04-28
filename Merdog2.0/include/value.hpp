@@ -1,9 +1,12 @@
 #pragma once
+#include <vector>
 #include "parser_node.hpp"
 #include "lexer.hpp"
 namespace Mer
 {
-	class Num:public ParserNode
+	class Expr;
+	class FunctionBase;
+	class Num :public ParserNode
 	{
 	public:
 		Num(Token *t) :tok(t) {}
@@ -24,6 +27,7 @@ namespace Mer
 			default:
 				throw Error("syntax error");
 			}
+
 		}
 		std::string to_string()
 		{
@@ -32,4 +36,26 @@ namespace Mer
 	private:
 		Token *tok;
 	};
+	class Variable :public ParserNode
+	{
+	public:
+		Variable(Token *tok);
+		Mem::Object execute()override;
+	private:
+		size_t pos;
+	};
+	class FunctionCall :public ParserNode
+	{
+	public:
+		FunctionCall(Token * func_name, std::vector<Expr*>& exprs);
+		Mem::Object execute()override;
+	private:
+		FunctionBase *func;
+		std::vector<Expr*> argument;
+	};
+	namespace Parser
+	{
+		ParserNode *parse_id();
+		FunctionCall *parse_function_call();
+	}
 }

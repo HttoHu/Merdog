@@ -65,7 +65,7 @@ namespace Mer
 		{
 			if (tok->check(ID))
 				return static_cast<Id*>(tok)->id_name;
-			throw Mer::Error("type-convert failed(Token can't convert to Id).");
+			throw Mer::Error(tok->to_string()+" type-convert failed(Token can't convert to Id).");
 		}
 		static std::deque<std::map<std::string, Id*>> &id_table()
 		{

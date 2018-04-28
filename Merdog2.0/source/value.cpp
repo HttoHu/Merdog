@@ -8,7 +8,7 @@ Mer::Variable::Variable(Token * tok)
 {
 	auto result = global_symbol_table.find(Id::get_value(tok));
 	if (result == nullptr)
-		throw Error("var "+tok->to_string() + " no found");
+		throw Error("var " + tok->to_string() + " no found");
 	if (result->es != ESymbol::SVAR)
 		throw Error(tok->to_string() + " must be a symbol");
 	pos = static_cast<VarIdRecorder*> (result)->pos;
@@ -21,7 +21,7 @@ Mer::Mem::Object Mer::Variable::execute()
 
 Mer::FunctionCall::FunctionCall(Token * func_name, std::vector<Expr*>& exprs)
 {
-	func = Env::func_table().find(Id::get_value(func_name))->second;
+	func = function_table.find(Id::get_value(func_name))->second;
 	argument = exprs;
 }
 
@@ -41,8 +41,9 @@ Mer::ParserNode * Mer::Parser::parse_id()
 		return parse_function_call();
 	case ESymbol::SVAR:
 	{
+		auto ret= new Variable(token_stream.this_token());
 		token_stream.match(ID);
-		return new Variable(token_stream.this_token());
+		return ret;
 	}
 	default:
 		throw Error("please updata your Merdog interpreter or check whether have the errors in your program.");
@@ -52,10 +53,10 @@ Mer::FunctionCall * Mer::Parser::parse_function_call()
 {
 	auto id = token_stream.this_token();
 	std::vector<Expr*> exprs;
-	global_symbol_table.type_checked(id, Mer::ESymbol::SFUN);
-	auto result = Env::func_table().find(Id::get_value(id));
+	global_symbol_table.type_check(id, Mer::ESymbol::SFUN);
+	auto result = function_table.find(Id::get_value(id));
 	token_stream.match(ID);
-	if (result == Env::func_table().end())
+	if (result == function_table.end())
 		throw Error("function " + id->to_string() + " no found its defination");
 	auto function = result->second;
 	token_stream.match(LPAREN);
