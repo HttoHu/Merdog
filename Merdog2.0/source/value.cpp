@@ -31,6 +31,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 }
 Mer::ParserNode * Mer::Parser::parse_id()
 {
+	ParserNode *ret = nullptr;
 	auto id = token_stream.this_token();
 	auto result = global_symbol_table.find(Id::get_value(id));
 	if (result == nullptr)
@@ -38,16 +39,40 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	switch (result->es)
 	{
 	case ESymbol::SFUN:
-		return parse_function_call();
+		 ret=parse_function_call();
 	case ESymbol::SVAR:
 	{
-		auto ret= new Variable(token_stream.this_token());
+		ret= new Variable(token_stream.this_token());
 		token_stream.match(ID);
-		return ret;
+		break;
 	}
 	default:
 		throw Error("please updata your Merdog interpreter or check whether have the errors in your program.");
 	}
+	Assign::AssignType assignment_type;
+	switch (token_stream.this_tag())
+	{
+	case SADD:
+		assignment_type = Assign::AssignType::Add;
+		break;
+	case SSUB:
+		assignment_type = Assign::AssignType::Sub;
+		break;
+	case SMUL:
+		assignment_type = Assign::AssignType::Mul;
+		break;
+	case SDIV:
+		assignment_type = Assign::AssignType::Div;
+		break;
+	default:
+		return ret;
+	}
+	size_t pos = static_cast<VarIdRecorder*>(result)->pos;
+	token_stream.next();
+	auto expr = new Expr();
+	auto node = new Assign(assignment_type, pos, id, expr->root());
+	delete expr;
+	return node;
 }
 Mer::FunctionCall * Mer::Parser::parse_function_call()
 {
