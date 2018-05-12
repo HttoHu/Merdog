@@ -83,12 +83,12 @@ Mer::ParserNode * Mer::Expr::factor()
 	case TRUE:
 	{
 		token_stream.match(TRUE);
-		return new Num(result);
+		return new LConV(result);
 	}
 	case FALSE:
 	{
 		token_stream.match(FALSE);
-		return new Num(result);
+		return new LConV(result);
 	}
 	case LPAREN:
 	{
@@ -100,17 +100,17 @@ Mer::ParserNode * Mer::Expr::factor()
 	case REAL:
 	{
 		token_stream.match(REAL);
-		return new Num(result);
+		return new LConV(result);
 	}
 	case STRING:
 	{
 		token_stream.match(STRING);
-		return new Num(result);
+		return new LConV(result);
 	}
 	case INTEGER:
 	{
 		token_stream.match(INTEGER);
-		return new Num(result);
+		return new LConV(result);
 	}
 	case NOT:
 	case MINUS:
@@ -131,7 +131,7 @@ Mer::ParserNode * Mer::Expr::factor()
 		return node;
 	}
 	default:
-		return nullptr;
+		return new NonOp();
 	}
 }
 

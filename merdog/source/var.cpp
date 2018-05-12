@@ -6,6 +6,8 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 {
 	switch (bt)
 	{
+	case Mer::Mem::VOID:
+		return "void";
 	case Mer::Mem::BOOL:
 		return "bool";
 	case Mer::Mem::INT:
@@ -17,12 +19,15 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	default:
 		break;
 	}
+	return "";
 }
 
 size_t Mer::Mem::get_type_code(Token * tok)
 {
 	switch(tok->get_tag())
 	{
+	case VOID_DECL:
+		return VOID;
 	case INTEGER_DECL:
 		return INT;
 	case REAL_DECL:
@@ -32,6 +37,8 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	case STRING_DECL:
 		return STRING;
 	case ID:
+		throw Error("not finished yet");
+	default:
 		throw Error("not finished yet");
 	}
 }

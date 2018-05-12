@@ -3,10 +3,23 @@
 #include "lexer.hpp"
 namespace Mer
 {
+	class NonOp :public ParserNode
+	{
+	public:
+		Mem::Object execute()override
+		{
+			return nullptr;
+		}
+		size_t get_type()override
+		{
+			return Mem::BasicType::VOID;
+		}
+	private:
+	};
 	class BinOp :public ParserNode
 	{
 	public:
-		BinOp(ParserNode *l, Token *o, ParserNode* r) :left(l), op(o), right(r) 
+		BinOp(ParserNode *l, Token *o, ParserNode* r) :left(l), op(o), right(r)
 		{
 
 		}
@@ -63,18 +76,22 @@ namespace Mer
 				ret = left_v->operator>=(right_v);
 				break;
 			case LT:
-				ret = left_v->operator<=(right_v);
+				ret = left_v->operator<(right_v);
 				break;
 			case LE:
-				ret = left_v->operator<(right_v);
+				ret = left_v->operator<=(right_v);
 				break;
 			default:
 				break;
 			}
 			return Mem::Object(ret);
 		}
+		size_t get_type()override
+		{
+			return left->get_type();
+		}
 	private:
-		ParserNode *left;
+		ParserNode * left;
 		Token *op;
 		ParserNode *right;
 	};
@@ -83,21 +100,31 @@ namespace Mer
 	public:
 		UnaryOp(Token *t, ParserNode* e) :op(t), expr(e) {}
 		Mem::Object execute()override;
+		size_t get_type()override
+		{
+			return expr->get_type();
+		}
 	private:
-		Token *op;
+		Token * op;
 		ParserNode* expr;
 	};
-	class Expr:public ParserNode
+	class Expr :public ParserNode
 	{
 	public:
 		Expr() :tree(and_or()) {}
+		size_t get_type()override
+		{
+			if (tree == nullptr)
+				return Mem::VOID;
+			return tree->get_type();
+		}
 		Mem::Object execute()override
 		{
 			return tree->execute();
 		}
 		ParserNode *root() { return tree; }
 	private:
-		ParserNode *and_or();
+		ParserNode * and_or();
 		ParserNode *expr();
 		ParserNode *nexpr();
 		ParserNode *term();
@@ -110,9 +137,9 @@ namespace Mer
 		enum AssignType
 		{
 			None,
-			Add,Sub,Div,Mul,
+			Add, Sub, Div, Mul,
 		};
-		Assign(AssignType a,size_t l, Token* o, ParserNode* r) :asType(a),left(l), op(o), right(r) {}
+		Assign(AssignType a, size_t l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
 		Mem::Object execute()override;
 	private:
 		AssignType asType;

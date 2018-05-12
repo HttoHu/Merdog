@@ -2,5 +2,4 @@
 #include "lexer.hpp"
 namespace Mer
 {
-
 }

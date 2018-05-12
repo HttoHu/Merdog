@@ -2,6 +2,7 @@
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
 #include "../include/if.hpp"
+#include "../include/namespace.hpp"
 #include "../include/function.hpp"
 #include "../include/loop_statement.hpp"
 using namespace Mer;
@@ -14,6 +15,9 @@ Program* Mer::Parser::program()
 	{
 		switch (token_stream.this_tag())
 		{
+		case NAMESPACE:
+			build_namespace();
+			break;
 		case FUNCTION:
 			build_function();
 			break;
@@ -43,7 +47,7 @@ Program* Mer::Parser::program()
 Block * Mer::Parser::block()
 {
 	stack_memory.new_block();
-	global_symbol_table.new_block();
+	this_namespace->sl_table->new_block();
 	token_stream.match(BEGIN);
 	Block *ret = new Block();
 	while (token_stream.this_tag() != END)
@@ -71,7 +75,7 @@ Block * Mer::Parser::block()
 	}
 	token_stream.match(END);
 	stack_memory.end_block();
-	global_symbol_table.end_block();
+	this_namespace->sl_table->end_block();
 	return ret;
 }
 
@@ -123,9 +127,16 @@ ParserNode * Mer::Parser::statement()
 		node = var_decl();
 		break;
 	case RETURN:
+	{
 		token_stream.match(RETURN);
-		node = new Return(new Expr());
+		auto expr = new Expr();
+		if (expr->get_type() != this_func_type)
+		{
+			throw Error("return type doesn't correspond with function type");
+		}
+		node = new Return(expr);
 		break;
+	}
 	case BREAK:
 		node = new Word(Word::Type::Break);
 		token_stream.match(BREAK);
@@ -219,7 +230,7 @@ VarDecl * Mer::Parser::var_decl()
 
 WordRecorder * Mer::Parser::get_current_info()
 {
-	return global_symbol_table.find(Mer::Id::get_value(token_stream.this_token()));
+	return this_namespace->sl_table->find(Mer::Id::get_value(token_stream.this_token()));
 }
 
 Mer::VarDecl::VarDecl(size_t t, const std::map<Token*, Expr*>& v)
@@ -227,10 +238,10 @@ Mer::VarDecl::VarDecl(size_t t, const std::map<Token*, Expr*>& v)
 	type = t;
 	for (const auto &a : v)
 	{
-		if (global_symbol_table.find_front(Id::get_value(a.first)) != nullptr)
+		if (this_namespace->sl_table->find_front(Id::get_value(a.first)) != nullptr)
 			throw Error("Symbol " + a.first->to_string() + " redefined");
 		auto pos = stack_memory.push();
-		global_symbol_table.push(Id::get_value(a.first), new VarIdRecorder(t, pos));
+		this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(t, pos));
 		var_list.push_back({ pos, a.second });
 	}
 }
@@ -251,7 +262,7 @@ Mer::Print::Print(Token * tok) :content(tok)
 {
 	if (tok->get_tag() == ID)
 	{
-		auto result = global_symbol_table.find(Id::get_value(tok));
+		auto result = this_namespace->sl_table->find(Id::get_value(tok));
 		if (result == nullptr)
 			throw Error(tok->to_string() + " no found the definition");
 		if (result->es != ESymbol::SVAR)

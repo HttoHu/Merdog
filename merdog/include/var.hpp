@@ -9,7 +9,7 @@ namespace Mer
 	{
 		enum BasicType
 		{
-			INT=1, DOUBLE=3, STRING=5, BOOL=7
+			NDEF = -1, VOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
 		};
 		class Value;
 		std::string type_to_string(BasicType bt);
@@ -19,6 +19,10 @@ namespace Mer
 		{
 		public:
 			virtual std::string to_string()const { return ""; }
+			virtual size_t get_type()const
+			{
+				return BasicType::NDEF;
+			}
 			virtual Object operator=(Object v)
 			{
 				return nullptr;
@@ -71,24 +75,28 @@ namespace Mer
 					return "true";
 				return "false";
 			}
+			size_t get_type()const override
+			{
+				return BasicType::BOOL;
+			}
 			Object Convert(int type)override;
 			Object get_negation()override
 			{
 				return std::make_shared<Bool>(!value);
 			}
-			Object operator==(Object v)
+			Object operator==(Object v)override
 			{
 				return std::make_shared<Bool>(value == std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
-			Object operator!=(Object v)
+			Object operator!=(Object v)override
 			{
 				return std::make_shared<Bool>(value != std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
-			Object operator&& (Object v)
+			Object operator&& (Object v)override
 			{
 				return std::make_shared<Bool>(value && std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
-			Object operator||(Object v)
+			Object operator||(Object v)override
 			{
 				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
 			}
@@ -103,6 +111,10 @@ namespace Mer
 			std::string to_string()const override
 			{
 				return std::to_string(value);
+			}
+			size_t get_type()const override
+			{
+				return BasicType::INT;
 			}
 			Object operator=(Object v)override
 			{
@@ -173,8 +185,12 @@ namespace Mer
 			{
 				return std::make_shared<Int>(-value);
 			}
+			int64_t get_value()
+			{
+				return value;
+			}
 			Object Convert(int type) override;
-			Object operator[](Object v) { throw Error("int doesn't have a member <operator[](int)>"); }
+			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
 		private:
 			int64_t value;
 		};
@@ -186,10 +202,14 @@ namespace Mer
 			{
 				return std::to_string(value);
 			}
+			size_t get_type()const override
+			{
+				return BasicType::DOUBLE;
+			}
 			Object operator=(Object v)override
 			{
 				value = std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value;
-				return Object(this);
+				return Convert(Mem::DOUBLE);
 			}
 			Object operator+=(Object v)override
 			{
@@ -259,8 +279,11 @@ namespace Mer
 			{
 				return std::make_shared<Double>(-value);
 			}
-			Object operator[](Object v) { throw Error("double doesn't have a member <operator[](int)>"); }
-
+			Object operator[](Object v)override { throw Error("double doesn't have a member <operator[](int)>"); }
+			double get_value()
+			{
+				return value;
+			}
 			Object Convert(int type)override;
 		private:
 			double value;
@@ -274,6 +297,10 @@ namespace Mer
 			{
 				return std::make_shared<String>(str +
 					std::static_pointer_cast<String>(v->Convert(STRING))->str);
+			}
+			size_t get_type()const override
+			{
+				return BasicType::STRING;
 			}
 			Object Convert(int type)override
 			{

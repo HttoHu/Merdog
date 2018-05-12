@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <functional>
 #include "expr.hpp"
 namespace Mer
 {
@@ -23,14 +24,18 @@ namespace Mer
 	{
 	public:
 		FunctionBase() {}
-		virtual Mem::Object run(const std::vector<Expr*> exprs) { return nullptr; }
+		virtual Mem::Object run(std::vector<Mem::Object>& objs) { return nullptr; }
 		virtual size_t get_type() { return 0; }
 	};
 	class Function:public FunctionBase
 	{
 	public:
-		Function(size_t t,Param *p, Block *bl):type(t),param(p),blo(bl) {}
-		Mem::Object run(const std::vector<Expr*> exprs)override;
+		Function(size_t t,Param *p, Block *bl=nullptr):type(t),param(p),blo(bl) {}
+		void reset_block(Block *b)
+		{
+			blo = b;
+		}
+		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
 	private:
 		size_t type;
@@ -39,12 +44,25 @@ namespace Mer
 	};
 	class SystemFunction :public FunctionBase 
 	{
-
+	public:
+		SystemFunction(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t), func(fun) {}
+		Mem::Object run(std::vector<Mem::Object> &objs)override
+		{
+			return func(objs);
+		}
+		size_t get_type()override
+		{
+			return type;
+		}
+	private:
+		size_t type;
+		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
 	namespace Parser
 	{
 		Param *build_param();
 		void build_function();
 	}
+	extern size_t this_func_type;
 	extern std::map<std::string, Function*> function_table;
 }

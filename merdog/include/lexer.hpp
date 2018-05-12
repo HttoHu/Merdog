@@ -20,7 +20,7 @@ namespace Mer
 		IMPORT, NAMESPACE,
 		PRINT, CAST,
 		SADD, SSUB, SMUL, SDIV, GET_ADD,
-		INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
+		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
 		PROGRAM,
 		GE, LE, GT, LT, NE, EQ,
 		FUNCTION, RETURN,
@@ -249,6 +249,8 @@ namespace Mer
 	public:
 		static std::string get_value(Token *tok)
 		{
+			if (tok->get_tag() != STRING)
+				throw Error(tok->to_string() + " is not a string");
 			return static_cast<String*>(tok)->value;
 		}
 		String(const std::string&str) :Token(STRING), value(str) {}
@@ -265,4 +267,6 @@ namespace Mer
 	void build_token_stream(const std::string &content);
 	extern TokenStream token_stream;
 	size_t get_line_no();
+
+	std::string GIC();
 }

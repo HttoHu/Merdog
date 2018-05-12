@@ -3,20 +3,28 @@
 #include "../include/memory.hpp"
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"
+#include "../include/namespace.hpp"
 using namespace Mer; 
 std::map<std::string, Function*> Mer::function_table;
+size_t Mer::this_func_type;
+
 Param * Mer::Parser::build_param()
 {
 	Param *ret = new Param();
 	token_stream.match(LPAREN);
+	if (token_stream.this_tag() == RPAREN)
+	{
+		token_stream.match(RPAREN);
+		return ret;
+	}
 	while (true)
 	{
 		size_t type = Mem::get_type_code(token_stream.this_token());
 		token_stream.next();
-		auto name = String::get_value(token_stream.this_token());
+		auto name = Id::get_value(token_stream.this_token());
 		token_stream.match(ID);
 		size_t pos = stack_memory.push();
-		global_symbol_table.push(name, new VarIdRecorder(type, pos));
+		this_namespace->sl_table->push(name, new VarIdRecorder(type, pos));
 		ret->push_new_param(type, pos);
 		if (token_stream.this_tag() == COMMA)
 			token_stream.match(COMMA);
@@ -26,20 +34,23 @@ Param * Mer::Parser::build_param()
 	token_stream.match(RPAREN);
 	return ret;
 }
+
 void Mer::Parser::build_function()
 {
 	token_stream.match(FUNCTION);
 	size_t rtype = Mem::get_type_code(token_stream.this_token());
+	this_func_type = rtype;
 	token_stream.next();
 	stack_memory.new_block();
-	global_symbol_table.new_block();
+	this_namespace->sl_table->new_block();
 	auto name = Id::get_value(token_stream.this_token());
 	token_stream.next();
-	global_symbol_table.push(name, new FuncIdRecorder(rtype));
+	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
 	Param *param = build_param();
+	Function*ret = new Function(rtype, param);
+	this_namespace->functions.insert({ name,ret });
 	Block *blo = pure_block();
-	Function*ret = new Function(rtype, param, blo);
-	function_table.insert({ name,ret });
+	ret->reset_block(blo);
 }
 
 bool Mer::Param::type_check(const std::vector<size_t>& types)
@@ -54,12 +65,12 @@ bool Mer::Param::type_check(const std::vector<size_t>& types)
 	return true;
 }
 
-Mem::Object Mer::Function::run(const std::vector<Expr*> exprs)
+Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 {
 	stack_memory.new_func(param->get_param_table().size());
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
-		stack_memory[param->get_param_table()[i].second] = exprs[i]->execute();
+		stack_memory[param->get_param_table()[i].second] = objs[i];
 	}
 	try
 	{
@@ -71,4 +82,6 @@ Mem::Object Mer::Function::run(const std::vector<Expr*> exprs)
 		stack_memory.end_func();
 		return ret;
 	}
+	stack_memory.end_func();
+	return nullptr;
 }

@@ -5,22 +5,27 @@ namespace Mer
 	enum ESymbol
 	{
 		SFUN,SVAR,SNAME,
+		SGVAR,
 	};
 	struct WordRecorder
 	{
 	public:
 		WordRecorder(ESymbol e) :es(e) {}
 		ESymbol es;
-		int word_type;
+		size_t get_type() { return type_code; }
+	protected:
+		size_t type_code;
 		virtual ~WordRecorder() {}
 	};
 	struct VarIdRecorder :public WordRecorder
 	{
 	public:
 		VarIdRecorder(size_t type,size_t p,bool is_c=false) 
-			:WordRecorder(SVAR),type_code(type),pos(p),is_const(is_c){}
+			:WordRecorder(SVAR),pos(p),is_const(is_c)
+		{
+			type_code = type;
+		}
 		size_t pos;
-		size_t type_code;
 		bool known()
 		{
 			return is_const;
@@ -36,6 +41,15 @@ namespace Mer
 	private:
 		bool is_const;
 		Mem::Object obj;
+	};
+	class Namespace;
+	struct GVarIdRecorder:public WordRecorder
+	{
+	public:
+		GVarIdRecorder(size_t t, Mem::Object obj) :WordRecorder(SGVAR), value(obj) {
+			type_code = t;
+		}
+		Mem::Object value;
 	};
 	struct FuncIdRecorder :public WordRecorder
 	{
@@ -86,6 +100,10 @@ namespace Mer
 			}
 			return nullptr;
 		}
+		void push_glo(std::string id, WordRecorder *wr)
+		{
+			data.back().insert({ id,wr });
+		}
 		void push(std::string id, WordRecorder *wr)
 		{
 			data.front().insert({ id,wr });
@@ -93,5 +111,4 @@ namespace Mer
 	private:
 		std::deque<std::map<std::string, WordRecorder*>> data;
 	};
-	extern SymbolTable global_symbol_table;
 }
