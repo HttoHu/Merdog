@@ -1,6 +1,6 @@
-   Merdog
+#   Merdog
 ## 简介
-Merdog 是一个简单的开源解释器 前生Simcc
+Merdog 是一个简单的开源解释器 前身Simcc
 ## Merdog 2.1 支持的语法
 1. 基本类型 ** int, real, string, bool
 2. 基本语句 if / else / elif / while / for
