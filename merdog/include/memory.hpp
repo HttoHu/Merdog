@@ -3,6 +3,7 @@
 #include <vector>
 #include <stack>
 #include <map>
+#include <set>
 #include "var.hpp"
 namespace Mer
 {
@@ -74,5 +75,40 @@ namespace Mer
 		std::vector<size_t> block_flag;
 		Mem::Object *_mem;
 	};
+	class Heap
+	{
+	public:
+		Heap()
+		{
+			hmem.reserve(100);
+		}
+		size_t index()
+		{
+			return hmem.size();
+		}
+		size_t capacity()
+		{
+			return hmem.capacity();
+		}
+
+		size_t push(Mem::Object obj)
+		{
+			if (deleted_space.size() != 0)
+			{
+				hmem[deleted_space.top()] = obj;
+				deleted_space.pop();
+			}
+			else
+				hmem.push_back(obj);
+		}
+		size_t del(size_t sz)
+		{
+			deleted_space.push(sz);
+		}
+	private:
+		std::vector<Mem::Object> hmem;
+		std::stack<size_t> deleted_space;
+	};
 	extern Memory stack_memory;
+	extern Heap heap_memory;
 }

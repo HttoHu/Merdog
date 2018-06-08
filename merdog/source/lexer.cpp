@@ -10,7 +10,7 @@
 using namespace Mer;
 
 std::map<Tag, std::string> Mer::TagStr{
-	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },
+	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{STRUCT,"struct"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },
@@ -25,7 +25,7 @@ std::map<Tag, std::string> Mer::TagStr{
 	{ TRUE,"TRUE" },{ FALSE,"FALSE" },
 };
 std::map<std::string, Token*> Mer::KeyWord{
-	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },
+	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{"struct",new Token(STRUCT)},
 	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
 	{ "continue",new Token(CONTINUE) },
@@ -286,7 +286,7 @@ void Mer::build_token_stream(const std::string &content) {
 					if (content[i] == '*')
 					{
 						i++;
-						if (i < content.size() && content[i] == '\\')
+						if (i < content.size() && content[i] == '/')
 							break;
 					}
 				}

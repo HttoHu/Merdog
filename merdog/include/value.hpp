@@ -65,7 +65,13 @@ namespace Mer
 		FunctionBase * func;
 		std::vector<Expr*> argument;
 	};
+	class CompoundObjectCreater :public ParserNode
+	{
+	public:
 
+	private:
+
+	};
 	namespace Parser
 	{
 		ParserNode *parse_id();

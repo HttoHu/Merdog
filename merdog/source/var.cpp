@@ -2,6 +2,8 @@
 #include "../include/memory.hpp"
 #include "../include/lexer.hpp"
 using namespace Mer::Mem;
+int Mer::type_counter=8;
+
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
 	switch (bt)

@@ -3,6 +3,7 @@
 #include "function.hpp"
 namespace Mer
 {
+	class Structure;
 	class SymbolTable;
 	class Namespace
 	{
@@ -12,12 +13,16 @@ namespace Mer
 			const std::map<std::string,Namespace*>&cs,
 			const std::map<std::string, FunctionBase*> &funcs):parent(pare), children(cs), functions(funcs) {}
 		Namespace *parent;
+		std::map<std::string, std::pair<Structure*, size_t>> structures;
 		std::map<std::string, Namespace*> children;
 		std::map<std::string, FunctionBase*> functions;
 		std::vector<Namespace*> using_namespaces;
 		SymbolTable *sl_table;
+		void set_new_structure(const std::string &name, Structure *structure);
 		void set_new_func(const std::string &name, size_t type, FunctionBase* func);
 		void set_new_var(const std::string &name,size_t type, Mem::Object obj);
+
+
 		Mem::Object find_var(const std::string &name);
 		FunctionBase *find_func(const std::string &name);
 	};

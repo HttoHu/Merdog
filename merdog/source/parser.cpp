@@ -228,6 +228,34 @@ VarDecl * Mer::Parser::var_decl()
 	return new VarDecl(type_code, var_list);
 }
 
+size_t Mer::Parser::get_type()
+{
+	switch (token_stream.this_tag())
+	{
+	case VOID_DECL:
+		token_stream.match(VOID_DECL);
+		return Mem::VOID;
+	case INTEGER_DECL:
+		token_stream.match(INTEGER_DECL);
+		return Mem::INT;
+	case REAL_DECL:
+		token_stream.match(REAL_DECL);
+		return Mem::DOUBLE;
+	case BOOL_DECL:
+		token_stream.match(BOOL_DECL);
+		return Mem::BOOL;
+	case STRING_DECL:
+		token_stream.match(STRING_DECL);
+		return Mem::STRING;
+	case ID:
+	{
+		
+	}
+	default:
+		throw Error("not finished yet");
+	}
+}
+
 WordRecorder * Mer::Parser::get_current_info()
 {
 	return this_namespace->sl_table->find(Mer::Id::get_value(token_stream.this_token()));

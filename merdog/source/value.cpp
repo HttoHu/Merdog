@@ -63,6 +63,9 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
+	case ESymbol::SSTRUCTURE:
+		throw Error("structure is not supported now.");
+		break;
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;
@@ -90,6 +93,9 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	Assign::AssignType assignment_type;
 	switch (token_stream.this_tag())
 	{
+	case ASSIGN:
+		assignment_type = Assign::AssignType::None;
+		break;
 	case SADD:
 		assignment_type = Assign::AssignType::Add;
 		break;

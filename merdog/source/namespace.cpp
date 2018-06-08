@@ -1,6 +1,7 @@
 #include "../include/namespace.hpp"
 #include "../include/value.hpp"
 #include "../include/word_record.hpp"
+#include "../include/structure.hpp"
 using namespace Mer;
 Namespace *Mer::root_namespace = new Namespace(nullptr);
 Namespace *Mer::this_namespace = root_namespace;
@@ -8,6 +9,11 @@ Namespace *Mer::this_namespace = root_namespace;
 Mer::Namespace::Namespace(Namespace * pare) :parent(pare)
 {
 	sl_table = new SymbolTable();
+}
+void Mer::Namespace::set_new_structure(const std::string & name, Structure * structure)
+{
+	structures.insert({ name,{structure,type_counter++} });
+	sl_table->push_glo(name, new WordRecorder(ESymbol::SSTRUCTURE));
 }
 void Mer::Namespace::set_new_func(const std::string & name, size_t type, FunctionBase * func)
 {
@@ -80,6 +86,9 @@ Mer::Namespace * Mer::Parser::build_namespace()
 	{
 		switch (token_stream.this_tag())
 		{
+		case STRUCT:
+			parse_structure();
+			break;
 		case NAMESPACE:
 		{
 			build_namespace();
