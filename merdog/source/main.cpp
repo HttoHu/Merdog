@@ -1,11 +1,11 @@
 #include <string>
 #include <iostream>
-#include "../include/parser.hpp"
-#include "../include/clib/merdog_io.hpp"
-#include "../include/clib/maths.hpp"
 #include <Windows.h>
 #include <fstream>
 #include <time.h>
+#include "../include/parser.hpp"
+#include "../include/clib/merdog_io.hpp"
+#include "../include/clib/maths.hpp"
 std::string get_file_content(const std::string & filename)
 {
 	using namespace std;

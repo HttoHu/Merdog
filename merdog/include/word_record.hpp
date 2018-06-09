@@ -13,9 +13,9 @@ namespace Mer
 		WordRecorder(ESymbol e) :es(e) {}
 		ESymbol es;
 		size_t get_type() { return type_code; }
+		virtual ~WordRecorder() {}
 	protected:
 		size_t type_code;
-		virtual ~WordRecorder() {}
 	};
 	struct VarIdRecorder :public WordRecorder
 	{
@@ -42,7 +42,18 @@ namespace Mer
 		bool is_const;
 		Mem::Object obj;
 	};
+	struct StructRecorder :public WordRecorder
+	{
+	public:
+		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
+		{
+			type_code = Mem::type_no()++;
+		}
+		
+	private:
+	};
 	class Namespace;
+
 	struct GVarIdRecorder:public WordRecorder
 	{
 	public:
@@ -54,8 +65,9 @@ namespace Mer
 	struct FuncIdRecorder :public WordRecorder
 	{
 	public:
-		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN),type_code(type){}
-		size_t type_code;
+		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN){
+			type_code = type;
+		}
 	private:
 	};
 	class SymbolTable

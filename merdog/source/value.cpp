@@ -5,6 +5,7 @@
 #include "../include/function.hpp"
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
+#include "../include/structure.hpp"
 Mer::Variable::Variable(Token * tok) :id(tok)
 {
 	auto result = this_namespace->sl_table->find(Id::get_value(tok));
@@ -48,6 +49,46 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	}
 	return func->run(tmp);
 }
+// How to split the method into some smaller functions?? 6-7-18
+Mer::Assign::AssignType _token_to_assType()
+{
+	using namespace Mer;
+	switch (token_stream.this_tag())
+	{
+	case ASSIGN:
+		return Assign::AssignType::None;
+	case SADD:
+		return Assign::AssignType::Add;
+	case SSUB:
+		return Assign::AssignType::Sub;
+	case SMUL:
+		return Assign::AssignType::Mul;
+	case SDIV:
+		return Assign::AssignType::Div;
+	default:
+		return Assign::AssignType::Null;
+	}
+}
+
+Mer::ParserNode * Mer::Parser::build_init_list(Namespace *names)
+{
+	std::string type_name = GIC();
+	auto result = names->sl_table->find(type_name);
+	if (result->es != ESymbol::SSTRUCTURE)
+		throw Error("merdog inner errors. 1");  
+	Structure* structure = static_cast<Structure*>(type_vtable[result->get_type()]);
+	token_stream.match(BEGIN);
+	std::map<std::string, Expr*> tmp;// to init InitList;
+	while (token_stream.this_tag() != END)
+	{
+		std::string name = GIC();
+		token_stream.match(COMMA);
+		tmp.insert({ name,new Expr() });
+	}
+	token_stream.match(END);
+	return new InitList(structure, tmp);
+}
+
 Mer::ParserNode * Mer::Parser::parse_id()
 {
 	ParserNode *ret = nullptr;
@@ -64,8 +105,10 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	switch (result->es)
 	{
 	case ESymbol::SSTRUCTURE:
-		throw Error("structure is not supported now.");
+	{
+		ret = build_init_list(this_namespace);
 		break;
+	}
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;
@@ -90,27 +133,10 @@ Mer::ParserNode * Mer::Parser::parse_id()
 		return ret;
 	}
 	}
-	Assign::AssignType assignment_type;
-	switch (token_stream.this_tag())
-	{
-	case ASSIGN:
-		assignment_type = Assign::AssignType::None;
-		break;
-	case SADD:
-		assignment_type = Assign::AssignType::Add;
-		break;
-	case SSUB:
-		assignment_type = Assign::AssignType::Sub;
-		break;
-	case SMUL:
-		assignment_type = Assign::AssignType::Mul;
-		break;
-	case SDIV:
-		assignment_type = Assign::AssignType::Div;
-		break;
-	default:
+
+	Mer::Assign::AssignType assignment_type = _token_to_assType();
+	if (_token_to_assType() == Assign::AssignType::Null)
 		return ret;
-	}
 	size_t pos = static_cast<VarIdRecorder*>(result)->pos;
 	token_stream.next();
 	auto expr = new Expr();
@@ -118,6 +144,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	delete expr;
 	return node;
 }
+
 Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 {
 	ParserNode *ret = nullptr;
@@ -127,6 +154,11 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 		throw Error(id->to_string() + " no found");
 	switch (result->es)
 	{
+	case ESymbol::SSTRUCTURE:
+	{
+		ret = build_init_list(names);
+		break;
+	}
 	case ESymbol::SFUN:
 
 		ret = parse_function_call(names);
@@ -164,6 +196,7 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 	token_stream.next();
 	return new NVModificationAdapter(assignment_type,ret,new Expr());
 }
+
 Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 {
 	auto id = token_stream.this_token();

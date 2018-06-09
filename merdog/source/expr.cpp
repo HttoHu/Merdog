@@ -1,6 +1,7 @@
 #include "../include/expr.hpp"
 #include "../include/value.hpp"
 #include "../include/memory.hpp"
+#include "../include/structure.hpp"
 using namespace Mer;
 Mer::ParserNode * Mer::Expr::and_or()
 {
@@ -170,4 +171,23 @@ Mem::Object Mer::Assign::execute()
 	default:
 		throw Error("unkonwn assignment type");
 	}
+}
+
+Mer::InitList::InitList(Structure * _type, const std::map<std::string, Expr*>& _init_list) {
+	type = _type->type_id();
+	init_v.resize(_type->type_size());
+	for (const auto &a : _init_list)
+	{
+		init_v[_type->find_var(a.first).first] = a.second;
+	}
+}
+
+Mem::Object Mer::InitList::execute()
+{
+	std::vector<Mem::Object> v(init_v.size());
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		v[i] = init_v[i]->execute();
+	}
+	return std::make_shared<CompoundObject>(type,v);
 }

@@ -108,6 +108,19 @@ namespace Mer
 		Token * op;
 		ParserNode* expr;
 	};
+	class Structure;
+	class CompoundObject;
+	class Expr;
+	class Type;
+	class InitList :public ParserNode
+	{
+	public:
+		InitList(Structure *_type, const std::map<std::string, Expr*>& _init_list);
+		Mem::Object execute()override;
+	private:
+		std::vector<Expr*> init_v;
+		size_t type;
+	};
 	class Expr :public ParserNode
 	{
 	public:
@@ -138,6 +151,7 @@ namespace Mer
 		{
 			None,
 			Add, Sub, Div, Mul,
+			Null,
 		};
 		Assign(AssignType a, size_t l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
 		Mem::Object execute()override;

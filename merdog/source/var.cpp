@@ -1,6 +1,8 @@
 #include "../include/var.hpp"
 #include "../include/memory.hpp"
 #include "../include/lexer.hpp"
+#include "../include/namespace.hpp"
+#include "../include/word_record.hpp"
 using namespace Mer::Mem;
 int Mer::type_counter=8;
 
@@ -39,10 +41,19 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	case STRING_DECL:
 		return STRING;
 	case ID:
-		throw Error("not finished yet");
-	default:
-		throw Error("not finished yet");
+	{
+		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		return info->get_type();
 	}
+	default:
+		throw Error("invalid type ");
+	}
+}
+
+size_t &Mer::Mem::type_no()
+{
+	static size_t this_type_index = 10;
+	return this_type_index;
 }
 
 Mer::Mem::Object  Mer::Mem::Int::Convert(int type)

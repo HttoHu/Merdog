@@ -4,6 +4,7 @@
 #include "error.hpp"
 namespace Mer
 {
+	class Namespace;
 	class Token;
 	namespace Mem
 	{
@@ -15,6 +16,7 @@ namespace Mer
 
 		std::string type_to_string(BasicType bt);
 		size_t get_type_code(Token *tok);
+		size_t &type_no();
 		using Object = std::shared_ptr<Value>;
 		class Value
 		{
@@ -346,4 +348,5 @@ namespace Mer
 
 	}
 	extern int type_counter;
+	extern Namespace *this_namespace;
 }

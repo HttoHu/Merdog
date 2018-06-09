@@ -4,9 +4,9 @@
 #include "../include/if.hpp"
 #include "../include/namespace.hpp"
 #include "../include/function.hpp"
+#include "../include/structure.hpp"
 #include "../include/loop_statement.hpp"
 using namespace Mer;
-
 Program* Mer::Parser::program()
 {
 	Program *ret = nullptr;
@@ -15,6 +15,9 @@ Program* Mer::Parser::program()
 	{
 		switch (token_stream.this_tag())
 		{
+		case STRUCT:
+			parse_structure();
+			break;
 		case NAMESPACE:
 			build_namespace();
 			break;
@@ -38,7 +41,7 @@ Program* Mer::Parser::program()
 				throw Error("The program must have a program as an entry");
 			return ret;
 		default:
-			break;
+			throw Error("syntax error");
 		}
 	}
 
@@ -208,8 +211,6 @@ VarDecl * Mer::Parser::var_decl()
 		auto exp = new Expr();
 		var_list.insert({ id,exp });
 	}
-	else
-		throw Error("try to create a var without initialization");
 	while (token_stream.this_token()->get_tag() == COMMA)
 	{
 		auto id = token_stream.this_token();
