@@ -36,13 +36,11 @@ namespace Mer
 		{
 			blo = b;
 		}
+		Param *param;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
-
 	private:
-
 		size_t type;
-		Param *param;
 		Block *blo;
 	};
 	class SystemFunction :public FunctionBase 

@@ -42,13 +42,9 @@ void Mer::Parser::build_function()
 	size_t rtype = Mem::get_type_code(token_stream.this_token());
 	this_func_type = rtype;
 	token_stream.next();
-	stack_memory.new_block();
 	this_namespace->sl_table->new_block();
 	auto name = Id::get_value(token_stream.this_token());
 	token_stream.next();
-	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
-	Param *param = build_param();
-	Function*ret = new Function(rtype, param);
 #ifdef MER2_1_1
 	auto finder = this_namespace->functions.find(name);
 	if (finder != this_namespace->functions.end())
@@ -57,11 +53,19 @@ void Mer::Parser::build_function()
 		{
 			throw Error("function redefined.");
 		}
+		Function *temp = static_cast<Function*>(finder->second);
+		temp->param = build_param();
 		Block *blo = pure_block();
-		ret->reset_block(blo);
+		temp->reset_block(blo);
+		temp->is_completed = true;
+		this_namespace->sl_table->end_block();
 		return;
 	}
 #endif
+	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
+	stack_memory.new_block();
+	Param *param = build_param();
+	Function*ret = new Function(rtype, nullptr);
 	this_namespace->functions.insert({ name,ret });
 #ifdef MER2_1_1
 	if (token_stream.this_tag() == SEMI)
@@ -72,6 +76,7 @@ void Mer::Parser::build_function()
 	}
 #endif
 	Block *blo = pure_block();
+	ret->param = param;
 	ret->reset_block(blo);
 	ret->is_completed = true;
 }

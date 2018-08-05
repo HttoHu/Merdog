@@ -177,6 +177,7 @@ namespace Mer
 			if (pos >= content.size())
 			{
 				content.push_back(END_TOKEN);
+				throw Error("to the end of token_stream");
 			}
 		}
 		void next()
