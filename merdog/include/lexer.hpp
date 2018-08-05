@@ -17,7 +17,7 @@ namespace Mer
 {
 	enum Tag
 	{
-		IMPORT, NAMESPACE,STRUCT,
+		IMPORT, NAMESPACE, STRUCT,
 		PRINT, CAST,
 		SADD, SSUB, SMUL, SDIV, GET_ADD,
 		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
@@ -29,7 +29,7 @@ namespace Mer
 		REF, BEGIN, END, SEMI, DOT, COMMA,
 		ID, INTEGER, REAL, COLON,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
-		TRUE, FALSE,
+		TTRUE, TFALSE,
 		LPAREN, RPAREN,
 		ENDOF, ENDL,
 		STRING,
@@ -65,7 +65,7 @@ namespace Mer
 		{
 			if (tok->check(ID))
 				return static_cast<Id*>(tok)->id_name;
-			throw Mer::Error(tok->to_string()+" type-convert failed(Token can't convert to Id).");
+			throw Mer::Error(tok->to_string() + " type-convert failed(Token can't convert to Id).");
 		}
 		static std::deque<std::map<std::string, Id*>> &id_table()
 		{
@@ -74,7 +74,7 @@ namespace Mer
 		}
 		static Id* find(std::string str)
 		{
-			for (size_t i = 0; i <id_table().size(); i++)
+			for (size_t i = 0; i < id_table().size(); i++)
 			{
 				auto result = id_table()[i].find(str);
 				if (result == id_table()[i].end())
@@ -150,7 +150,7 @@ namespace Mer
 		}
 		Token* this_token()
 		{
-			while (content[pos]->get_tag() == ENDL)
+			while (content[pos]->get_tag() == Tag::ENDL)
 				advance();
 			return content[pos];
 		}
@@ -181,7 +181,7 @@ namespace Mer
 		}
 		void next()
 		{
-			if (this_token()->get_tag() == ENDL)
+			if (this_token()->get_tag() == Tag::ENDL)
 			{
 				advance();
 				next();
@@ -192,7 +192,7 @@ namespace Mer
 		{
 			// to check the token whether it is right, and if matched call advance, or throw an error.
 			// example: match(PLUS); 
-			if (this_token()->get_tag() == ENDL)
+			if (this_token()->get_tag() == Mer::Tag::ENDL)
 			{
 				advance();
 				match(t);
@@ -222,7 +222,7 @@ namespace Mer
 	class Endl :public Token
 	{
 	public:
-		Endl() :Token(ENDL)
+		Endl() :Token(Tag::ENDL)
 		{
 			static size_t current_line = 0;
 			line_no = ++current_line;
@@ -249,11 +249,11 @@ namespace Mer
 	public:
 		static std::string get_value(Token *tok)
 		{
-			if (tok->get_tag() != STRING)
+			if (tok->get_tag() != Tag::STRING)
 				throw Error(tok->to_string() + " is not a string");
 			return static_cast<String*>(tok)->value;
 		}
-		String(const std::string&str) :Token(STRING), value(str) {}
+		String(const std::string&str) :Token(Tag::STRING), value(str) {}
 		std::string to_string()const override
 		{
 			return "<str:" + value + ">";

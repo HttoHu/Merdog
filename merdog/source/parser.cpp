@@ -235,7 +235,7 @@ size_t Mer::Parser::get_type()
 	{
 	case VOID_DECL:
 		token_stream.match(VOID_DECL);
-		return Mem::VOID;
+		return Mem::BVOID;
 	case INTEGER_DECL:
 		token_stream.match(INTEGER_DECL);
 		return Mem::INT;

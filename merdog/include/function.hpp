@@ -25,7 +25,8 @@ namespace Mer
 	public:
 		FunctionBase() {}
 		virtual Mem::Object run(std::vector<Mem::Object>& objs) { return nullptr; }
-		virtual size_t get_type() { return 0; }
+		virtual size_t get_type() { return 0; }		
+		bool is_completed;
 	};
 	class Function:public FunctionBase
 	{
@@ -37,7 +38,9 @@ namespace Mer
 		}
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
+
 	private:
+
 		size_t type;
 		Param *param;
 		Block *blo;

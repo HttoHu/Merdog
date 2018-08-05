@@ -22,7 +22,7 @@ std::map<Tag, std::string> Mer::TagStr{
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
 	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{SADD,"SADD"},
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
-	{ TRUE,"TRUE" },{ FALSE,"FALSE" },
+	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },
 };
 std::map<std::string, Token*> Mer::KeyWord{
 	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{"struct",new Token(STRUCT)},
@@ -30,8 +30,8 @@ std::map<std::string, Token*> Mer::KeyWord{
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
 	{ "continue",new Token(CONTINUE) },
 	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
-	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TRUE) },
-	{ "false",new Token(FALSE) },
+	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },
+	{ "false",new Token(TFALSE) },
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
 	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },

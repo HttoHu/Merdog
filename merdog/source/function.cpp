@@ -4,6 +4,7 @@
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"
+#define MER2_1_1
 using namespace Mer; 
 std::map<std::string, Function*> Mer::function_table;
 size_t Mer::this_func_type;
@@ -48,9 +49,31 @@ void Mer::Parser::build_function()
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
 	Param *param = build_param();
 	Function*ret = new Function(rtype, param);
+#ifdef MER2_1_1
+	auto finder = this_namespace->functions.find(name);
+	if (finder != this_namespace->functions.end())
+	{
+		if (finder->second->is_completed == true)
+		{
+			throw Error("function redefined.");
+		}
+		Block *blo = pure_block();
+		ret->reset_block(blo);
+		return;
+	}
+#endif
 	this_namespace->functions.insert({ name,ret });
+#ifdef MER2_1_1
+	if (token_stream.this_tag() == SEMI)
+	{
+		ret->is_completed = false;
+		token_stream.match(SEMI);
+		return;
+	}
+#endif
 	Block *blo = pure_block();
 	ret->reset_block(blo);
+	ret->is_completed = true;
 }
 
 bool Mer::Param::type_check(const std::vector<size_t>& types)

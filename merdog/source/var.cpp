@@ -10,7 +10,7 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 {
 	switch (bt)
 	{
-	case Mer::Mem::VOID:
+	case Mer::Mem::BVOID:
 		return "void";
 	case Mer::Mem::BOOL:
 		return "bool";
@@ -31,7 +31,7 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	switch(tok->get_tag())
 	{
 	case VOID_DECL:
-		return VOID;
+		return BVOID;
 	case INTEGER_DECL:
 		return INT;
 	case REAL_DECL:

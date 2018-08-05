@@ -12,7 +12,7 @@ namespace Mer
 		}
 		size_t get_type()override
 		{
-			return Mem::BasicType::VOID;
+			return Mem::BasicType::BVOID;
 		}
 	private:
 	};
@@ -128,7 +128,7 @@ namespace Mer
 		size_t get_type()override
 		{
 			if (tree == nullptr)
-				return Mem::VOID;
+				return Mem::BVOID;
 			return tree->get_type();
 		}
 		Mem::Object execute()override

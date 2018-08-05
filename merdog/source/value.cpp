@@ -240,11 +240,11 @@ Mer::LConV::LConV(Token * t)
 {
 	switch (t->get_tag())
 	{
-	case TRUE:
+	case TTRUE:
 		type = Mem::BOOL;
 		obj = std::make_shared<Mem::Bool>(true);
 		break;
-	case FALSE:
+	case TFALSE:
 		type = Mem::BOOL;
 		obj = std::make_shared<Mem::Bool>(false);
 		break;

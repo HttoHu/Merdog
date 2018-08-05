@@ -10,7 +10,7 @@ namespace Mer
 	{
 		enum BasicType
 		{
-			NDEF = -1, VOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
+			NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
 		};
 		class Value;
 

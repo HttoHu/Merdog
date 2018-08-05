@@ -81,14 +81,14 @@ Mer::ParserNode * Mer::Expr::factor()
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
-	case TRUE:
+	case TTRUE:
 	{
-		token_stream.match(TRUE);
+		token_stream.match(TTRUE);
 		return new LConV(result);
 	}
-	case FALSE:
+	case TFALSE:
 	{
-		token_stream.match(FALSE);
+		token_stream.match(TFALSE);
 		return new LConV(result);
 	}
 	case LPAREN:
