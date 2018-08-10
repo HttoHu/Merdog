@@ -6,6 +6,7 @@
 #include "../include/function.hpp"
 #include "../include/structure.hpp"
 #include "../include/loop_statement.hpp"
+#include "../include/environment.hpp"
 using namespace Mer;
 Program* Mer::Parser::program()
 {
@@ -111,6 +112,7 @@ Block * Mer::Parser::pure_block()
 		ret->ins_table.push_back(node);
 	}
 	token_stream.match(END);
+
 	stack_memory.end_block();
 	return ret;
 }
@@ -190,6 +192,7 @@ Assign * Mer::Parser::assignment_statement()
 	token_stream.next();
 	auto expr = new Expr();
 	auto node = new Assign(assignment_type, pos, name, expr->root());
+	expr->tree = nullptr;
 	delete expr;
 	return node;
 }

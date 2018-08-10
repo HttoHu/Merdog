@@ -148,6 +148,12 @@ namespace Mer
 		{
 			content.pop_back();
 		}
+		Token* this_token(size_t sz)
+		{
+			/*while (content[pos+sz]->get_tag() == Tag::ENDL)
+				advance();*/
+			return content[pos+sz];
+		}
 		Token* this_token()
 		{
 			while (content[pos]->get_tag() == Tag::ENDL)
@@ -216,6 +222,8 @@ namespace Mer
 		{
 			return pos;
 		}
+		void remove_tokens();
+		void clear();
 	private:
 		std::vector<Token*> content;
 		size_t pos = 0;
@@ -225,7 +233,6 @@ namespace Mer
 	public:
 		Endl() :Token(Tag::ENDL)
 		{
-			static size_t current_line = 0;
 			line_no = ++current_line;
 		}
 		static size_t get_value(Token* tok)
@@ -237,11 +244,12 @@ namespace Mer
 			else
 				throw Error("convert failed");
 		}
-
+		static size_t current_line;
 		std::string to_string()const override
 		{
 			return "\n";
 		}
+		
 	private:
 		size_t line_no;
 	};

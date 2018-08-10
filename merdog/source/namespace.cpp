@@ -72,8 +72,7 @@ Mer::Namespace * Mer::Parser::find_namespace(const std::string & name)
 	return result;
 }
 
-Mer::Namespace * Mer::Parser::build_namespace()
-{
+Mer::Namespace * Mer::Parser::build_namespace() {
 	Namespace *nns = new Namespace(this_namespace);
 	token_stream.match(NAMESPACE);
 	std::string nnname = GIC();
@@ -109,7 +108,7 @@ Mer::Namespace * Mer::Parser::build_namespace()
 			throw Error("syntax error");
 		}
 	}
-	e:
+e:
 	this_namespace->sl_table->end_block();
 	token_stream.match(END);
 	this_namespace = nns->parent;
@@ -159,7 +158,7 @@ void Mer::Parser::create_namespace_var()
 }
 
 Mer::NVModificationAdapter::NVModificationAdapter(Assign::AssignType mt, ParserNode * o, Expr * e)
-	:mtype(mt), expr(e) 
+	:mtype(mt), expr(e)
 {
 	obj = o->execute();
 }

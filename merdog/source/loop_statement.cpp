@@ -25,7 +25,7 @@ namespace Mer
 			ret->condition = new Expr();
 			token_stream.match(SEMI);
 			
-			ret->step_action = assignment_statement();
+			ret->step_action = new Expr();
 			token_stream.match(RPAREN);
 			ret->blo = block();
 			return ret;

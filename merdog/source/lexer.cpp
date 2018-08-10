@@ -8,8 +8,11 @@
 */
 #include "../include/lexer.hpp"
 using namespace Mer;
-
-std::map<Tag, std::string> Mer::TagStr{
+using TokenMap = std::map<std::string, Token*>;
+using TagStrMap = std::map<Tag, std::string>;
+//==========================================
+size_t Mer::Endl::	current_line = 0;
+TagStrMap	Mer::	TagStr{
 	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{STRUCT,"struct"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
@@ -24,7 +27,7 @@ std::map<Tag, std::string> Mer::TagStr{
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },
 };
-std::map<std::string, Token*> Mer::KeyWord{
+TokenMap	Mer::	KeyWord{
 	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{"struct",new Token(STRUCT)},
 	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
@@ -37,10 +40,11 @@ std::map<std::string, Token*> Mer::KeyWord{
 	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },
 	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) }
 };
-bool is_function_args = false;
-Token* Mer::END_TOKEN = new Token(ENDOF);
-TokenStream Mer::token_stream;
-Token * Mer::parse_number(const std::string &str, size_t &pos)
+bool				is_function_args = false;
+//==========================================
+Token* Mer::		END_TOKEN = new Token(ENDOF);
+TokenStream Mer::	token_stream;
+Token* Mer::		parse_number(const std::string &str, size_t &pos)
 {
 	int64_t ret = 0;
 	for (; pos < str.size(); pos++)
@@ -72,7 +76,7 @@ Token * Mer::parse_number(const std::string &str, size_t &pos)
 	}
 	return new Integer(ret);
 }
-Token *Mer::parse_word(const std::string &str, size_t &pos)
+Token*	Mer::		parse_word(const std::string &str, size_t &pos)
 {
 	std::string ret;
 	bool first_char = true;
@@ -98,10 +102,10 @@ Token *Mer::parse_word(const std::string &str, size_t &pos)
 			}
 		}
 	}
-	auto result = KeyWord.find(ret);
+	auto result = Mer::KeyWord.find(ret);
 	if (ret == "function")
 		is_function_args = true;
-	if (result != KeyWord.end())
+	if (result != Mer::KeyWord.end())
 	{
 		return result->second;
 	}
@@ -111,7 +115,7 @@ Token *Mer::parse_word(const std::string &str, size_t &pos)
 	else
 		return new Id(ret);
 }
-Token * Mer::parse_string(const std::string & str, size_t & pos)
+Token*Mer::			parse_string(const std::string & str, size_t & pos)
 {
 	std::string value;
 	if (str[pos] == '\'')
@@ -150,7 +154,7 @@ Token * Mer::parse_string(const std::string & str, size_t & pos)
 	}
 	return new String(value);
 }
-void Mer::build_token_stream(const std::string &content) {
+void Mer::			build_token_stream(const std::string &content) {
 	std::string tmp_str;
 	token_stream.push_back(new Endl());
 	for (size_t i = 0; i < content.size(); i++)
@@ -330,11 +334,54 @@ void Mer::build_token_stream(const std::string &content) {
 	}
 	token_stream.push_back(END_TOKEN);
 }
-
-
-std::string Mer::GIC()
+std::string Mer::	GIC()
 {
 	auto ret = Id::get_value(token_stream.this_token());
 	token_stream.match(ID);
 	return ret;
+}
+void TokenStream::	remove_tokens()
+{
+	int index = -1;
+	// delete literal_const and endl value
+	for (const auto &a : content)
+	{
+		index++;
+		switch (a->get_tag())
+		{
+		case ENDL:
+		case INTEGER:
+		case REAL:
+		case STRING:
+		{
+			auto tmp = a;
+			content.erase(content.begin() + index);
+			delete tmp;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	Endl::current_line = 0;
+	// delete Ids
+	for (auto &a : Id::id_table())
+	{
+		for (auto &b : a)
+		{
+			delete b.second;
+		}
+		a.clear();
+	}
+	Id::id_table().clear();
+	Id::id_table().push_back(std::map<std::string, Id*>());
+
+	// delete container
+	content.clear();
+	//throw Error("HEY"+std::to_string(content.size()));
+}
+void TokenStream::	clear()
+{
+	remove_tokens();
+	pos = 0;
 }

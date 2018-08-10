@@ -191,3 +191,9 @@ Mem::Object Mer::InitList::execute()
 	}
 	return std::make_shared<CompoundObject>(type,v);
 }
+
+Mer::InitList::~InitList()
+{
+	for (auto &a : init_v)
+		delete a;
+}

@@ -6,6 +6,7 @@
 #include "../include/parser.hpp"
 #include "../include/clib/merdog_io.hpp"
 #include "../include/clib/maths.hpp"
+#include "../include/environment.hpp"
 std::string get_file_content(const std::string & filename)
 {
 	using namespace std;
@@ -44,6 +45,8 @@ int main(int argc, char* argv[])
 */
 int main()
 {
+	std::cout<<Mer::run_interpreter(get_file_content("test.mer"));
+	/*
 	try
 	{
 		Mer::set_io();
@@ -63,7 +66,7 @@ int main()
 	{
 		std::cout << e.what();
 	}
-	std::cout << "\nThe program has exited";
+	std::cout << "\nThe program has exited";*/
 	Sleep(100000);
 	return 0;
 }

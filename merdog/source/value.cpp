@@ -133,7 +133,6 @@ Mer::ParserNode * Mer::Parser::parse_id()
 		return ret;
 	}
 	}
-
 	Mer::Assign::AssignType assignment_type = _token_to_assType();
 	if (_token_to_assType() == Assign::AssignType::Null)
 		return ret;
@@ -141,6 +140,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	token_stream.next();
 	auto expr = new Expr();
 	auto node = new Assign(assignment_type, pos, id, expr->root());
+	expr->tree = nullptr;
 	delete expr;
 	return node;
 }

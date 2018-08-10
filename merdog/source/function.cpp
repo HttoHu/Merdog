@@ -7,9 +7,37 @@
 #define MER2_1_1
 using namespace Mer; 
 std::map<std::string, Function*> Mer::function_table;
-size_t Mer::this_func_type;
 
-Param * Mer::Parser::build_param()
+size_t Mer::					this_func_type;
+
+bool							is_function_statement()
+{
+	int index = 1;
+	if (token_stream.this_tag() == LPAREN)
+	{
+		while (token_stream.this_token(index)->get_tag()!=RPAREN)
+		{
+			if (token_stream.this_token(index) == END_TOKEN)
+				throw Error("Reached end of the file");
+			index++;
+		}
+		if (token_stream.this_token(index + 1)->get_tag() == SEMI)
+		{
+			for (int i = 0; i < index+1; i++)
+			{
+				token_stream.next();
+			}
+			token_stream.match(SEMI);
+			return true;
+		}
+		else
+			return false;
+	}
+	else
+		throw Error("it isn't a function");
+}
+
+Param * Mer::Parser::			build_param()
 {
 	Param *ret = new Param();
 	token_stream.match(LPAREN);
@@ -36,7 +64,7 @@ Param * Mer::Parser::build_param()
 	return ret;
 }
 
-void Mer::Parser::build_function()
+void Mer::Parser::				build_function()
 {
 	token_stream.match(FUNCTION);
 	size_t rtype = Mem::get_type_code(token_stream.this_token());
@@ -54,34 +82,37 @@ void Mer::Parser::build_function()
 			throw Error("function redefined.");
 		}
 		Function *temp = static_cast<Function*>(finder->second);
+		stack_memory.new_block();
 		temp->param = build_param();
+
 		Block *blo = pure_block();
 		temp->reset_block(blo);
 		temp->is_completed = true;
 		this_namespace->sl_table->end_block();
+
 		return;
 	}
 #endif
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
+	if (is_function_statement())
+	{
+		Function*ret = new Function(rtype, nullptr);
+		this_namespace->functions.insert({ name,ret });
+		ret->is_completed = false;
+		return;
+	}
 	stack_memory.new_block();
 	Param *param = build_param();
 	Function*ret = new Function(rtype, nullptr);
 	this_namespace->functions.insert({ name,ret });
-#ifdef MER2_1_1
-	if (token_stream.this_tag() == SEMI)
-	{
-		ret->is_completed = false;
-		token_stream.match(SEMI);
-		return;
-	}
-#endif
 	Block *blo = pure_block();
 	ret->param = param;
 	ret->reset_block(blo);
 	ret->is_completed = true;
+	this_namespace->sl_table->end_block();
 }
 
-bool Mer::Param::type_check(const std::vector<size_t>& types)
+bool Mer::Param::				type_check(const std::vector<size_t>& types)
 {
 	if (types.size() != param_pos.size())
 		return false;
@@ -93,7 +124,7 @@ bool Mer::Param::type_check(const std::vector<size_t>& types)
 	return true;
 }
 
-Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
+Mem::Object Mer::Function::		run(std::vector<Mem::Object>& objs)
 {
 	stack_memory.new_func(param->get_param_table().size());
 	for (size_t i = 0; i < param->get_param_table().size(); i++)

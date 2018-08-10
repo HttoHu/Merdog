@@ -3,7 +3,7 @@
 #include "block.hpp"
 namespace Mer
 {
-	class WordRecorder;
+	struct WordRecorder;
 	class Program:public ParserNode
 	{
 	public:

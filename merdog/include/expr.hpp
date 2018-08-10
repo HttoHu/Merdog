@@ -90,6 +90,11 @@ namespace Mer
 		{
 			return left->get_type();
 		}
+		virtual ~BinOp()
+		{
+			delete left;
+			delete right;
+		}
 	private:
 		ParserNode * left;
 		Token *op;
@@ -104,6 +109,10 @@ namespace Mer
 		{
 			return expr->get_type();
 		}
+		virtual ~UnaryOp()
+		{
+			delete expr;
+		}
 	private:
 		Token * op;
 		ParserNode* expr;
@@ -117,6 +126,7 @@ namespace Mer
 	public:
 		InitList(Structure *_type, const std::map<std::string, Expr*>& _init_list);
 		Mem::Object execute()override;
+		virtual ~InitList();
 	private:
 		std::vector<Expr*> init_v;
 		size_t type;
@@ -136,13 +146,18 @@ namespace Mer
 			return tree->execute();
 		}
 		ParserNode *root() { return tree; }
+		virtual ~Expr() {
+			if(tree!=nullptr)
+				delete tree;
+		}
+		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
+		ParserNode *tree;
 	private:
 		ParserNode * and_or();
 		ParserNode *expr();
 		ParserNode *nexpr();
 		ParserNode *term();
 		ParserNode *factor();
-		ParserNode *tree;
 	};
 	class Assign :public ParserNode
 	{
@@ -155,6 +170,10 @@ namespace Mer
 		};
 		Assign(AssignType a, size_t l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
 		Mem::Object execute()override;
+		virtual ~Assign()
+		{
+			delete right;
+		}
 	private:
 		AssignType asType;
 		size_t left;
