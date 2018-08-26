@@ -235,20 +235,10 @@ namespace Mer
 		{
 			line_no = ++current_line;
 		}
-		static size_t get_value(Token* tok)
-		{
-			if (tok->get_tag() == ENDL)
-			{
-				return static_cast<Endl*>(tok)->line_no;
-			}
-			else
-				throw Error("convert failed");
-		}
+		static size_t get_value(Token* tok);
+
 		static size_t current_line;
-		std::string to_string()const override
-		{
-			return "\n";
-		}
+		std::string to_string()const override;
 		
 	private:
 		size_t line_no;

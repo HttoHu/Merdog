@@ -200,8 +200,6 @@ void Mer::			build_token_stream(const std::string &content) {
 				token_stream.push_back(new Token(OR));
 				i++;
 			}
-			else
-				throw Error("invalid token '|'");
 			break;
 		case '<':
 			if (i + 1 < content.size() && content[i + 1] == '=')
@@ -226,10 +224,8 @@ void Mer::			build_token_stream(const std::string &content) {
 			{
 				token_stream.push_back(new Token(EQ));
 				i++;
-				break;
 			}
-			else
-				throw Error("invalid token '='");
+			break;
 		case '!':
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
@@ -271,6 +267,7 @@ void Mer::			build_token_stream(const std::string &content) {
 			{
 				token_stream.push_back(new Token(SMUL));
 				i++;
+				break;
 			}
 			token_stream.push_back(new Token(MUL));
 			break;
@@ -384,4 +381,19 @@ void TokenStream::	clear()
 {
 	remove_tokens();
 	pos = 0;
+}
+
+
+std::string Endl::to_string()const
+{
+	return "\n";
+}
+size_t Endl::get_value(Token* tok)
+{
+	if (tok->get_tag() == ENDL)
+	{
+		return static_cast<Endl*>(tok)->line_no;
+	}
+	else
+		throw Error("convert failed");
 }
