@@ -19,9 +19,6 @@ Program* Mer::Parser::program()
 		case STRUCT:
 			parse_structure();
 			break;
-		case NAMESPACE:
-			build_namespace();
-			break;
 		case FUNCTION:
 			build_function();
 			break;
@@ -42,7 +39,9 @@ Program* Mer::Parser::program()
 				throw Error("The program must have a program as an entry");
 			return ret;
 		default:
-			throw Error("syntax error");
+			statement()->execute();
+		//	throw Error("Syntax Error");
+			break;
 		}
 	}
 

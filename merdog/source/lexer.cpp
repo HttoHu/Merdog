@@ -274,8 +274,10 @@ void Mer::			build_token_stream(const std::string &content) {
 		case '/':
 			if (i + 1 < content.size() && content[i + 1] == '/')
 			{
-				while (i + 1 < content.size() && content[++i] != '\n')
+				while (i + 1 < content.size() && content[i++] != '\n')
 					continue;
+				// in case that the uncorrect of line no
+				i-=2;
 				break;
 			}
 			else if (i + 1 < content.size() && content[i + 1] == '*')
@@ -283,6 +285,10 @@ void Mer::			build_token_stream(const std::string &content) {
 				i += 2;
 				while (i < content.size())
 				{
+					if (content[i] == '\n')
+					{
+						token_stream.push_back(new Endl());
+					}
 					i++;
 					if (content[i] == '*')
 					{
