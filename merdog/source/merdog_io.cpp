@@ -4,6 +4,26 @@ namespace Mer
 {
 	namespace
 	{
+		Mem::Object _substr(std::vector<Mem::Object>& args)
+		{
+			if (args.size() == 3)
+			{
+				auto tmp = std::dynamic_pointer_cast<Mem::String>(args[0]);
+				auto off= std::dynamic_pointer_cast<Mem::Int>(args[1]);
+				auto size = std::dynamic_pointer_cast<Mem::Int>(args[2]);
+				return std::make_shared<Mem::String>(tmp->to_string().substr(off->get_value(),size->get_value()));
+			}
+			throw Error("argument size error");
+		}
+		Mem::Object _str_size(std::vector<Mem::Object>& args)
+		{
+			if (args.size() == 1)
+			{
+				auto tmp = std::dynamic_pointer_cast<Mem::String>(args[0]);
+				return std::make_shared<Mem::Int>(tmp->to_string().size());
+			}
+			throw Error("argument size error");
+		}
 		Mem::Object _cout(std::vector<Mem::Object>& args)
 		{
 			for (const auto &a : args)
@@ -36,6 +56,8 @@ namespace Mer
 		}
 	}
 	Namespace *mstd=new Namespace(nullptr);
+	Mer::SystemFunction *substr = new SystemFunction(Mem::BasicType::STRING, _substr);
+	Mer::SystemFunction *str_size = new SystemFunction(Mem::BasicType::STRING, _str_size);
 	Mer::SystemFunction *cout=new SystemFunction(Mem::BasicType::BVOID,_cout);
 	Mer::SystemFunction *input_int=new SystemFunction(Mem::BasicType::INT, _input_int);
 	Mer::SystemFunction *input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
@@ -43,6 +65,8 @@ namespace Mer
 	void set_io()
 	{
 		Mer::root_namespace->children.insert({ "std", mstd });
+		mstd->set_new_func("substr", Mem::BasicType::STRING, substr);
+		mstd->set_new_func("strsize", Mem::BasicType::INT, str_size);
 		mstd->set_new_func("cout",Mem::BasicType::BVOID,cout);
 		mstd->set_new_func("input_int", Mem::BasicType::INT,input_int);
 		mstd->set_new_func("input_real", Mem::BasicType::DOUBLE, input_real);

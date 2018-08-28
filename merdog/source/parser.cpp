@@ -211,6 +211,8 @@ VarDecl * Mer::Parser::var_decl()
 	{
 		token_stream.match(ASSIGN);
 		auto exp = new Expr();
+		if (exp->get_type() != type_code)
+			throw Error("type not matched");
 		var_list.insert({ id,exp });
 	}
 	while (token_stream.this_token()->get_tag() == COMMA)
@@ -221,6 +223,8 @@ VarDecl * Mer::Parser::var_decl()
 		{
 			token_stream.match(ASSIGN);
 			auto exp = new Expr();
+			if (exp->get_type() != type_code)
+				throw Error("type not matched");
 			var_list.insert({ id,exp });
 		}
 		else
