@@ -39,7 +39,12 @@ namespace Mer
 		Param *param;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
+		void set_new_gv(size_t *pos)
+		{
+			pos_info.push_back(pos);
+		}
 	private:
+		std::vector<size_t*> pos_info;
 		size_t type;
 		Block *blo;
 	};
@@ -64,6 +69,7 @@ namespace Mer
 		Param *build_param();
 		void build_function();
 	}
+	extern Function *current_function;
 	extern size_t this_func_type;
 	extern std::map<std::string, Function*> function_table;
 }

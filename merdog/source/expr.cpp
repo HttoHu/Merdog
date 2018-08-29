@@ -2,6 +2,7 @@
 #include "../include/value.hpp"
 #include "../include/memory.hpp"
 #include "../include/structure.hpp"
+#include "../include/function.hpp"
 using namespace Mer;
 Mer::ParserNode * Mer::Expr::and_or()
 {
@@ -154,6 +155,16 @@ Mer::Mem::Object Mer::UnaryOp::execute()
 	}
 }
 
+void Mer::Assign::attach_pos_to_current_function()
+{
+	if (Mer::current_function == nullptr)
+		throw Error("unkonwn error");
+	else
+	{
+		std::cout << "Add:" << left << std::endl;
+		Mer::current_function->set_new_gv(&left);
+	}
+}
 Mem::Object Mer::Assign::execute()
 {
 	switch (asType)

@@ -87,8 +87,6 @@ Token*	Mer::		parse_word(const std::string &str, size_t &pos)
 			first_char = false;
 			if (isalpha(str[pos]) || str[pos] == '_')
 				ret += str[pos];
-			else
-				throw Error("a word must begin with alpha or '_' ");
 			continue;
 		}
 		else

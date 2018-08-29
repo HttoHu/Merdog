@@ -169,6 +169,7 @@ namespace Mer
 			Null,
 		};
 		Assign(AssignType a, size_t l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
+		void attach_pos_to_current_function();
 		Mem::Object execute()override;
 		virtual ~Assign()
 		{

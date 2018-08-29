@@ -114,9 +114,12 @@ Mer::ParserNode * Mer::Parser::parse_id()
 		break;
 	case ESymbol::SGVAR:
 	{
+		ret=_parse_id_wn(Mer::root_namespace);
+		return ret;
+		/*
 		ret = new GVar(Mer::this_namespace, token_stream.this_token());
 		token_stream.match(ID);
-		break;
+		break;*/
 	}
 	case ESymbol::SVAR:
 	{

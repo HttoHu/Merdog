@@ -39,6 +39,10 @@ namespace Mer
 			block_flag.pop_back();
 			return block_flag.back();
 		}
+		size_t get_current()
+		{
+			return current;
+		}
 		Mem::Object& operator[] (size_t in)
 		{
 			return _mem[in + current];

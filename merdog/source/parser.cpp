@@ -16,6 +16,9 @@ Program* Mer::Parser::program()
 	{
 		switch (token_stream.this_tag())
 		{
+		/*case NAMESPACE:
+			build_namespace();
+			break;*/
 		case STRUCT:
 			parse_structure();
 			break;
@@ -39,8 +42,8 @@ Program* Mer::Parser::program()
 				throw Error("The program must have a program as an entry");
 			return ret;
 		default:
-			statement()->execute();
-		//	throw Error("Syntax Error");
+			create_namespace_var();
+			//throw Error("Syntax Error");
 			break;
 		}
 	}
