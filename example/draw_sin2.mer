@@ -1,0 +1,31 @@
+// Milo Yip https://www.zhihu.com/question/52187430/answer/483568196
+function real min(real x,real y)
+{
+    real tmp:=0.0;
+    if(x<y)
+	{
+	   tmp:=x;
+	   return tmp;
+	}
+	tmp:=y;
+	return tmp;
+}
+program main
+{
+    real x:=0.0, y:=0.0, dx := 1.0 / 16.0, dy:=1.0 / 16.0;
+    for (y := 1.0; y >= -1.0; y -= dy)
+    {
+	    print '\n';
+        for (x := 0.0; x < 6.28; x += dx)
+        {
+            if(fminf(abs(sin(x)-y),abs(y))<(dy/2.0))
+            {
+                print '*';
+            }
+            else 
+			{
+			    print ' ';
+			}
+        }
+    }
+}.

@@ -3,6 +3,16 @@ namespace Mer
 {
 	namespace
 	{
+		Mem::Object _min(std::vector<Mem::Object>& args)
+		{
+			if (args.size() != 2)
+				throw Error("Error A04");
+			auto obj = args.front();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d2 = std::static_pointer_cast<Mem::Double>(args[1]->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double ret = fminf(d, d2);
+			return std::make_shared<Mem::Double>(ret);
+		}
 		Mem::Object _sqrt(std::vector<Mem::Object>& args)
 		{
 			if (args.size() != 1)
@@ -87,6 +97,7 @@ namespace Mer
 		}
 	}
 	Namespace *maths = new Namespace(nullptr);
+	Mer::SystemFunction *min = new SystemFunction(Mem::DOUBLE, _min);
 	Mer::SystemFunction *sin = new SystemFunction(Mem::DOUBLE, _sin);
 	Mer::SystemFunction *cos = new SystemFunction(Mem::DOUBLE, _cos);
 	Mer::SystemFunction *tan = new SystemFunction(Mem::DOUBLE, _tan);
@@ -98,7 +109,9 @@ namespace Mer
 	Mer::SystemFunction *abs = new SystemFunction(Mem::DOUBLE, _abs);
 	void Mer::set_maths()
 	{
-		mstd->children.insert({ "maths", maths });
+		maths = root_namespace;
+		//mstd->children.insert({ "maths", maths });
+		maths->set_new_func("fminf", Mem::DOUBLE, min);
 		maths->set_new_func("sqrt",Mem::DOUBLE,sqrt);
 		maths->set_new_func("mod", Mem::INT, mod);
 		maths->set_new_func("tan", Mem::DOUBLE,tan);

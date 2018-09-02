@@ -72,7 +72,7 @@ Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
 	}
 }
 
-Object Mer::Mem::Double::Convert(int type)
+Mer::Mem::Object Mer::Mem::Double::Convert(int type)
 {
 	switch (type)
 	{
@@ -85,7 +85,7 @@ Object Mer::Mem::Double::Convert(int type)
 	}
 }
 
-Object Mer::Mem::Bool::Convert(int type)
+Mer::Mem::Object Mer::Mem::Bool::Convert(int type)
 {
 	switch (type)
 	{

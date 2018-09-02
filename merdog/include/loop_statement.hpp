@@ -68,7 +68,7 @@ namespace Mer
 			return nullptr;
 		}
 
-		VarDecl * init;
+		ParserNode * init;
 		Expr *condition;
 		ParserNode *step_action;
 		Block *blo;

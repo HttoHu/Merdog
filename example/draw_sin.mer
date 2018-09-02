@@ -1,0 +1,20 @@
+// Milo Yip https://www.zhihu.com/question/52187430/answer/483568196
+program main
+{
+    real x:=0.0, y:=0.0, dx := 1.0 / 16.0, dy:=1.0 / 16.0;
+    for (y := 1.0; y >= -1.0; y -= dy)
+    {
+	    print '\n';
+        for (x := 0.0; x < 6.28; x += dx)
+        {
+            if((y>0)!=(std.maths.sin(x)<y))
+            {
+                print '*';
+            }
+            else 
+			{
+			    print ' ';
+			}
+        }
+    }
+}.

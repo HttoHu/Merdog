@@ -5,6 +5,7 @@ namespace Mer
 	class Namespace;
 	extern Namespace *maths;
 	void set_maths();
+	extern Mer::SystemFunction *min;
 	extern Mer::SystemFunction *mod;
 	extern Mer::SystemFunction *sqrt;
 	extern Mer::SystemFunction *sin;

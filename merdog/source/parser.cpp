@@ -218,8 +218,13 @@ VarDecl * Mer::Parser::var_decl()
 			throw Error("type not matched");
 		var_list.insert({ id,exp });
 	}
+	else
+	{
+		throw Error("please init var");
+	}
 	while (token_stream.this_token()->get_tag() == COMMA)
 	{
+		token_stream.match(COMMA);
 		auto id = token_stream.this_token();
 		token_stream.match(ID);
 		if (token_stream.this_token()->get_tag() == ASSIGN)

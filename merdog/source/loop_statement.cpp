@@ -18,9 +18,7 @@ namespace Mer
 			For *ret = new For();
 			token_stream.match(FOR);
 			token_stream.match(LPAREN);
-			ret->init = var_decl();
-
-			token_stream.match(SEMI);
+			ret->init = statement();
 
 			ret->condition = new Expr();
 			token_stream.match(SEMI);
