@@ -18,7 +18,7 @@ std::string get_file_content(const std::string & filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-/*
+#ifndef _DEBUG
 int main(int argc, char* argv[])
 {
 	try
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	Sleep(100000);
 	return 0;
 }
-*/
+#else
 int main()
 {
 	std::cout<<Mer::run_interpreter(get_file_content("test.mer"));
@@ -70,3 +70,4 @@ int main()
 	Sleep(100000);
 	return 0;
 }
+#endif
