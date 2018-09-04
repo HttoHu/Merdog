@@ -21,6 +21,7 @@ namespace Mer
 		class Value
 		{
 		public:
+			virtual Object clone()const { return nullptr; }
 			virtual std::string to_string()const { return ""; }
 			virtual size_t get_type()const
 			{
@@ -50,8 +51,8 @@ namespace Mer
 			virtual Object operator- (Object v) { throw Error("syntax error"); }
 			virtual Object operator* (Object v) { throw Error("syntax error"); }
 			virtual Object operator/ (Object v) { throw Error("syntax error"); }
-			virtual Object  Convert(int type) { throw Error("syntax error"); }
-			virtual Object  get_negation()
+			virtual Object Convert(int type) { throw Error("syntax error"); }
+			virtual Object get_negation()
 			{
 				throw Error("syntax error");
 			}
@@ -102,6 +103,10 @@ namespace Mer
 			Object operator||(Object v)override
 			{
 				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
+			}
+			Object clone()const override 
+			{
+				return std::make_shared<Bool>(value);
 			}
 			bool _value() { return value; }
 		private:
@@ -184,6 +189,10 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(value != std::static_pointer_cast<Int>(v->Convert(INT))->value);
 			}
+			Object clone()const override
+			{
+				return std::make_shared<Int>(value);
+			}
 			Object get_negation()override
 			{
 				return std::make_shared<Int>(-value);
@@ -209,11 +218,7 @@ namespace Mer
 			{
 				return BasicType::DOUBLE;
 			}
-			Object operator=(Object v)override
-			{
-				value = std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value;
-				return Convert(Mem::DOUBLE);
-			}
+			Object operator=(Object v)override;
 			Object operator+=(Object v)override
 			{
 				return std::make_shared<Double>(value +=
@@ -278,6 +283,10 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(value != std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
 			}
+			Object clone()const override
+			{
+				return std::make_shared<Double>(value);
+			}
 			Object get_negation()override
 			{
 				return std::make_shared<Double>(-value);
@@ -336,7 +345,10 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(str.size() == std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
 			}
-
+			Object clone()const override
+			{
+				return std::make_shared<String>(str);
+			}
 			std::string to_string()const override
 			{
 				return str;

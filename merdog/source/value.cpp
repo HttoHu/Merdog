@@ -33,7 +33,7 @@ Mer::Mem::Object Mer::Variable::execute()
 	return stack_memory[pos];
 }
 
-Mer::FunctionCall::FunctionCall(FunctionBase * func_name, std::vector<Expr*>& exprs) :func(func_name), argument(exprs) {}
+Mer::FunctionCall::FunctionCall(size_t _index,FunctionBase * func_name, std::vector<Expr*>& exprs) :index(_index),func(func_name), argument(exprs) {}
 
 size_t Mer::FunctionCall::get_type()
 {
@@ -47,6 +47,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	{
 		tmp.push_back(a->execute());
 	}
+	func->set_index(index);
 	return func->run(tmp);
 }
 // How to split the method into some smaller functions?? 6-7-18
@@ -116,10 +117,6 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	{
 		ret=_parse_id_wn(Mer::root_namespace);
 		return ret;
-		/*
-		ret = new GVar(Mer::this_namespace, token_stream.this_token());
-		token_stream.match(ID);
-		break;*/
 	}
 	case ESymbol::SVAR:
 	{
@@ -213,7 +210,7 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(result, exprs);
+		return new FunctionCall(stack_memory.get_index(),result, exprs);
 	}
 	exprs.push_back(new Expr());
 	while (token_stream.this_tag() == COMMA)
@@ -222,7 +219,7 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 		exprs.push_back(new Expr());
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(result, exprs);
+	return new FunctionCall(stack_memory.get_index(), result, exprs);
 }
 
 Mer::Namespace * Mer::Parser::kill_namespaces()

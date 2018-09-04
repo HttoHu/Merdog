@@ -16,9 +16,9 @@ namespace Mer
 		{
 			return "<empty_node>";
 		}
-		virtual void record() 
+		inline virtual bool constant()const
 		{
-			throw std::runtime_error("called by an indefinite var");
+			return false;
 		}
 		virtual size_t get_type()
 		{

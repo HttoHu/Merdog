@@ -294,7 +294,7 @@ Mem::Object Mer::VarDecl::execute()
 	for (const auto &a : var_list)
 	{
 		if (a.second != nullptr)
-			stack_memory[a.first] = a.second->execute();
+			stack_memory[a.first] = a.second->execute()->clone();
 		else
 			throw Error("please init var");
 	}

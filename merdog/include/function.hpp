@@ -26,25 +26,21 @@ namespace Mer
 		FunctionBase() {}
 		virtual Mem::Object run(std::vector<Mem::Object>& objs) { return nullptr; }
 		virtual size_t get_type() { return 0; }		
+		void set_index(size_t pos);
 		bool is_completed;
+		int index;
 	};
 	class Function:public FunctionBase
 	{
 	public:
 		Function(size_t t,Param *p, Block *bl=nullptr):type(t),param(p),blo(bl) {}
-		void reset_block(Block *b)
-		{
-			blo = b;
-		}
+		void reset_block(Block *b);
 		Param *param;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
-		void set_new_gv(size_t *pos)
-		{
-			pos_info.push_back(pos);
-		}
+		
 	private:
-		std::vector<size_t*> pos_info;
+
 		size_t type;
 		Block *blo;
 	};
@@ -69,7 +65,6 @@ namespace Mer
 		Param *build_param();
 		void build_function();
 	}
-	extern Function *current_function;
 	extern size_t this_func_type;
 	extern std::map<std::string, Function*> function_table;
 }

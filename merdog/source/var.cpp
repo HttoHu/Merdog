@@ -72,6 +72,12 @@ Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
 	}
 }
 
+Object Mer::Mem::Double::operator=(Object v) {
+
+	value = std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value;
+	return Convert(Mem::DOUBLE);
+}
+
 Mer::Mem::Object Mer::Mem::Double::Convert(int type)
 {
 	switch (type)

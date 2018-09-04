@@ -6,11 +6,9 @@
 #include "../include/namespace.hpp"
 #define MER2_1_1
 using namespace Mer; 
-Function *Mer::current_function=nullptr;
 std::map<std::string, Function*> Mer::function_table;
-
 size_t Mer::					this_func_type;
-
+//=============================================================
 bool							is_function_statement()
 {
 	int index = 1;
@@ -84,7 +82,6 @@ void Mer::Parser::				build_function()
 			throw Error("function redefined.");
 		}
 		Function *temp = static_cast<Function*>(finder->second);
-		current_function = temp;
 		stack_memory.new_block();
 		temp->param = build_param();
 
@@ -92,7 +89,6 @@ void Mer::Parser::				build_function()
 		temp->reset_block(blo);
 		temp->is_completed = true;
 		this_namespace->sl_table->end_block();
-		current_function = nullptr;
 		return;
 	}
 #endif
@@ -107,14 +103,12 @@ void Mer::Parser::				build_function()
 	stack_memory.new_block();
 	Param *param = build_param();
 	Function*ret = new Function(rtype, nullptr);
-	current_function = ret;
 	this_namespace->functions.insert({ name,ret });
 	Block *blo = pure_block();
 	ret->param = param;
 	ret->reset_block(blo);
 	ret->is_completed = true;
 	this_namespace->sl_table->end_block();
-	current_function = nullptr;
 }
 
 bool Mer::Param::				type_check(const std::vector<size_t>& types)
@@ -128,16 +122,19 @@ bool Mer::Param::				type_check(const std::vector<size_t>& types)
 	}
 	return true;
 }
+//================================================================
+void Mer::FunctionBase::set_index(size_t pos)
+{
+	index = pos;
+}
+
+void Mer::Function::			reset_block(Block * b) {
+	blo = b;
+}
 
 Mem::Object Mer::Function::		run(std::vector<Mem::Object>& objs)
 {
-	size_t reserved_size = param->get_param_table().size();
-	stack_memory.new_func(reserved_size);
-	for (auto *a : pos_info)
-	{
-		*a -= reserved_size;
-		std::cout << "Current add:"<<a<<std::endl;
-	}
+	stack_memory.new_func(index);
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
 		stack_memory[param->get_param_table()[i].second] = objs[i];
@@ -153,9 +150,6 @@ Mem::Object Mer::Function::		run(std::vector<Mem::Object>& objs)
 		return ret;
 	}
 	stack_memory.end_func();	
-	for (auto &a : pos_info)
-	{
-		*a += reserved_size;
-	}
 	return nullptr;
 }
+

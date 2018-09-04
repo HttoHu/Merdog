@@ -162,6 +162,7 @@ void Mer::			build_token_stream(const std::string &content) {
 		case '\'':
 			token_stream.push_back(parse_string(content, i));
 			break;
+			case '\r':
 		case '\n':
 			token_stream.push_back(new Endl());
 			break;
@@ -222,6 +223,10 @@ void Mer::			build_token_stream(const std::string &content) {
 			{
 				token_stream.push_back(new Token(EQ));
 				i++;
+			}
+			else
+			{
+				token_stream.push_back(new Token(ASSIGN));
 			}
 			break;
 		case '!':

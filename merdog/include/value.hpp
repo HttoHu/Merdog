@@ -23,6 +23,10 @@ namespace Mer
 		{
 			return "num";//tok->to_string();
 		}
+		inline bool constant()const override
+		{
+			return true;
+		}
 	private:
 		size_t type;
 		Mem::Object obj;
@@ -39,6 +43,10 @@ namespace Mer
 		Mem::Object execute()override
 		{
 			return obj;
+		}
+		inline bool constant()const override
+		{
+			return false;
 		}
 	private:
 		Namespace * names;
@@ -58,10 +66,11 @@ namespace Mer
 	class FunctionCall :public ParserNode
 	{
 	public:
-		FunctionCall(FunctionBase * fun, std::vector<Expr*>& exprs);
+		FunctionCall(size_t _index,FunctionBase * fun, std::vector<Expr*>& exprs);
 		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
+		size_t index;
 		FunctionBase * func;
 		std::vector<Expr*> argument;
 	};

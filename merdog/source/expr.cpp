@@ -9,9 +9,9 @@ Mer::ParserNode * Mer::Expr::and_or()
 	auto result = nexpr();
 	while (token_stream.this_tag() == AND || token_stream.this_tag() == OR)
 	{
+		is_bool = true;
 		auto tok = token_stream.this_token();
 		token_stream.next();
-		std::cout << token_stream.this_token()->to_string();
 		result = new BinOp(result, tok, nexpr());
 	}
 	return result;
@@ -155,16 +155,6 @@ Mer::Mem::Object Mer::UnaryOp::execute()
 	}
 }
 
-void Mer::Assign::attach_pos_to_current_function()
-{
-	if (Mer::current_function == nullptr)
-		throw Error("unkonwn error");
-	else
-	{
-		std::cout << "Add:" << left << std::endl;
-		Mer::current_function->set_new_gv(&left);
-	}
-}
 Mem::Object Mer::Assign::execute()
 {
 	switch (asType)

@@ -1,14 +1,11 @@
 // Milo Yip https://www.zhihu.com/question/52187430/answer/483568196
-function real min(real x,real y)
+function real min2(real x,real y)
 {
-    real tmp:=0.0;
     if(x<y)
 	{
-	   tmp:=x;
-	   return tmp;
+	   return x;
 	}
-	tmp:=y;
-	return tmp;
+	return y;
 }
 program main
 {
@@ -18,7 +15,7 @@ program main
 	    print '\n';
         for (x := 0.0; x < 6.28; x += dx)
         {
-            if(fminf(abs(sin(x)-y),abs(y))<(dy/2.0))
+            if(min2(abs(sin(x)-y),abs(y))<(dy/2.0))
             {
                 print '*';
             }

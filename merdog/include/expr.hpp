@@ -134,9 +134,13 @@ namespace Mer
 	class Expr :public ParserNode
 	{
 	public:
-		Expr() :tree(and_or()) {}
+		Expr() :is_bool(false),tree(and_or()) {}
 		size_t get_type()override
 		{
+			if (is_bool)
+			{
+				return Mem::BOOL;
+			}
 			if (tree == nullptr)
 				return Mem::BVOID;
 			return tree->get_type();
@@ -146,13 +150,19 @@ namespace Mer
 			return tree->execute();
 		}
 		ParserNode *root() { return tree; }
+		inline bool constant()const override
+		{
+			return false;
+		}
 		virtual ~Expr() {
 			if(tree!=nullptr)
 				delete tree;
 		}
 		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
+		bool is_bool = true;
 		ParserNode *tree;
 	private:
+
 		ParserNode * and_or();
 		ParserNode *expr();
 		ParserNode *nexpr();
@@ -169,7 +179,6 @@ namespace Mer
 			Null,
 		};
 		Assign(AssignType a, size_t l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
-		void attach_pos_to_current_function();
 		Mem::Object execute()override;
 		virtual ~Assign()
 		{

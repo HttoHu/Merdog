@@ -111,7 +111,7 @@ namespace Mer
 	{
 		maths = root_namespace;
 		//mstd->children.insert({ "maths", maths });
-		maths->set_new_func("fminf", Mem::DOUBLE, min);
+		maths->set_new_func("min2", Mem::DOUBLE, min);
 		maths->set_new_func("sqrt",Mem::DOUBLE,sqrt);
 		maths->set_new_func("mod", Mem::INT, mod);
 		maths->set_new_func("tan", Mem::DOUBLE,tan);
