@@ -40,7 +40,6 @@ namespace Mer
 		size_t get_type()override { return type; }
 		
 	private:
-
 		size_t type;
 		Block *blo;
 	};

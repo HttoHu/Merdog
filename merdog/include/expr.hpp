@@ -161,9 +161,10 @@ namespace Mer
 		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
 		bool is_bool = true;
 		ParserNode *tree;
+		size_t expr_type;
 	private:
 
-		ParserNode * and_or();
+		ParserNode *and_or();
 		ParserNode *expr();
 		ParserNode *nexpr();
 		ParserNode *term();

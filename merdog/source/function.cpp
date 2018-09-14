@@ -135,9 +135,10 @@ void Mer::Function::			reset_block(Block * b) {
 Mem::Object Mer::Function::		run(std::vector<Mem::Object>& objs)
 {
 	stack_memory.new_func(index);
+	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
-		stack_memory[param->get_param_table()[i].second] = objs[i];
+		stack_memory[param_table[i].second] = objs[i];
 	}
 	try
 	{

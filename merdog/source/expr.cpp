@@ -102,6 +102,7 @@ Mer::ParserNode * Mer::Expr::factor()
 	case REAL:
 	{
 		token_stream.match(REAL);
+
 		return new LConV(result);
 	}
 	case STRING:

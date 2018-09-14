@@ -18,6 +18,7 @@ std::string get_file_content(const std::string & filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
+/*
 #ifndef _DEBUG
 int main(int argc, char* argv[])
 {
@@ -43,10 +44,11 @@ int main(int argc, char* argv[])
 	return 0;
 }
 #else
+*/
 int main()
 {
-	std::cout<<Mer::run_interpreter(get_file_content("test.mer"));
-	/*
+	//std::cout<<Mer::run_interpreter(get_file_content("test.mer"));
+	
 	try
 	{
 		Mer::set_io();
@@ -66,8 +68,8 @@ int main()
 	{
 		std::cout << e.what();
 	}
-	std::cout << "\nThe program has exited";*/
+	std::cout << "\nThe program has exited";
 	Sleep(100000);
 	return 0;
 }
-#endif
+//#endif
