@@ -276,11 +276,31 @@ WordRecorder * Mer::Parser::get_current_info()
 	return this_namespace->sl_table->find(Mer::Id::get_value(token_stream.this_token()));
 }
 
+Mer::VarDeclUnit::VarDeclUnit(size_t t, Token * tok, Expr * _expr):type(t)
+{
+	if(_expr==nullptr)
+		throw Error("Symbol " +tok->to_string() + " redefined");
+	auto var_mtable = this_namespace->sl_table;
+	std::string var_name= Id::get_value(tok);
+	//=========================================
+	if (var_mtable->find_front(var_name) != nullptr)
+		throw Error("Symbol " + tok->to_string() + " redefined");
+	pos= stack_memory.push();
+	var_mtable->push(var_name, new VarIdRecorder(t, pos));
+}
+
+Mem::Object Mer::VarDeclUnit::execute()
+{
+	return Mem::Object();
+}
+
 Mer::VarDecl::VarDecl(size_t t, const std::map<Token*, Expr*>& v)
 {
 	type = t;
 	for (const auto &a : v)
 	{
+		if(a.second==nullptr)
+			throw Error("please init var");
 		if (this_namespace->sl_table->find_front(Id::get_value(a.first)) != nullptr)
 			throw Error("Symbol " + a.first->to_string() + " redefined");
 		auto pos = stack_memory.push();
@@ -293,10 +313,7 @@ Mem::Object Mer::VarDecl::execute()
 {
 	for (const auto &a : var_list)
 	{
-		if (a.second != nullptr)
 			stack_memory[a.first] = a.second->execute()->clone();
-		else
-			throw Error("please init var");
 	}
 	return nullptr;
 }
@@ -329,3 +346,5 @@ Mem::Object Mer::Print::execute()
 	}
 	return nullptr;
 }
+
+

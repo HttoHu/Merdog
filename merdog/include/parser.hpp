@@ -21,6 +21,16 @@ namespace Mer
 		Token *identify;
 		Block *blo;
 	};
+	class VarDeclUnit :public ParserNode
+	{
+	public:
+		VarDeclUnit(size_t t, Token *tok, Expr* _expr);
+		Mem::Object execute()override;
+	private:
+		size_t type;
+		size_t pos;
+		Expr* expr;
+	};
 	class VarDecl :public ParserNode
 	{
 	public:
