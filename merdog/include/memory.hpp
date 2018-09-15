@@ -4,8 +4,6 @@
 #include <map>
 #include <set>
 #include "var.hpp"
-#define CALL_STACK_SIZE 100
-#define BLOCK_MAX_DEEP 100
 namespace Mer
 {
 	class Memory
@@ -13,16 +11,35 @@ namespace Mer
 	public:
 		Memory()
 		{
-			call_stack2 = new size_t[CALL_STACK_SIZE];
 			_mem = new Mem::Object[capacity];
-			block_flag2 = new size_t[BLOCK_MAX_DEEP];
+			block_flag.push_back(0);
 		}
-		size_t new_block();
-		size_t end_block();
-		void new_func(int siz);
-		void end_func();
-		size_t push();
+		size_t new_block()
+		{
+			block_flag.push_back(index);
+			return index;
+		}
+		void new_func(int siz)
+		{
+			current += siz;
+			call_stack.push(siz);
+		}
+		void end_func()
+		{
+			current -= call_stack.top();
 
+			call_stack.pop();
+		}
+		size_t push()
+		{
+			check();
+			return index++;
+		}
+		size_t end_block() {
+			index = block_flag.back();
+			block_flag.pop_back();
+			return block_flag.back();
+		}
 		size_t get_current()
 		{
 			return current;
@@ -33,10 +50,7 @@ namespace Mer
 		}
 		~Memory()
 		{
-			// well I hope they are moved to orginal position, yep, it should be.
 			delete[] _mem;
-			delete[] call_stack2;
-			delete[] block_flag2;
 		}
 		size_t& get_index() {
 			return index;
@@ -44,26 +58,14 @@ namespace Mer
 	private:
 		void check()
 		{
-			if (current > 0.5*capacity)
+			if (index+current> 0.5*capacity)
 				alloc();
 		}
-		void alloc()
-		{
-			capacity *= 2;
-			Mem::Object *tmp = new Mem::Object[capacity];
-			for (size_t i = 0; i < current; i++)
-			{
-				tmp[i] = _mem[i];
-			}
-			delete[] _mem;
-			_mem = tmp;
-		}
+		void alloc();
 		size_t index = 0;
 		size_t current = 0;
-		size_t capacity = 128;
-		size_t *call_stack2=nullptr;
-		//std::stack<size_t> call_stack;
-		size_t *block_flag2 = nullptr;
+		size_t capacity = 1024;
+		std::stack<size_t> call_stack;
 		std::vector<size_t> block_flag;
 		Mem::Object *_mem;
 	};

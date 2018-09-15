@@ -52,11 +52,16 @@ namespace Mer
 	class Return :public ParserNode
 	{
 	public:
-		Return(Expr* e) :expr(e) {}
-		Mem::Object execute()override { throw this; }
+		Return(Expr* e,Block *blo) :expr(e), block(blo) 
+		{
+			if (block == nullptr)
+				throw Error("What hell it was");
+		}
+		Mem::Object execute()override;
 		Expr* get_expr() { return expr; }
 	private:
 		Expr *expr;
+		Block *block;
 	};
 	namespace Parser
 	{

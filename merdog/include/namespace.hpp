@@ -1,6 +1,7 @@
 #pragma once
 #include "expr.hpp"
 #include "function.hpp"
+#define symbol_table this_namespace->sl_table
 namespace Mer
 {
 	class Structure;

@@ -35,8 +35,10 @@ namespace Mer
 	public:
 		Function(size_t t,Param *p, Block *bl=nullptr):type(t),param(p),blo(bl) {}
 		void reset_block(Block *b);
+
 		Param *param;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
+		Block *get_block() { return blo; }
 		size_t get_type()override { return type; }
 		
 	private:
@@ -64,6 +66,7 @@ namespace Mer
 		Param *build_param();
 		void build_function();
 	}
+	extern Block *current_function_block;
 	extern size_t this_func_type;
 	extern std::map<std::string, Function*> function_table;
 }

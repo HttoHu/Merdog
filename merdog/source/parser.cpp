@@ -16,17 +16,11 @@ Program* Mer::Parser::program()
 	{
 		switch (token_stream.this_tag())
 		{
-		/*case NAMESPACE:
-			build_namespace();
-			break;*/
-		case STRUCT:
-			parse_structure();
-			break;
 		case FUNCTION:
 			build_function();
 			break;
 		case PROGRAM:
-		{
+		{			
 			token_stream.match(PROGRAM);
 			auto tmp = token_stream.this_token();
 			token_stream.match(ID);
@@ -35,6 +29,7 @@ Program* Mer::Parser::program()
 			token_stream.match(DOT);
 			ret = new Program(tmp, blo);
 			programe_num++;
+
 			break;
 		}
 		case ENDOF:
@@ -84,11 +79,12 @@ Block * Mer::Parser::block()
 	this_namespace->sl_table->end_block();
 	return ret;
 }
-
+//served for function;
 Block * Mer::Parser::pure_block()
 {
 	token_stream.match(BEGIN);
 	Block *ret = new Block();
+	current_function_block = ret;
 	while (token_stream.this_tag() != END)
 	{
 		ParserNode *node;
@@ -127,12 +123,6 @@ ParserNode * Mer::Parser::statement()
 	case ID:
 		node = Parser::parse_id();
 		break;
-	case BOOL_DECL:
-	case INTEGER_DECL:
-	case REAL_DECL:
-	case STRING_DECL:
-		node = var_decl();
-		break;
 	case RETURN:
 	{
 		token_stream.match(RETURN);
@@ -141,9 +131,16 @@ ParserNode * Mer::Parser::statement()
 		{
 			throw Error("return type doesn't correspond with function type");
 		}
-		node = new Return(expr);
+		node = new Return(expr, current_function_block);
 		break;
 	}
+	case BOOL_DECL:
+	case INTEGER_DECL:
+	case REAL_DECL:
+
+	case STRING_DECL:
+		node = var_decl();
+		break;
 	case BREAK:
 		node = new Word(Word::Type::Break);
 		token_stream.match(BREAK);
@@ -347,4 +344,10 @@ Mem::Object Mer::Print::execute()
 	return nullptr;
 }
 
+Mem::Object Mer::Return::execute() {
+	
+	block->index = block->ins_table.size();
 
+	block->ret = expr->execute();
+	return nullptr;
+}

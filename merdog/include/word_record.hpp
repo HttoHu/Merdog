@@ -12,6 +12,7 @@ namespace Mer
 	public:
 		WordRecorder(ESymbol e) :es(e) {}
 		ESymbol es;
+		virtual std::string to_string() { return""; }
 		size_t get_type() { return type_code; }
 		virtual ~WordRecorder() {}
 	protected:
@@ -26,6 +27,10 @@ namespace Mer
 			type_code = type;
 		}
 		size_t pos;
+		std::string to_string()override
+		{
+			return "pos:" + std::to_string(pos);
+		}
 		bool known()
 		{
 			return is_const;
@@ -119,6 +124,7 @@ namespace Mer
 		void push(std::string id, WordRecorder *wr)
 		{
 			data.front().insert({ id,wr });
+			//std::cout << id << "   " << wr->to_string() << std::endl;
 		}
 	private:
 		std::deque<std::map<std::string, WordRecorder*>> data;

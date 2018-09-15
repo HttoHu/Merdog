@@ -43,6 +43,8 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	case ID:
 	{
 		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		if (info == nullptr)
+			throw Error("id: "+ Id::get_value(token_stream.this_token())+"no found");
 		return info->get_type();
 	}
 	default:
