@@ -27,6 +27,7 @@ namespace Mer
 	class BStructure
 	{
 	public:
+		void set_index_table(const )
 		Mem::Object call(const std::string &func_name, std::vector<Mem::Object> &objs);
 		Mem::Object var_table(size_t index);
 	private:
