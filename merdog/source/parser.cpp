@@ -137,7 +137,6 @@ ParserNode * Mer::Parser::statement()
 	case BOOL_DECL:
 	case INTEGER_DECL:
 	case REAL_DECL:
-
 	case STRING_DECL:
 		node = var_decl();
 		break;
@@ -288,7 +287,8 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t, Token * tok, Expr * _expr):type(t)
 
 Mem::Object Mer::VarDeclUnit::execute()
 {
-	return Mem::Object();
+	stack_memory[pos] = expr->execute()->clone();
+	return nullptr;
 }
 
 Mer::VarDecl::VarDecl(size_t t, const std::map<Token*, Expr*>& v)

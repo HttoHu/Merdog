@@ -75,6 +75,22 @@ namespace Mer
 		}
 	private:
 	};
+	struct ArrayIdRecorder :public WordRecorder
+	{
+	public:
+		ArrayIdRecorder(size_t type, size_t p, int _size)
+			:WordRecorder(SVAR), pos(p), size(_size)
+		{
+			type_code = type;
+		}
+		size_t pos;
+		std::string to_string()override
+		{
+			return "pos:" + std::to_string(pos);
+		}
+	private:
+		int size;
+	};
 	class SymbolTable
 	{
 	public:

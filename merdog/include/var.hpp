@@ -356,7 +356,6 @@ namespace Mer
 		private:
 			std::string str;
 		};
-
 	}
 	extern int type_counter;
 	extern Namespace *this_namespace;

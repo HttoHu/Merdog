@@ -107,7 +107,11 @@ namespace Mer
 	class Integer :public Token
 	{
 	public:
-		Integer(int64_t n) :Token(INTEGER), value(n) {}
+		Integer(int64_t n) :Token(INTEGER), 
+			
+			
+			
+			(n) {}
 		static int64_t get_value(Token *tok)
 		{
 			if (tok->check(INTEGER))
