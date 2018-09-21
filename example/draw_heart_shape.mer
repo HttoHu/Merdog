@@ -1,1 +1,19 @@
-program main{	for (real y := 1.5; y > -1.5; y -= 0.1)	{		for (real x := -1.5; x < 1.5; x += 0.05)		{			real a := x*x + y*y - 1;			if ((a*a*a - x*x*y*y*y) <= 0)			{				std.cout('*');			}			else			{				std.cout(' ');			}		}		std.cout('\n');	}}.
+program main
+{
+	for (real y := 1.5; y > -1.5; y -= 0.1)
+	{
+		for (real x := -1.5; x < 1.5; x += 0.05)
+		{
+			real a := x*x + y*y - 1;
+			if ((a*a*a - x*x*y*y*y) <= 0)
+			{
+				std.cout('*');
+			}
+			else
+			{
+				std.cout(' ');
+			}
+		}
+		std.cout('\n');
+	}
+}.

@@ -12,9 +12,9 @@ program main
                 print '*';
             }
             else 
-			{
-			    print ' ';
-			}
+		    {
+                print ' ';
+		    }
         }
     }
 }.
