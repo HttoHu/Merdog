@@ -64,6 +64,7 @@ namespace Mer
 	Mer::SystemFunction *input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
 	void set_io()
 	{
+		cout->dnt_check_param();
 		Mer::root_namespace->children.insert({ "std", mstd });
 		mstd->set_new_func("substr", Mem::BasicType::STRING, substr);
 		mstd->set_new_func("strsize", Mem::BasicType::INT, str_size);

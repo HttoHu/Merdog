@@ -5,8 +5,6 @@ namespace Mer
 	{
 		Mem::Object _min(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 2)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			double d2 = std::static_pointer_cast<Mem::Double>(args[1]->Convert(Mem::BasicType::DOUBLE))->get_value();
@@ -15,8 +13,6 @@ namespace Mer
 		}
 		Mem::Object _sqrt(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::sqrt(d);
@@ -110,6 +106,16 @@ namespace Mer
 	void Mer::set_maths()
 	{
 		maths = root_namespace;
+		min->set_param_types({ Mem::DOUBLE });
+		sqrt->set_param_types({ Mem::DOUBLE });
+		mod->set_param_types({ Mem::DOUBLE });
+		tan->set_param_types({ Mem::DOUBLE });
+		sin->set_param_types({ Mem::DOUBLE });
+		cos->set_param_types({ Mem::DOUBLE });
+		arsin->set_param_types({ Mem::DOUBLE });
+		arcos->set_param_types({ Mem::DOUBLE });
+		artan->set_param_types({ Mem::DOUBLE });
+		abs->set_param_types({ Mem::DOUBLE });
 		//mstd->children.insert({ "maths", maths });
 		maths->set_new_func("min2", Mem::DOUBLE, min);
 		maths->set_new_func("sqrt",Mem::DOUBLE,sqrt);

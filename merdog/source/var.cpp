@@ -4,7 +4,16 @@
 #include "../include/namespace.hpp"
 #include "../include/word_record.hpp"
 using namespace Mer::Mem;
-int Mer::type_counter=8;
+//int Mer::type_counter=8;
+std::map<size_t, Type*> Mer::Mem::type_map
+{
+	{BasicType::INT,
+		new Type("int",BasicType::INT,{BasicType::INT,BasicType::BOOL,BasicType::DOUBLE})
+	},
+	{BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
+	{BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
+	{BasicType::STRING,new Type("int",BasicType::STRING,{ }) }
+};
 
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
@@ -104,4 +113,9 @@ Mer::Mem::Object Mer::Mem::Bool::Convert(int type)
 	default:
 		throw Error("type-convert error");
 	}
+}
+
+bool Mer::Mem::Type::convertible(const size_t & t)
+{
+	return convertible_types.find(t) != convertible_types.end();
 }

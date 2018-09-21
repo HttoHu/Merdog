@@ -66,7 +66,7 @@ namespace Mer
 	class FunctionCall :public ParserNode
 	{
 	public:
-		FunctionCall(size_t _index,FunctionBase * fun, std::vector<Expr*>& exprs);
+		FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * fun, std::vector<Expr*>& exprs);
 		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
@@ -76,7 +76,9 @@ namespace Mer
 	};
 	namespace Parser
 	{
+		/*
 		ParserNode *build_init_list(Namespace *names);
+		*/
 		ParserNode *parse_id();
 		ParserNode *_parse_id_wn(Namespace *names);
 		FunctionCall *parse_function_call(Namespace *names);

@@ -174,7 +174,7 @@ Mem::Object Mer::Assign::execute()
 		throw Error("unkonwn assignment type");
 	}
 }
-
+/*
 Mer::InitList::InitList(Structure * _type, const std::map<std::string, Expr*>& _init_list) {
 	type = _type->type_id();
 	init_v.resize(_type->type_size());
@@ -199,3 +199,4 @@ Mer::InitList::~InitList()
 	for (auto &a : init_v)
 		delete a;
 }
+*/

@@ -54,8 +54,8 @@ int main()
 		Mer::set_io();
 		Mer::set_maths();
 		std::string input_content = get_file_content("test.mer");
-		time_t s = clock();
 		Mer::build_token_stream(input_content);
+		time_t s = clock();
 		Mer::Parser::program()->execute();
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;

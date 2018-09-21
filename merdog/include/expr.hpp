@@ -121,6 +121,7 @@ namespace Mer
 	class CompoundObject;
 	class Expr;
 	class Type;
+	/*
 	class InitList :public ParserNode
 	{
 	public:
@@ -130,7 +131,7 @@ namespace Mer
 	private:
 		std::vector<Expr*> init_v;
 		size_t type;
-	};
+	};*/
 	class Expr :public ParserNode
 	{
 	public:

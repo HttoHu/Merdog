@@ -10,11 +10,12 @@ Mer::Namespace::Namespace(Namespace * pare) :parent(pare)
 {
 	sl_table = new SymbolTable();
 }
+/*
 void Mer::Namespace::set_new_structure(const std::string & name, Structure * structure)
 {
 	structures.insert({ name,{structure,type_counter++} });
 	sl_table->push_glo(name, new WordRecorder(ESymbol::SSTRUCTURE));
-}
+}*/
 void Mer::Namespace::set_new_func(const std::string & name, size_t type, FunctionBase * func)
 {
 	functions.insert({ name,func });
@@ -85,6 +86,7 @@ Mer::Namespace * Mer::Parser::build_namespace() {
 	{
 		switch (token_stream.this_tag())
 		{
+			/*
 		case STRUCT:
 			parse_structure();
 			break;
@@ -92,7 +94,7 @@ Mer::Namespace * Mer::Parser::build_namespace() {
 		{
 			build_namespace();
 			break;
-		}
+		}*/
 		case FUNCTION:
 			build_function();
 			break;

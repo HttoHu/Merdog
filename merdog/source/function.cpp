@@ -7,10 +7,10 @@
 #define MER2_1_1
 using namespace Mer;
 std::map<std::string, Function*> Mer::function_table;
-Block *Mer::current_function_block =nullptr;
+Block *Mer::current_function_block = nullptr;
 size_t Mer::this_func_type;
 //=============================================================
-bool							is_function_statement()
+bool		is_function_statement()
 {
 	int index = 1;
 	if (token_stream.this_tag() == LPAREN)
@@ -94,11 +94,10 @@ void Mer::Parser::build_function()
 		symbol_table->end_block();
 		return;
 	}
-
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
 	if (is_function_statement())
 	{
-		Function*ret = new Function(rtype, nullptr);
+		Function*ret = new Function(rtype);
 		this_namespace->functions.insert({ name,ret });
 		ret->is_completed = false;
 		return;
@@ -106,22 +105,54 @@ void Mer::Parser::build_function()
 	// create a function and return it.
 	stack_memory.new_block();
 	Param *param = build_param();
-	Function *ret = new Function(rtype, nullptr);
+	Function *ret = new Function(rtype, param, nullptr);
 	this_namespace->functions.insert({ name,ret });
 	Block *blo = pure_block();
-	ret->param = param;
 	ret->reset_block(blo);
 	ret->is_completed = true;
 	symbol_table->end_block();
+
 }
 
 bool Mer::Param::type_check(const std::vector<size_t>& types)
 {
-	if (types.size() != param_pos.size())
+	if (types.size() != arg_pos.size())
+	{
 		return false;
+	}
 	for (size_t i = 0; i < types.size(); i++)
 	{
-		if (types[i] != param_pos[i].first)
+		auto type_seeker = Mem::type_map.find(types[i]);
+		if (type_seeker == Mem::type_map.end())
+		{
+			throw Error("<inner error>type were no found");
+		}
+		if (!type_seeker->second->convertible(arg_pos[i].second))
+		{
+			std::cout << type_seeker->second->to_string() << std::endl;
+			std::cout << arg_pos[i].second;
+			return false;
+		}
+	}
+	return true;
+}
+Mer::FunctionBase::FunctionBase()
+{
+}
+bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
+{
+	if (types.size() != param_types.size())
+	{
+		return false;
+	}
+	for (size_t i = 0; i < param_types.size(); i++)
+	{
+		auto type_seeker = Mem::type_map.find(types[i]);
+		if (type_seeker == Mem::type_map.end())
+		{
+			throw Error("A01 exists an undefined type");
+		}
+		if (!type_seeker->second->convertible(param_types[i]))
 			return false;
 	}
 	return true;
@@ -132,8 +163,25 @@ void Mer::FunctionBase::set_index(size_t pos)
 	index = pos;
 }
 
+Mer::Function::Function(size_t t, Param * p, Block * bl) :type(t), param(p), blo(bl)
+{
+	for (const auto &a : param->get_param_table())
+	{
+		param_types.push_back(a.first);
+	}
+}
+
+Mer::Function::Function(size_t t, Block * bl) :type(t), blo(bl) {}
 void Mer::Function::reset_block(Block * b) {
 	blo = b;
+}
+
+void Mer::Function::reser_param(Param * p)
+{
+	for (const auto &a : param->get_param_table())
+	{
+		param_types.push_back(a.first);
+	}
 }
 
 Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
@@ -144,8 +192,14 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	{
 		stack_memory[param_table[i].second] = objs[i];
 	}
-	auto ret= blo->execute();
+	auto ret = blo->execute();
 	stack_memory.end_func();
 	return ret;
 }
 
+bool Mer::SystemFunction::check_param(const std::vector<size_t>& types)
+{
+	if (check_param_type)
+		return FunctionBase::check_param(types);
+	return true;
+}

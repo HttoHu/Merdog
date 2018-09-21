@@ -108,10 +108,7 @@ namespace Mer
 	{
 	public:
 		Integer(int64_t n) :Token(INTEGER), 
-			
-			
-			
-			(n) {}
+			value(n) {}
 		static int64_t get_value(Token *tok)
 		{
 			if (tok->check(INTEGER))

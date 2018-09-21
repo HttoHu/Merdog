@@ -33,7 +33,13 @@ Mer::Mem::Object Mer::Variable::execute()
 	return stack_memory[pos];
 }
 
-Mer::FunctionCall::FunctionCall(size_t _index,FunctionBase * func_name, std::vector<Expr*>& exprs) :index(_index),func(func_name), argument(exprs) {}
+Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
+{
+	if (!func->check_param(types))
+	{
+		throw Error( "A02 type not matched");
+	}
+}
 
 size_t Mer::FunctionCall::get_type()
 {
@@ -70,13 +76,13 @@ Mer::Assign::AssignType _token_to_assType()
 		return Assign::AssignType::Null;
 	}
 }
-
+/*
 Mer::ParserNode * Mer::Parser::build_init_list(Namespace *names)
 {
 	std::string type_name = GIC();
 	auto result = names->sl_table->find(type_name);
 	if (result->es != ESymbol::SSTRUCTURE)
-		throw Error("merdog inner errors. 1");  
+		throw Error("merdog inner errors. 1");
 	Structure* structure = static_cast<Structure*>(type_vtable[result->get_type()]);
 	token_stream.match(BEGIN);
 	std::map<std::string, Expr*> tmp;// to init InitList;
@@ -89,7 +95,7 @@ Mer::ParserNode * Mer::Parser::build_init_list(Namespace *names)
 	token_stream.match(END);
 	return new InitList(structure, tmp);
 }
-
+*/
 Mer::ParserNode * Mer::Parser::parse_id()
 {
 	ParserNode *ret = nullptr;
@@ -105,17 +111,18 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
+		/*
 	case ESymbol::SSTRUCTURE:
 	{
 		ret = build_init_list(this_namespace);
 		break;
-	}
+	}*/
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;
 	case ESymbol::SGVAR:
 	{
-		ret=_parse_id_wn(Mer::root_namespace);
+		ret = _parse_id_wn(Mer::root_namespace);
 		return ret;
 	}
 	case ESymbol::SVAR:
@@ -129,7 +136,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 		auto target_namespace = kill_namespaces();
 		if (target_namespace == nullptr)
 			throw Error("unsupported id type");
-		ret= _parse_id_wn(target_namespace);
+		ret = _parse_id_wn(target_namespace);
 		return ret;
 	}
 	}
@@ -154,18 +161,19 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 		throw Error(id->to_string() + " no found");
 	switch (result->es)
 	{
+		/*
 	case ESymbol::SSTRUCTURE:
 	{
 		ret = build_init_list(names);
 		break;
-	}
+	}*/
 	case ESymbol::SFUN:
 
 		ret = parse_function_call(names);
 		break;
 	case ESymbol::SGVAR:
 	{
-		ret = new GVar(names,token_stream.this_token());
+		ret = new GVar(names, token_stream.this_token());
 		token_stream.match(ID);
 		break;
 	}
@@ -194,13 +202,15 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 		return ret;
 	}
 	token_stream.next();
-	return new NVModificationAdapter(assignment_type,ret,new Expr());
+	return new NVModificationAdapter(assignment_type, ret, new Expr());
 }
 
 Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 {
 	auto id = token_stream.this_token();
 	std::vector<Expr*> exprs;
+	// to check the param's type.
+	std::vector<size_t> param_types;
 	names->sl_table->type_check(id, Mer::ESymbol::SFUN);
 	auto result = names->find_func(Id::get_value(id));
 	token_stream.match(ID);
@@ -210,28 +220,32 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(stack_memory.get_index(),result, exprs);
+		return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
 	}
-	exprs.push_back(new Expr());
+	auto param_unit = new Expr();
+	param_types.push_back(param_unit->get_type());
+	exprs.push_back(param_unit);
 	while (token_stream.this_tag() == COMMA)
 	{
 		token_stream.match(COMMA);
-		exprs.push_back(new Expr());
+		auto param_unit2 = new Expr();
+		param_types.push_back(param_unit2->get_type());
+		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(stack_memory.get_index(), result, exprs);
+	return new FunctionCall(param_types,stack_memory.get_index(), result, exprs);
 }
 
 Mer::Namespace * Mer::Parser::kill_namespaces()
 {
-	Namespace *current=this_namespace;
+	Namespace *current = this_namespace;
 	auto result = _find_namespace_driver(current, Id::get_value(token_stream.this_token()));
 	while (result != nullptr)
 	{
 		current = result;
 		token_stream.match(ID);
 		token_stream.match(DOT);
-		result= _find_namespace_driver(current, Id::get_value(token_stream.this_token()));
+		result = _find_namespace_driver(current, Id::get_value(token_stream.this_token()));
 	}
 	return current;
 }
@@ -265,7 +279,7 @@ Mer::LConV::LConV(Token * t)
 	}
 }
 
-Mer::GVar::GVar(Namespace *ns,Token * o)
+Mer::GVar::GVar(Namespace *ns, Token * o)
 {
 	auto result = ns->sl_table->find(Id::get_value(o));
 	if (result == nullptr)

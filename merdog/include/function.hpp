@@ -12,30 +12,40 @@ namespace Mer
 		bool type_check(const std::vector<size_t> &types);
 		void push_new_param(size_t type, size_t pos)
 		{
-			param_pos.push_back({ type,pos });
+			arg_pos.push_back({ type,pos });
 		}
-		std::vector<std::pair<size_t, size_t>> &get_param_table() { return param_pos; }
+		std::vector<std::pair<size_t, size_t>> &get_param_table() { return arg_pos; }
 	private:
 		size_t param_size;
 		// type + pos;
-		std::vector<std::pair<size_t,size_t>> param_pos;
+		std::vector<std::pair<size_t,size_t>> arg_pos;
 	};
 	class FunctionBase
 	{
 	public:
-		FunctionBase() {}
+		FunctionBase();
+		virtual bool check_param(const std::vector<size_t>& types);
+		void set_param_types(const std::vector<size_t>& types)
+		{
+			param_types = types;
+		}
+		virtual size_t get_type() { return 0; }
+
 		virtual Mem::Object run(std::vector<Mem::Object>& objs) { return nullptr; }
-		virtual size_t get_type() { return 0; }		
 		void set_index(size_t pos);
+
 		bool is_completed;
 		int index;
+	protected:
+		std::vector<size_t> param_types;
 	};
-	class Function:public FunctionBase
+	class Function : public FunctionBase
 	{
 	public:
-		Function(size_t t,Param *p, Block *bl=nullptr):type(t),param(p),blo(bl) {}
+		Function(size_t t, Param *p, Block *bl = nullptr) ;
+		Function(size_t t, Block *bl = nullptr);
 		void reset_block(Block *b);
-
+		void reser_param(Param *p);
 		Param *param;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		Block *get_block() { return blo; }
@@ -57,8 +67,14 @@ namespace Mer
 		{
 			return type;
 		}
+		bool check_param(const std::vector<size_t>& types)override;
+		void dnt_check_param()
+		{
+			check_param_type = false;
+		}
 	private:
 		size_t type;
+		bool check_param_type = true;
 		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
 	namespace Parser

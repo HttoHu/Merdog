@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <set>
 #include "parser.hpp"
 namespace Mer
 {
@@ -8,7 +9,7 @@ namespace Mer
 	{
 		FUNC = 0, VAR = 1
 	};
-
+	class FunctionBase;
 	class TypeInfo
 	{
 	public:
@@ -19,19 +20,17 @@ namespace Mer
 		std::string key;
 		MemberType info;
 	};
-	bool compareTypeInfo(const TypeInfo &a, const TypeInfo &b)
-	{
-		a.get_key() < b.get_key();
-	}
+	bool compareTypeInfo(const TypeInfo &a, const TypeInfo &b);
 	// to init build_in type such as vector,,
 	class BStructure
 	{
 	public:
-		void set_index_table(const )
+		using TypeInfoSet = std::set<TypeInfo, decltype(compareTypeInfo)*>;
+		void set_index_table(const TypeInfoSet &t) { index_table = t; }
 		Mem::Object call(const std::string &func_name, std::vector<Mem::Object> &objs);
-		Mem::Object var_table(size_t index);
+		Mem::Object find_var(size_t index);
 	private:
-		std::set <TypeInfo, decltype(compareTypeInfo)*> index_table;
+		std::set<TypeInfo, decltype(compareTypeInfo)*> index_table;
 		std::map <std::string, size_t> var_table;
 		std::map <std::string, FunctionBase*> func_table;
 		std::vector<Mer::Mem::Object> var_stack;
