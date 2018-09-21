@@ -2,7 +2,7 @@
 #   Merdog
 ## 作者忙于2019年高考中
 ## 简介
-Merdog 是一个简单的开源解释器 前身Simcc
+Merdog 是一个简单的开源解释器C-Like 语言语法
 ## Merdog 2.1 支持的语法
 1. 基本类型 ** int, real, string, bool
 2. 基本语句 if / else / elif / while / for
@@ -24,5 +24,5 @@ program main
 
 ## 其他
 * 以 编译原理 为参考书 
-* **部分算法来(表达式翻译,和一些语法分析)自Ruslan 的博客 https://ruslanspivak.com/lsbasi-part1/ 其他全靠想象力....**
+* **部分算法来(表达式翻译,和一些语法分析)自Ruslan 的博客 https://ruslanspivak.com/lsbasi-part1/ **
 * 邮箱 [Email]huyuantao@outlook.com
