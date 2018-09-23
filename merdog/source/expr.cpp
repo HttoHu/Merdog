@@ -200,3 +200,10 @@ Mer::InitList::~InitList()
 		delete a;
 }
 */
+
+Mer::ImplicitConvertion::ImplicitConvertion(size_t _type) :type(_type) {}
+
+Mem::Object Mer::ImplicitConvertion::execute()
+{
+	return tree->execute()->Convert(type);
+}

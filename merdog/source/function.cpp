@@ -157,6 +157,20 @@ bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 	}
 	return true;
 }
+void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
+{
+	// ensure you have checked the args' type.
+	for (size_t i = 0; i < args.size(); i++)
+	{
+		if (args[i]->get_type() != param_types[i])
+		{
+			Expr *tmp=new ImplicitConvertion(param_types[i]);
+			tmp->tree=args[i]->tree;
+			args[i] = tmp;
+
+		}
+	}
+}
 //================================================================
 void Mer::FunctionBase::set_index(size_t pos)
 {

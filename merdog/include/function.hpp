@@ -25,12 +25,13 @@ namespace Mer
 	public:
 		FunctionBase();
 		virtual bool check_param(const std::vector<size_t>& types);
+		virtual void convert_arg(std::vector<Expr*> &args);
 		void set_param_types(const std::vector<size_t>& types)
 		{
 			param_types = types;
 		}
 		virtual size_t get_type() { return 0; }
-
+		// covert args' type in order to comply with params' type.
 		virtual Mem::Object run(std::vector<Mem::Object>& objs) { return nullptr; }
 		void set_index(size_t pos);
 
@@ -63,6 +64,7 @@ namespace Mer
 		{
 			return func(objs);
 		}
+		void convert_arg(std::vector<Expr*> &args)override{}
 		size_t get_type()override
 		{
 			return type;

@@ -39,6 +39,8 @@ Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index,
 	{
 		throw Error( "A02 type not matched");
 	}
+	std::vector<ParserNode*> tmp;
+	func->convert_arg(argument);
 }
 
 size_t Mer::FunctionCall::get_type()

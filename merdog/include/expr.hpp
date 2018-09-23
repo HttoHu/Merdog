@@ -192,4 +192,12 @@ namespace Mer
 		Token *op;
 		ParserNode* right;
 	};
+	class ImplicitConvertion:public Expr
+	{
+	public:
+		ImplicitConvertion(size_t _type);
+		Mem::Object execute()override;
+	private:
+		size_t type;
+	};
 }

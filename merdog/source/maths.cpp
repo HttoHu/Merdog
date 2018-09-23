@@ -20,8 +20,6 @@ namespace Mer
 		}
 		Mem::Object _mod(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 2)
-				throw Error("Error A04");
 			auto obj = args.front();
 			auto obj2 = args[1];
 			auto v = std::static_pointer_cast<Mem::Int>(obj->Convert(Mem::BasicType::INT))->get_value();
@@ -30,8 +28,6 @@ namespace Mer
 		}
 		Mem::Object _sin(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::sin(d);
@@ -39,8 +35,6 @@ namespace Mer
 		}
 		Mem::Object _cos(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::cos(d);
@@ -48,8 +42,6 @@ namespace Mer
 		}
 		Mem::Object _tan(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::tan(d);
@@ -57,8 +49,6 @@ namespace Mer
 		}
 		Mem::Object _arsin(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::asin(d);
@@ -66,8 +56,6 @@ namespace Mer
 		}
 		Mem::Object _arcos(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::acos(d);
@@ -75,8 +63,6 @@ namespace Mer
 		}
 		Mem::Object _artan(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::atan(d);
@@ -84,8 +70,6 @@ namespace Mer
 		}
 		Mem::Object _abs(std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 1)
-				throw Error("Error A04");
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::abs(d);
