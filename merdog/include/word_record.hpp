@@ -5,7 +5,8 @@ namespace Mer
 	enum ESymbol
 	{
 		SFUN,SVAR,SNAME,
-		SGVAR,SSTRUCTURE
+		SGVAR,SSTRUCTURE,
+		STYPE,
 	};
 	struct WordRecorder
 	{
@@ -75,21 +76,18 @@ namespace Mer
 		}
 	private:
 	};
-	struct ArrayIdRecorder :public WordRecorder
+	struct ContainerTypeRecorder :public WordRecorder
 	{
 	public:
-		ArrayIdRecorder(size_t type, size_t p, int _size)
-			:WordRecorder(SVAR), pos(p), size(_size)
+		ContainerTypeRecorder(const std::string &str):WordRecorder(STYPE)
 		{
-			type_code = type;
+			type_code = Mem::type_counter += 2;
 		}
-		size_t pos;
-		std::string to_string()override
-		{
-			return "pos:" + std::to_string(pos);
+		std::string to_string() override { 
+			return "type:"+type_name; 
 		}
 	private:
-		int size;
+		std::string type_name;
 	};
 	class SymbolTable
 	{

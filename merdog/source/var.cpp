@@ -4,7 +4,7 @@
 #include "../include/namespace.hpp"
 #include "../include/word_record.hpp"
 using namespace Mer::Mem;
-//int Mer::type_counter=8;
+int Mer::Mem::type_counter=7;
 std::map<size_t, Type*> Mer::Mem::type_map
 {
 	{BasicType::INT,
@@ -14,6 +14,11 @@ std::map<size_t, Type*> Mer::Mem::type_map
 	{BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
 	{BasicType::STRING,new Type("int",BasicType::STRING,{ }) }
 };
+
+void Mer::Mem::set_new_type(const std::string & type_name, Type * t)
+{
+
+}
 
 std::string Mer::Mem::type_to_string(BasicType bt)
 {

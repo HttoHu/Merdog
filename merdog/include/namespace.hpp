@@ -1,7 +1,7 @@
 #pragma once
 #include "expr.hpp"
 #include "function.hpp"
-#define symbol_table this_namespace->sl_table
+#define tsymbol_table this_namespace->sl_table
 namespace Mer
 {
 	class Structure;
@@ -19,8 +19,8 @@ namespace Mer
 		std::map<std::string, FunctionBase*> functions;
 		std::vector<Namespace*> using_namespaces;
 		SymbolTable *sl_table;
-		void set_new_structure(const std::string &name, Structure *structure);
-		void set_new_func(const std::string &name, size_t type, FunctionBase* func);
+		void set_new_func(const std::string &name, size_t 
+			, FunctionBase* func);
 		void set_new_var(const std::string &name,size_t type, Mem::Object obj);
 
 

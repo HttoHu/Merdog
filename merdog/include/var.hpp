@@ -21,6 +21,7 @@ namespace Mer
 		extern int type_counter;
 		extern Namespace *this_namespace;
 
+		void set_new_type(const std::string & type_name, Type *t);
 		std::string type_to_string(BasicType bt);
 		size_t get_type_code(Token *tok);
 		size_t &type_no();
@@ -31,7 +32,7 @@ namespace Mer
 			Type(const std::string &_name, BasicType bt, const std::set<size_t>& _convertible_types)
 				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
 			bool convertible(const size_t &t);
-			virtual std::string to_string() { return "{TYPE:}"+name+"\n"; }
+			virtual std::string to_string() { return "{TYPE:}"+name+"/n"; }
 			virtual ~Type() {}
 
 		private:
@@ -379,5 +380,4 @@ namespace Mer
 			std::string str;
 		};
 	}
-
 }

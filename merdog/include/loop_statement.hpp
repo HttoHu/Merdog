@@ -5,7 +5,8 @@ namespace Mer
 	class Word :public ParserNode
 	{
 	public:
-		enum Type
+		enum 
+
 		{
 			Break, Continue
 		};

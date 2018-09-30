@@ -53,7 +53,7 @@ Param * Mer::Parser::build_param()
 		auto name = Id::get_value(token_stream.this_token());
 		token_stream.match(ID);
 		size_t pos = stack_memory.push();
-		symbol_table->push(name, new VarIdRecorder(type, pos));
+		tsymbol_table->push(name, new VarIdRecorder(type, pos));
 		ret->push_new_param(type, pos);
 		if (token_stream.this_tag() == COMMA)
 			token_stream.match(COMMA);
@@ -91,7 +91,7 @@ void Mer::Parser::build_function()
 		Block *blo = pure_block();
 		temp->reset_block(blo);
 		temp->is_completed = true;
-		symbol_table->end_block();
+		tsymbol_table->end_block();
 		return;
 	}
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
@@ -110,7 +110,7 @@ void Mer::Parser::build_function()
 	Block *blo = pure_block();
 	ret->reset_block(blo);
 	ret->is_completed = true;
-	symbol_table->end_block();
+	tsymbol_table->end_block();
 
 }
 
@@ -177,7 +177,8 @@ void Mer::FunctionBase::set_index(size_t pos)
 	index = pos;
 }
 
-Mer::Function::Function(size_t t, Param * p, Block * bl) :type(t), param(p), blo(bl)
+Mer::Function::Function(size_t t, Param * p, Block * bl) :
+	type(t), param(p), blo(bl)
 {
 	for (const auto &a : param->get_param_table())
 	{
