@@ -130,14 +130,89 @@ Mer::ParserNode * Mer::Expr::factor()
 	}
 	case ID:
 	{
-		auto node = Parser::parse_id();
-		return node;
+		ParserNode* id = Parser::parse_id();
+		if (token_stream.this_tag() == LSB)
+		{
+			auto tmp = token_stream.this_token();
+			token_stream.match(LSB);
+
+			auto ret = new BinOp(id, tmp, new Expr());
+			token_stream.match(RSB);
+			return ret;
+		}
+		return id;
 	}
 	default:
 		return new NonOp();
 	}
 }
 
+Mem::Object BinOp::execute()
+{
+	auto left_v = left->execute();
+	auto right_v = right->execute();
+	Mem::Object ret = nullptr;
+	switch (op->get_tag())
+	{
+	case SADD:
+		ret = left_v->operator+=(right_v);
+		break;
+	case SSUB:
+		ret = left_v->operator-=(right_v);
+		break;
+	case SDIV:
+		ret = left_v->operator/=(right_v);
+		break;
+	case SMUL:
+		ret = left_v->operator*=(right_v);
+		break;
+	case ASSIGN:
+		ret = left_v->operator=(right_v);
+		break;
+	case AND:
+		ret = left_v->operator&&(right_v);
+		break;
+	case OR:
+		ret = left_v->operator||(right_v);
+		break;
+	case PLUS:
+		ret = left_v->operator+(right_v);
+		break;
+	case MINUS:
+		ret = left_v->operator-(right_v);
+		break;
+	case MUL:
+		ret = left_v->operator*(right_v);
+		break;
+	case DIV:
+		ret = left_v->operator/(right_v);
+		break;
+	case EQ:
+		ret = left_v->operator==(right_v);
+		break;
+	case NE:
+		ret = left_v->operator!=(right_v);
+		break;
+	case GT:
+		ret = left_v->operator>(right_v);
+		break;
+	case GE:
+		ret = left_v->operator>=(right_v);
+		break;
+	case LT:
+		ret = left_v->operator<(right_v);
+		break;
+	case LE:
+		ret = left_v->operator<=(right_v);
+		break;
+	case LSB:
+		ret = left_v->operator[](right_v);
+		return ret;
+	default:
+		break;
+	}
+	return Mem::Object(ret);
+}
 Mer::Mem::Object Mer::UnaryOp::execute()
 {
 	switch (op->get_tag())

@@ -23,69 +23,7 @@ namespace Mer
 		{
 
 		}
-		Mem::Object execute()override
-		{
-			auto left_v = left->execute();
-			auto right_v = right->execute();
-			Mem::Object ret = nullptr;
-			switch (op->get_tag())
-			{
-			case SADD:
-				ret = left_v->operator+=(right_v);
-				break;
-			case SSUB:
-				ret = left_v->operator-=(right_v);
-				break;
-			case SDIV:
-				ret = left_v->operator/=(right_v);
-				break;
-			case SMUL:
-				ret = left_v->operator*=(right_v);
-				break;
-			case ASSIGN:
-				ret = left_v->operator=(right_v);
-				break;
-			case AND:
-				ret = left_v->operator&&(right_v);
-				break;
-			case OR:
-				ret = left_v->operator||(right_v);
-				break;
-			case PLUS:
-				ret = left_v->operator+(right_v);
-				break;
-			case MINUS:
-				ret = left_v->operator-(right_v);
-				break;
-			case MUL:
-				ret = left_v->operator*(right_v);
-				break;
-			case DIV:
-				ret = left_v->operator/(right_v);
-				break;
-			case EQ:
-				ret = left_v->operator==(right_v);
-				break;
-			case NE:
-				ret = left_v->operator!=(right_v);
-				break;
-			case GT:
-				ret = left_v->operator>(right_v);
-				break;
-			case GE:
-				ret = left_v->operator>=(right_v);
-				break;
-			case LT:
-				ret = left_v->operator<(right_v);
-				break;
-			case LE:
-				ret = left_v->operator<=(right_v);
-				break;
-			default:
-				break;
-			}
-			return Mem::Object(ret);
-		}
+		Mem::Object execute()override;
 		size_t get_type()override
 		{
 			return left->get_type();

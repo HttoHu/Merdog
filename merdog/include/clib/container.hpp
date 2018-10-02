@@ -37,7 +37,7 @@ namespace Mer
 		static size_t type_code;
 	private:
 		std::map<std::string, SystemFunction*> metholds_map;
-	};
+	}mer_vec;
 
 	struct ContainerInit
 	{

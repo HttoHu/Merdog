@@ -21,7 +21,7 @@ TagStrMap	Mer::	TagStr{
 	{ PLUS,"PLUS" },{ MINUS,"MINUS" },{ MUL,"MUL" },{ DIV,"DIV" },
 	{ GE,"GE" },{ GT,"GT" },{ LE,"LE" },{ LT,"LT" },{ EQ,"EQ" },{ NE,"NE" },
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
-	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },
+	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },{LSB,"LSB"},{RSB,"RSB"},
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
 	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{SADD,"SADD"},
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
@@ -256,6 +256,12 @@ void Mer::			build_token_stream(const std::string &content) {
 		case '\t':
 			break;
 		case ' ':
+			break;
+		case '[':
+			token_stream.push_back(new Token(LSB));
+			break;
+		case ']':
+			token_stream.push_back(new Token(RSB));
 			break;
 		case '(':
 			if (is_function_args)

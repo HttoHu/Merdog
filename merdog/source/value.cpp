@@ -115,7 +115,6 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	{
 	case ESymbol::STYPE:
 	{
-		//std::cout << "GUAGUA";
 		return static_cast<ContainerTypeRecorder*>(result)->create_var();
 	}
 	case ESymbol::SFUN:
