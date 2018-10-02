@@ -121,6 +121,20 @@ void Mer::Parser::create_namespace_var()
 {
 	std::map<Token*, Expr*> var_list;
 	// get types
+	if (token_stream.this_tag() == ID)
+	{
+		auto finder = tsymbol_table->find(Id::get_value(token_stream.this_token()));
+		if (finder->es == STYPE)
+		{
+			static_cast<ContainerTypeRecorder*>(finder)->create_glo_var();
+			token_stream.match(SEMI);
+			return;
+		}
+		else
+		{
+			throw Error("create global var failed.unkown type "+token_stream.this_token()->to_string());
+		}
+	}
 	auto type = token_stream.this_token();
 	size_t type_code = Mem::get_type_code(type);
 	token_stream.next();

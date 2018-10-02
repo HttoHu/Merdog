@@ -21,11 +21,12 @@ namespace Mer
 		MemberType info;
 	};
 	bool compareTypeInfo(const TypeInfo &a, const TypeInfo &b);
+
 	// to init build_in type such as vector..
 	class StructureBase
 	{
 	public: 
-		virtual FunctionBase* get_function(const std::string &id) {};
+		virtual FunctionBase* get_function(const std::string &id) { return nullptr; };
 		virtual ~StructureBase() {}
 	private:
 	};

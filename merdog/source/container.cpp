@@ -14,9 +14,9 @@ namespace Mer
 		// if you need to check index, please replace it with <at(args)>;
 		return nullptr;
 	}
-	ParserNode * parse_def_container()
+	//=============================================
+	std::map<Token*, UContainerInit> front_part(size_t &ct,size_t &et)
 	{
-		// get type=========================
 		size_t container_type;
 		std::string type_name = Id::get_value(token_stream.this_token());
 		if (type_name == "vector") {
@@ -57,7 +57,27 @@ namespace Mer
 				var_list.insert({ id,std::make_unique<ContainerInit>(container_type) });
 			}
 		}
-		return new ContainerDecl( container_type,element_type, std::move(var_list));
+		ct = container_type;
+		et = element_type;
+		return var_list;
+	}
+	ParserNode * parse_def_container()
+	{
+		size_t container_type;
+		size_t element_type;
+		auto var_list = std::move(front_part(container_type,element_type));
+		return new ContainerDecl(container_type, element_type, std::move(var_list));
+	}
+	ParserNode * parse_def_glo_container()
+	{	
+		size_t c, e;
+		auto var_list = std::move(front_part(c, e));
+		for (auto &a : var_list)
+		{
+			Mem::Object nobj = a.second->make_container();
+			Mer::this_namespace->set_new_var(Id::get_value(a.first), c, nobj);
+		}
+		return nullptr;
 	}
 	UContainerInit parse_container_init(size_t element_type)
 	{
@@ -80,19 +100,37 @@ namespace Mer
 	{
 		auto container_info = new ContainerTypeRecorder("vector");
 		container_info->create_var = parse_def_container;
+		container_info->create_glo_var = parse_def_glo_container;
 		Mer::tsymbol_table->push_glo("vector",container_info);
 		mVector::type_code = type_counter;
 		type_map.insert({ type_counter ,new Mer::Mem::Type("vector",BasicType(type_counter),std::set<size_t>()) });
+		mVector::methods_map();
 	}
-	FunctionBase * mVector::get_function(const std ::string &id)
+
+	// vector methods  =======================================
+	FunctionBase * mVector::get_function(const std::string &id)
 	{
-		auto finder = metholds_map.find(id);
-		if (finder == metholds_map.end())
+		auto finder = methods_map().find(id);
+		if (finder == methods_map().end())
 		{
 			throw Error("method<" + id + ">no found");
 		}
 		return finder->second;
 	}
+	std::map<std::string, SystemFunction*>& mVector::methods_map()
+	{
+		static std::map<std::string, SystemFunction*> ret;
+		return ret;
+	}
+	// I need a more powerful type check mechanism which can compare container types. 
+	Mem::Object mVector::_m_push_back(const std::vector<Mem::Object> &args)
+	{
+		auto container = args[0];
+		auto element = args[1];
+		std::static_pointer_cast<MerVecObj>(container)->content.push_back(element);
+		return nullptr;
+	}
+	// ====================================================
 	MerVecObj::MerVecObj(size_t type,  const std::vector<Expr*>& cn):ContainerBase(type)
 	{
 		for (const auto &a : cn) {

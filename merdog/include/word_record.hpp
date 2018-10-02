@@ -87,6 +87,7 @@ namespace Mer
 			return "type:"+type_name; 
 		}
 		std::function<ParserNode*()> create_var;
+		std::function<ParserNode*()> create_glo_var;
 	private:
 		std::string type_name;
 	};

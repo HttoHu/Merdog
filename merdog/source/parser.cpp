@@ -36,9 +36,9 @@ Program* Mer::Parser::program()
 			if (programe_num != 1)
 				throw Error("The program must have a program as an entry");
 			return ret;
+		case ID:
 		default:
 			create_namespace_var();
-			//throw Error("Syntax Error");
 			break;
 		}
 	}

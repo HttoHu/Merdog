@@ -62,7 +62,7 @@ size_t Mer::Mem::get_type_code(Token * tok)
 		return info->get_type();
 	}
 	default:
-		throw Error("invalid type ");
+		throw Error(tok->to_string()+" unknown type ");
 	}
 }
 

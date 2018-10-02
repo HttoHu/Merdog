@@ -11,9 +11,9 @@ namespace Mer
 		ContainerBase(size_t t);
 		virtual Mem::Object operator[](Mem::Object v)override;
 		virtual ~ContainerBase() {}
-	protected:
 		size_t obj_type;
 	};
+	class mVector;
 	class MerVecObj :public ContainerBase
 	{
 	public:
@@ -22,22 +22,24 @@ namespace Mer
 		virtual Mem::Object operator[](Mem::Object v)override;
 		virtual ~MerVecObj() {}
 	private:
+		friend class Mer::mVector;
 		std::vector<Mem::Object> content;
 	};
-
-	
 	class mVector:public StructureBase
 	{
 	public:
 		FunctionBase * get_function(const std::string &id) override;
 		void push_functions(const std::string &str, SystemFunction* func)
 		{
-			metholds_map.insert({ str, func });
+			methods_map().insert({ str, func });
 		}
 		static size_t type_code;
+		static std::map<std::string, SystemFunction*>&methods_map();
 	private:
-		std::map<std::string, SystemFunction*> metholds_map;
-	}mer_vec;
+		Mem::Object  _m_push_back(const std::vector<Mem::Object> &args);
+	};
+
+
 
 	struct ContainerInit
 	{
@@ -54,6 +56,7 @@ namespace Mer
 	class ContainerDecl :public ParserNode
 	{
 	public:
+		friend ParserNode * parse_def_glo_container();
 		ContainerDecl(size_t ct,size_t et, std::map<Token*, UContainerInit> &&v);
 		Mem::Object execute()override;
 	private:
