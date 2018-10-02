@@ -113,12 +113,11 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
-		/*
-	case ESymbol::SSTRUCTURE:
+	case ESymbol::STYPE:
 	{
-		ret = build_init_list(this_namespace);
-		break;
-	}*/
+		//std::cout << "GUAGUA";
+		return static_cast<ContainerTypeRecorder*>(result)->create_var();
+	}
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;

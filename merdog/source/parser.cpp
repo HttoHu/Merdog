@@ -141,11 +141,11 @@ ParserNode * Mer::Parser::statement()
 		node = var_decl();
 		break;
 	case BREAK:
-		node = new Word(Word::Type::Break);
+		node = new Word(Word::Break);
 		token_stream.match(BREAK);
 		break;
 	case CONTINUE:
-		node = new Word(Word::Type::Continue);
+		node = new Word(Word::Continue);
 		token_stream.match(CONTINUE);
 		break;
 	case PRINT:
@@ -198,9 +198,7 @@ Assign * Mer::Parser::assignment_statement()
 VarDecl * Mer::Parser::var_decl()
 {
 	std::map<Token*, Expr*> var_list;
-	// get types
-	auto type = token_stream.this_token();
-	size_t type_code = Mem::get_type_code(type);
+	size_t type_code = Mem::get_type_code(token_stream.this_token());
 	token_stream.next();
 	//matched the exprs with the ids and push into var_list to init a VarDecl.
 	auto id = token_stream.this_token();

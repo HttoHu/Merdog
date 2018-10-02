@@ -24,10 +24,9 @@ namespace Mer
 	// to init build_in type such as vector..
 	class StructureBase
 	{
-	private:
+	public: 
+		virtual FunctionBase* get_function(const std::string &id) {};
 		virtual ~StructureBase() {}
-		// tell between var and function. 
-		virtual FunctionBase* get_function(const std::string &id) = 0;
-	public:
+	private:
 	};
 }

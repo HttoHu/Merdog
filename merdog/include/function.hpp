@@ -79,10 +79,10 @@ namespace Mer
 		bool check_param_type = true;
 		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
-	class SMethold:public FunctionBase
+	class SMethod:public FunctionBase
 	{
 	public:
-		SMethold(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t), func(fun) {}
+		SMethod(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t), func(fun) {}
 		Mem::Object run(std::vector<Mem::Object> &objs)override
 		{
 			return func(objs);

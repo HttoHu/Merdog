@@ -90,7 +90,7 @@ namespace Mer
 	void Mer::set_maths()
 	{
 		maths = root_namespace;
-		min->set_param_types({ Mem::DOUBLE });
+		min->set_param_types({ Mem::DOUBLE,Mem::DOUBLE });
 		sqrt->set_param_types({ Mem::DOUBLE });
 		mod->set_param_types({ Mem::DOUBLE });
 		tan->set_param_types({ Mem::DOUBLE });

@@ -1,5 +1,6 @@
 #pragma once
 #include "value.hpp"
+#include <functional>
 namespace Mer
 {
 	enum ESymbol
@@ -53,10 +54,9 @@ namespace Mer
 	public:
 		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
 		{
-			type_code = Mem::type_no()++;
+			type_code = Mem::type_counter+=2;
 		}
-		
-	private:
+
 	};
 	class Namespace;
 
@@ -86,6 +86,7 @@ namespace Mer
 		std::string to_string() override { 
 			return "type:"+type_name; 
 		}
+		std::function<ParserNode*()> create_var;
 	private:
 		std::string type_name;
 	};

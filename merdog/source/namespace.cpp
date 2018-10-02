@@ -16,8 +16,7 @@ void Mer::Namespace::set_new_structure(const std::string & name, Structure * str
 	structures.insert({ name,{structure,type_counter++} });
 	sl_table->push_glo(name, new WordRecorder(ESymbol::SSTRUCTURE));
 }*/
-void Mer::Namespace::set_new_func(const std::string & name, size_t 
-	, FunctionBase * func)
+void Mer::Namespace::set_new_func(const std::string & name, size_t type, FunctionBase * func)
 {
 	functions.insert({ name,func });
 	sl_table->push_glo(name, new FuncIdRecorder(type));

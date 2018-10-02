@@ -7,6 +7,7 @@
 #include "../include/clib/merdog_io.hpp"
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
+#include "../include/clib/container.hpp"
 std::string get_file_content(const std::string & filename)
 {
 	using namespace std;
@@ -51,6 +52,7 @@ int main()
 	
 	try
 	{
+		Mer::using_vector();
 		Mer::set_io();
 		Mer::set_maths();
 		std::string input_content = get_file_content("test.mer");
