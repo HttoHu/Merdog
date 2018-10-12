@@ -5,9 +5,14 @@
 #include "../include/memory.hpp"
 namespace Mer
 {
+	mVector Mer::m_vector;
 	using namespace Mem;
 	size_t mVector::type_code = 0;
 	ContainerBase::ContainerBase(size_t type) :obj_type(type) {}
+	Mem::Object ContainerBase::operator+=(Mem::Object v)
+	{
+		return nullptr;
+	}
 	Object ContainerBase::operator[](Object v)
 	{
 		// [] don't check v's type or its number;
@@ -107,6 +112,11 @@ namespace Mer
 		mVector::methods_map();
 	}
 
+	mVector::mVector()
+	{
+		methods_map().insert({ "push_back",_m_push_back });
+	}
+
 	// vector methods  =======================================
 	FunctionBase * mVector::get_function(const std::string &id)
 	{
@@ -117,9 +127,9 @@ namespace Mer
 		}
 		return finder->second;
 	}
-	std::map<std::string, SystemFunction*>& mVector::methods_map()
+	std::map<std::string, SMethod*>& mVector::methods_map()
 	{
-		static std::map<std::string, SystemFunction*> ret;
+		static std::map<std::string, SMethod*> ret;
 		return ret;
 	}
 	// I need a more powerful type check mechanism which can compare container types. 
@@ -136,6 +146,11 @@ namespace Mer
 		for (const auto &a : cn) {
 			content.push_back(a->execute());
 		}
+	}
+	Mem::Object MerVecObj::operator+=(Mem::Object v)
+	{
+		content.push_back(v);
+		return v;
 	}
 	Mem::Object MerVecObj::operator[](Mem::Object v)
 	{

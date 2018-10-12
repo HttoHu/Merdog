@@ -9,6 +9,7 @@ namespace Mer
 	{
 	public:
 		ContainerBase(size_t t);
+		virtual Mem::Object operator+=(Mem::Object v)override;
 		virtual Mem::Object operator[](Mem::Object v)override;
 		virtual ~ContainerBase() {}
 		size_t obj_type;
@@ -19,6 +20,7 @@ namespace Mer
 	public:
 		MerVecObj(size_t t) :ContainerBase(t) {}
 		MerVecObj(size_t type, const std::vector<Expr*>& cn);
+		virtual Mem::Object operator+=(Mem::Object v)override;
 		virtual Mem::Object operator[](Mem::Object v)override;
 		virtual ~MerVecObj() {}
 	private:
@@ -28,17 +30,18 @@ namespace Mer
 	class mVector:public StructureBase
 	{
 	public:
+		mVector();
 		FunctionBase * get_function(const std::string &id) override;
-		void push_functions(const std::string &str, SystemFunction* func)
+		void push_functions(const std::string &str, SMethod* func)
 		{
 			methods_map().insert({ str, func });
 		}
 		static size_t type_code;
-		static std::map<std::string, SystemFunction*>&methods_map();
+		static std::map<std::string, SMethod*>&methods_map();
 	private:
 		Mem::Object  _m_push_back(const std::vector<Mem::Object> &args);
 	};
-
+	extern mVector m_vector;
 
 
 	struct ContainerInit

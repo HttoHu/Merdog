@@ -10,18 +10,6 @@ namespace Mer
 		FUNC = 0, VAR = 1
 	};
 	class FunctionBase;
-	class TypeInfo
-	{
-	public:
-		TypeInfo(const std::string &k, MemberType _info) :key(k), info(_info) {}
-		std::string get_key()const { return key; }
-		MemberType get_info()const  { return info; }
-	private:
-		std::string key;
-		MemberType info;
-	};
-	bool compareTypeInfo(const TypeInfo &a, const TypeInfo &b);
-
 	// to init build_in type such as vector..
 	class StructureBase
 	{
@@ -30,4 +18,19 @@ namespace Mer
 		virtual ~StructureBase() {}
 	private:
 	};
+	class SComVarFuncCall:public ParserNode
+	{
+	public:
+		SComVarFuncCall(const std::vector<size_t> &types, FunctionBase * fun, std::vector<Expr*>& exprs);
+		size_t get_type()override;
+		Mem::Object execute()override;
+	private:
+		Mem::Object obj;
+		FunctionBase * func;
+		std::vector<Expr*> argument;
+	};
+	namespace Parser
+	{
+		ParserNode* parse_compound_var_id();
+	}
 }
