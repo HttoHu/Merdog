@@ -5,6 +5,8 @@
 #include <memory>
 namespace Mer
 {
+	class mVector;
+
 	class ContainerBase :public Mem::Value
 	{
 	public:
@@ -14,7 +16,7 @@ namespace Mer
 		virtual ~ContainerBase() {}
 		size_t obj_type;
 	};
-	class mVector;
+
 	class MerVecObj :public ContainerBase
 	{
 	public:
@@ -27,20 +29,23 @@ namespace Mer
 		friend class Mer::mVector;
 		std::vector<Mem::Object> content;
 	};
+
 	class mVector:public StructureBase
 	{
 	public:
 		mVector();
 		FunctionBase * get_function(const std::string &id) override;
-		void push_functions(const std::string &str, SMethod* func)
+		void push_functions(const std::string &str, SystemFunction* func)
 		{
 			methods_map().insert({ str, func });
 		}
 		static size_t type_code;
-		static std::map<std::string, SMethod*>&methods_map();
+		static std::map<std::string, SystemFunction*>&methods_map();
 	private:
-		Mem::Object  _m_push_back(const std::vector<Mem::Object> &args);
-	};
+		static Mem::Object  _m_push_back(std::vector<Mem::Object>& args);
+		static Mem::Object  _m_pop_back(std::vector<Mem::Object>& args);
+		static Mem::Object  _m_size(std::vector<Mem::Object>& args);
+	}; 
 	extern mVector m_vector;
 
 
@@ -54,6 +59,7 @@ namespace Mer
 		size_t container_type=0;
 		size_t element_type;
 	};
+
 	using UContainerInit = std::unique_ptr<ContainerInit>;
 	using SContainerInit = std::shared_ptr<ContainerInit>;
 	class ContainerDecl :public ParserNode
@@ -67,6 +73,7 @@ namespace Mer
 		size_t element_type=0;
 		std::vector<std::pair<std::size_t, UContainerInit >> var_list;
 	};
+
 	ParserNode *parse_def_container();
 	// now I am trying to use unique to prevent memory from leaking.. (Before, I seldom used unique_ptr.
 	UContainerInit parse_container_init(size_t element_type);

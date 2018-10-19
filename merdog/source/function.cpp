@@ -7,10 +7,12 @@
 #define MER2_1_1
 using namespace Mer;
 std::map<std::string, Function*> Mer::function_table;
+
 Block *Mer::current_function_block = nullptr;
+
 size_t Mer::this_func_type;
 //=============================================================
-bool		is_function_statement()
+bool	is_function_statement()
 {
 	int index = 1;
 	if (token_stream.this_tag() == LPAREN)
@@ -136,9 +138,11 @@ bool Mer::Param::type_check(const std::vector<size_t>& types)
 	}
 	return true;
 }
+
 Mer::FunctionBase::FunctionBase()
 {
 }
+
 bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 {
 	if (types.size() != param_types.size())
@@ -157,6 +161,7 @@ bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 	}
 	return true;
 }
+
 void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
 {
 	// ensure you have checked the args' type.
@@ -187,6 +192,7 @@ Mer::Function::Function(size_t t, Param * p, Block * bl) :
 }
 
 Mer::Function::Function(size_t t, Block * bl) :type(t), blo(bl) {}
+
 void Mer::Function::reset_block(Block * b) {
 	blo = b;
 }

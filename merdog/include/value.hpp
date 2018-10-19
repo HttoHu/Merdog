@@ -32,7 +32,9 @@ namespace Mer
 		size_t type;
 		Mem::Object obj;
 	};
+
 	class Namespace;
+
 	class GVar :public ParserNode
 	{
 	public:
@@ -54,6 +56,7 @@ namespace Mer
 		size_t type;
 		Mem::Object obj;
 	};
+
 	class Variable :public ParserNode
 	{
 	public:
@@ -64,6 +67,7 @@ namespace Mer
 		Token * id;
 		size_t pos;
 	};
+
 	class FunctionCall :public ParserNode
 	{
 	public:
@@ -75,7 +79,9 @@ namespace Mer
 		FunctionBase * func;
 		std::vector<Expr*> argument;
 	};
-	class WordRecorder;
+
+	struct WordRecorder;
+
 	namespace Parser
 	{
 		/*

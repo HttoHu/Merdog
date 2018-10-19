@@ -124,7 +124,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	case ESymbol::SVAR:
 	{
-		ret= parse_var(result);
+		ret = parse_var(result);
 		break;
 	}
 	default:
@@ -239,9 +239,10 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Mer::Expr * co_name, Struct
 	std::vector<Expr*> exprs{ co_name };
 	// to check the param's type.
 	std::vector<size_t> param_types;
-	tsymbol_table->type_check(id, Mer::ESymbol::SFUN);
+
 	auto result = sb->get_function(Id::get_value(id));
 	token_stream.match(ID);
+
 	if (result == nullptr)
 		throw Error("function " + id->to_string() + " no found its defination");
 	token_stream.match(LPAREN);
@@ -261,6 +262,7 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Mer::Expr * co_name, Struct
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
+
 	return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
 }
 

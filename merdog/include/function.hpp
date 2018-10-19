@@ -79,29 +79,6 @@ namespace Mer
 		bool check_param_type = true;
 		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
-	class SMethod:public FunctionBase
-	{
-	public:
-		SMethod(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t), func(fun) {}
-		Mem::Object run(std::vector<Mem::Object> &objs)override
-		{
-			return func(objs);
-		}
-		void convert_arg(std::vector<Expr*> &args)override {}
-		size_t get_type()override
-		{
-			return type;
-		}
-		bool check_param(const std::vector<size_t>& types)override;
-		void dnt_check_param()
-		{
-			check_param_type = false;
-		}
-	private:
-		size_t type;
-		bool check_param_type = true;
-		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
-	};
 
 	namespace Parser
 	{

@@ -105,7 +105,7 @@ namespace Mer
 	void using_vector()
 	{
 		auto container_info = new ContainerTypeRecorder("vector");
-		//structure_seeker.insert({ type_counter,m_vector });
+		structure_seeker.insert({ type_counter,&m_vector });
 		container_info->create_var = parse_def_container;
 		container_info->create_glo_var = parse_def_glo_container;
 		Mer::tsymbol_table->push_glo("vector",container_info);
@@ -116,7 +116,13 @@ namespace Mer
 
 	mVector::mVector()
 	{
-		//methods_map().insert({ "push_back",_m_push_back });
+		SystemFunction *mpush_back = new SystemFunction(Mem::BasicType::BVOID, _m_push_back);
+		SystemFunction *mpop_back = new SystemFunction(Mem::BasicType::BVOID, _m_pop_back);
+		SystemFunction *msize = new SystemFunction(Mem::BasicType::BVOID, _m_size);
+		mpush_back->dnt_check_param();
+		methods_map().insert({ "push_back",mpush_back});
+		methods_map().insert({ "pop_back",mpop_back });
+		methods_map().insert({ "size",msize });
 	}
 
 	// vector methods  =======================================
@@ -129,18 +135,32 @@ namespace Mer
 		}
 		return finder->second;
 	}
-	std::map<std::string, SMethod*>& mVector::methods_map()
+
+	std::map<std::string, SystemFunction*>& mVector::methods_map()
 	{
-		static std::map<std::string, SMethod*> ret;
+		static std::map<std::string, SystemFunction*> ret;
 		return ret;
 	}
+
 	// I need a more powerful type check mechanism which can compare container types. 
-	Mem::Object mVector::_m_push_back(const std::vector<Mem::Object> &args)
+	Mem::Object mVector::_m_push_back(std::vector<Mem::Object> &args)
 	{
 		auto container = args[0];
 		auto element = args[1];
 		std::static_pointer_cast<MerVecObj>(container)->content.push_back(element);
 		return nullptr;
+	}
+	Mem::Object mVector::_m_pop_back(std::vector<Mem::Object>& args)
+	{
+		auto container = args[0];
+		std::static_pointer_cast<MerVecObj>(container)->content.pop_back();
+		return nullptr;
+	}
+	Mem::Object mVector::_m_size(std::vector<Mem::Object>& args)
+	{
+		auto container = args[0];
+		size_t size=std::static_pointer_cast<MerVecObj>(container)->content.size();
+		return std::make_shared<Int>(size);
 	}
 	// ====================================================
 	MerVecObj::MerVecObj(size_t type,  const std::vector<Expr*>& cn):ContainerBase(type)
@@ -149,15 +169,18 @@ namespace Mer
 			content.push_back(a->execute());
 		}
 	}
+
 	Mem::Object MerVecObj::operator+=(Mem::Object v)
 	{
 		content.push_back(v);
 		return v;
 	}
+
 	Mem::Object MerVecObj::operator[](Mem::Object v)
 	{
 		return content[std::static_pointer_cast<Int>(v)->get_value()];
 	}
+
 	ContainerDecl::ContainerDecl(size_t ct, size_t et, std::map<Token*, UContainerInit>&& v):
 		container_type(ct),element_type(et)
 	{
@@ -170,6 +193,7 @@ namespace Mer
 			var_list.push_back({ pos,std::move(a.second) });
 		}
 	}
+
 	Mem::Object ContainerDecl::execute()
 	{
 		for (const auto &a : var_list)
@@ -178,6 +202,7 @@ namespace Mer
 		}
 		return nullptr;
 	}
+
 	Object ContainerInit::make_container()
 	{
 		if (container_type == mVector::type_code)
