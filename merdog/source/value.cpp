@@ -1,8 +1,5 @@
-#include "../include/value.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
-#include "../include/parser.hpp"
-#include "../include/function.hpp"
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
 #include "../include/structure.hpp"
@@ -127,8 +124,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	case ESymbol::SVAR:
 	{
-		ret = new Variable(token_stream.this_token());
-		token_stream.match(ID);
+		ret= parse_var(result);
 		break;
 	}
 	default:
@@ -151,6 +147,38 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	delete expr;
 	return node;
 }
+
+Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
+{
+	Token *var_id = token_stream.this_token();
+	token_stream.match(ID);
+	switch (token_stream.this_tag())
+	{
+	case DOT:
+	{
+		// if a type_code less than 7, it must be a basic type (int real bool string) which doesn't have their members.;
+		if (var_info->get_type() <= BASICTYPE_MAX_CODE)
+		{
+			throw Error("basic-type var doesn't have members");
+		}
+		StructureBase *structure = nullptr;
+		{
+			// find structure;
+			auto result = structure_seeker.find(var_info->get_type());
+			if (result == structure_seeker.end())
+				throw Error("type no found");
+			structure = result->second;
+		}
+		token_stream.match(DOT);
+		ParserNode* tmp = new Variable(var_id);
+		return parse_function_call(static_cast<Expr*>(tmp), structure);
+	}
+	default:
+		return new Variable(var_id);
+	}
+}
+
+
 
 Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 {
@@ -203,6 +231,37 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 	}
 	token_stream.next();
 	return new NVModificationAdapter(assignment_type, ret, new Expr());
+}
+
+Mer::FunctionCall * Mer::Parser::parse_function_call(Mer::Expr * co_name, StructureBase *sb)
+{
+	auto id = token_stream.this_token();
+	std::vector<Expr*> exprs{ co_name };
+	// to check the param's type.
+	std::vector<size_t> param_types;
+	tsymbol_table->type_check(id, Mer::ESymbol::SFUN);
+	auto result = sb->get_function(Id::get_value(id));
+	token_stream.match(ID);
+	if (result == nullptr)
+		throw Error("function " + id->to_string() + " no found its defination");
+	token_stream.match(LPAREN);
+	if (token_stream.this_tag() == RPAREN)
+	{
+		token_stream.match(RPAREN);
+		return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
+	}
+	auto param_unit = new Expr();
+	param_types.push_back(param_unit->get_type());
+	exprs.push_back(param_unit);
+	while (token_stream.this_tag() == COMMA)
+	{
+		token_stream.match(COMMA);
+		auto param_unit2 = new Expr();
+		param_types.push_back(param_unit2->get_type());
+		exprs.push_back(param_unit2);
+	}
+	token_stream.match(RPAREN);
+	return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
 }
 
 Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)

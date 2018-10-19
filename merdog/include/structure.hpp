@@ -11,6 +11,8 @@ namespace Mer
 	};
 	class FunctionBase;
 	// to init build_in type such as vector..
+	class StructureBase;
+	extern std::map<size_t, StructureBase*> structure_seeker;
 	class StructureBase
 	{
 	public: 
@@ -18,7 +20,7 @@ namespace Mer
 		virtual ~StructureBase() {}
 	private:
 	};
-	class SComVarFuncCall:public ParserNode
+	/*class SComVarFuncCall:public ParserNode
 	{
 	public:
 		SComVarFuncCall(const std::vector<size_t> &types, FunctionBase * fun, std::vector<Expr*>& exprs);
@@ -28,7 +30,7 @@ namespace Mer
 		Mem::Object obj;
 		FunctionBase * func;
 		std::vector<Expr*> argument;
-	};
+	};*/
 	namespace Parser
 	{
 		ParserNode* parse_compound_var_id();

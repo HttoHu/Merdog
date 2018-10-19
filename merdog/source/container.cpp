@@ -1,8 +1,9 @@
 #include "../include/clib/container.hpp"
 #include "../include/namespace.hpp"
 #include "../include/word_record.hpp"
-#include <algorithm>
 #include "../include/memory.hpp"
+#include <algorithm>
+
 namespace Mer
 {
 	mVector Mer::m_vector;
@@ -104,6 +105,7 @@ namespace Mer
 	void using_vector()
 	{
 		auto container_info = new ContainerTypeRecorder("vector");
+		//structure_seeker.insert({ type_counter,m_vector });
 		container_info->create_var = parse_def_container;
 		container_info->create_glo_var = parse_def_glo_container;
 		Mer::tsymbol_table->push_glo("vector",container_info);
@@ -114,7 +116,7 @@ namespace Mer
 
 	mVector::mVector()
 	{
-		methods_map().insert({ "push_back",_m_push_back });
+		//methods_map().insert({ "push_back",_m_push_back });
 	}
 
 	// vector methods  =======================================

@@ -6,6 +6,7 @@ namespace Mer
 {
 	class Expr;
 	class FunctionBase;
+	class StructureBase;
 	//字面值常量 literal-const
 	class LConV :public ParserNode
 	{
@@ -74,13 +75,16 @@ namespace Mer
 		FunctionBase * func;
 		std::vector<Expr*> argument;
 	};
+	class WordRecorder;
 	namespace Parser
 	{
 		/*
 		ParserNode *build_init_list(Namespace *names);
 		*/
 		ParserNode *parse_id();
+		ParserNode *parse_var(WordRecorder* var_info);
 		ParserNode *_parse_id_wn(Namespace *names);
+		FunctionCall *parse_function_call(Mer::Expr *co_caller,StructureBase *sb);
 		FunctionCall *parse_function_call(Namespace *names);
 		Namespace *kill_namespaces();
 	}
