@@ -37,7 +37,7 @@ namespace Mer
 		std::map<Token*, UContainerInit> var_list;
 		auto id = token_stream.this_token();
 		token_stream.match(ID);
-		if (token_stream.this_token()->get_tag() == LPAREN)
+		if (token_stream.this_token()->get_tag() == BEGIN)
 		{
 			auto exp = parse_container_init(element_type);
 			exp->container_type = container_type;
@@ -52,7 +52,7 @@ namespace Mer
 			token_stream.match(COMMA);
 			auto id = token_stream.this_token();
 			token_stream.match(ID);
-			if (token_stream.this_token()->get_tag() == LPAREN)
+			if (token_stream.this_token()->get_tag() == BEGIN)
 			{
 				auto cinit = parse_container_init(element_type);
 				cinit->container_type = container_type;
@@ -88,10 +88,10 @@ namespace Mer
 	UContainerInit parse_container_init(size_t element_type)
 	{
 		auto ret = std::make_unique<ContainerInit>(element_type);
-		if (token_stream.this_tag() != LPAREN)
+		if (token_stream.this_tag() != BEGIN)
 			return ret;
-		token_stream.match(LPAREN);
-		while (token_stream.this_tag() != RPAREN)
+		token_stream.match(BEGIN);
+		while (token_stream.this_tag() != END)
 		{
 			ret->args.push_back(new Expr());
 			if (token_stream.this_tag() == COMMA)
@@ -99,7 +99,7 @@ namespace Mer
 				token_stream.match(COMMA);
 			}
 		}
-		token_stream.match(RPAREN);
+		token_stream.match(END);
 		return ret;
 	}
 	void using_vector()
@@ -119,10 +119,12 @@ namespace Mer
 		SystemFunction *mpush_back = new SystemFunction(Mem::BasicType::BVOID, _m_push_back);
 		SystemFunction *mpop_back = new SystemFunction(Mem::BasicType::BVOID, _m_pop_back);
 		SystemFunction *msize = new SystemFunction(Mem::BasicType::BVOID, _m_size);
+		SystemFunction *mclear = new SystemFunction(Mem::BasicType::BVOID, _m_clear);
 		mpush_back->dnt_check_param();
 		methods_map().insert({ "push_back",mpush_back});
 		methods_map().insert({ "pop_back",mpop_back });
 		methods_map().insert({ "size",msize });
+		methods_map().insert({ "clear",mclear });
 	}
 
 	// vector methods  =======================================
@@ -142,6 +144,13 @@ namespace Mer
 		return ret;
 	}
 
+	Mem::Object mVector::_m_clear(std::vector<Mem::Object>& args)
+	{
+		auto container = args[0];
+		
+		std::static_pointer_cast<MerVecObj>(container)->content.clear();
+		return nullptr;
+	}
 	// I need a more powerful type check mechanism which can compare container types. 
 	Mem::Object mVector::_m_push_back(std::vector<Mem::Object> &args)
 	{

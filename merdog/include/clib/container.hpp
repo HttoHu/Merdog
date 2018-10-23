@@ -42,6 +42,7 @@ namespace Mer
 		static size_t type_code;
 		static std::map<std::string, SystemFunction*>&methods_map();
 	private:
+		static Mem::Object  _m_clear(std::vector<Mem::Object>& args);
 		static Mem::Object  _m_push_back(std::vector<Mem::Object>& args);
 		static Mem::Object  _m_pop_back(std::vector<Mem::Object>& args);
 		static Mem::Object  _m_size(std::vector<Mem::Object>& args);
