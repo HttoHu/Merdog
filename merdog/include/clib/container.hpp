@@ -1,6 +1,7 @@
 #pragma once
 #include "../structure.hpp"
 #include "sys_method.hpp"
+#include "../type.hpp"
 #include <vector>
 #include <memory>
 namespace Mer
@@ -67,11 +68,10 @@ namespace Mer
 	{
 	public:
 		friend ParserNode * parse_def_glo_container();
-		ContainerDecl(size_t ct,size_t et, std::map<Token*, UContainerInit> &&v);
+		ContainerDecl(std::map<Token*, UContainerInit> &&v,Mem::CompoundType *com_type);
 		Mem::Object execute()override;
 	private:
-		size_t container_type=0;
-		size_t element_type=0;
+		Mem::CompoundType *ctype;
 		std::vector<std::pair<std::size_t, UContainerInit >> var_list;
 	};
 

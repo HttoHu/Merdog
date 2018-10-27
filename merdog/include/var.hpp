@@ -4,6 +4,7 @@
 #include <set>
 #include <map>
 #include "error.hpp"
+#include "type.hpp"
 #define BASICTYPE_MAX_CODE 7
 namespace Mer
 {
@@ -11,36 +12,11 @@ namespace Mer
 	class Token;
 	namespace Mem
 	{
-		enum BasicType
-		{
-			NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
-		};
+		size_t get_type_code(Token *tok);
 		class Type;
 		class Value;
 		using Object = std::shared_ptr<Value>;
-		extern std::map<size_t, Type*> type_map;
-		extern int type_counter;
 		extern Namespace *this_namespace;
-
-		void set_new_type(const std::string & type_name, Type *t);
-		std::string type_to_string(BasicType bt);
-		size_t get_type_code(Token *tok);
-		size_t &type_no();
-
-		class Type
-		{
-		public:
-			Type(const std::string &_name, BasicType bt, const std::set<size_t>& _convertible_types)
-				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
-			bool convertible(const size_t &t);
-			virtual std::string to_string() { return "{TYPE:}"+name+"/n"; }
-			virtual ~Type() {}
-
-		private:
-			std::set<size_t> convertible_types;
-			BasicType type_code;
-			std::string name;
-		};
 
 		class Value
 		{
