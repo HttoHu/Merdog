@@ -15,15 +15,15 @@ namespace Mer
 		WordRecorder(ESymbol e) :es(e) {}
 		ESymbol es;
 		virtual std::string to_string() { return""; }
-		size_t get_type() { return type_code; }
+		Mem::Type* get_type() { return type_code; }
 		virtual ~WordRecorder() {}
 	protected:
-		size_t type_code;
+		Mem::Type* type_code;
 	};
 	struct VarIdRecorder :public WordRecorder
 	{
 	public:
-		VarIdRecorder(size_t type,size_t p,bool is_c=false) 
+		VarIdRecorder(Mem::Type* type,size_t p,bool is_c=false) 
 			:WordRecorder(SVAR),pos(p),is_const(is_c)
 		{
 			type_code = type;
@@ -54,7 +54,7 @@ namespace Mer
 	public:
 		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
 		{
-			type_code = Mem::type_counter+=2;
+			type_code = Mem::type_map[Mem::type_counter+=2];
 		}
 
 	};
@@ -63,7 +63,7 @@ namespace Mer
 	struct GVarIdRecorder:public WordRecorder
 	{
 	public:
-		GVarIdRecorder(size_t t, Mem::Object obj) :WordRecorder(SGVAR), value(obj) {
+		GVarIdRecorder(Mem::Type* t, Mem::Object obj) :WordRecorder(SGVAR), value(obj) {
 			type_code = t;
 		}
 		Mem::Object value;
@@ -71,7 +71,7 @@ namespace Mer
 	struct FuncIdRecorder :public WordRecorder
 	{
 	public:
-		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN){
+		FuncIdRecorder(Mem::Type* type) :WordRecorder(ESymbol::SFUN){
 			type_code = type;
 		}
 	private:
@@ -81,7 +81,7 @@ namespace Mer
 	public:
 		ContainerTypeRecorder(const std::string &str):WordRecorder(STYPE)
 		{
-			type_code = Mem::type_counter += 2;
+			type_code =Mer::Mem::type_map[Mem::type_counter += 2];
 		}
 		std::string to_string() override { 
 			return "type:"+type_name; 

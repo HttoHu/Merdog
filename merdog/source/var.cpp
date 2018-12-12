@@ -3,46 +3,12 @@
 #include "../include/lexer.hpp"
 #include "../include/namespace.hpp"
 #include "../include/word_record.hpp"
+
 using namespace Mer::Mem;
-int Mer::Mem::type_counter=7;
-std::map<size_t, Type*> Mer::Mem::type_map
-{
-	{BasicType::INT,
-		new Type("int",BasicType::INT,{BasicType::INT,BasicType::BOOL,BasicType::DOUBLE})
-	},
-	{BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-	{BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-	{BasicType::STRING,new Type("int",BasicType::STRING,{ }) }
-};
-
-void Mer::Mem::set_new_type(const std::string & type_name, Type * t)
-{
-
-}
-
-std::string Mer::Mem::type_to_string(BasicType bt)
-{
-	switch (bt)
-	{
-	case Mer::Mem::BVOID:
-		return "void";
-	case Mer::Mem::BOOL:
-		return "bool";
-	case Mer::Mem::INT:
-		return "int";
-	case Mer::Mem::DOUBLE:
-		return "double";
-	case Mer::Mem::STRING:
-		return "string";
-	default:
-		break;
-	}
-	return "";
-}
 
 size_t Mer::Mem::get_type_code(Token * tok)
 {
-	switch(tok->get_tag())
+	switch (tok->get_tag())
 	{
 	case VOID_DECL:
 		return BVOID;
@@ -58,19 +24,14 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	{
 		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
 		if (info == nullptr)
-			throw Error("id: "+ Id::get_value(token_stream.this_token())+"no found");
+			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
 		return info->get_type();
 	}
 	default:
-		throw Error(tok->to_string()+" unknown type ");
+		throw Error(tok->to_string() + " unknown type ");
 	}
 }
 
-size_t &Mer::Mem::type_no()
-{
-	static size_t this_type_index = 10;
-	return this_type_index;
-}
 
 Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
 {
@@ -120,7 +81,3 @@ Mer::Mem::Object Mer::Mem::Bool::Convert(int type)
 	}
 }
 
-bool Mer::Mem::Type::convertible(const size_t & t)
-{
-	return convertible_types.find(t) != convertible_types.end();
-}
