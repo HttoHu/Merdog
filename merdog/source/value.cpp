@@ -34,7 +34,7 @@ Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index,
 {
 	if (!func->check_param(types))
 	{
-		throw Error("A02 type not matched ");
+		throw Error( "A02 type not matched");
 	}
 	std::vector<ParserNode*> tmp;
 	func->convert_arg(argument);

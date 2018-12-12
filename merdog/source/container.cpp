@@ -20,65 +20,7 @@ namespace Mer
 		// if you need to check index, please replace it with <at(args)>;
 		return nullptr;
 	}
-	std::string ComplexType::to_string()
-	{
-		if (container_type == mVector::type_code)
-		{
-			return "vector";
-		}
-		return "unknown";
-	}
 	//=============================================
-/*
-#pragma region NR
-
-	Mem::Type* find_complex(size_t sz)
-	{
-		auto result = Mem::type_map.find(sz);
-		if (result == Mem::type_map.end())
-			throw Error("type undefined");
-		return result->second;
-	}
-	std::map<Token*, UContainerInit> front_part_tmp(size_t &type)
-	{
-		type=get_ctype_code();
-		auto complex_type_result = dynamic_cast<Mem::ComplexType*>(find_complex(type));
-		//==============================
-		std::map<Token*, UContainerInit> var_list;
-		auto id = token_stream.this_token();
-		token_stream.match(ID);
-		if (token_stream.this_token()->get_tag() == BEGIN)
-		{
-			auto exp = parse_container_init(complex_type_result->get_element_type());
-			exp->container_type = container_type;
-			var_list.insert({ id,std::move(exp) });
-		}
-		else
-		{
-			var_list.insert({ id,std::make_unique<ContainerInit>(element_type) });
-		}
-		while (token_stream.this_token()->get_tag() == COMMA)
-		{
-			token_stream.match(COMMA);
-			auto id = token_stream.this_token();
-			token_stream.match(ID);
-			if (token_stream.this_token()->get_tag() == BEGIN)
-			{
-				auto cinit = parse_container_init(element_type);
-				cinit->container_type = container_type;
-				var_list.insert({ id,std::move(cinit) });
-			}
-			else
-			{
-				var_list.insert({ id,std::make_unique<ContainerInit>(container_type) });
-			}
-		}
-		ct = container_type;
-		et = element_type;
-		return var_list;
-	}
-#pragma endregion
-*/
 	std::map<Token*, UContainerInit> front_part(size_t &ct,size_t &et)
 	{
 		size_t container_type;
@@ -88,8 +30,8 @@ namespace Mer
 		}
 		token_stream.match(ID);
 		token_stream.match(LT);
-		// changed point
-		size_t element_type = get_ctype_code();
+		size_t element_type = get_type_code(token_stream.this_token());
+		token_stream.next();
 		token_stream.match(GT);
 		//==============================
 		std::map<Token*, UContainerInit> var_list;
@@ -151,10 +93,7 @@ namespace Mer
 		token_stream.match(BEGIN);
 		while (token_stream.this_tag() != END)
 		{
-			auto pusher = new Expr();
-			if (pusher->get_type() != element_type)
-				throw Error("type can't convert");
-			ret->args.push_back(pusher);
+			ret->args.push_back(new Expr());
 			if (token_stream.this_tag() == COMMA)
 			{
 				token_stream.match(COMMA);
@@ -254,13 +193,12 @@ namespace Mer
 	ContainerDecl::ContainerDecl(size_t ct, size_t et, std::map<Token*, UContainerInit>&& v):
 		container_type(ct),element_type(et)
 	{
-		size_t ctype=merge_two_type(container_type,element_type);
 		for (auto && a:v)
 		{
 			if (Mer::this_namespace->sl_table->find_front(Id::get_value(a.first)) != nullptr)
 				throw Error("Symbol " + a.first->to_string() + " redefined");
 			auto pos =  stack_memory.push();
-			Mer::this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(ctype, pos));
+			Mer::this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(container_type, pos));
 			var_list.push_back({ pos,std::move(a.second) });
 		}
 	}
@@ -285,5 +223,4 @@ namespace Mer
 			throw Error("undefined type");
 		}
 	}
-
 }

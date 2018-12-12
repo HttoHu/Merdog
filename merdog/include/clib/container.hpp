@@ -6,6 +6,7 @@
 namespace Mer
 {
 	class mVector;
+
 	class ContainerBase :public Mem::Value
 	{
 	public:
@@ -46,8 +47,8 @@ namespace Mer
 		static Mem::Object  _m_pop_back(std::vector<Mem::Object>& args);
 		static Mem::Object  _m_size(std::vector<Mem::Object>& args);
 	}; 
-	
 	extern mVector m_vector;
+
 
 	struct ContainerInit
 	{
