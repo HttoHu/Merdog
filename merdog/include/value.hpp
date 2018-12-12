@@ -7,12 +7,12 @@ namespace Mer
 	class Expr;
 	class FunctionBase;
 	class StructureBase;
-	// literal-const
+	//字面值常量 literal-const
 	class LConV :public ParserNode
 	{
 	public:
 		LConV(Token *t);
-		Mem::Type* get_type()override
+		size_t get_type()override
 		{
 			return type;
 		}
@@ -29,7 +29,7 @@ namespace Mer
 			return true;
 		}
 	private:
-		Mem::Type* type;
+		size_t type;
 		Mem::Object obj;
 	};
 
@@ -39,7 +39,7 @@ namespace Mer
 	{
 	public:
 		GVar(Namespace *ns,Token *o);
-		Mem::Type* get_type()override
+		size_t get_type()override
 		{
 			return type;
 		}
@@ -53,7 +53,7 @@ namespace Mer
 		}
 	private:
 		Namespace * names;
-		Mem::Type* type;
+		size_t type;
 		Mem::Object obj;
 	};
 
@@ -61,7 +61,7 @@ namespace Mer
 	{
 	public:
 		Variable(Token *tok);
-		Mem::Type* get_type()override;
+		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
 		Token * id;
@@ -72,7 +72,7 @@ namespace Mer
 	{
 	public:
 		FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * fun, std::vector<Expr*>& exprs);
-		Mem::Type* get_type()override;
+		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
 		size_t index;

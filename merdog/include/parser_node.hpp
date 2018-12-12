@@ -20,9 +20,9 @@ namespace Mer
 		{
 			return false;
 		}
-		virtual Mem::Type* get_type()
+		virtual size_t get_type()
 		{
-			return nullptr;
+			return 0;
 		}
 		virtual Mem::Object execute() 
 		{

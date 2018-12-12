@@ -4,7 +4,6 @@
 #include <set>
 #include <map>
 #include "error.hpp"
-#include "type.hpp"
 #define BASICTYPE_MAX_CODE 7
 namespace Mer
 {
@@ -12,14 +11,17 @@ namespace Mer
 	class Token;
 	namespace Mem
 	{
-		size_t get_type_code(Token *tok);
+		enum BasicType
+		{
+			NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
+		};
 		class Type;
 		class Value;
 		using Object = std::shared_ptr<Value>;
+		extern std::map<size_t, Type*> type_map;
+		extern int type_counter;
 		extern Namespace *this_namespace;
 
-<<<<<<< HEAD
-=======
 		std::string type_to_string(BasicType bt);
 		size_t get_type_code(Token *tok);
 		size_t &type_no();
@@ -52,7 +54,6 @@ namespace Mer
 			size_t container_type;
 			size_t element_type;
 		};
->>>>>>> parent of 65e88d1... Revert "修复若干bug"
 		class Value
 		{
 		public:

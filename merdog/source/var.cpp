@@ -3,10 +3,6 @@
 #include "../include/lexer.hpp"
 #include "../include/namespace.hpp"
 #include "../include/word_record.hpp"
-<<<<<<< HEAD
-
-using namespace Mer::Mem;
-=======
 using namespace Mer::Mem;
 int Mer::Mem::type_counter=7;
 std::map<size_t, Type*> Mer::Mem::type_map
@@ -43,11 +39,10 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	}
 	return "";
 }
->>>>>>> parent of 65e88d1... Revert "修复若干bug"
 
 size_t Mer::Mem::get_type_code(Token * tok)
 {
-	switch (tok->get_tag())
+	switch(tok->get_tag())
 	{
 	case VOID_DECL:
 		return BVOID;
@@ -63,16 +58,14 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	{
 		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
 		if (info == nullptr)
-			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
+			throw Error("id: "+ Id::get_value(token_stream.this_token())+"no found");
 		return info->get_type();
 	}
 	default:
-		throw Error(tok->to_string() + " unknown type ");
+		throw Error(tok->to_string()+" unknown type ");
 	}
 }
 
-<<<<<<< HEAD
-=======
 size_t &Mer::Mem::type_no()
 {
 	static size_t this_type_index = 10;
@@ -106,7 +99,6 @@ size_t Mer::Mem::merge_two_type(size_t c, size_t e)
 	type_m.insert({ { c,e }, (size_t)type_counter });
 	return (size_t)type_counter;
 }
->>>>>>> parent of 65e88d1... Revert "修复若干bug"
 
 Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
 {
@@ -156,8 +148,6 @@ Mer::Mem::Object Mer::Mem::Bool::Convert(int type)
 	}
 }
 
-<<<<<<< HEAD
-=======
 bool Mer::Mem::Type::convertible(const size_t & t)
 {
 	return convertible_types.find(t) != convertible_types.end();
@@ -167,4 +157,3 @@ void Mer::Mem::Type::add_compatible_type(size_t type_code)
 {
 	convertible_types.insert( type_code );
 }
->>>>>>> parent of 65e88d1... Revert "修复若干bug"

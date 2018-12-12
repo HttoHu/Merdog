@@ -10,7 +10,7 @@ std::map<std::string, Function*> Mer::function_table;
 
 Block *Mer::current_function_block = nullptr;
 
-Mem::Type* Mer::this_func_type;
+size_t Mer::this_func_type;
 //=============================================================
 bool	is_function_statement()
 {
@@ -50,12 +50,7 @@ Param * Mer::Parser::build_param()
 	}
 	while (true)
 	{
-<<<<<<< HEAD
-		Mem::Type* type = Mem::type_map[Mem::get_type_code(token_stream.this_token())];
-		token_stream.next();
-=======
 		size_t type = Mem::get_ctype_code();
->>>>>>> parent of 65e88d1... Revert "修复若干bug"
 		auto name = Id::get_value(token_stream.this_token());
 		token_stream.match(ID);
 		size_t pos = stack_memory.push();
@@ -73,7 +68,7 @@ Param * Mer::Parser::build_param()
 void Mer::Parser::build_function()
 {
 	token_stream.match(FUNCTION);
-	Mem::Type* rtype = Mem::type_map[Mem::get_type_code(token_stream.this_token())];
+	size_t rtype = Mem::get_type_code(token_stream.this_token());
 	this_func_type = rtype;
 	token_stream.next();
 	this_namespace->sl_table->new_block();
@@ -133,7 +128,7 @@ bool Mer::Param::type_check(const std::vector<size_t>& types)
 		{
 			throw Error("<inner error>type were no found");
 		}
-		if (!type_seeker->second->convertible(arg_pos[i].first()))
+		if (!type_seeker->second->convertible(arg_pos[i].second))
 		{
 			std::cout << type_seeker->second->to_string() << std::endl;
 			std::cout << arg_pos[i].second;
@@ -147,7 +142,7 @@ Mer::FunctionBase::FunctionBase()
 {
 }
 
-bool Mer::FunctionBase::check_param(const std::vector<Mem::Type*>& types)
+bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 {
 	if (types.size() != param_types.size())
 	{
@@ -189,7 +184,7 @@ void Mer::FunctionBase::set_index(size_t pos)
 	index = pos;
 }
 
-Mer::Function::Function(Mem::Type* t, Param * p, Block * bl) :
+Mer::Function::Function(size_t t, Param * p, Block * bl) :
 	type(t), param(p), blo(bl)
 {
 	for (const auto &a : param->get_param_table())
@@ -198,7 +193,7 @@ Mer::Function::Function(Mem::Type* t, Param * p, Block * bl) :
 	}
 }
 
-Mer::Function::Function(Mem::Type* t, Block * bl) :type(t), blo(bl) {}
+Mer::Function::Function(size_t t, Block * bl) :type(t), blo(bl) {}
 
 void Mer::Function::reset_block(Block * b) {
 	blo = b;

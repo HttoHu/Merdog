@@ -10,9 +10,9 @@ namespace Mer
 		{
 			return nullptr;
 		}
-		Mem::Type* get_type()override
+		size_t get_type()override
 		{
-			return Mem::type_map[Mem::BVOID];
+			return Mem::BasicType::BVOID;
 		}
 	private:
 	};
@@ -24,7 +24,7 @@ namespace Mer
 
 		}
 		Mem::Object execute()override;
-		Mem::Type* get_type()override
+		size_t get_type()override
 		{
 			return left->get_type();
 		}
@@ -43,7 +43,7 @@ namespace Mer
 	public:
 		UnaryOp(Token *t, ParserNode* e) :op(t), expr(e) {}
 		Mem::Object execute()override;
-		Mem::Type* get_type()override
+		size_t get_type()override
 		{
 			return expr->get_type();
 		}
@@ -58,6 +58,7 @@ namespace Mer
 	class Structure;
 	class CompoundObject;
 	class Expr;
+	class Type;
 	/*
 	class InitList :public ParserNode
 	{
@@ -73,14 +74,14 @@ namespace Mer
 	{
 	public:
 		Expr() :is_bool(false),tree(and_or()) {}
-		Mem::Type* get_type()override
+		size_t get_type()override
 		{
 			if (is_bool)
 			{
-				return Mem::type_map[Mem::BOOL];
+				return Mem::BOOL;
 			}
 			if (tree == nullptr)
-				return Mem::type_map[Mem::BVOID];;
+				return Mem::BVOID;
 			return tree->get_type();
 		}
 		Mem::Object execute()override

@@ -3,7 +3,6 @@
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
 #include "../include/structure.hpp"
-using namespace Mer;
 Mer::Variable::Variable(Token * tok) :id(tok)
 {
 	auto result = this_namespace->sl_table->find(Id::get_value(tok));
@@ -14,7 +13,7 @@ Mer::Variable::Variable(Token * tok) :id(tok)
 	pos = static_cast<VarIdRecorder*> (result)->pos;
 }
 
-Mer::Mem::Type* Mer::Variable::get_type()
+size_t Mer::Variable::get_type()
 {
 	auto result = this_namespace->sl_table->find(Id::get_value(id));
 	if (result == nullptr)
@@ -41,7 +40,7 @@ Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index,
 	func->convert_arg(argument);
 }
 
-Mem::Type* Mer::FunctionCall::get_type()
+size_t Mer::FunctionCall::get_type()
 {
 	return func->get_type();
 }
@@ -158,7 +157,7 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 	case DOT:
 	{
 		// if a type_code less than 7, it must be a basic type (int real bool string) which doesn't have their members.;
-		if (var_info->get_type()->type_code <= BASICTYPE_MAX_CODE)
+		if (var_info->get_type() <= BASICTYPE_MAX_CODE)
 		{
 			throw Error("basic-type var doesn't have members");
 		}
@@ -314,28 +313,27 @@ Mer::Namespace * Mer::Parser::kill_namespaces()
 
 Mer::LConV::LConV(Token * t)
 {
-	using namespace Mem;
 	switch (t->get_tag())
 	{
 	case TTRUE:
-		type = Mem::type_map[Mem::BOOL];
+		type = Mem::BOOL;
 		obj = std::make_shared<Mem::Bool>(true);
 		break;
 	case TFALSE:
-		type = type_map[BOOL];
+		type = Mem::BOOL;
 		obj = std::make_shared<Mem::Bool>(false);
 		break;
 	case INTEGER:
-		type = type_map[INT];
+		type = Mem::INT;
 		obj = std::make_shared<Mem::Int>(Integer::get_value(t));
 		break;
 	case REAL:
-		type = type_map[BOOL];
+		type = Mem::DOUBLE;
 		obj = std::make_shared <Mem::Double >(Real::get_value(t));
 		break;
-	case Mer::STRING:
-		type = type_map[Mem::STRING];
-		obj = std::make_shared<Mem::String>(Mer::String::get_value(t));
+	case STRING:
+		type = Mem::STRING;
+		obj = std::make_shared<Mem::String>(String::get_value(t));
 		break;
 	default:
 		throw Error("syntax error");

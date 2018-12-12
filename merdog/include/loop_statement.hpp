@@ -5,16 +5,16 @@ namespace Mer
 	class Word :public ParserNode
 	{
 	public:
-		enum WType
+		enum Type
 		{
 			Break, Continue
 		};
-		Word(WType v) :type(v) {}
+		Word(Type v) :type(v) {}
 		Mem::Object execute()override
 		{
 			throw *this;
 		}
-		WType type;
+		Type type;
 	};
 	class While :public ParserNode
 	{
@@ -30,9 +30,9 @@ namespace Mer
 				}
 				catch (Word c)
 				{
-					if (c.type == Word::WType::Break)
+					if (c.type == Word::Type::Break)
 						break;
-					else if (c.type == Word::WType::Continue)
+					else if (c.type == Word::Type::Continue)
 						continue;
 				}
 			}
@@ -58,9 +58,9 @@ namespace Mer
 				}
 				catch (Word c)
 				{
-					if (c.type == Word::WType::Break)
+					if (c.type == Word::Type::Break)
 						break;
-					else if (c.type == Word::WType::Continue)
+					else if (c.type == Word::Type::Continue)
 						continue;
 				}
 			}

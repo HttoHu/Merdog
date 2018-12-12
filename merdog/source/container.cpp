@@ -29,9 +29,6 @@ namespace Mer
 		return "unknown";
 	}
 	//=============================================
-<<<<<<< HEAD
-	std::map<Token*, UContainerInit> front_part(size_t &ct, size_t &et)
-=======
 /*
 #pragma region NR
 
@@ -83,7 +80,6 @@ namespace Mer
 #pragma endregion
 */
 	std::map<Token*, UContainerInit> front_part(size_t &ct,size_t &et)
->>>>>>> parent of 65e88d1... Revert "修复若干bug"
 	{
 		size_t container_type;
 		std::string type_name = Id::get_value(token_stream.this_token());
@@ -133,11 +129,11 @@ namespace Mer
 	{
 		size_t container_type;
 		size_t element_type;
-		auto var_list = std::move(front_part(container_type, element_type));
-		return new  ContainerDecl(container_type, element_type, std::move(var_list));
+		auto var_list = std::move(front_part(container_type,element_type));
+		return new ContainerDecl(container_type, element_type, std::move(var_list));
 	}
 	ParserNode * parse_def_glo_container()
-	{
+	{	
 		size_t c, e;
 		auto var_list = std::move(front_part(c, e));
 		for (auto &a : var_list)
@@ -169,13 +165,11 @@ namespace Mer
 	}
 	void using_vector()
 	{
-		Mem::type_map.insert({ type_counter + 2,new Mem::Type("vector", type_counter + 2,{ type_counter + 2 }) });
 		auto container_info = new ContainerTypeRecorder("vector");
-
 		structure_seeker.insert({ type_counter,&m_vector });
 		container_info->create_var = parse_def_container;
 		container_info->create_glo_var = parse_def_glo_container;
-		Mer::tsymbol_table->push_glo("vector", container_info);
+		Mer::tsymbol_table->push_glo("vector",container_info);
 		mVector::type_code = type_counter;
 		type_map.insert({ type_counter ,new Mer::Mem::Type("vector",BasicType(type_counter),std::set<size_t>()) });
 		mVector::methods_map();
@@ -188,7 +182,7 @@ namespace Mer
 		SystemFunction *msize = new SystemFunction(Mem::BasicType::BVOID, _m_size);
 		SystemFunction *mclear = new SystemFunction(Mem::BasicType::BVOID, _m_clear);
 		mpush_back->dnt_check_param();
-		methods_map().insert({ "push_back",mpush_back });
+		methods_map().insert({ "push_back",mpush_back});
 		methods_map().insert({ "pop_back",mpop_back });
 		methods_map().insert({ "size",msize });
 		methods_map().insert({ "clear",mclear });
@@ -214,7 +208,7 @@ namespace Mer
 	Mem::Object mVector::_m_clear(std::vector<Mem::Object>& args)
 	{
 		auto container = args[0];
-
+		
 		std::static_pointer_cast<MerVecObj>(container)->content.clear();
 		return nullptr;
 	}
@@ -235,11 +229,11 @@ namespace Mer
 	Mem::Object mVector::_m_size(std::vector<Mem::Object>& args)
 	{
 		auto container = args[0];
-		size_t size = std::static_pointer_cast<MerVecObj>(container)->content.size();
+		size_t size=std::static_pointer_cast<MerVecObj>(container)->content.size();
 		return std::make_shared<Int>(size);
 	}
 	// ====================================================
-	MerVecObj::MerVecObj(size_t type, const std::vector<Expr*>& cn) :ContainerBase(type)
+	MerVecObj::MerVecObj(size_t type,  const std::vector<Expr*>& cn):ContainerBase(type)
 	{
 		for (const auto &a : cn) {
 			content.push_back(a->execute());
@@ -257,22 +251,15 @@ namespace Mer
 		return content[std::static_pointer_cast<Int>(v)->get_value()];
 	}
 
-	ContainerDecl::ContainerDecl(std::map<Token*, UContainerInit>&& v, CompoundType * com_type):ctype(com_type)
+	ContainerDecl::ContainerDecl(size_t ct, size_t et, std::map<Token*, UContainerInit>&& v):
+		container_type(ct),element_type(et)
 	{
-<<<<<<< HEAD
-		for (auto && a : v)
-		{
-			if (Mer::this_namespace->sl_table->find_front(Id::get_value(a.first)) != nullptr)
-				throw Error("Symbol " + a.first->to_string() + " redefined");
-			auto pos = stack_memory.push();
-=======
 		size_t ctype=merge_two_type(container_type,element_type);
 		for (auto && a:v)
 		{
 			if (Mer::this_namespace->sl_table->find_front(Id::get_value(a.first)) != nullptr)
 				throw Error("Symbol " + a.first->to_string() + " redefined");
 			auto pos =  stack_memory.push();
->>>>>>> parent of 65e88d1... Revert "修复若干bug"
 			Mer::this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(ctype, pos));
 			var_list.push_back({ pos,std::move(a.second) });
 		}
