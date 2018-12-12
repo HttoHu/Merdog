@@ -50,8 +50,12 @@ Param * Mer::Parser::build_param()
 	}
 	while (true)
 	{
+<<<<<<< HEAD
 		Mem::Type* type = Mem::type_map[Mem::get_type_code(token_stream.this_token())];
 		token_stream.next();
+=======
+		size_t type = Mem::get_ctype_code();
+>>>>>>> parent of 65e88d1... Revert "修复若干bug"
 		auto name = Id::get_value(token_stream.this_token());
 		token_stream.match(ID);
 		size_t pos = stack_memory.push();
@@ -157,7 +161,10 @@ bool Mer::FunctionBase::check_param(const std::vector<Mem::Type*>& types)
 			throw Error("A01 exists an undefined type");
 		}
 		if (!type_seeker->second->convertible(param_types[i]))
+		{
+			std::cout <<std::endl<< param_types[i] << " VS " << types[i];
 			return false;
+		}
 	}
 	return true;
 }

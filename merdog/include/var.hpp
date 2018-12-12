@@ -18,6 +18,41 @@ namespace Mer
 		using Object = std::shared_ptr<Value>;
 		extern Namespace *this_namespace;
 
+<<<<<<< HEAD
+=======
+		std::string type_to_string(BasicType bt);
+		size_t get_type_code(Token *tok);
+		size_t &type_no();
+		// to get a compound type's code like vector<map<int,real>>
+		size_t get_ctype_code();
+		size_t merge_two_type(size_t c, size_t e);
+		class Type
+		{
+		public:
+			Type(const std::string &_name, size_t bt, const std::set<size_t>& _convertible_types)
+				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
+			bool convertible(const size_t &t);
+			void add_compatible_type(size_t type_code);
+			virtual std::string to_string() { return "{TYPE:}"+name+"/n"; }
+			virtual ~Type() {}
+
+		protected:
+			std::set<size_t> convertible_types;
+			size_t type_code;
+			std::string name;
+		};
+		class ComplexType :public Type
+		{
+		public:
+			ComplexType(size_t ct, size_t et);
+			virtual std::string to_string();
+			size_t get_container_type()const { return container_type; }
+			size_t get_element_type()const { return element_type; }
+		private:
+			size_t container_type;
+			size_t element_type;
+		};
+>>>>>>> parent of 65e88d1... Revert "修复若干bug"
 		class Value
 		{
 		public:
@@ -356,5 +391,6 @@ namespace Mer
 		private:
 			std::string str;
 		};
+		
 	}
 }
