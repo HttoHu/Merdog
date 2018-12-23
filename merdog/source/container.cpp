@@ -3,7 +3,6 @@
 #include "../include/word_record.hpp"
 #include "../include/memory.hpp"
 #include <algorithm>
-
 namespace Mer
 {
 	mVector Mer::m_vector;

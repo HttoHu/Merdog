@@ -20,7 +20,7 @@ std::string get_file_content(const std::string & filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-/*
+
 #ifndef _DEBUG
 int main(int argc, char* argv[])
 {
@@ -46,7 +46,6 @@ int main(int argc, char* argv[])
 	return 0;
 }
 #else
-*/
 int main()
 {
 	try
@@ -79,4 +78,4 @@ int main()
 	Sleep(100000);
 	return 0;
 }
-//#endif
+#endif
