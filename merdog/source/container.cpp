@@ -21,11 +21,7 @@ namespace Mer
 	}
 	std::string ComplexType::to_string()
 	{
-		if (container_type == mVector::type_code)
-		{
-			return "vector";
-		}
-		return "unknown";
+		return "complex_type";
 	}
 	//=============================================
 /*

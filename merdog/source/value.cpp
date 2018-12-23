@@ -169,18 +169,13 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 			{
 				throw Error("A04 type no found");
 			}
-			if (var_info->get_type() == 9)
-			{
-				auto result = structure_seeker.find(dynamic_cast<Mem::ComplexType*>(complex_type->second)->get_container_type());
-				if (result == structure_seeker.end())
-					throw Error("A05 type no found");
-				structure = result->second;
-			}
-			else
-			{
-				auto result = structure_seeker.find(var_info->get_type());
-				structure = result->second;
-			}
+			size_t type = var_info->get_type();
+			if (complex_type->second->to_string() == "complex_type")
+				type = dynamic_cast<Mem::ComplexType*>(complex_type->second)->get_container_type();
+			auto result = structure_seeker.find(type);
+			if (result == structure_seeker.end())
+				throw Error("A05 type no found");
+			structure = result->second;
 		}
 		token_stream.match(DOT);
 		ParserNode* tmp = new Variable(var_id);
@@ -307,7 +302,7 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(param_types,stack_memory.get_index(), result, exprs);
+	return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
 }
 
 Mer::Namespace * Mer::Parser::kill_namespaces()
