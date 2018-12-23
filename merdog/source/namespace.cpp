@@ -126,7 +126,7 @@ void Mer::Parser::create_namespace_var()
 		auto finder = tsymbol_table->find(Id::get_value(token_stream.this_token()));
 		if (finder->es == STYPE)
 		{
-			static_cast<ContainerTypeRecorder*>(finder)->create_glo_var();
+			static_cast<BuildInClass*>(finder)->create_glo_var();
 			token_stream.match(SEMI);
 			return;
 		}

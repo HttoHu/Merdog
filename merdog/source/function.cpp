@@ -157,7 +157,7 @@ bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 		}
 		if (!type_seeker->second->convertible(param_types[i]))
 		{
-			std::cout <<std::endl<< param_types[i] << " VS " << types[i];
+
 			return false;
 		}
 	}

@@ -208,8 +208,11 @@ VarDecl * Mer::Parser::var_decl()
 	{
 		token_stream.match(ASSIGN);
 		auto exp = new Expr();
-		if (exp->get_type() != type_code)
-			throw Error("type not matched");
+		if (!Mem::type_map[exp->get_type()]->convertible(type_code))
+		{
+			throw Error("A06  type not matched");
+			exp->expr_type = type_code;
+		}
 		var_list.insert({ id,exp });
 	}
 	else
@@ -300,6 +303,7 @@ Mer::VarDecl::VarDecl(size_t t, const std::map<Token*, Expr*>& v)
 			throw Error("Symbol " + a.first->to_string() + " redefined");
 		auto pos = stack_memory.push();
 		this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(t, pos));
+
 		var_list.push_back({ pos, a.second });
 	}
 }

@@ -56,7 +56,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	return func->run(tmp);
 }
 // How to split the method into some smaller functions?? 6-7-18
-Mer::Assign::AssignType _token_to_assType()
+Mer::Assign::AssignType Mer::_token_to_assType()
 {
 	using namespace Mer;
 	switch (token_stream.this_tag())
@@ -110,9 +110,9 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
-	case ESymbol::STYPE:
+	case ESymbol::STYPE:// Build-in Type but not basic type 
 	{
-		return static_cast<ContainerTypeRecorder*>(result)->create_var();
+		return static_cast<BuildInClass*>(result)->create_var();
 	}
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
@@ -164,10 +164,23 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 		StructureBase *structure = nullptr;
 		{
 			// find structure;
-			auto result = structure_seeker.find(var_info->get_type());
-			if (result == structure_seeker.end())
-				throw Error("type no found");
-			structure = result->second;
+			auto complex_type = Mem::type_map.find(var_info->get_type());
+			if (complex_type == Mem::type_map.end())
+			{
+				throw Error("A04 type no found");
+			}
+			if (var_info->get_type() == 9)
+			{
+				auto result = structure_seeker.find(dynamic_cast<Mem::ComplexType*>(complex_type->second)->get_container_type());
+				if (result == structure_seeker.end())
+					throw Error("A05 type no found");
+				structure = result->second;
+			}
+			else
+			{
+				auto result = structure_seeker.find(var_info->get_type());
+				structure = result->second;
+			}
 		}
 		token_stream.match(DOT);
 		ParserNode* tmp = new Variable(var_id);

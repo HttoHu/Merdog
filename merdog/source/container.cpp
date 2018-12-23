@@ -165,10 +165,12 @@ namespace Mer
 	}
 	void using_vector()
 	{
-		auto container_info = new ContainerTypeRecorder("vector");
+		auto container_info = new BuildInClass("vector");
 		structure_seeker.insert({ type_counter,&m_vector });
+
 		container_info->create_var = parse_def_container;
 		container_info->create_glo_var = parse_def_glo_container;
+
 		Mer::tsymbol_table->push_glo("vector",container_info);
 		mVector::type_code = type_counter;
 		type_map.insert({ type_counter ,new Mer::Mem::Type("vector",BasicType(type_counter),std::set<size_t>()) });

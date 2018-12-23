@@ -2,6 +2,7 @@
 #include <vector>
 #include "parser_node.hpp"
 #include "lexer.hpp"
+#include "../include/parser.hpp"
 namespace Mer
 {
 	class Expr;
@@ -81,9 +82,11 @@ namespace Mer
 	};
 
 	struct WordRecorder;
+	Assign::AssignType _token_to_assType();
 
 	namespace Parser
 	{
+
 		/*
 		ParserNode *build_init_list(Namespace *names);
 		*/

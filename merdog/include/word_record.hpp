@@ -76,10 +76,10 @@ namespace Mer
 		}
 	private:
 	};
-	struct ContainerTypeRecorder :public WordRecorder
+	struct BuildInClass :public WordRecorder
 	{
 	public:
-		ContainerTypeRecorder(const std::string &str):WordRecorder(STYPE)
+		BuildInClass(const std::string &str):WordRecorder(STYPE)
 		{
 			type_code = Mem::type_counter += 2;
 		}

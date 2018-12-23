@@ -4,6 +4,7 @@
 #include <fstream>
 #include <time.h>
 #include "../include/parser.hpp"
+#include "../include/clib/string.hpp"
 #include "../include/clib/merdog_io.hpp"
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
@@ -48,11 +49,11 @@ int main(int argc, char* argv[])
 */
 int main()
 {
-	//std::cout<<Mer::run_interpreter(get_file_content("test.mer"));
-	
 	try
 	{
 		Mer::using_vector();
+		Mer::using_str();
+
 		Mer::set_io();
 		Mer::set_maths();
 		std::string input_content = get_file_content("test.mer");
@@ -69,6 +70,10 @@ int main()
 	catch (Mer::Error &e)
 	{
 		std::cout << e.what();
+	}
+	catch (...)
+	{
+		std::cout << "Merdog »µµôÁË";
 	}
 	std::cout << "\nThe program has exited";
 	Sleep(100000);

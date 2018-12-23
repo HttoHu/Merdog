@@ -2,9 +2,11 @@
 #include "../include/memory.hpp"
 #include "../include/lexer.hpp"
 #include "../include/namespace.hpp"
+#include "../include/function.hpp"
 #include "../include/word_record.hpp"
+#include "../include/structure.hpp"
 using namespace Mer::Mem;
-int Mer::Mem::type_counter=7;
+int Mer::Mem::type_counter = 7;
 std::map<size_t, Type*> Mer::Mem::type_map
 {
 	{BasicType::INT,
@@ -12,11 +14,11 @@ std::map<size_t, Type*> Mer::Mem::type_map
 	},
 	{BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
 	{BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-	{BasicType::STRING,new Type("int",BasicType::STRING,{ }) }
+	{BasicType::STRING,new Type("string",BasicType::STRING,{11,BasicType::STRING }) }
 };
 Mer::Mem::ComplexType::ComplexType(size_t ct, size_t et) :
 	Type("no_name", (size_t)(type_counter), { (size_t)(++type_counter) })
-,container_type(ct),element_type(et){};
+	, container_type(ct), element_type(et) {};
 
 
 
@@ -42,7 +44,7 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 
 size_t Mer::Mem::get_type_code(Token * tok)
 {
-	switch(tok->get_tag())
+	switch (tok->get_tag())
 	{
 	case VOID_DECL:
 		return BVOID;
@@ -58,11 +60,12 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	{
 		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
 		if (info == nullptr)
-			throw Error("id: "+ Id::get_value(token_stream.this_token())+"no found");
+			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
 		return info->get_type();
+
 	}
 	default:
-		throw Error(tok->to_string()+" unknown type ");
+		throw Error(tok->to_string() + " unknown type ");
 	}
 }
 
@@ -85,12 +88,12 @@ size_t Mer::Mem::get_ctype_code()
 	token_stream.match(LT);
 	element_type = get_ctype_code();
 	token_stream.match(GT);
-	return merge_two_type(container_type,element_type);
+	return merge_two_type(container_type, element_type);
 }
 
 size_t Mer::Mem::merge_two_type(size_t c, size_t e)
 {
-	static std::map<std::pair<size_t, size_t>,size_t> type_m;
+	static std::map<std::pair<size_t, size_t>, size_t> type_m;
 	std::pair<size_t, size_t> key = { c,e };
 	auto result = type_m.find(key);
 	if (result != type_m.end())
@@ -155,5 +158,7 @@ bool Mer::Mem::Type::convertible(const size_t & t)
 
 void Mer::Mem::Type::add_compatible_type(size_t type_code)
 {
-	convertible_types.insert( type_code );
+	convertible_types.insert(type_code);
 }
+
+

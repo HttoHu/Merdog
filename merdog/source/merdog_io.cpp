@@ -65,6 +65,7 @@ namespace Mer
 	void set_io()
 	{
 		cout->dnt_check_param();
+		substr->set_param_types({Mer::Mem::BasicType::STRING, Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		Mer::root_namespace->children.insert({ "std", mstd });
 		mstd->set_new_func("substr", Mem::BasicType::STRING, substr);
 		mstd->set_new_func("strsize", Mem::BasicType::INT, str_size);

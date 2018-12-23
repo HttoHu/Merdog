@@ -7,10 +7,11 @@
 #define BASICTYPE_MAX_CODE 7
 namespace Mer
 {
+	class StructureBase;
 	class Namespace;
 	class Token;
 	namespace Mem
-	{
+	{	
 		enum BasicType
 		{
 			NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
@@ -336,6 +337,9 @@ namespace Mer
 		private:
 			double value;
 		};
+		
+
+
 		class String :public Value
 		{
 		public:
@@ -381,6 +385,10 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(str.size() == std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
 			}
+			Object operator[](Object v)override
+			{
+				return Object(new String(str[std::static_pointer_cast<Int>(v)->get_value()]));
+			}
 			Object clone()const override
 			{
 				return std::make_shared<String>(str);
@@ -388,8 +396,7 @@ namespace Mer
 			std::string to_string()const override
 			{
 				return str;
-			}
-		private:
+			}		
 			std::string str;
 		};
 		
