@@ -1,6 +1,5 @@
 
 #   Merdog
-## 作者忙于2019年高考中
 ## 简介
 Merdog 是一个简单的开源解释器C-Like 语言语法
 ## Merdog 2.1 支持的语法
@@ -11,11 +10,11 @@ Merdog 是一个简单的开源解释器C-Like 语言语法
 ```c++
 function int sum (int x, int y)
 {
-  return x+y;
+   return x+y;
 }
 program main
 {
-   std.cout(sum(1,2));
+  std.cout(sum(1,2));
 }.
 ```
 
@@ -23,6 +22,6 @@ program main
 使用Mircosoft 2017 和 Clang 编译通过并成功运行.
 
 ## 其他
-* 以 编译原理 为参考书 
+* 以 编译原理 为参考书
 * **部分算法来(表达式翻译,和一些语法分析)自Ruslan 的博客 https://ruslanspivak.com/lsbasi-part1/ **
 * 邮箱 [Email]huyuantao@outlook.com
