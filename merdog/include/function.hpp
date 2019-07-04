@@ -5,6 +5,7 @@
 #include "expr.hpp"
 namespace Mer
 {
+	using ParamFeature = std::vector<size_t>;
 	class Block;
 	class Param
 	{
@@ -82,6 +83,7 @@ namespace Mer
 
 	namespace Parser
 	{
+		ParamFeature build_param_feature();
 		Param *build_param();
 		void build_function();
 	}

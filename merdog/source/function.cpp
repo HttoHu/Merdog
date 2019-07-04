@@ -25,11 +25,6 @@ bool	is_function_statement()
 		}
 		if (token_stream.this_token(index + 1)->get_tag() == SEMI)
 		{
-			for (int i = 0; i < index + 1; i++)
-			{
-				token_stream.next();
-			}
-			token_stream.match(SEMI);
 			return true;
 		}
 		else
@@ -37,6 +32,29 @@ bool	is_function_statement()
 	}
 	else
 		throw Error("it isn't a function");
+}
+
+ParamFeature Mer::Parser::build_param_feature()
+{
+	ParamFeature ret;
+	token_stream.match(LPAREN);
+	if (token_stream.this_tag() == RPAREN)
+	{
+		token_stream.match(RPAREN);
+		return ret;
+	}
+	while (true)
+	{
+		size_t type = Mem::get_ctype_code();
+		token_stream.match(ID);
+		ret.push_back(type);
+		if (token_stream.this_tag() == COMMA)
+			token_stream.match(COMMA);
+		else
+			break;
+	}
+	token_stream.match(RPAREN);
+	return ret;
 }
 
 Param * Mer::Parser::build_param()
@@ -72,7 +90,7 @@ void Mer::Parser::build_function()
 	this_func_type = rtype;
 	token_stream.next();
 	this_namespace->sl_table->new_block();
-	auto name = Id::get_value(token_stream.this_token());
+	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.next();
 	// if the function has decleared.
 	auto finder = this_namespace->functions.find(name);
@@ -99,6 +117,9 @@ void Mer::Parser::build_function()
 	if (is_function_statement())
 	{
 		Function*ret = new Function(rtype);
+		auto param_types = build_param_feature();
+		token_stream.match(SEMI);
+		ret->set_param_types(param_types);
 		this_namespace->functions.insert({ name,ret });
 		ret->is_completed = false;
 		return;
