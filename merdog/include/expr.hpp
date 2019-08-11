@@ -16,6 +16,22 @@ namespace Mer
 		}
 	private:
 	};
+	class Index :public ParserNode
+	{
+	public:
+		Index(ParserNode* l, size_t _index) :left(l), index(_index) {}
+		Mem::Object execute()override
+		{
+			return left->execute()->operator[](std::make_shared<Mem::Int>(index));
+		}
+		size_t get_type()override
+		{
+			return left->get_type();
+		}
+	private:
+		ParserNode* left;
+		size_t index;
+	};
 	class BinOp :public ParserNode
 	{
 	public:
@@ -118,7 +134,7 @@ namespace Mer
 			Add, Sub, Div, Mul,
 			Null,
 		};
-		Assign(AssignType a, size_t l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
+		Assign(AssignType a, ParserNode* l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
 		Mem::Object execute()override;
 		virtual ~Assign()
 		{
@@ -126,7 +142,7 @@ namespace Mer
 		}
 	private:
 		AssignType asType;
-		size_t left;
+		ParserNode* left;
 		Token *op;
 		ParserNode* right;
 	};

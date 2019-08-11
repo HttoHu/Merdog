@@ -103,6 +103,24 @@ size_t Mer::Mem::merge_two_type(size_t c, size_t e)
 	return (size_t)type_counter;
 }
 
+Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
+{
+	switch (type)
+	{
+	case INT:
+		return std::make_shared<Int>(6832);
+	case DOUBLE:
+		return std::make_shared<Double>(0.0);
+	case BOOL:
+		return std::make_shared<Bool>(true);
+	case STRING:
+		return std::make_shared<String>("");
+	default:
+		break;
+	}
+	throw Error("Mer::Mem::Object Mer::Mem::create_var_t(size_t type) Unsupported type.");
+}
+
 Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
 {
 	switch (type)

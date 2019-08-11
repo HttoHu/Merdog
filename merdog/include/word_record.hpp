@@ -7,7 +7,7 @@ namespace Mer
 	{
 		SFUN,SVAR,SNAME,
 		SGVAR,SSTRUCTURE,
-		STYPE,
+		STYPE,USVAR
 	};
 	struct WordRecorder
 	{
@@ -59,7 +59,6 @@ namespace Mer
 
 	};
 	class Namespace;
-
 	struct GVarIdRecorder:public WordRecorder
 	{
 	public:

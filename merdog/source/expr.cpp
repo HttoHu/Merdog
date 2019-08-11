@@ -236,15 +236,15 @@ Mem::Object Mer::Assign::execute()
 	switch (asType)
 	{
 	case Mer::Assign::None:
-		return stack_memory[left]->operator=(right->execute());
+		return left->execute()->operator=(right->execute());
 	case Mer::Assign::Add:
-		return stack_memory[left]->operator+=(right->execute());
+		return left->execute()->operator+=(right->execute());
 	case Mer::Assign::Sub:
-		return stack_memory[left]->operator-=(right->execute());
+		return left->execute()->operator-=(right->execute());
 	case Mer::Assign::Div:
-		return stack_memory[left]->operator/=(right->execute());
+		return left->execute()->operator/=(right->execute());
 	case Mer::Assign::Mul:
-		return stack_memory[left]->operator*=(right->execute());
+		return left->execute()->operator*=(right->execute());
 	default:
 		throw Error("unkonwn assignment type");
 	}

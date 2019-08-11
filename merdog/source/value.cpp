@@ -2,6 +2,7 @@
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
+#include "../include/compound_box.hpp"
 #include "../include/structure.hpp"
 Mer::Variable::Variable(Token * tok) :id(tok)
 {
@@ -110,6 +111,10 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
+	case ESymbol::SSTRUCTURE:
+	{
+		return structure_decl();
+	}
 	case ESymbol::STYPE:// Build-in Type but not basic type 
 	{
 		return static_cast<BuildInClass*>(result)->create_var();
@@ -136,13 +141,15 @@ Mer::ParserNode * Mer::Parser::parse_id()
 		return ret;
 	}
 	}
+	//std::cout << "This Token:" << token_stream.this_token()->to_string();
 	Mer::Assign::AssignType assignment_type = _token_to_assType();
 	if (_token_to_assType() == Assign::AssignType::Null)
+	{
 		return ret;
-	size_t pos = static_cast<VarIdRecorder*>(result)->pos;
+	}
 	token_stream.next();
 	auto expr = new Expr();
-	auto node = new Assign(assignment_type, pos, id, expr->root());
+	auto node = new Assign(assignment_type, ret, id, expr->root());
 	expr->tree = nullptr;
 	delete expr;
 	return node;
@@ -161,7 +168,7 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 		{
 			throw Error("basic-type var doesn't have members");
 		}
-		StructureBase *structure = nullptr;
+		/*StructureBase *structure = nullptr;
 		{
 			// find structure;
 			auto complex_type = Mem::type_map.find(var_info->get_type());
@@ -176,10 +183,15 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 			if (result == structure_seeker.end())
 				throw Error("A05 type no found");
 			structure = result->second;
-		}
+		}*/
 		token_stream.match(DOT);
-		ParserNode* tmp = new Variable(var_id);
-		return parse_function_call(static_cast<Expr*>(tmp), structure);
+		std::string member_name = Id::get_value(token_stream.this_token());
+		auto usinfo = find_ustructure_t(var_info->get_type());
+		auto member_info = usinfo->mapping.find(member_name);
+		if (member_info == usinfo->mapping.end())
+			throw Error("member " + member_name + " no found");
+		token_stream.match(ID);
+		return new Index(new Variable(var_id), member_info->second);
 	}
 	default:
 		return new Variable(var_id);

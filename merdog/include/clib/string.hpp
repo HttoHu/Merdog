@@ -16,7 +16,5 @@ namespace Mer
 		static Mem::Object  _m_size(std::vector<Mem::Object>& args);
 	};
 	extern StringBase mstr;
-	ParserNode *create_str();
-	ParserNode *create_glo_str();
 	void using_str();
 }

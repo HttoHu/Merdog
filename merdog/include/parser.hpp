@@ -69,7 +69,6 @@ namespace Mer
 		Block* block();
 		Block* pure_block();
 		ParserNode *statement();
-		Assign *assignment_statement();
 		VarDecl *var_decl();
 		size_t get_type();
 
