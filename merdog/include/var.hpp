@@ -348,6 +348,11 @@ namespace Mer
 				return std::make_shared<String>(str +
 					std::static_pointer_cast<String>(v->Convert(STRING))->str);
 			}
+			Object operator=(Object v)override
+			{
+				str = std::static_pointer_cast<String>(v->Convert(STRING))->str;
+				return Convert(Mem::STRING);
+			}
 			size_t get_type()const override
 			{
 				return BasicType::STRING;
