@@ -28,7 +28,8 @@ void Mer::build_ustructure()
 	ustructure_map.insert({ name,us });
 	name_type_mapping.insert({ name,++Mem::type_counter });
 	type_name_mapping.insert({ Mem::type_counter,name });
-	Mer::this_namespace->sl_table->push(name, new WordRecorder(ESymbol::SSTRUCTURE));
+	Mer::this_namespace->sl_table->push(name, new WordRecorder(ESymbol::SSTRUCTURE,Mem::type_counter));
+	Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
 }
 
 StructureDecl* Mer::structure_decl()
@@ -58,7 +59,7 @@ Mer::UStructrue* Mer::find_ustructure_t(size_t type)
 {
 	auto result = type_name_mapping.find(type);
 	if (result == type_name_mapping.end())
-		throw Error("type " + std::to_string(type) + " undefined");
+		throw Error("type" + std::to_string(type) + " undefined");
 	auto result2 = ustructure_map.find(result->second);
 	if (result2 == ustructure_map.end())
 		throw Error("Id " +result2->first + " undefined");

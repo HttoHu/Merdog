@@ -12,7 +12,7 @@ namespace Mer
 	struct WordRecorder
 	{
 	public:
-		WordRecorder(ESymbol e) :es(e) {}
+		WordRecorder(ESymbol e, size_t tp = 0) :es(e),type_code(tp) {}
 		ESymbol es;
 		virtual std::string to_string() { return""; }
 		size_t get_type() { return type_code; }
