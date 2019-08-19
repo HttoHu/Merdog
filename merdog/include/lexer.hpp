@@ -17,6 +17,7 @@ namespace Mer
 {
 	enum Tag
 	{
+		EPT,
 		IMPORT, NAMESPACE, STRUCT,
 		PRINT, CAST,
 		SADD, SSUB, SMUL, SDIV, GET_ADD,
@@ -178,6 +179,20 @@ namespace Mer
 			advance();
 			return tmp;
 		}
+		void back() {
+			if (this_token()->get_tag() == Tag::ENDL || this_token()->get_tag() == Tag::EPT)
+			{
+				dec();
+				back();
+			}
+			dec();
+		}
+		void dec()
+		{
+			--pos;
+		}
+		void replace_this(Token* tok);
+		void add(Token* tok);
 		void advance()
 		{
 			pos++;
@@ -189,7 +204,7 @@ namespace Mer
 		}
 		void next()
 		{
-			if (this_token()->get_tag() == Tag::ENDL)
+			if (this_token()->get_tag() == Tag::ENDL|| this_token()->get_tag() == Tag::EPT)
 			{
 				advance();
 				next();

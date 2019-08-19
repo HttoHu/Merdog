@@ -352,6 +352,18 @@ std::string Mer::	GIC()
 	token_stream.match(ID);
 	return ret;
 }
+void Mer::TokenStream::replace_this(Token* tok)
+{
+	if (tok == nullptr)
+		this_token() == new Token(Tag::EPT);
+	else {
+		content[pos] = tok;
+	}
+}
+void Mer::TokenStream::add(Token* tok)
+{
+	content.insert(content.begin() + pos+1, tok);
+}
 void TokenStream::	remove_tokens()
 {
 	int index = -1;

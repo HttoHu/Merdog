@@ -7,6 +7,7 @@
 #include "../include/structure.hpp"
 #include "../include/loop_statement.hpp"
 #include "../include/environment.hpp"
+#include "../include/compound_box.hpp"
 using namespace Mer;
 Program* Mer::Parser::program()
 {
@@ -16,6 +17,9 @@ Program* Mer::Parser::program()
 	{
 		switch (token_stream.this_tag())
 		{
+		case STRUCT:
+			build_ustructure();
+			break;
 		case FUNCTION:
 			build_function();
 			break;
@@ -29,7 +33,6 @@ Program* Mer::Parser::program()
 			token_stream.match(DOT);
 			ret = new Program(tmp, blo);
 			programe_num++;
-
 			break;
 		}
 		case ENDOF:
@@ -160,40 +163,6 @@ ParserNode * Mer::Parser::statement()
 	return node;
 }
 
-Assign * Mer::Parser::assignment_statement()
-{
-	auto name = token_stream.this_token();
-	auto left = get_current_info();
-
-	if (left->es != ESymbol::SVAR)
-		throw Error(name->to_string() + " is not a lv");
-	size_t pos = static_cast<VarIdRecorder*>(left)->pos;
-	token_stream.match(ID);
-	Assign::AssignType assignment_type = Assign::AssignType::None;
-	switch (token_stream.this_tag())
-	{
-	case SADD:
-		assignment_type = Assign::AssignType::Add;
-		break;
-	case SSUB:
-		assignment_type = Assign::AssignType::Sub;
-		break;
-	case SMUL:
-		assignment_type = Assign::AssignType::Mul;
-		break;
-	case SDIV:
-		assignment_type = Assign::AssignType::Div;
-		break;
-	default:
-		break;
-	}
-	token_stream.next();
-	auto expr = new Expr();
-	auto node = new Assign(assignment_type, pos, name, expr->root());
-	expr->tree = nullptr;
-	delete expr;
-	return node;
-}
 
 VarDecl * Mer::Parser::var_decl()
 {

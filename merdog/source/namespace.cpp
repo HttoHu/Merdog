@@ -124,7 +124,11 @@ void Mer::Parser::create_namespace_var()
 	if (token_stream.this_tag() == ID)
 	{
 		auto finder = tsymbol_table->find(Id::get_value(token_stream.this_token()));
-		if (finder->es == STYPE)
+		if (finder == nullptr)
+		{
+			throw Error("unkown token");
+		}
+		else if (finder->es != STYPE)
 		{
 			static_cast<BuildInClass*>(finder)->create_glo_var();
 			token_stream.match(SEMI);

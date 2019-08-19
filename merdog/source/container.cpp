@@ -31,7 +31,7 @@ namespace Mer
 	{
 		auto result = Mem::type_map.find(sz);
 		if (result == Mem::type_map.end())
-			throw Error("type undefined");
+			throw Error("type undefined");type undefined
 		return result->second;
 	}
 	std::map<Token*, UContainerInit> front_part_tmp(size_t &type)

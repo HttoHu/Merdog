@@ -29,6 +29,7 @@ namespace Mer
 		// to get a compound type's code like vector<map<int,real>>
 		size_t get_ctype_code();
 		size_t merge_two_type(size_t c, size_t e);
+		Mem::Object create_var_t(size_t type);
 		class Type
 		{
 		public:
@@ -337,9 +338,6 @@ namespace Mer
 		private:
 			double value;
 		};
-		
-
-
 		class String :public Value
 		{
 		public:
@@ -349,6 +347,11 @@ namespace Mer
 			{
 				return std::make_shared<String>(str +
 					std::static_pointer_cast<String>(v->Convert(STRING))->str);
+			}
+			Object operator=(Object v)override
+			{
+				str = std::static_pointer_cast<String>(v->Convert(STRING))->str;
+				return Convert(Mem::STRING);
 			}
 			size_t get_type()const override
 			{

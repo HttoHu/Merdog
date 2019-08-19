@@ -56,40 +56,6 @@ Mer::Mem::Object Mer::StringBase::_m_size(std::vector<Mem::Object>& args)
 	return std::make_shared<Mem::Int>(size);
 }
 
-ParserNode * Mer::create_str()
-{
-	ParserNode *ret = nullptr;
-	token_stream.match(ID);
-	auto id = token_stream.this_token();
-	auto result = this_namespace->sl_table->find(Id::get_value(id));
-	if (result == nullptr)
-	{
-		throw Error("Merdog is broken");
-	}
-	switch (result->es)
-	{
-	case ESymbol::STYPE:// Build-in Type but not basic type 
-		break;
-	default:
-		throw Error("inert error");
-	}
-	Mer::Assign::AssignType assignment_type = _token_to_assType();
-	if (_token_to_assType() == Assign::AssignType::Null)
-		return ret;
-	size_t pos = static_cast<VarIdRecorder*>(result)->pos;
-	token_stream.next();
-	auto expr = new Expr();
-	auto node = new Assign(assignment_type, pos, id, expr->root());
-	expr->tree = nullptr;
-	delete expr;
-	return node;
-}
-
-ParserNode * Mer::create_glo_str()
-{
-	return nullptr;
-}
-
 void Mer::using_str()
 {
 	auto container_info = new BuildInClass("mstr");
