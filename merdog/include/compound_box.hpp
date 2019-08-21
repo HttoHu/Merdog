@@ -41,6 +41,13 @@ namespace Mer
 	class USObject :public Mem::Value {
 	public:
 		USObject(const std::vector<Mem::Object>& _vec):vec(_vec) { }
+		Mem::Object operator=(Mem::Object v)override
+		{
+			// haha, lasy and high performance.
+			auto a = std::static_pointer_cast<USObject>(v);
+			vec = a->vec;
+			return a;
+		}
 		virtual Mem::Object operator[](Mem::Object v)
 		{
 			return vec[std::static_pointer_cast<Mem::Int>(v)->get_value()];
