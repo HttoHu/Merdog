@@ -3,6 +3,7 @@
 #include <memory>
 #include <set>
 #include <map>
+#include "type.hpp"
 #include "error.hpp"
 #define BASICTYPE_MAX_CODE 7
 namespace Mer
@@ -12,15 +13,11 @@ namespace Mer
 	class Token;
 	namespace Mem
 	{	
-		enum BasicType
-		{
-			NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
-		};
+
 		class Type;
 		class Value;
 		using Object = std::shared_ptr<Value>;
-		extern std::map<size_t, Type*> type_map;
-		extern int type_counter;
+
 		extern Namespace *this_namespace;
 
 		std::string type_to_string(BasicType bt);
@@ -30,32 +27,6 @@ namespace Mer
 		size_t get_ctype_code();
 		size_t merge_two_type(size_t c, size_t e);
 		Mem::Object create_var_t(size_t type);
-		class Type
-		{
-		public:
-			Type(const std::string &_name, size_t bt, const std::set<size_t>& _convertible_types)
-				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
-			bool convertible(const size_t &t);
-			void add_compatible_type(size_t type_code);
-			virtual std::string to_string() { return "{TYPE:}"+name+"/n"; }
-			virtual ~Type() {}
-
-		protected:
-			std::set<size_t> convertible_types;
-			size_t type_code;
-			std::string name;
-		};
-		class ComplexType :public Type
-		{
-		public:
-			ComplexType(size_t ct, size_t et);
-			virtual std::string to_string();
-			size_t get_container_type()const { return container_type; }
-			size_t get_element_type()const { return element_type; }
-		private:
-			size_t container_type;
-			size_t element_type;
-		};
 		class Value
 		{
 		public:

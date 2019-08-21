@@ -230,7 +230,11 @@ size_t Mer::Parser::get_type()
 		return Mem::STRING;
 	case ID:
 	{
-		
+		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		if (info == nullptr)
+			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
+		token_stream.next();
+		return info->get_type();
 	}
 	default:
 		throw Error("not finished yet");

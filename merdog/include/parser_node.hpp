@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "var.hpp"
+#include "object.hpp"
 namespace Mer
 {
 	class ParserNode

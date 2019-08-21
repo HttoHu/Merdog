@@ -1,5 +1,5 @@
 #include "../include/function.hpp"
-#include "../include/var.hpp"
+#include "../include/object.hpp"
 #include "../include/memory.hpp"
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"

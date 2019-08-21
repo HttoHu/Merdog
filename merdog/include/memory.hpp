@@ -3,7 +3,7 @@
 #include <stack>
 #include <map>
 #include <set>
-#include "var.hpp"
+#include "object.hpp"
 namespace Mer
 {
 	class Memory

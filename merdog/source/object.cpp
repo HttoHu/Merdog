@@ -1,4 +1,4 @@
-#include "../include/var.hpp"
+#include "../include/object.hpp"
 #include "../include/memory.hpp"
 #include "../include/lexer.hpp"
 #include "../include/namespace.hpp"
@@ -6,20 +6,6 @@
 #include "../include/word_record.hpp"
 #include "../include/structure.hpp"
 using namespace Mer::Mem;
-int Mer::Mem::type_counter = 7;
-std::map<size_t, Type*> Mer::Mem::type_map
-{
-	{BasicType::INT,
-		new Type("int",BasicType::INT,{BasicType::INT,BasicType::BOOL,BasicType::DOUBLE})
-	},
-	{BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-	{BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-	{BasicType::STRING,new Type("string",BasicType::STRING,{11,BasicType::STRING }) }
-};
-Mer::Mem::ComplexType::ComplexType(size_t ct, size_t et) :
-	Type("no_name", (size_t)(type_counter), { (size_t)(++type_counter) })
-	, container_type(ct), element_type(et) {};
-
 
 
 std::string Mer::Mem::type_to_string(BasicType bt)
@@ -79,8 +65,7 @@ size_t Mer::Mem::get_ctype_code()
 {
 	size_t container_type;
 	size_t element_type;
-	container_type = get_type_code(token_stream.this_token());
-	token_stream.next();
+	container_type = Parser::get_type();
 	if (token_stream.this_tag() != LT)
 	{
 		return container_type;

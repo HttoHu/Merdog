@@ -1,5 +1,5 @@
 #include "../include/clib/string.hpp"
-#include "../include/var.hpp"
+#include "../include/object.hpp"
 #include "../include/value.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"

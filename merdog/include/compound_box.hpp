@@ -3,7 +3,7 @@
 #include <vector>
 #include <functional>
 #include <map>
-#include "var.hpp"
+#include "object.hpp"
 #include "parser.hpp"
 namespace Mer
 {
@@ -58,7 +58,6 @@ namespace Mer
 		std::vector<std::size_t> var_list;
 	};
 	extern std::map<std::string, UStructrue*> ustructure_map;
-	extern std::map<std::string, size_t> name_type_mapping;
 	extern std::map<size_t, std::string> type_name_mapping;
 	void build_ustructure();
 	StructureDecl* structure_decl();

@@ -5,7 +5,6 @@
 #include "../include/namespace.hpp"
 using namespace Mer;
 std::map<std::string, Mer::UStructrue*> Mer::ustructure_map;
-std::map<std::string, size_t> Mer::name_type_mapping;
 std::map<size_t,std::string> Mer::type_name_mapping;
 //OK
 void Mer::build_ustructure()
@@ -26,7 +25,7 @@ void Mer::build_ustructure()
 	}
 	token_stream.match(END);
 	ustructure_map.insert({ name,us });
-	name_type_mapping.insert({ name,++Mem::type_counter });
+	Mem::type_index.insert({ name,++Mem::type_counter });
 	type_name_mapping.insert({ Mem::type_counter,name });
 	Mer::this_namespace->sl_table->push(name, new WordRecorder(ESymbol::SSTRUCTURE,Mem::type_counter));
 	Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
@@ -42,7 +41,7 @@ StructureDecl* Mer::structure_decl()
 	{
 		throw Error("undefined type <" + type_name + ">");
 	}
-	auto type_result = name_type_mapping.find(type_name);
+	auto type_result = Mem::type_index.find(type_name);
 	tvec.push_back(token_stream.this_token());
 	token_stream.match(ID);
 	while (token_stream.this_tag() != SEMI)

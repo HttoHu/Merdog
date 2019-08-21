@@ -8,7 +8,7 @@ namespace Mer
 	class Expr;
 	class FunctionBase;
 	class StructureBase;
-	//×ÖÃæÖµ³£Á¿ literal-const
+	//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ literal-const
 	class LConV :public ParserNode
 	{
 	public:
