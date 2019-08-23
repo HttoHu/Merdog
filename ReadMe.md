@@ -19,7 +19,7 @@ program main
 ```
 
 ## 有关编译器
-使用Mircosoft 2017 和 Clang 编译通过并成功运行.
+使用Mircosoft Visual Studio 2017/2019 和 Clang 编译通过并成功运行.
 
 ## 其他
 * 以 编译原理 为参考书
