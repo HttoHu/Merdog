@@ -1,4 +1,5 @@
 #pragma once
+#include "../type.hpp"
 #include "../function.hpp"
 #include "../include/namespace.hpp"
 namespace Mer

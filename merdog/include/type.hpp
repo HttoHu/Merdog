@@ -29,7 +29,7 @@ namespace Mer
 		{
 		public:
 			ComplexType(size_t ct, size_t et);
-			virtual std::string to_string();
+			virtual std::string to_string() { return ""; }
 			size_t get_container_type()const { return container_type; }
 			size_t get_element_type()const { return element_type; }
 		private:
