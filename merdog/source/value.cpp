@@ -3,7 +3,6 @@
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
 #include "../include/compound_box.hpp"
-#include "../include/structure.hpp"
 Mer::Variable::Variable(Token * tok) :id(tok)
 {
 	auto result = this_namespace->sl_table->find(Id::get_value(tok));
@@ -251,39 +250,6 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 	}
 	token_stream.next();
 	return new NVModificationAdapter(assignment_type, ret, new Expr());
-}
-
-Mer::FunctionCall * Mer::Parser::parse_function_call(Mer::Expr * co_name, StructureBase *sb)
-{
-	auto id = token_stream.this_token();
-	std::vector<Expr*> exprs{ co_name };
-	// to check the param's type.
-	std::vector<size_t> param_types;
-
-	auto result = sb->get_function(Id::get_value(id));
-	token_stream.match(ID);
-
-	if (result == nullptr)
-		throw Error("function " + id->to_string() + " no found its defination");
-	token_stream.match(LPAREN);
-	if (token_stream.this_tag() == RPAREN)
-	{
-		token_stream.match(RPAREN);
-		return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
-	}
-	auto param_unit = new Expr();
-	param_types.push_back(param_unit->get_type());
-	exprs.push_back(param_unit);
-	while (token_stream.this_tag() == COMMA)
-	{
-		token_stream.match(COMMA);
-		auto param_unit2 = new Expr();
-		param_types.push_back(param_unit2->get_type());
-		exprs.push_back(param_unit2);
-	}
-	token_stream.match(RPAREN);
-
-	return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
 }
 
 Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)

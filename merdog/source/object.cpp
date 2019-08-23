@@ -4,7 +4,6 @@
 #include "../include/namespace.hpp"
 #include "../include/function.hpp"
 #include "../include/word_record.hpp"
-#include "../include/structure.hpp"
 using namespace Mer::Mem;
 
 

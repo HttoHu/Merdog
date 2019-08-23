@@ -4,7 +4,6 @@
 #include "../include/if.hpp"
 #include "../include/namespace.hpp"
 #include "../include/function.hpp"
-#include "../include/structure.hpp"
 #include "../include/loop_statement.hpp"
 #include "../include/environment.hpp"
 #include "../include/compound_box.hpp"

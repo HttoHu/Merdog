@@ -1,7 +1,6 @@
 #include "../include/expr.hpp"
 #include "../include/value.hpp"
 #include "../include/memory.hpp"
-#include "../include/structure.hpp"
 #include "../include/function.hpp"
 using namespace Mer;
 Mer::ParserNode * Mer::Expr::and_or()

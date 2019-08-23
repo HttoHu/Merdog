@@ -1,7 +1,6 @@
 #include "../include/namespace.hpp"
 #include "../include/value.hpp"
 #include "../include/word_record.hpp"
-#include "../include/structure.hpp"
 using namespace Mer;
 Namespace *Mer::root_namespace = new Namespace(nullptr);
 Namespace *Mer::this_namespace = root_namespace;
