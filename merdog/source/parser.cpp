@@ -163,7 +163,7 @@ ParserNode * Mer::Parser::statement()
 }
 
 
-VarDecl * Mer::Parser::var_decl()
+ParserNode * Mer::Parser::var_decl()
 {
 	std::map<Token*, Expr*> var_list;
 	size_t type_code = Mem::get_type_code(token_stream.this_token());
@@ -183,6 +183,11 @@ VarDecl * Mer::Parser::var_decl()
 		}
 		var_list.insert({ id,exp });
 	}
+	else if (token_stream.this_token()->get_tag() == LSB)
+	{
+		token_stream.back();
+		return array_decl(type_code);
+	}
 	else
 	{
 		throw Error("please init var");
@@ -200,6 +205,7 @@ VarDecl * Mer::Parser::var_decl()
 				throw Error("type not matched");
 			var_list.insert({ id,exp });
 		}
+
 		else
 		{
 			var_list.insert({ id,nullptr });
@@ -324,4 +330,34 @@ Mem::Object Mer::Return::execute() {
 
 	block->ret = expr->execute();
 	return nullptr;
+}
+
+Mer::ArrayDecl::ArrayDecl(size_t t, size_t sz, Token *tok, InitList* _expr):type(t), size(sz), expr(_expr) {
+	if (_expr == nullptr)
+		throw Error("Symbol " + tok->to_string() + " redefined");
+	auto var_mtable = this_namespace->sl_table;
+	std::string var_name = Id::get_value(tok);
+	//=========================================
+	if (var_mtable->find_front(var_name) != nullptr)
+		throw Error("Symbol " + tok->to_string() + " redefined");
+	pos = stack_memory.push();
+	var_mtable->push(var_name, new VarIdRecorder(Mem::ARRAY, pos));
+}
+Mem::Object Mer::ArrayDecl::execute()
+{
+	stack_memory[pos] = expr->execute();
+	return nullptr;
+}
+
+ArrayDecl* Mer::Parser::array_decl(size_t type_code)
+{
+	Token *tok = token_stream.this_token();
+	token_stream.match(ID);
+	token_stream.match(LSB);
+	auto sz = token_stream.this_token();
+	token_stream.match(INTEGER);
+	token_stream.match(RSB);
+	token_stream.match(ASSIGN);
+	auto expr = new InitList(Integer::get_value(sz));
+	return new ArrayDecl(type_code, Integer::get_value(sz), tok, expr);
 }

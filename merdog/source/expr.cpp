@@ -248,24 +248,49 @@ Mem::Object Mer::Assign::execute()
 		throw Error("unkonwn assignment type");
 	}
 }
-/*
-Mer::InitList::InitList(Structure * _type, const std::map<std::string, Expr*>& _init_list) {
-	type = _type->type_id();
-	init_v.resize(_type->type_size());
-	for (const auto &a : _init_list)
+
+Mer::InitList::InitList(size_t sz):size(sz)
+{
+	size_t type_c;
+	token_stream.match(BEGIN);
+	while (token_stream.this_tag() != Tag::END)
 	{
-		init_v[_type->find_var(a.first).first] = a.second;
+		init_v.push_back(new Expr());
+		if (token_stream.this_tag() == Tag::COMMA)
+			token_stream.match(COMMA);
 	}
+	token_stream.match(END);
+	type = init_v[0]->get_type();
+	if (init_v.size() > sz)
+		throw Error("Error, array overflow");
+	if (init_v.size() < 2)
+	{
+		return;
+	}
+	for (int i = 1; i < init_v.size(); i++)
+	{
+		if (init_v[i]->get_type() != init_v[i - 1]->get_type())
+			throw Error("there is a type-distinction in an init list.");
+	}
+
 }
 
 Mem::Object Mer::InitList::execute()
 {
 	std::vector<Mem::Object> v(init_v.size());
+	if (v.size() == 1 && size > 1)
+	{
+		auto tmp= init_v[0]->execute();
+		v = std::vector<Mem::Object>(size, tmp);
+		return std::make_shared<Mem::ArrayObj>(std::move(v),type);
+	}
+	if (v.size() != size)
+		throw Error("list size is not matched with array");
 	for (size_t i = 0; i < v.size(); i++)
 	{
 		v[i] = init_v[i]->execute();
 	}
-	return std::make_shared<CompoundObject>(type,v);
+	return std::make_shared<Mem::ArrayObj>(std::move(v),type);
 }
 
 Mer::InitList::~InitList()
@@ -273,7 +298,7 @@ Mer::InitList::~InitList()
 	for (auto &a : init_v)
 		delete a;
 }
-*/
+
 
 Mer::ImplicitConvertion::ImplicitConvertion(size_t _type) :type(_type) {}
 

@@ -50,7 +50,7 @@ namespace Mer
 			delete right;
 		}
 	private:
-		ParserNode * left;
+		ParserNode *left;
 		Token *op;
 		ParserNode *right;
 	};
@@ -75,17 +75,22 @@ namespace Mer
 	class CompoundObject;
 	class Expr;
 	class Type;
-	/*
+	
 	class InitList :public ParserNode
 	{
 	public:
-		InitList(Structure *_type, const std::map<std::string, Expr*>& _init_list);
+		InitList(size_t sz);
 		Mem::Object execute()override;
+		size_t get_type()override
+		{
+			return type;
+		}
 		virtual ~InitList();
 	private:
 		std::vector<Expr*> init_v;
 		size_t type;
-	};*/
+		size_t size;
+	};
 	class Expr :public ParserNode
 	{
 	public:

@@ -11,24 +11,24 @@ using namespace Mer;
 using TokenMap = std::map<std::string, Token*>;
 using TagStrMap = std::map<Tag, std::string>;
 //==========================================
-size_t Mer::Endl::	current_line = 0;
-TagStrMap	Mer::	TagStr{
-	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{STRUCT,"struct"},
+size_t Mer::Endl::current_line = 0;
+TagStrMap	Mer::TagStr{
+	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },
-	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{VOID_DECL,"VOID_DECL"},
+	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{ VOID_DECL,"VOID_DECL" },
 	{ PLUS,"PLUS" },{ MINUS,"MINUS" },{ MUL,"MUL" },{ DIV,"DIV" },
 	{ GE,"GE" },{ GT,"GT" },{ LE,"LE" },{ LT,"LT" },{ EQ,"EQ" },{ NE,"NE" },
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
-	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },{LSB,"LSB"},{RSB,"RSB"},
+	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },{ LSB,"LSB" },{ RSB,"RSB" },
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
-	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{SADD,"SADD"},
+	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },
 };
-TokenMap	Mer::	KeyWord{
-	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{"struct",new Token(STRUCT)},
+TokenMap	Mer::KeyWord{
+	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
 	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
 	{ "continue",new Token(CONTINUE) },
@@ -42,9 +42,9 @@ TokenMap	Mer::	KeyWord{
 };
 bool				is_function_args = false;
 //==========================================
-Token* Mer::		END_TOKEN = new Token(ENDOF);
-TokenStream Mer::	token_stream;
-Token* Mer::		parse_number(const std::string &str, size_t &pos)
+Token* Mer::END_TOKEN = new Token(ENDOF);
+TokenStream Mer::token_stream;
+Token* Mer::parse_number(const std::string &str, size_t &pos)
 {
 	int64_t ret = 0;
 	for (; pos < str.size(); pos++)
@@ -76,7 +76,7 @@ Token* Mer::		parse_number(const std::string &str, size_t &pos)
 	}
 	return new Integer(ret);
 }
-Token*	Mer::		parse_word(const std::string &str, size_t &pos)
+Token*	Mer::parse_word(const std::string &str, size_t &pos)
 {
 	std::string ret;
 	bool first_char = true;
@@ -113,7 +113,7 @@ Token*	Mer::		parse_word(const std::string &str, size_t &pos)
 	else
 		return new Id(ret);
 }
-Token*Mer::			parse_string(const std::string & str, size_t & pos)
+Token*Mer::parse_string(const std::string & str, size_t & pos)
 {
 	std::string value;
 	if (str[pos] == '\'')
@@ -152,7 +152,7 @@ Token*Mer::			parse_string(const std::string & str, size_t & pos)
 	}
 	return new String(value);
 }
-void Mer::			build_token_stream(const std::string &content) {
+void Mer::build_token_stream(const std::string &content) {
 	std::string tmp_str;
 	token_stream.push_back(new Endl());
 	for (size_t i = 0; i < content.size(); i++)
@@ -162,7 +162,7 @@ void Mer::			build_token_stream(const std::string &content) {
 		case '\'':
 			token_stream.push_back(parse_string(content, i));
 			break;
-			case '\r':
+		case '\r':
 		case '\n':
 			token_stream.push_back(new Endl());
 			break;
@@ -286,7 +286,7 @@ void Mer::			build_token_stream(const std::string &content) {
 				while (i + 1 < content.size() && content[i++] != '\n')
 					continue;
 				// in case that the uncorrect of line no
-				i-=2;
+				i -= 2;
 				break;
 			}
 			else if (i + 1 < content.size() && content[i + 1] == '*')
@@ -346,7 +346,7 @@ void Mer::			build_token_stream(const std::string &content) {
 	}
 	token_stream.push_back(END_TOKEN);
 }
-std::string Mer::	GIC()
+std::string Mer::GIC()
 {
 	auto ret = Id::get_value(token_stream.this_token());
 	token_stream.match(ID);
@@ -362,9 +362,9 @@ void Mer::TokenStream::replace_this(Token* tok)
 }
 void Mer::TokenStream::add(Token* tok)
 {
-	content.insert(content.begin() + pos+1, tok);
+	content.insert(content.begin() + pos + 1, tok);
 }
-void TokenStream::	remove_tokens()
+void TokenStream::remove_tokens()
 {
 	int index = -1;
 	// delete literal_const and endl value
@@ -404,7 +404,7 @@ void TokenStream::	remove_tokens()
 	content.clear();
 	//throw Error("HEY"+std::to_string(content.size()));
 }
-void TokenStream::	clear()
+void TokenStream::clear()
 {
 	remove_tokens();
 	pos = 0;

@@ -48,6 +48,7 @@ namespace Mer
 		Mem::Object execute()override
 		{
 			blo->new_block();
+
 			for (init->execute();
 				std::static_pointer_cast<Mem::Bool>(condition->execute())->_value();
 				step_action->execute())

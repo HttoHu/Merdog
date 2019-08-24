@@ -63,15 +63,26 @@ namespace Mer
 		Expr *expr;
 		Block *block;
 	};
+	class ArrayDecl :public ParserNode
+	{
+	public:
+		ArrayDecl(size_t t, size_t sz, Token *tok, InitList* _expr);
+		Mem::Object execute()override;
+	private:
+		size_t type;
+		size_t size;
+		size_t pos;
+		InitList* expr;
+	};
 	namespace Parser
 	{
 		Program* program();
 		Block* block();
 		Block* pure_block();
 		ParserNode *statement();
-		VarDecl *var_decl();
+		ParserNode *var_decl();
 		size_t get_type();
-
+		ArrayDecl* array_decl(size_t type_code);
 		WordRecorder *get_current_info();
 	}
 }

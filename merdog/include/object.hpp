@@ -3,6 +3,7 @@
 #include <memory>
 #include <set>
 #include <map>
+#include <vector>
 #include "type.hpp"
 #include "error.hpp"
 #define BASICTYPE_MAX_CODE 7
@@ -373,6 +374,32 @@ namespace Mer
 			}		
 			std::string str;
 		};
-		
+		class ArrayObj :public Value
+		{
+		public:
+			ArrayObj(std::vector<Object> && lst, size_t type_c) :elems(lst), type_code(type_c) {}
+			ArrayObj(size_t sz, size_t type_c) : type_code(type_c),elems(sz) {}
+			virtual Object operator=(Object v)
+			{
+				if (v->get_type() != BasicType::ARRAY&&std::static_pointer_cast<ArrayObj>(v)->get_ele_type() != type_code)
+					throw Error("assign to an array failed.");
+				elems = std::static_pointer_cast<ArrayObj>(v)->elems;
+			}
+			virtual Object operator[](Object v)
+			{
+				return elems[std::static_pointer_cast<Int>(v->Convert(INT))->get_value()];
+			}
+			virtual size_t get_type()const
+			{
+				return BasicType::ARRAY;
+			}
+			size_t get_ele_type()const
+			{
+				return type_code;
+			}
+		private:
+			size_t type_code;
+			std::vector<Object> elems;
+		};
 	}
 }

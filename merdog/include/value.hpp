@@ -93,7 +93,7 @@ namespace Mer
 		ParserNode *parse_id();
 		ParserNode *parse_var(WordRecorder* var_info);
 		ParserNode *_parse_id_wn(Namespace *names);
-		FunctionCall *parse_function_call(Mer::Expr *co_caller,StructureBase *sb);
+		//FunctionCall *parse_function_call(Mer::Expr *co_caller,StructureBase *sb);
 		FunctionCall *parse_function_call(Namespace *names);
 		Namespace *kill_namespaces();
 	}
