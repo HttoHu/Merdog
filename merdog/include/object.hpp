@@ -125,7 +125,7 @@ namespace Mer
 		class Int :public Value
 		{
 		public:
-			Int(int64_t v) :value(v) {}
+			Int(int v) :value(v) {}
 			std::string to_string()const override
 			{
 				return std::to_string(value);
@@ -207,14 +207,14 @@ namespace Mer
 			{
 				return std::make_shared<Int>(-value);
 			}
-			int64_t get_value()
+			int get_value()
 			{
 				return value;
 			}
 			Object Convert(int type) override;
 			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
 		private:
-			int64_t value;
+			int value;
 		};
 		class Double :public Value
 		{

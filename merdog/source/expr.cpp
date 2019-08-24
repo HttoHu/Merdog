@@ -306,3 +306,8 @@ Mem::Object Mer::ImplicitConvertion::execute()
 {
 	return tree->execute()->Convert(type);
 }
+
+Mem::Object Mer::ContainerIndex::execute()
+{
+	return stack_memory[pos]->operator[](expr->execute());
+}

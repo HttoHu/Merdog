@@ -46,7 +46,7 @@ Token* Mer::END_TOKEN = new Token(ENDOF);
 TokenStream Mer::token_stream;
 Token* Mer::parse_number(const std::string &str, size_t &pos)
 {
-	int64_t ret = 0;
+	int ret = 0;
 	for (; pos < str.size(); pos++)
 	{
 		if (isdigit(str[pos]))

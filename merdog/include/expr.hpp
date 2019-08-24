@@ -32,6 +32,15 @@ namespace Mer
 		ParserNode* left;
 		size_t index;
 	};
+	class ContainerIndex :public ParserNode
+	{
+	public:
+		ContainerIndex(size_t _pos, ParserNode* _expr) :pos(_pos), expr(_expr) {}
+		Mem::Object execute()override;
+	private:
+		size_t pos;
+		ParserNode* expr;
+	};
 	class BinOp :public ParserNode
 	{
 	public:

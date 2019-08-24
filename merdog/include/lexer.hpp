@@ -108,9 +108,9 @@ namespace Mer
 	class Integer :public Token
 	{
 	public:
-		Integer(int64_t n) :Token(INTEGER), 
+		Integer(int n) :Token(INTEGER), 
 			value(n) {}
-		static int64_t get_value(Token *tok)
+		static int get_value(Token *tok)
 		{
 			if (tok->check(INTEGER))
 				return static_cast<Integer*>(tok)->value;
@@ -120,7 +120,7 @@ namespace Mer
 			return "<Integer:" + std::to_string(value) + ">";
 		}
 	private:
-		int64_t value;
+		int value;
 	};
 	class Real :public Token
 	{

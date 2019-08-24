@@ -167,22 +167,6 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 		{
 			throw Error("basic-type var doesn't have members");
 		}
-		/*StructureBase *structure = nullptr;
-		{
-			// find structure;
-			auto complex_type = Mem::type_map.find(var_info->get_type());
-			if (complex_type == Mem::type_map.end())
-			{
-				throw Error("A04 type no found");
-			}
-			size_t type = var_info->get_type();
-			if (complex_type->second->to_string() == "complex_type")
-				type = dynamic_cast<Mem::ComplexType*>(complex_type->second)->get_container_type();
-			auto result = structure_seeker.find(type);
-			if (result == structure_seeker.end())
-				throw Error("A05 type no found");
-			structure = result->second;
-		}*/
 		token_stream.match(DOT);
 		std::string member_name = Id::get_value(token_stream.this_token());
 		auto usinfo = find_ustructure_t(var_info->get_type());
@@ -191,6 +175,14 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 			throw Error("member " + member_name + " no found");
 		token_stream.match(ID);
 		return new Index(new Variable(var_id), member_info->second);
+	}
+	case LSB:
+	{
+		auto lsb = token_stream.this_token();
+		token_stream.match(LSB);
+		auto expr = new Expr();
+		token_stream.match(RSB);
+		return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
 	}
 	default:
 		return new Variable(var_id);
