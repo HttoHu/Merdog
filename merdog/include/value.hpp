@@ -62,13 +62,13 @@ namespace Mer
 	{
 	public:
 		Variable(Token *tok);
+		Variable(Token *tok, size_t _pos) :id(tok), pos(_pos) {}
 		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
 		Token * id;
 		size_t pos;
 	};
-
 	class FunctionCall :public ParserNode
 	{
 	public:
@@ -90,6 +90,7 @@ namespace Mer
 		/*
 		ParserNode *build_init_list(Namespace *names);
 		*/
+		ParserNode *parse_array(WordRecorder* var_info);
 		ParserNode *parse_id();
 		ParserNode *parse_var(WordRecorder* var_info);
 		ParserNode *_parse_id_wn(Namespace *names);

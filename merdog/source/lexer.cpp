@@ -76,6 +76,7 @@ Token* Mer::parse_number(const std::string &str, size_t &pos)
 	}
 	return new Integer(ret);
 }
+
 Token*	Mer::parse_word(const std::string &str, size_t &pos)
 {
 	std::string ret;

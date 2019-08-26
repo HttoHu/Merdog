@@ -293,6 +293,24 @@ Mem::Object Mer::InitList::execute()
 	return std::make_shared<Mem::ArrayObj>(std::move(v),type);
 }
 
+std::vector<Mem::Object> Mer::InitList::get_array()
+{
+	std::vector<Mem::Object> v(init_v.size());
+	if (v.size() == 1 && size > 1)
+	{
+		auto tmp = init_v[0]->execute();
+		v = std::vector<Mem::Object>(size, tmp);
+		return v;
+	}
+	if (v.size() != size)
+		throw Error("list size is not matched with array");
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		v[i] = init_v[i]->execute();
+	}
+	return v;
+}
+
 Mer::InitList::~InitList()
 {
 	for (auto &a : init_v)
@@ -309,5 +327,6 @@ Mem::Object Mer::ImplicitConvertion::execute()
 
 Mem::Object Mer::ContainerIndex::execute()
 {
-	return stack_memory[pos]->operator[](expr->execute());
+	auto tmp = expr->execute();
+	return stack_memory[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 }

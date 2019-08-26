@@ -90,6 +90,7 @@ namespace Mer
 	public:
 		InitList(size_t sz);
 		Mem::Object execute()override;
+		std::vector<Mem::Object> get_array();
 		size_t get_type()override
 		{
 			return type;

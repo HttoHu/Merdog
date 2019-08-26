@@ -340,12 +340,17 @@ Mer::ArrayDecl::ArrayDecl(size_t t, size_t sz, Token *tok, InitList* _expr):type
 	//=========================================
 	if (var_mtable->find_front(var_name) != nullptr)
 		throw Error("Symbol " + tok->to_string() + " redefined");
-	pos = stack_memory.push();
-	var_mtable->push(var_name, new VarIdRecorder(Mem::ARRAY, pos));
+	pos = stack_memory.push(sz);
+	var_mtable->push(var_name, new VarIdRecorder(type, pos));
+
 }
 Mem::Object Mer::ArrayDecl::execute()
 {
-	stack_memory[pos] = expr->execute();
+	auto tmp = expr->get_array();
+	for (int i = 0; i < size; i++)
+	{
+		stack_memory[pos + i] = tmp[i];
+	}
 	return nullptr;
 }
 

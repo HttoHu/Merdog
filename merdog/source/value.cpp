@@ -95,6 +95,7 @@ Mer::ParserNode * Mer::Parser::build_init_list(Namespace *names)
 	return new InitList(structure, tmp);
 }
 */
+
 Mer::ParserNode * Mer::Parser::parse_id()
 {
 	ParserNode *ret = nullptr;
@@ -178,11 +179,8 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 	}
 	case LSB:
 	{
-		auto lsb = token_stream.this_token();
-		token_stream.match(LSB);
-		auto expr = new Expr();
-		token_stream.match(RSB);
-		return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
+		token_stream.back();
+		return parse_array(var_info);
 	}
 	default:
 		return new Variable(var_id);
@@ -327,4 +325,22 @@ Mer::GVar::GVar(Namespace *ns, Token * o)
 		throw Error("merdog inner-errors");
 	obj = static_cast<GVarIdRecorder*>(result)->value;
 	type = result->get_type();
+}
+
+Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
+{
+	
+	auto id_name= token_stream.this_token();
+	token_stream.match(ID);
+	token_stream.match(LSB);
+	if (token_stream.this_tag() == INTEGER)
+	{
+		int off = Integer::get_value(token_stream.this_token());
+		token_stream.match(INTEGER);
+		token_stream.match(RSB);
+		return new Variable(id_name, static_cast<VarIdRecorder*>(var_info)->pos + off);
+	}
+	auto expr = new Expr();
+	token_stream.match(RSB);
+	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
 }

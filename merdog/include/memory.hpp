@@ -30,6 +30,12 @@ namespace Mer
 
 			call_stack.pop();
 		}
+		size_t push(int size)
+		{
+			index += size;
+			check();
+			return index;
+		}
 		size_t push()
 		{
 			check();
