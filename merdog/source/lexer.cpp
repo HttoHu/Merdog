@@ -132,6 +132,12 @@ Token*Mer::parse_string(const std::string & str, size_t & pos)
 				throw Error("out of range");
 			switch (str[pos])
 			{
+			case 'a':
+				value += '\a';
+				break;
+			case 'b':
+				value += '\b';
+				break;
 			case 'n':
 				value += '\n';
 				break;

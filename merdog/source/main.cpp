@@ -55,7 +55,7 @@ int main()
 		time_t s = clock();
 		Mer::Parser::program()->execute();
 		time_t e = clock();
-		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;
+		std::cout << "\ntime:" << (double)(e - s)*1000 / CLK_TCK <<" ms";
 	}
 	catch (std::exception &e)
 	{

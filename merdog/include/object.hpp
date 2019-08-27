@@ -83,6 +83,12 @@ namespace Mer
 		{
 		public:
 			Bool(bool b) :value(b) {}
+			Object operator=(Object v)override
+			{
+				auto tmp = v->Convert(BOOL);
+				value = std::static_pointer_cast<Bool>(v)->value;
+				return tmp;
+			}
 			std::string to_string()const override
 			{
 				if (value)

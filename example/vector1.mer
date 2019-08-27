@@ -1,9 +1,0 @@
-program main
-{
-	vector<string> name_set('John','Jack','Mike','Richard');
-	name_set.push_back('Htto');
-	for (int i=0;i<name_set.size();i+=1)
-	{
-		std.cout(name_set[i],'\n');
-	}
-}.
