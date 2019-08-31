@@ -282,7 +282,7 @@ Mem::Object Mer::InitList::execute()
 	{
 		auto tmp= init_v[0]->execute();
 		v = std::vector<Mem::Object>(size, tmp);
-		return std::make_shared<Mem::ArrayObj>(std::move(v),type);
+		return std::make_shared<Mem::InitListObj>(std::move(v),type);
 	}
 	if (v.size() != size)
 		throw Error("list size is not matched with array");
@@ -290,7 +290,7 @@ Mem::Object Mer::InitList::execute()
 	{
 		v[i] = init_v[i]->execute();
 	}
-	return std::make_shared<Mem::ArrayObj>(std::move(v),type);
+	return std::make_shared<Mem::InitListObj>(std::move(v),type);
 }
 
 std::vector<Mem::Object> Mer::InitList::get_array()

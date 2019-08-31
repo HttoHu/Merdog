@@ -64,10 +64,27 @@ namespace Mer
 		size_t type;
 		std::vector<std::size_t> var_list;
 	};
+
+	class SDH
+	{
+	public:
+		SDH();
+		std::vector<Expr*> vec;
+	};
+	class StructureDeclWithInit :public ParserNode
+	{
+	public:
+		StructureDeclWithInit(size_t t, const std::vector<Token*>& v);
+		Mem::Object execute()override;
+	private:
+		size_t type;
+		std::vector<std::size_t> var_list;
+	};
 	extern std::map<std::string, UStructrue*> ustructure_map;
 	extern std::map<size_t, std::string> type_name_mapping;
 	void build_ustructure();
+	
 	StructureDecl* structure_decl();
 	Mer::UStructrue* find_ustructure_t(size_t type);
-
+	
 }

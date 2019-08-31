@@ -380,17 +380,11 @@ namespace Mer
 			}		
 			std::string str;
 		};
-		class ArrayObj :public Value
+		class InitListObj :public Value
 		{
 		public:
-			ArrayObj(std::vector<Object> && lst, size_t type_c) :elems(lst), type_code(type_c) {}
-			ArrayObj(size_t sz, size_t type_c) : type_code(type_c),elems(sz) {}
-			virtual Object operator=(Object v)
-			{
-				if (v->get_type() != BasicType::ARRAY&&std::static_pointer_cast<ArrayObj>(v)->get_ele_type() != type_code)
-					throw Error("assign to an array failed.");
-				elems = std::static_pointer_cast<ArrayObj>(v)->elems;
-			}
+			InitListObj(std::vector<Object> && lst, size_t type_c) :elems(lst), type_code(type_c) {}
+			InitListObj(size_t sz, size_t type_c) : type_code(type_c),elems(sz) {}
 			virtual Object operator[](Object v)
 			{
 				return elems[std::static_pointer_cast<Int>(v->Convert(INT))->get_value()];
@@ -403,7 +397,7 @@ namespace Mer
 			{
 				return type_code;
 			}
-		private:
+		
 			size_t type_code;
 			std::vector<Object> elems;
 		};

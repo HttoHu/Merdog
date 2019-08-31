@@ -13,7 +13,7 @@ using TagStrMap = std::map<Tag, std::string>;
 //==========================================
 size_t Mer::Endl::current_line = 0;
 TagStrMap	Mer::TagStr{
-	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },
+	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },
@@ -33,6 +33,7 @@ TokenMap	Mer::KeyWord{
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
 	{ "continue",new Token(CONTINUE) },
 	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
+	{"new",new Token(NEW)},
 	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },
 	{ "false",new Token(TFALSE) },
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },

@@ -95,3 +95,19 @@ Mem::Object Mer::StructureDecl::execute()
 	}
 	return nullptr;
 }
+
+Mer::StructureDeclWithInit::StructureDeclWithInit(size_t t, const std::vector<Token*>& v)
+{
+	type = t;
+	for (auto& a : v)
+	{
+		auto pos = stack_memory.push();
+		this_namespace->sl_table->push(Id::get_value(a), new VarIdRecorder(t, pos));
+		var_list.push_back({ pos });
+	}
+}
+
+Mem::Object Mer::StructureDeclWithInit::execute()
+{
+	return Mem::Object();
+}
