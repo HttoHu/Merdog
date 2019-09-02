@@ -6,7 +6,9 @@ Merdog 是一个简单的开源解释器C-Like 语言语法
 1. 基本类型 **int, real, string, bool**
 2. 基本语句 if / else / elif / while / for
 3. 支持函数的声明和定义
-4. 内置基本的IO库和数学函数库（std函数的封装）
+4. 支持复合变量 struct
+5. 支持数组
+6. 内置基本的IO库和数学函数库（std函数的封装）
 ```c++
 function int sum (int x, int y)
 {
