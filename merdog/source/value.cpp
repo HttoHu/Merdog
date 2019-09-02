@@ -113,7 +113,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	{
 	case ESymbol::SSTRUCTURE:
 	{
-		return structure_decl();
+		return structobj_decl();
 	}
 	case ESymbol::STYPE:// Build-in Type but not basic type 
 	{

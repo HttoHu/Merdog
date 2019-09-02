@@ -1,10 +1,10 @@
-#include "../include/compound_box.hpp"
+﻿#include "../include/compound_box.hpp"
 #include "../include/lexer.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"
 using namespace Mer;
-std::map<std::string, Mer::UStructrue*> Mer::ustructure_map;
+std::map<std::string, Mer::UStructure*> Mer::ustructure_map;
 std::map<size_t,std::string> Mer::type_name_mapping;
 //OK
 void Mer::build_ustructure()
@@ -13,7 +13,7 @@ void Mer::build_ustructure()
 	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.match(ID);
 	token_stream.match(BEGIN);
-	UStructrue* us=new UStructrue();
+	UStructure* us=new UStructure();
 	while (token_stream.this_tag() != END)
 	{
 		size_t type = Mem::get_type_code(token_stream.this_token());
@@ -31,9 +31,9 @@ void Mer::build_ustructure()
 	Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
 }
 
-StructureDecl* Mer::structure_decl()
+StructureDecl* Mer::structobj_decl()
 {
-	std::vector<Token*> tvec;
+	std::vector<std::pair<Token*,SInitBase*>> tvec;
 	std::string type_name = Id::get_value(token_stream.this_token());
 	token_stream.next();
 	auto result = ustructure_map.find(type_name);
@@ -42,19 +42,32 @@ StructureDecl* Mer::structure_decl()
 		throw Error("undefined type <" + type_name + ">");
 	}
 	auto type_result = Mem::type_index.find(type_name);
-	tvec.push_back(token_stream.this_token());
+	Token* first_id=token_stream.this_token();
 	token_stream.match(ID);
+	if (token_stream.this_tag() == BEGIN)
+	{
+		auto init_list = new StructureInitList(result->second->mapping);
+		tvec.push_back({ first_id,init_list });
+	}
+	else
+		tvec.push_back({ first_id,new StructureEmptyInit(result->second) });
 	while (token_stream.this_tag() != SEMI)
 	{
 		token_stream.match(COMMA);
-		tvec.push_back(token_stream.this_token());
+		Token *remain_ids = token_stream.this_token();
 		token_stream.match(ID);
+		if (token_stream.this_tag() == BEGIN)
+		{
+			tvec.push_back({ remain_ids,new StructureInitList(result->second->mapping) });
+		}
+		else
+			tvec.push_back({ remain_ids,new StructureEmptyInit(result->second) });
 	}
 	return new StructureDecl(type_result->second,tvec);
 }
 
 //OK
-Mer::UStructrue* Mer::find_ustructure_t(size_t type)
+Mer::UStructure* Mer::find_ustructure_t(size_t type)
 {
 	auto result = type_name_mapping.find(type);
 	if (result == type_name_mapping.end())
@@ -65,7 +78,7 @@ Mer::UStructrue* Mer::find_ustructure_t(size_t type)
 	return result2->second;
 }
 //OK
-std::vector<Mem::Object> Mer::UStructrue::init()
+std::vector<Mem::Object> Mer::UStructure::init()
 {
 	std::vector<Mem::Object> ret;
 	for (const auto &a : STMapping)
@@ -75,14 +88,14 @@ std::vector<Mem::Object> Mer::UStructrue::init()
 	return ret;
 }
 
-Mer::StructureDecl::StructureDecl(size_t t, const std::vector<Token*>& v)
+Mer::StructureDecl::StructureDecl(size_t t, const std::vector<std::pair<Token*, SInitBase*>>& v)
 {
 	type = t;
 	for (auto& a : v)
 	{
 		auto pos = stack_memory.push();
-		this_namespace->sl_table->push(Id::get_value(a), new VarIdRecorder(t, pos));
-		var_list.push_back({ pos });
+		this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(t, pos));
+		var_list.push_back({ pos,a.second });
 	}
 }
 
@@ -91,23 +104,39 @@ Mem::Object Mer::StructureDecl::execute()
 	auto tmp = find_ustructure_t(type);
 	for (auto& a : var_list)
 	{
-		stack_memory[a] = std::make_shared<USObject>(tmp->init());
+		stack_memory[a.first] = a.second->transfer();
 	}
 	return nullptr;
 }
 
-Mer::StructureDeclWithInit::StructureDeclWithInit(size_t t, const std::vector<Token*>& v)
+std::shared_ptr<USObject> Mer::StructureInitList::transfer()
 {
-	type = t;
-	for (auto& a : v)
+	std::vector<Mem::Object> obj_vec(vec.size());
+	for (int i=0;i<vec.size();i++)
 	{
-		auto pos = stack_memory.push();
-		this_namespace->sl_table->push(Id::get_value(a), new VarIdRecorder(t, pos));
-		var_list.push_back({ pos });
+		obj_vec[i] = vec[i]->execute();
 	}
+	return std::make_shared<USObject>(obj_vec);
 }
 
-Mem::Object Mer::StructureDeclWithInit::execute()
+Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m):vec(m.size())
 {
-	return Mem::Object();
+	token_stream.match(BEGIN);
+	size_t last_index=-1;
+	while (token_stream.this_tag() != END) {
+		auto member_suffix = token_stream.this_token();
+		auto result = m.find(Id::get_value(member_suffix));
+		if (result == m.end())
+			throw Error("struct_obj init Error: Not exits member " + member_suffix->to_string());
+		token_stream.match(ID);
+		token_stream.match(COLON);
+		vec[result->second] = new Expr();
+		if (token_stream.this_tag() == END)
+		{ 
+			token_stream.match(END);
+			return;
+		}
+		token_stream.match(COMMA);
+	}
+	
 }

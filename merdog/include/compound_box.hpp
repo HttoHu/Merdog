@@ -24,7 +24,7 @@ namespace Mer
 		DataTable children_table;
 		SIM &mapping;
 	};*/
-	class UStructrue
+	class UStructure
 	{
 	public:
 		using SIM=std::map<std::string, int>;
@@ -38,6 +38,7 @@ namespace Mer
 		std::map<std::string, size_t> STMapping;
 		int be = 0;
 	};
+
 	class USObject :public Mem::Value {
 	public:
 		USObject(const std::vector<Mem::Object>& _vec):vec(_vec) { }
@@ -55,36 +56,51 @@ namespace Mer
 	private:
 		std::vector<Mem::Object> vec;
 	};
+
+	class SInitBase
+	{
+	public:
+		virtual std::shared_ptr<USObject> transfer() = 0;
+		virtual ~SInitBase() {};
+	};
+
 	class StructureDecl :public ParserNode
 	{
 	public:
-		StructureDecl(size_t t, const std::vector<Token*>& v);
+		StructureDecl(size_t t, const std::vector<std::pair<Token*,SInitBase*>>& v);
 		Mem::Object execute()override;
 	private:
 		size_t type;
-		std::vector<std::size_t> var_list;
+		std::vector<std::pair<std::size_t, SInitBase*>> var_list;
 	};
 
-	class SDH
+
+	class StructureInitList:public SInitBase
 	{
 	public:
-		SDH();
+		StructureInitList(const std::map<std::string, int>& m);
+		std::shared_ptr<USObject> transfer()override;
+		virtual ~StructureInitList() {}
+	private:
 		std::vector<Expr*> vec;
 	};
-	class StructureDeclWithInit :public ParserNode
+
+	class StructureEmptyInit :public SInitBase
 	{
 	public:
-		StructureDeclWithInit(size_t t, const std::vector<Token*>& v);
-		Mem::Object execute()override;
+		StructureEmptyInit(UStructure* u) {
+			vec = u->init();
+		}
+		std::shared_ptr<USObject> transfer()override { return std::make_shared<USObject>(vec); }
 	private:
-		size_t type;
-		std::vector<std::size_t> var_list;
+		std::vector<Mem::Object> vec;
 	};
-	extern std::map<std::string, UStructrue*> ustructure_map;
+
+	extern std::map<std::string, UStructure*> ustructure_map;
 	extern std::map<size_t, std::string> type_name_mapping;
 	void build_ustructure();
 	
-	StructureDecl* structure_decl();
-	Mer::UStructrue* find_ustructure_t(size_t type);
+	StructureDecl* structobj_decl();
+	Mer::UStructure* find_ustructure_t(size_t type);
 	
 }
