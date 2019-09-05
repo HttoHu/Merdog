@@ -3,6 +3,7 @@
 ## 简介
 Merdog 是一个简单的开源解释器C-Like 语言语法
 
+![](https://img.shields.io/badge/merdog-easy%20to%20use-orange)
 [![](https://img.shields.io/github/languages/top/HttoHu/Merdog)](http://www.cplusplus.com/)  
 
 ## Merdog 2.1 支持的语法
