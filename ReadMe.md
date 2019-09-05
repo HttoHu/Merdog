@@ -2,6 +2,9 @@
 #   Merdog
 ## 简介
 Merdog 是一个简单的开源解释器C-Like 语言语法
+
+[![](https://img.shields.io/github/languages/top/HttoHu/Merdog)](http://www.cplusplus.com/)  
+
 ## Merdog 2.1 支持的语法
 1. 基本类型 **int, real, string, bool**
 2. 基本语句 if / else / elif / while / for
