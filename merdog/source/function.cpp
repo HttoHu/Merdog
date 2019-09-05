@@ -236,7 +236,9 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	{
 		stack_memory[param_table[i].second] = objs[i];
 	}
+	size_t tmp_index = blo->index;
 	auto ret = blo->execute();
+	blo->index = tmp_index;
 	stack_memory.end_func();
 	return ret;
 }
