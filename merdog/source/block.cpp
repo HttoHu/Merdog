@@ -13,9 +13,11 @@ void Mer::Block::end_block()
 Mer::Mem::Object Mer::Block::execute()
 {
 	ret = nullptr;
+	size_t tmp = index;
 	for (index=0; index < (ins_table.size()); index++)
 	{
 		ins_table[index]->execute();
 	}
+	index = tmp;
 	return ret;
 }
