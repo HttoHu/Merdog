@@ -1,13 +1,17 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/block.hpp"
 #include "../include/memory.hpp"
 void Mer::Block::new_block()
 {
-	stack_memory.new_block();
+	mem.new_block();
 }
 
 void Mer::Block::end_block()
 {
-	stack_memory.end_block();
+	mem.end_block();
 }
 
 Mer::Mem::Object Mer::Block::execute()

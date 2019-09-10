@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/namespace.hpp"
 #include "../include/value.hpp"
 #include "../include/word_record.hpp"
@@ -22,7 +26,7 @@ void Mer::Namespace::set_new_func(const std::string & name, size_t type, Functio
 }
 void Mer::Namespace::set_new_var(const std::string & name, size_t type, Mem::Object obj)
 {
-	sl_table->push_glo(name, new GVarIdRecorder(type, obj));
+	//sl_table->push_glo(name, new GVarIdRecorder(type, obj));
 }
 
 Mer::Mem::Object Mer::Namespace::find_var(const std::string & name)
@@ -31,7 +35,7 @@ Mer::Mem::Object Mer::Namespace::find_var(const std::string & name)
 	if (result != nullptr)
 	{
 		if (result->es == ESymbol::SGVAR)
-			return static_cast<GVarIdRecorder*>(result)->value;
+			return static_cast<GVarIdRecorder*>(result)->get_value();
 		else
 			throw Error("Error A20");
 	}
@@ -150,6 +154,10 @@ void Mer::Parser::create_namespace_var()
 		token_stream.match(ASSIGN);
 		auto exp = new Expr();
 		var_list.insert({ id,exp });
+	}
+	else if (token_stream.this_tag() == LSB)
+	{
+
 	}
 	else
 		throw Error("try to create a var without initialization");

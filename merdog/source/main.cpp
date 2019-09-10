@@ -1,6 +1,9 @@
+/*
+	* MIT License
+	* Copyright (c) 2019 Htto Hu
+*/
 #include <string>
 #include <iostream>
-#include <Windows.h>
 #include <fstream>
 #include <time.h>
 #include "../include/parser.hpp"
@@ -28,6 +31,11 @@ int main(int argc, char* argv[])
 		Mer::set_maths();
 		if (argc != 2)
 			throw std::runtime_error("argument error");
+		if (argv[1] == '-v')
+		{
+			std::cout << "3.0";
+			return 0;
+		}
 		std::string input_content = get_file_content(argv[1]);
 		Mer::build_token_stream(input_content);
 		Mer::Parser::program()->execute();
@@ -67,10 +75,10 @@ int main()
 	}
 	catch (...)
 	{
-		std::cout << "Merdog »µµôÁË";
+		std::cout << "internal error!";
 	}
+	std::cin.get();
 	std::cout << "\nThe program has exited";
-	Sleep(100000);
 	return 0;
 }
 #endif

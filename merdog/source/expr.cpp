@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/expr.hpp"
 #include "../include/value.hpp"
 #include "../include/memory.hpp"
@@ -249,9 +253,8 @@ Mem::Object Mer::Assign::execute()
 	}
 }
 
-Mer::InitList::InitList(size_t sz):size(sz)
+Mer::InitList::InitList(size_t t,size_t sz):type(t),size(sz)
 {
-	size_t type_c;
 	token_stream.match(BEGIN);
 	while (token_stream.this_tag() != Tag::END)
 	{
@@ -260,7 +263,6 @@ Mer::InitList::InitList(size_t sz):size(sz)
 			token_stream.match(COMMA);
 	}
 	token_stream.match(END);
-	type = init_v[0]->get_type();
 	if (init_v.size() > sz)
 		throw Error("Error, array overflow");
 	if (init_v.size() < 2)
@@ -269,8 +271,11 @@ Mer::InitList::InitList(size_t sz):size(sz)
 	}
 	for (int i = 1; i < init_v.size(); i++)
 	{
-		if (init_v[i]->get_type() != init_v[i - 1]->get_type())
+		if (type != init_v[i - 1]->get_type())
+		{ 
+			std::cout << type << "VS" << init_v[i - 1]->get_type() << std::endl;
 			throw Error("there is a type-distinction in an init list.");
+		}
 	}
 
 }
@@ -284,8 +289,6 @@ Mem::Object Mer::InitList::execute()
 		v = std::vector<Mem::Object>(size, tmp);
 		return std::make_shared<Mem::InitListObj>(std::move(v),type);
 	}
-	if (v.size() != size)
-		throw Error("list size is not matched with array");
 	for (size_t i = 0; i < v.size(); i++)
 	{
 		v[i] = init_v[i]->execute();
@@ -328,5 +331,18 @@ Mem::Object Mer::ImplicitConvertion::execute()
 Mem::Object Mer::ContainerIndex::execute()
 {
 	auto tmp = expr->execute();
-	return stack_memory[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+	return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+}
+
+Mer::EmptyList::EmptyList(size_t t, size_t sz):type_code(t),size(sz)
+{
+	for (size_t i = 0; i < sz; i++)
+	{
+		obj_vec.push_back(Mem::create_var_t(t));
+	}
+}
+
+Mem::Object Mer::EmptyList::execute()
+{
+	return std::make_shared<Mem::InitListObj>(std::move(obj_vec), type_code);
 }

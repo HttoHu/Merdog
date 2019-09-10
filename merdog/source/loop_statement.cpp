@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/loop_statement.hpp"
 #include "../include/namespace.hpp"
 #include "../include/memory.hpp"
@@ -18,7 +22,7 @@ namespace Mer
 		}
 		For * for_statement()
 		{
-			stack_memory.new_block();
+			mem.new_block();
 			this_namespace->sl_table->new_block();
 			For *ret = new For();
 			token_stream.match(FOR);

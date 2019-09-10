@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/clib/merdog_io.hpp"
 
 namespace Mer

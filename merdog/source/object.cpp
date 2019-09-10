@@ -1,9 +1,14 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/object.hpp"
 #include "../include/memory.hpp"
 #include "../include/lexer.hpp"
 #include "../include/namespace.hpp"
 #include "../include/function.hpp"
 #include "../include/word_record.hpp"
+#include "../include/compound_box.hpp"
 using namespace Mer::Mem;
 
 
@@ -92,13 +97,20 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 	switch (type)
 	{
 	case INT:
-		return std::make_shared<Int>(6832);
+		return std::make_shared<Int>(0);
 	case DOUBLE:
 		return std::make_shared<Double>(0.0);
 	case BOOL:
 		return std::make_shared<Bool>(true);
 	case STRING:
 		return std::make_shared<String>("");
+	case ID:
+	{
+		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		if (info == nullptr)
+			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
+		return std::make_shared<USObject>(find_ustructure_t(info->get_type())->init());
+	}
 	default:
 		break;
 	}

@@ -84,11 +84,20 @@ namespace Mer
 	class CompoundObject;
 	class Expr;
 	class Type;
-	
+	class EmptyList :public ParserNode
+	{
+	public:
+		EmptyList(size_t t, size_t sz);
+		Mem::Object execute()override;
+	private:
+		std::vector<Mem::Object> obj_vec;
+		size_t type_code;
+		size_t size;
+	};
 	class InitList :public ParserNode
 	{
 	public:
-		InitList(size_t sz);
+		InitList(size_t t,size_t sz);
 		Mem::Object execute()override;
 		std::vector<Mem::Object> get_array();
 		size_t get_type()override

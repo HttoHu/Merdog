@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/function.hpp"
 #include "../include/object.hpp"
 #include "../include/memory.hpp"
@@ -71,7 +75,7 @@ Param * Mer::Parser::build_param()
 		size_t type = Mem::get_ctype_code();
 		auto name = Id::get_value(token_stream.this_token());
 		token_stream.match(ID);
-		size_t pos = stack_memory.push();
+		size_t pos = mem.push();
 		tsymbol_table->push(name, new VarIdRecorder(type, pos));
 		ret->push_new_param(type, pos);
 		if (token_stream.this_tag() == COMMA)
@@ -103,7 +107,7 @@ void Mer::Parser::build_function()
 		}
 		// create a function and return it.
 		Function *temp = static_cast<Function*>(finder->second);
-		stack_memory.new_block();
+		mem.new_block();
 		temp->param = build_param();
 		// we use pure_block because we should push the param to the block, 
 		// so we need to create a preserved memory for param.
@@ -125,7 +129,7 @@ void Mer::Parser::build_function()
 		return;
 	}
 	// create a function and return it.
-	stack_memory.new_block();
+	mem.new_block();
 	Param *param = build_param();
 	Function *ret = new Function(rtype, param, nullptr);
 	this_namespace->functions.insert({ name,ret });
@@ -230,14 +234,14 @@ void Mer::Function::reser_param(Param * p)
 
 Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 {
-	stack_memory.new_func(index);
+	mem.new_func(index);
 	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
-		stack_memory[param_table[i].second] = objs[i];
+		mem[param_table[i].second] = objs[i];
 	}
 	auto ret = blo->execute();
-	stack_memory.end_func();
+	mem.end_func();
 	return ret;
 }
 

@@ -11,7 +11,8 @@ namespace Mer
 	public:
 		Memory()
 		{
-			_mem = new Mem::Object[capacity];
+			static_mem = new Mem::Object[scapacity];
+			stack_mem = new Mem::Object[capacity];
 			block_flag.push_back(0);
 		}
 		size_t new_block()
@@ -30,33 +31,20 @@ namespace Mer
 
 			call_stack.pop();
 		}
-		size_t push(int size)
-		{
-			index += size;
-			check();
-			return index;
-		}
-		size_t push()
-		{
-			check();
-			return index++;
-		}
-		size_t end_block() {
-			index = block_flag.back();
-			block_flag.pop_back();
-			return block_flag.back();
-		}
+		size_t push(int size);
+		size_t push();
+		size_t push_to_static();
+		size_t end_block();
 		size_t get_current()
 		{
 			return current;
 		}
-		Mem::Object& operator[] (size_t in)
-		{
-			return _mem[in + current];
-		}
+		Mem::Object& static_index(size_t in);
+		Mem::Object& operator[]  (size_t in);
 		~Memory()
 		{
-			delete[] _mem;
+			delete[] stack_mem;
+			delete[] static_mem;
 		}
 		size_t& get_index() {
 			return index;
@@ -64,16 +52,24 @@ namespace Mer
 	private:
 		void check()
 		{
-			if (index+current> 0.5*capacity)
+			if (index+current> 0.5L*capacity)
 				alloc();
 		}
+		void check_static();
 		void alloc();
+		//alloc for static memory
+		void salloc();
 		size_t index = 0;
 		size_t current = 0;
 		size_t capacity = 1024;
+		size_t scapacity = 512;
 		std::stack<size_t> call_stack;
 		std::vector<size_t> block_flag;
-		Mem::Object *_mem;
+		Mem::Object *stack_mem;
+		Mem::Object* static_mem;
+
+		size_t sindex=0;
+		
 	};
 	class Heap
 	{
@@ -109,6 +105,6 @@ namespace Mer
 		std::vector<Mem::Object> hmem;
 		std::stack<size_t> deleted_space;
 	};
-	extern Memory stack_memory;
+	extern Memory mem;
 	extern Heap heap_memory;
 }

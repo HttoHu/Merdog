@@ -1,10 +1,6 @@
 /*
-* Inspired by
-* https://ruslanspivak.com/lsbasi-part10/
-* Ruslan's Blog
-* C++ Version.
-* Yuantao Hu 2018
-* Email Huyuantao@outlook.com
+* MIT License
+* Copyright (c) 2019 Htto Hu
 */
 #include "../include/lexer.hpp"
 using namespace Mer;

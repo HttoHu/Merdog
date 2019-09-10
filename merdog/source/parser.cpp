@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/parser.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
@@ -8,9 +12,11 @@
 #include "../include/environment.hpp"
 #include "../include/compound_box.hpp"
 using namespace Mer;
+bool Mer::global_stmt = true;
+std::vector<ParserNode*> Mer::pre_stmt;
 Program* Mer::Parser::program()
 {
-	Program *ret = nullptr;
+	Program* ret = nullptr;
 	int programe_num = 0;
 	while (1)
 	{
@@ -23,7 +29,8 @@ Program* Mer::Parser::program()
 			build_function();
 			break;
 		case PROGRAM:
-		{			
+		{
+			global_stmt = false;
 			token_stream.match(PROGRAM);
 			auto tmp = token_stream.this_token();
 			token_stream.match(ID);
@@ -40,22 +47,22 @@ Program* Mer::Parser::program()
 			return ret;
 		case ID:
 		default:
-			create_namespace_var();
+			pre_stmt.push_back(Parser::statement());
 			break;
 		}
 	}
 
 }
 
-Block * Mer::Parser::block()
+Block* Mer::Parser::block()
 {
-	stack_memory.new_block();
+	mem.new_block();
 	this_namespace->sl_table->new_block();
 	token_stream.match(BEGIN);
-	Block *ret = new Block();
+	Block* ret = new Block();
 	while (token_stream.this_tag() != END)
 	{
-		ParserNode *node;
+		ParserNode* node;
 		switch (token_stream.this_tag())
 		{
 		case BEGIN:
@@ -77,19 +84,19 @@ Block * Mer::Parser::block()
 		ret->ins_table.push_back(node);
 	}
 	token_stream.match(END);
-	stack_memory.end_block();
+	mem.end_block();
 	this_namespace->sl_table->end_block();
 	return ret;
 }
 //served for function;
-Block * Mer::Parser::pure_block()
+Block* Mer::Parser::pure_block()
 {
 	token_stream.match(BEGIN);
-	Block *ret = new Block();
+	Block* ret = new Block();
 	current_function_block = ret;
 	while (token_stream.this_tag() != END)
 	{
-		ParserNode *node;
+		ParserNode* node;
 
 		switch (token_stream.this_tag())
 		{
@@ -113,13 +120,13 @@ Block * Mer::Parser::pure_block()
 	}
 	token_stream.match(END);
 
-	stack_memory.end_block();
+	mem.end_block();
 	return ret;
 }
 
-ParserNode * Mer::Parser::statement()
+ParserNode* Mer::Parser::statement()
 {
-	ParserNode *node = nullptr;
+	ParserNode* node = nullptr;
 	switch (token_stream.this_token()->get_tag())
 	{
 	case ID:
@@ -163,55 +170,21 @@ ParserNode * Mer::Parser::statement()
 }
 
 
-ParserNode * Mer::Parser::var_decl()
+ParserNode* Mer::Parser::var_decl()
 {
-	std::map<Token*, Expr*> var_list;
-	size_t type_code = Mem::get_type_code(token_stream.this_token());
+	size_t type = Mem::get_type_code(token_stream.this_token());
+	std::vector<VarDeclUnit*> units;
 	token_stream.next();
-	//matched the exprs with the ids and push into var_list to init a VarDecl.
-	auto id = token_stream.this_token();
-
-	token_stream.match(ID);
-	if (token_stream.this_token()->get_tag() == ASSIGN)
-	{
-		token_stream.match(ASSIGN);
-		auto exp = new Expr();
-		if (!Mem::type_map[exp->get_type()]->convertible(type_code))
-		{
-			throw Error("A06  type not matched");
-			exp->expr_type = type_code;
-		}
-		var_list.insert({ id,exp });
-	}
-	else if (token_stream.this_token()->get_tag() == LSB)
-	{
-		token_stream.back();
-		return array_decl(type_code);
-	}
-	else
-	{
-		throw Error("please init var");
-	}
-	while (token_stream.this_token()->get_tag() == COMMA)
+	units.push_back(new VarDeclUnit(type));
+	//std::cout << token_stream.this_token()->to_string();
+	while (token_stream.this_tag() != SEMI)
 	{
 		token_stream.match(COMMA);
-		auto id = token_stream.this_token();
-		token_stream.match(ID);
-		if (token_stream.this_token()->get_tag() == ASSIGN)
-		{
-			token_stream.match(ASSIGN);
-			auto exp = new Expr();
-			if (exp->get_type() != type_code)
-				throw Error("type not matched");
-			var_list.insert({ id,exp });
-		}
-
-		else
-		{
-			var_list.insert({ id,nullptr });
-		}
+		units.push_back(new VarDeclUnit(type));
 	}
-	return new VarDecl(type_code, var_list);
+	if (global_stmt)
+		return new GloVarDecl(units,type);
+	return new LocalVarDecl(units,type);
 }
 
 size_t Mer::Parser::get_type()
@@ -246,56 +219,13 @@ size_t Mer::Parser::get_type()
 	}
 }
 
-WordRecorder * Mer::Parser::get_current_info()
+WordRecorder* Mer::Parser::get_current_info()
 {
 	return this_namespace->sl_table->find(Mer::Id::get_value(token_stream.this_token()));
 }
 
-Mer::VarDeclUnit::VarDeclUnit(size_t t, Token * tok, Expr * _expr):type(t)
-{
-	if(_expr==nullptr)
-		throw Error("Symbol " +tok->to_string() + " redefined");
-	auto var_mtable = this_namespace->sl_table;
-	std::string var_name= Id::get_value(tok);
-	//=========================================
-	if (var_mtable->find_front(var_name) != nullptr)
-		throw Error("Symbol " + tok->to_string() + " redefined");
-	pos= stack_memory.push();
-	var_mtable->push(var_name, new VarIdRecorder(t, pos));
-}
 
-Mem::Object Mer::VarDeclUnit::execute()
-{
-	stack_memory[pos] = expr->execute()->clone();
-	return nullptr;
-}
-
-Mer::VarDecl::VarDecl(size_t t, const std::map<Token*, Expr*>& v)
-{
-	type = t;
-	for (const auto &a : v)
-	{
-		if(a.second==nullptr)
-			throw Error("please init var");
-		if (this_namespace->sl_table->find_front(Id::get_value(a.first)) != nullptr)
-			throw Error("Symbol " + a.first->to_string() + " redefined");
-		auto pos = stack_memory.push();
-		this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(t, pos));
-
-		var_list.push_back({ pos, a.second });
-	}
-}
-
-Mem::Object Mer::VarDecl::execute()
-{
-	for (const auto &a : var_list)
-	{
-			stack_memory[a.first] = a.second->execute()->clone();
-	}
-	return nullptr;
-}
-
-Mer::Print::Print(Token * tok) :content(tok)
+Mer::Print::Print(Token* tok) :content(tok)
 {
 	if (tok->get_tag() == ID)
 	{
@@ -316,7 +246,7 @@ Mem::Object Mer::Print::execute()
 		std::cout << String::get_value(content);
 		break;
 	case ID:
-		std::cout << stack_memory[pos]->to_string();
+		std::cout << mem[pos]->to_string();
 		break;
 	default:
 		throw Error("print: invalid args");
@@ -325,44 +255,95 @@ Mem::Object Mer::Print::execute()
 }
 
 Mem::Object Mer::Return::execute() {
-	
+
 	block->index = block->ins_table.size();
 
 	block->ret = expr->execute();
 	return nullptr;
 }
 
-Mer::ArrayDecl::ArrayDecl(size_t t, size_t sz, Token *tok, InitList* _expr):type(t), size(sz), expr(_expr) {
-	if (_expr == nullptr)
-		throw Error("Symbol " + tok->to_string() + " redefined");
-	auto var_mtable = this_namespace->sl_table;
-	std::string var_name = Id::get_value(tok);
-	//=========================================
-	if (var_mtable->find_front(var_name) != nullptr)
-		throw Error("Symbol " + tok->to_string() + " redefined");
-	pos = stack_memory.push(sz);
-	var_mtable->push(var_name, new VarIdRecorder(type, pos));
-
-}
-Mem::Object Mer::ArrayDecl::execute()
+Mer::NamePart::NamePart()
 {
-	auto tmp = expr->get_array();
-	for (int i = 0; i < size; i++)
-	{
-		stack_memory[pos + i] = tmp[i];
-	}
-	return nullptr;
-}
-
-ArrayDecl* Mer::Parser::array_decl(size_t type_code)
-{
-	Token *tok = token_stream.this_token();
+	id = token_stream.this_token();
 	token_stream.match(ID);
-	token_stream.match(LSB);
-	auto sz = token_stream.this_token();
-	token_stream.match(INTEGER);
-	token_stream.match(RSB);
-	token_stream.match(ASSIGN);
-	auto expr = new InitList(Integer::get_value(sz));
-	return new ArrayDecl(type_code, Integer::get_value(sz), tok, expr);
+	if (token_stream.this_tag() == LSB)
+	{
+		arr = true;
+		token_stream.match(LSB);
+		auto c = token_stream.this_token();
+		count = Integer::get_value(c);
+		token_stream.match(INTEGER);
+		token_stream.match(RSB);
+	}
+
+}
+
+Mer::VarDeclUnit::VarDeclUnit(size_t t):type_code(t)
+{
+	NamePart name_part;
+	id = name_part.get_id();
+	if (name_part.is_array())
+	{
+		if (token_stream.this_tag() == ASSIGN)
+		{ 
+			token_stream.match(ASSIGN);
+			expr = new InitList(t, name_part.get_count());
+		}
+		else {
+			expr = new EmptyList(t, name_part.get_count());
+		}
+		return;
+	}
+	if (token_stream.this_tag() == ASSIGN)
+	{
+		token_stream.match(ASSIGN);
+		expr = new Expr();
+		if (type_code != expr->get_type())
+			throw Error("type not matched");
+		return;
+	}
+	if (type_name_mapping.find(t) != type_name_mapping.end())
+	{
+		UStructure* result = find_ustructure_t(t);
+		if (token_stream.this_tag() == BEGIN)
+			expr = new StructureInitList(result->mapping);
+		else {
+			expr = new DefaultInitList(result->mapping);
+		}
+		return;
+	}
+	throw Error("try to init a non-init variable");
+}
+
+Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t) :units(vec),type(t)
+{
+	pos = mem.push(units.size()) - units.size();
+	for (int i = 0; i < units.size(); i++)
+	{
+		this_namespace->sl_table->push(Id::get_value(units[i]->get_id()), new VarIdRecorder(type, pos + i));
+	}
+}
+
+Mem::Object Mer::LocalVarDecl::execute()
+{
+	for (int i = 0; i < units.size(); i++) {
+		mem[pos + i] = units[i]->get_expr()->execute()->clone();
+	}
+	return Mem::Object(nullptr);
+}
+
+Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :units(vec), type(t)
+{
+	pos = mem.push(units.size())- units.size();
+	for (int i = 0; i < units.size(); i++)
+	{
+		this_namespace->sl_table->push(Id::get_value(units[i]->get_id()), new GVarIdRecorder(type, pos + i));
+	}
+}
+Mem::Object Mer::GloVarDecl::execute()
+{
+	for(int i=0;i<units.size();i++){
+		mem.static_index(pos+i) = units[i]->get_expr()->execute()->clone();
+	}
+	return Mem::Object(nullptr);
 }

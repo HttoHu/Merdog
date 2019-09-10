@@ -401,5 +401,10 @@ namespace Mer
 			size_t type_code;
 			std::vector<Object> elems;
 		};
+		template<typename T>
+		Object init_obj()
+		{
+			return std::make_shared<T>(0);
+		}
 	}
 }

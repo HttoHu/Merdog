@@ -3,13 +3,22 @@
 #include "block.hpp"
 namespace Mer
 {
+	extern std::vector<ParserNode*> pre_stmt;
+	// to ensure variables which declared outside are assigned to global locations
+	extern bool global_stmt;
+
 	struct WordRecorder;
+	
 	class Program:public ParserNode
 	{
 	public:
 		Program(Token *id,Block* b):identify(id),blo(b) {}
 		Mem::Object execute()override
 		{
+			for (auto a : pre_stmt)
+			{
+				a->execute();
+			}
 			blo->execute();
 			return nullptr;
 		}
@@ -21,24 +30,48 @@ namespace Mer
 		Token *identify;
 		Block *blo;
 	};
-	class VarDeclUnit :public ParserNode
+	class NamePart
 	{
 	public:
-		VarDeclUnit(size_t t, Token *tok, Expr* _expr);
-		Mem::Object execute()override;
+		NamePart();
+		size_t get_count() { return count; }
+		bool is_array() { return arr; }
+		Token* get_id() { return id; }
 	private:
-		size_t type;
-		size_t pos;
-		Expr* expr;
+		Token* id;
+		bool arr = false;
+		size_t count=0;
 	};
-	class VarDecl :public ParserNode
+	class VarDeclUnit
 	{
 	public:
-		VarDecl(size_t t,const std::map<Token*, Expr*> &v);
+		VarDeclUnit(size_t t);
+		ParserNode* get_expr() { return expr; }
+		Token* get_id() { return id; }
+	private:
+		size_t type_code;
+		Token* id;
+		ParserNode* expr;
+	};
+	class LocalVarDecl :public ParserNode
+	{
+	public:
+		LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t);
 		Mem::Object execute()override;
 	private:
+		size_t pos;
+		std::vector<VarDeclUnit*> units;
 		size_t type;
-		std::vector<std::pair<std::size_t, Expr *>> var_list;
+	};
+	class GloVarDecl :public ParserNode
+	{
+	public:
+		GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t);
+		Mem::Object execute()override;
+	private:
+		std::vector<VarDeclUnit*> units;
+		size_t pos;
+		size_t type;
 	};
 	class Print :public ParserNode
 	{
@@ -63,17 +96,6 @@ namespace Mer
 		Expr *expr;
 		Block *block;
 	};
-	class ArrayDecl :public ParserNode
-	{
-	public:
-		ArrayDecl(size_t t, size_t sz, Token *tok, InitList* _expr);
-		Mem::Object execute()override;
-	private:
-		size_t type;
-		size_t size;
-		size_t pos;
-		InitList* expr;
-	};
 	namespace Parser
 	{
 		Program* program();
@@ -82,7 +104,6 @@ namespace Mer
 		ParserNode *statement();
 		ParserNode *var_decl();
 		size_t get_type();
-		ArrayDecl* array_decl(size_t type_code);
 		WordRecorder *get_current_info();
 	}
 }

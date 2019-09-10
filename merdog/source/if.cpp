@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/if.hpp"
 #include "../include/memory.hpp"
 namespace Mer
@@ -11,7 +15,7 @@ namespace Mer
 			token_stream.match(LPAREN);
 			auto expr = new Expr();
 			token_stream.match(RPAREN);
-			stack_memory.new_block();
+			mem.new_block();
 			auto blo = Parser::block();
 			ret->if_block.push_back({ expr,blo });
 			while (token_stream.this_tag() == ELSE_IF)
@@ -33,19 +37,19 @@ namespace Mer
 	}
 	Mem::Object If::execute()
 	{
-		stack_memory.new_block();
+		mem.new_block();
 		for (auto &a : if_block)
 		{
 			if (std::static_pointer_cast<Mem::Bool>(a.first->execute())->_value())
 			{
 				a.second->execute();
-				stack_memory.end_block();
+				mem.end_block();
 				return nullptr;
 			}
 		}
 		if (else_block != nullptr)
 			else_block->execute();
-		stack_memory.end_block();
+		mem.end_block();
 		return nullptr;
 	}
 }

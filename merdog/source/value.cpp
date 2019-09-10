@@ -1,3 +1,7 @@
+/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"
@@ -5,6 +9,7 @@
 #include "../include/compound_box.hpp"
 Mer::Variable::Variable(Token * tok) :id(tok)
 {
+
 	auto result = this_namespace->sl_table->find(Id::get_value(tok));
 	if (result == nullptr)
 		throw Error("var " + tok->to_string() + " no found");
@@ -27,7 +32,7 @@ size_t Mer::Variable::get_type()
 
 Mer::Mem::Object Mer::Variable::execute()
 {
-	return stack_memory[pos];
+	return mem[pos];
 }
 
 Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
@@ -111,9 +116,15 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
+	case ESymbol::SGVAR:
+	{
+		ret = new GVar(result);
+		token_stream.match(ID);
+		break;
+	}
 	case ESymbol::SSTRUCTURE:
 	{
-		return structobj_decl();
+		return var_decl();;
 	}
 	case ESymbol::STYPE:// Build-in Type but not basic type 
 	{
@@ -122,11 +133,6 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;
-	case ESymbol::SGVAR:
-	{
-		ret = _parse_id_wn(Mer::root_namespace);
-		return ret;
-	}
 	case ESymbol::SVAR:
 	{
 		ret = parse_var(result);
@@ -210,7 +216,7 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 		break;
 	case ESymbol::SGVAR:
 	{
-		ret = new GVar(names, token_stream.this_token());
+		ret = new GVar(result);
 		token_stream.match(ID);
 		break;
 	}
@@ -257,7 +263,7 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
+		return new FunctionCall(param_types, mem.get_index(), result, exprs);
 	}
 	auto param_unit = new Expr();
 	param_types.push_back(param_unit->get_type());
@@ -270,7 +276,7 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(param_types, stack_memory.get_index(), result, exprs);
+	return new FunctionCall(param_types, mem.get_index(), result, exprs);
 }
 
 Mer::Namespace * Mer::Parser::kill_namespaces()
@@ -316,15 +322,10 @@ Mer::LConV::LConV(Token * t)
 	}
 }
 
-Mer::GVar::GVar(Namespace *ns, Token * o)
+Mer::GVar::GVar(WordRecorder* result)
 {
-	auto result = ns->sl_table->find(Id::get_value(o));
-	if (result == nullptr)
-		throw Error(o->to_string() + "no found");
-	if (result->es != ESymbol::SGVAR)
-		throw Error("merdog inner-errors");
-	obj = static_cast<GVarIdRecorder*>(result)->value;
 	type = result->get_type();
+	pos = static_cast<GVarIdRecorder*>(result)->pos;
 }
 
 Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)

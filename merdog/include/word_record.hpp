@@ -12,7 +12,7 @@ namespace Mer
 	struct WordRecorder
 	{
 	public:
-		WordRecorder(ESymbol e, size_t tp = 0) :es(e),type_code(tp) {}
+		WordRecorder(ESymbol e, size_t tc = 0) :es(e),type_code(tc) {}
 		ESymbol es;
 		virtual std::string to_string() { return""; }
 		size_t get_type() { return type_code; }
@@ -62,10 +62,13 @@ namespace Mer
 	struct GVarIdRecorder:public WordRecorder
 	{
 	public:
-		GVarIdRecorder(size_t t, Mem::Object obj) :WordRecorder(SGVAR), value(obj) {
-			type_code = t;
+		GVarIdRecorder(size_t t,size_t _pos) :WordRecorder(SGVAR,t), pos(_pos) {
 		}
-		Mem::Object value;
+		Mem::Object& get_value()
+		{
+			return mem.static_index(pos);
+		}
+		size_t pos;
 	};
 	struct FuncIdRecorder :public WordRecorder
 	{
@@ -122,10 +125,10 @@ namespace Mer
 		}
 		WordRecorder* find(std::string id)
 		{
-			for (const auto &a:data)
+			for (int i=0;i<data.size();i++)
 			{
-				auto result = a.find(id);
-				if (result != a.end())
+				auto result = data[i].find(id);
+				if (result != data[i].end())
 				{
 					return result->second;
 				}
@@ -141,6 +144,7 @@ namespace Mer
 			data.front().insert({ id,wr });
 			//std::cout << id << "   " << wr->to_string() << std::endl;
 		}
+		void print();
 	private:
 		std::deque<std::map<std::string, WordRecorder*>> data;
 	};

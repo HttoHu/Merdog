@@ -1,14 +1,16 @@
 #pragma once
 #include <vector>
+#include "memory.hpp"
 #include "parser_node.hpp"
 #include "lexer.hpp"
 #include "../include/parser.hpp"
 namespace Mer
 {
+	class Namespace;
 	class Expr;
 	class FunctionBase;
 	class StructureBase;
-	//����ֵ���� literal-const
+	//literal-const
 	class LConV :public ParserNode
 	{
 	public:
@@ -39,23 +41,22 @@ namespace Mer
 	class GVar :public ParserNode
 	{
 	public:
-		GVar(Namespace *ns,Token *o);
+		GVar(WordRecorder *result);
 		size_t get_type()override
 		{
 			return type;
 		}
 		Mem::Object execute()override
 		{
-			return obj;
+			return mem.static_index(pos);
 		}
 		inline bool constant()const override
 		{
 			return false;
 		}
 	private:
-		Namespace * names;
 		size_t type;
-		Mem::Object obj;
+		size_t pos;
 	};
 
 	class Variable :public ParserNode

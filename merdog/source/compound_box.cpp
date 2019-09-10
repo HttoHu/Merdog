@@ -1,4 +1,8 @@
-﻿#include "../include/compound_box.hpp"
+﻿/*
+* MIT License
+* Copyright (c) 2019 Htto Hu
+*/
+#include "../include/compound_box.hpp"
 #include "../include/lexer.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
@@ -31,42 +35,7 @@ void Mer::build_ustructure()
 	Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
 }
 
-StructureDecl* Mer::structobj_decl()
-{
-	std::vector<std::pair<Token*,SInitBase*>> tvec;
-	std::string type_name = Id::get_value(token_stream.this_token());
-	token_stream.next();
-	auto result = ustructure_map.find(type_name);
-	if (result == ustructure_map.end())
-	{
-		throw Error("undefined type <" + type_name + ">");
-	}
-	auto type_result = Mem::type_index.find(type_name);
-	Token* first_id=token_stream.this_token();
-	token_stream.match(ID);
-	if (token_stream.this_tag() == BEGIN)
-	{
-		auto init_list = new StructureInitList(result->second->mapping);
-		tvec.push_back({ first_id,init_list });
-	}
-	else
-		tvec.push_back({ first_id,new StructureEmptyInit(result->second) });
-	while (token_stream.this_tag() != SEMI)
-	{
-		token_stream.match(COMMA);
-		Token *remain_ids = token_stream.this_token();
-		token_stream.match(ID);
-		if (token_stream.this_tag() == BEGIN)
-		{
-			tvec.push_back({ remain_ids,new StructureInitList(result->second->mapping) });
-		}
-		else
-			tvec.push_back({ remain_ids,new StructureEmptyInit(result->second) });
-	}
-	return new StructureDecl(type_result->second,tvec);
-}
 
-//OK
 Mer::UStructure* Mer::find_ustructure_t(size_t type)
 {
 	auto result = type_name_mapping.find(type);
@@ -77,7 +46,6 @@ Mer::UStructure* Mer::find_ustructure_t(size_t type)
 		throw Error("Id " +result2->first + " undefined");
 	return result2->second;
 }
-//OK
 std::vector<Mem::Object> Mer::UStructure::init()
 {
 	std::vector<Mem::Object> ret;
@@ -88,28 +56,8 @@ std::vector<Mem::Object> Mer::UStructure::init()
 	return ret;
 }
 
-Mer::StructureDecl::StructureDecl(size_t t, const std::vector<std::pair<Token*, SInitBase*>>& v)
-{
-	type = t;
-	for (auto& a : v)
-	{
-		auto pos = stack_memory.push();
-		this_namespace->sl_table->push(Id::get_value(a.first), new VarIdRecorder(t, pos));
-		var_list.push_back({ pos,a.second });
-	}
-}
 
-Mem::Object Mer::StructureDecl::execute()
-{
-	auto tmp = find_ustructure_t(type);
-	for (auto& a : var_list)
-	{
-		stack_memory[a.first] = a.second->transfer();
-	}
-	return nullptr;
-}
-
-std::shared_ptr<USObject> Mer::StructureInitList::transfer()
+Mem::Object Mer::StructureInitList::execute()
 {
 	std::vector<Mem::Object> obj_vec(vec.size());
 	for (int i=0;i<vec.size();i++)
@@ -139,4 +87,17 @@ Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m):v
 		token_stream.match(COMMA);
 	}
 	
+}
+
+Mer::DefaultInitList::DefaultInitList(const std::map<std::string, int>& m)
+{
+	for (auto& a : m)
+	{
+		vec.push_back(Mem::create_var_t(a.second));
+	}
+}
+
+Mem::Object Mer::DefaultInitList::execute()
+{
+	return std::make_shared<USObject>(vec);
 }
