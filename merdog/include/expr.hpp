@@ -41,6 +41,15 @@ namespace Mer
 		size_t pos;
 		ParserNode* expr;
 	};
+	class ContainerGloIndex :public ParserNode
+	{
+	public:
+		ContainerGloIndex(size_t _pos, ParserNode* _expr) :pos(_pos), expr(_expr) {}
+		Mem::Object execute()override;
+	private:
+		size_t pos;
+		ParserNode* expr;
+	};
 	class BinOp :public ParserNode
 	{
 	public:
@@ -94,12 +103,13 @@ namespace Mer
 		size_t type_code;
 		size_t size;
 	};
-	class InitList :public ParserNode
+	class InitList:public ParserNode
 	{
 	public:
 		InitList(size_t t,size_t sz);
 		Mem::Object execute()override;
 		std::vector<Mem::Object> get_array();
+		std::vector<Expr*>& exprs() { return init_v; }
 		size_t get_type()override
 		{
 			return type;

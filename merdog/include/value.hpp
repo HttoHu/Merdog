@@ -41,7 +41,7 @@ namespace Mer
 	class GVar :public ParserNode
 	{
 	public:
-		GVar(WordRecorder *result);
+		GVar(WordRecorder *result,size_t _pos);
 		size_t get_type()override
 		{
 			return type;
@@ -91,6 +91,8 @@ namespace Mer
 		/*
 		ParserNode *build_init_list(Namespace *names);
 		*/
+
+		ParserNode* parse_glo(WordRecorder* var_info);
 		ParserNode *parse_array(WordRecorder* var_info);
 		ParserNode *parse_id();
 		ParserNode *parse_var(WordRecorder* var_info);

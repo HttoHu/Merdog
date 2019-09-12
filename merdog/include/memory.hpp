@@ -34,6 +34,7 @@ namespace Mer
 		size_t push(int size);
 		size_t push();
 		size_t push_to_static();
+		size_t push_to_static(size_t sz);
 		size_t end_block();
 		size_t get_current()
 		{

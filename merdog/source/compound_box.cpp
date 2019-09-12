@@ -60,7 +60,7 @@ std::vector<Mem::Object> Mer::UStructure::init()
 Mem::Object Mer::StructureInitList::execute()
 {
 	std::vector<Mem::Object> obj_vec(vec.size());
-	for (int i=0;i<vec.size();i++)
+	for (size_t i=0;i<vec.size();i++)
 	{
 		obj_vec[i] = vec[i]->execute();
 	}

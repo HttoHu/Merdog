@@ -136,8 +136,7 @@ ParserNode* Mer::Parser::statement()
 	{
 		token_stream.match(RETURN);
 		auto expr = new Expr();
-		if (expr->get_type() != this_func_type)
-		{
+		if (expr->get_type() != this_func_type){
 			throw Error("return type doesn't correspond with function type");
 		}
 		node = new Return(expr, current_function_block);
@@ -282,8 +281,10 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t):type_code(t)
 {
 	NamePart name_part;
 	id = name_part.get_id();
+	is_arr = name_part.is_array();
 	if (name_part.is_array())
 	{
+		size = name_part.get_count();
 		if (token_stream.this_tag() == ASSIGN)
 		{ 
 			token_stream.match(ASSIGN);
@@ -315,35 +316,67 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t):type_code(t)
 	throw Error("try to init a non-init variable");
 }
 
-Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t) :units(vec),type(t)
+Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t) :type(t)
 {
-	pos = mem.push(units.size()) - units.size();
-	for (int i = 0; i < units.size(); i++)
+	for (const auto& a : vec)
 	{
-		this_namespace->sl_table->push(Id::get_value(units[i]->get_id()), new VarIdRecorder(type, pos + i));
+		sum += a->get_size();
+	}
+	pos = mem.push(sum) -sum;
+	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos));
+	for (int i = 1; i < vec.size(); i++)
+	{
+		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, pos + vec[i-1]->get_size()));
+	}
+	for (auto& a : vec)
+	{
+		if (a->arr())
+		{
+			auto arr = static_cast<InitList*>(a->get_expr())->exprs();
+			exprs.insert(exprs.end(),arr.begin(), arr.end());
+		}
+		else {
+			exprs.push_back(static_cast<Expr*>(a->get_expr()));
+		}
 	}
 }
 
 Mem::Object Mer::LocalVarDecl::execute()
 {
-	for (int i = 0; i < units.size(); i++) {
-		mem[pos + i] = units[i]->get_expr()->execute()->clone();
+	for (int i = 0; i <sum; i++) {
+		mem[pos + i] = exprs[i]->execute()->clone();
 	}
 	return Mem::Object(nullptr);
 }
 
-Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :units(vec), type(t)
+Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 {
-	pos = mem.push(units.size())- units.size();
-	for (int i = 0; i < units.size(); i++)
+	for (const auto& a : vec)
 	{
-		this_namespace->sl_table->push(Id::get_value(units[i]->get_id()), new GVarIdRecorder(type, pos + i));
+		sum += a->get_size();
+	}
+	pos = mem.push_to_static(sum) - sum;
+	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new GVarIdRecorder(type, pos));
+	for (int i = 1; i < vec.size(); i++)
+	{
+		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new GVarIdRecorder(type, pos + vec[i - 1]->get_size()));
+	}
+	for (auto& a : vec)
+	{
+		if (a->arr())
+		{
+			auto arr = static_cast<InitList*>(a->get_expr())->exprs();
+			exprs.insert(exprs.end(), arr.begin(), arr.end());
+		}
+		else {
+			exprs.push_back(static_cast<Expr*>(a->get_expr()));
+		}
 	}
 }
 Mem::Object Mer::GloVarDecl::execute()
 {
-	for(int i=0;i<units.size();i++){
-		mem.static_index(pos+i) = units[i]->get_expr()->execute()->clone();
+	for (int i = 0; i < sum; i++) {
+		mem.static_index(pos+i) = exprs[i]->execute()->clone();
 	}
 	return Mem::Object(nullptr);
 }

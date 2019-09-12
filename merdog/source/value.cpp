@@ -118,8 +118,7 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	{
 	case ESymbol::SGVAR:
 	{
-		ret = new GVar(result);
-		token_stream.match(ID);
+		ret = parse_glo(result);
 		break;
 	}
 	case ESymbol::SSTRUCTURE:
@@ -216,8 +215,7 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 		break;
 	case ESymbol::SGVAR:
 	{
-		ret = new GVar(result);
-		token_stream.match(ID);
+		ret = parse_glo(result);
 		break;
 	}
 	default:
@@ -322,11 +320,11 @@ Mer::LConV::LConV(Token * t)
 	}
 }
 
-Mer::GVar::GVar(WordRecorder* result)
+Mer::GVar::GVar(WordRecorder* result,size_t _pos):pos(_pos)
 {
 	type = result->get_type();
-	pos = static_cast<GVarIdRecorder*>(result)->pos;
 }
+
 
 Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 {
@@ -340,6 +338,28 @@ Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
 		return new Variable(id_name, static_cast<VarIdRecorder*>(var_info)->pos + off);
+	}
+	auto expr = new Expr();
+	token_stream.match(RSB);
+	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
+}
+
+
+Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
+{
+	auto id_name = token_stream.this_token();
+	token_stream.match(ID);
+	if (token_stream.this_tag() != LSB)
+	{
+		return new GVar(var_info, static_cast<VarIdRecorder*>(var_info)->pos);
+	}
+	token_stream.match(LSB);
+	if (token_stream.this_tag() == INTEGER)
+	{
+		int off = Integer::get_value(token_stream.this_token());
+		token_stream.match(INTEGER);
+		token_stream.match(RSB);
+		return new GVar(var_info, static_cast<VarIdRecorder*>(var_info)->pos + off);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);

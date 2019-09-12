@@ -263,17 +263,18 @@ Mer::InitList::InitList(size_t t,size_t sz):type(t),size(sz)
 			token_stream.match(COMMA);
 	}
 	token_stream.match(END);
-	if (init_v.size() > sz)
-		throw Error("Error, array overflow");
-	if (init_v.size() < 2)
+	if (init_v.size() == 1 && sz > 1)
 	{
+		init_v = std::vector<Expr*>(sz, init_v[0]);
 		return;
 	}
+	if (init_v.size() != sz)
+		throw Error("Error, array overflow");
+
 	for (int i = 1; i < init_v.size(); i++)
 	{
 		if (type != init_v[i - 1]->get_type())
 		{ 
-			std::cout << type << "VS" << init_v[i - 1]->get_type() << std::endl;
 			throw Error("there is a type-distinction in an init list.");
 		}
 	}
@@ -345,4 +346,10 @@ Mer::EmptyList::EmptyList(size_t t, size_t sz):type_code(t),size(sz)
 Mem::Object Mer::EmptyList::execute()
 {
 	return std::make_shared<Mem::InitListObj>(std::move(obj_vec), type_code);
+}
+
+Mem::Object Mer::ContainerGloIndex::execute()
+{
+	auto tmp = expr->execute();
+	return mem.static_index(pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value());
 }

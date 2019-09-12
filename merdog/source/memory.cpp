@@ -22,6 +22,12 @@ size_t Mer::Memory::push_to_static()
 	check_static();
 	return sindex++;
 }
+size_t Mer::Memory::push_to_static(size_t sz)
+{
+	sindex += sz;
+	this->check_static();
+	return sindex;
+}
 size_t Mer::Memory::end_block() {
 	index = block_flag.back();
 	block_flag.pop_back();

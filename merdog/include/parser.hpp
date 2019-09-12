@@ -48,7 +48,11 @@ namespace Mer
 		VarDeclUnit(size_t t);
 		ParserNode* get_expr() { return expr; }
 		Token* get_id() { return id; }
+		size_t get_size() { return size; }
+		bool arr() { return is_arr; }
 	private:
+		bool is_arr = false;
+		size_t size=1;
 		size_t type_code;
 		Token* id;
 		ParserNode* expr;
@@ -60,7 +64,8 @@ namespace Mer
 		Mem::Object execute()override;
 	private:
 		size_t pos;
-		std::vector<VarDeclUnit*> units;
+		size_t sum;
+		std::vector<Expr*> exprs;
 		size_t type;
 	};
 	class GloVarDecl :public ParserNode
@@ -69,8 +74,9 @@ namespace Mer
 		GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t);
 		Mem::Object execute()override;
 	private:
-		std::vector<VarDeclUnit*> units;
-		size_t pos;
+		size_t pos=0;
+		size_t sum;
+		std::vector<Expr*> exprs;
 		size_t type;
 	};
 	class Print :public ParserNode
