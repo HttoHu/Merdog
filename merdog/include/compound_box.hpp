@@ -36,6 +36,7 @@ namespace Mer
 			vec = a->vec;
 			return a;
 		}
+		Mem::Object clone()const override { return std::make_shared<USObject>(vec); }
 		virtual Mem::Object operator[](Mem::Object v)
 		{
 			return vec[std::static_pointer_cast<Mem::Int>(v)->get_value()];
@@ -48,7 +49,7 @@ namespace Mer
 	class DefaultInitList :public ParserNode
 	{
 	public:
-		DefaultInitList(const std::map<std::string, int>& m);
+		DefaultInitList(const std::map<std::string, size_t>& m);
 		Mem::Object execute()override;
 	private:
 		std::vector<Mem::Object> vec;

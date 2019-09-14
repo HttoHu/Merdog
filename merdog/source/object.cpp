@@ -32,7 +32,7 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	return "";
 }
 
-size_t Mer::Mem::get_type_code(Token * tok)
+size_t Mer::Mem::get_type_code(Token* tok)
 {
 	switch (tok->get_tag())
 	{
@@ -59,7 +59,7 @@ size_t Mer::Mem::get_type_code(Token * tok)
 	}
 }
 
-size_t &Mer::Mem::type_no()
+size_t& Mer::Mem::type_no()
 {
 	static size_t this_type_index = 10;
 	return this_type_index;
@@ -104,17 +104,9 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 		return std::make_shared<Bool>(true);
 	case STRING:
 		return std::make_shared<String>("");
-	case ID:
-	{
-		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
-		if (info == nullptr)
-			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
-		return std::make_shared<USObject>(find_ustructure_t(info->get_type())->init());
-	}
 	default:
-		break;
+		return std::make_shared<USObject>(find_ustructure_t(type)->init());
 	}
-	throw Error("Mer::Mem::Object Mer::Mem::create_var_t(size_t type) Unsupported type.");
 }
 
 Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
@@ -165,7 +157,7 @@ Mer::Mem::Object Mer::Mem::Bool::Convert(int type)
 	}
 }
 
-bool Mer::Mem::Type::convertible(const size_t & t)
+bool Mer::Mem::Type::convertible(const size_t& t)
 {
 	return convertible_types.find(t) != convertible_types.end();
 }

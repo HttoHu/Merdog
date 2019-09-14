@@ -40,7 +40,7 @@ Mer::UStructure* Mer::find_ustructure_t(size_t type)
 {
 	auto result = type_name_mapping.find(type);
 	if (result == type_name_mapping.end())
-		throw Error("type" + std::to_string(type) + " undefined");
+		throw Error("type " + std::to_string(type) + " undefined");
 	auto result2 = ustructure_map.find(result->second);
 	if (result2 == ustructure_map.end())
 		throw Error("Id " +result2->first + " undefined");
@@ -89,10 +89,11 @@ Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m):v
 	
 }
 
-Mer::DefaultInitList::DefaultInitList(const std::map<std::string, int>& m)
+Mer::DefaultInitList::DefaultInitList(const std::map<std::string, size_t>& m)
 {
 	for (auto& a : m)
 	{
+		//std::cout << "TYPE: "<<a.second << std::endl;
 		vec.push_back(Mem::create_var_t(a.second));
 	}
 }

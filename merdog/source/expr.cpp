@@ -85,6 +85,8 @@ Mer::ParserNode * Mer::Expr::factor()
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
+	case CAST:
+		return new Cast();
 	case TTRUE:
 	{
 		token_stream.match(TTRUE);

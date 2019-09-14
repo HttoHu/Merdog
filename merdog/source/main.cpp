@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 		Mer::set_maths();
 		if (argc != 2)
 			throw std::runtime_error("argument error");
-		if (argv[1] == '-v')
+		if (argv[1] == "-v")
 		{
 			std::cout << "3.0";
 			return 0;

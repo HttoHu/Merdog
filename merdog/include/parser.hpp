@@ -88,6 +88,16 @@ namespace Mer
 		size_t pos;
 		Token * content;
 	};
+	class Cast :public ParserNode
+	{
+	public:
+		Cast();
+		Mem::Object execute()override;
+		size_t get_type()override { return to_type; }
+	private:
+		Expr* expr;
+		size_t to_type;
+	};
 	class Return :public ParserNode
 	{
 	public:

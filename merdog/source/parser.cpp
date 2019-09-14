@@ -136,7 +136,7 @@ ParserNode* Mer::Parser::statement()
 	{
 		token_stream.match(RETURN);
 		auto expr = new Expr();
-		if (expr->get_type() != this_func_type){
+		if (expr->get_type() != this_func_type) {
 			throw Error("return type doesn't correspond with function type");
 		}
 		node = new Return(expr, current_function_block);
@@ -182,8 +182,8 @@ ParserNode* Mer::Parser::var_decl()
 		units.push_back(new VarDeclUnit(type));
 	}
 	if (global_stmt)
-		return new GloVarDecl(units,type);
-	return new LocalVarDecl(units,type);
+		return new GloVarDecl(units, type);
+	return new LocalVarDecl(units, type);
 }
 
 size_t Mer::Parser::get_type()
@@ -277,7 +277,7 @@ Mer::NamePart::NamePart()
 
 }
 
-Mer::VarDeclUnit::VarDeclUnit(size_t t):type_code(t)
+Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 {
 	NamePart name_part;
 	id = name_part.get_id();
@@ -286,12 +286,22 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t):type_code(t)
 	{
 		size = name_part.get_count();
 		if (token_stream.this_tag() == ASSIGN)
-		{ 
+		{
 			token_stream.match(ASSIGN);
 			expr = new InitList(t, name_part.get_count());
 		}
 		else {
 			expr = new EmptyList(t, name_part.get_count());
+		}
+		return;
+	}
+	if (type_name_mapping.find(t) != type_name_mapping.end())
+	{
+		UStructure* result = find_ustructure_t(t);
+		if (token_stream.this_tag() == BEGIN)
+			expr = new StructureInitList(result->mapping);
+		else {
+			expr = new DefaultInitList(result->STMapping);
 		}
 		return;
 	}
@@ -303,37 +313,27 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t):type_code(t)
 			throw Error("type not matched");
 		return;
 	}
-	if (type_name_mapping.find(t) != type_name_mapping.end())
-	{
-		UStructure* result = find_ustructure_t(t);
-		if (token_stream.this_tag() == BEGIN)
-			expr = new StructureInitList(result->mapping);
-		else {
-			expr = new DefaultInitList(result->mapping);
-		}
-		return;
-	}
 	throw Error("try to init a non-init variable");
 }
 
-Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t) :type(t)
+Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 {
 	for (const auto& a : vec)
 	{
 		sum += a->get_size();
 	}
-	pos = mem.push(sum) -sum;
+	pos = mem.push(sum) - sum;
 	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos));
 	for (int i = 1; i < vec.size(); i++)
 	{
-		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, pos + vec[i-1]->get_size()));
+		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, pos + vec[i - 1]->get_size()));
 	}
 	for (auto& a : vec)
 	{
 		if (a->arr())
 		{
 			auto arr = static_cast<InitList*>(a->get_expr())->exprs();
-			exprs.insert(exprs.end(),arr.begin(), arr.end());
+			exprs.insert(exprs.end(), arr.begin(), arr.end());
 		}
 		else {
 			exprs.push_back(static_cast<Expr*>(a->get_expr()));
@@ -343,7 +343,7 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t) :type(t
 
 Mem::Object Mer::LocalVarDecl::execute()
 {
-	for (int i = 0; i <sum; i++) {
+	for (int i = 0; i < sum; i++) {
 		mem[pos + i] = exprs[i]->execute()->clone();
 	}
 	return Mem::Object(nullptr);
@@ -376,7 +376,24 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 Mem::Object Mer::GloVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem.static_index(pos+i) = exprs[i]->execute()->clone();
+		mem.static_index(pos + i) = exprs[i]->execute()->clone();
 	}
 	return Mem::Object(nullptr);
+}
+
+Mer::Cast::Cast()
+{
+	token_stream.match(CAST);
+	token_stream.match(LT);
+	to_type = Mem::get_type_code(token_stream.this_token());
+	token_stream.next();
+	token_stream.match(GT);
+	token_stream.match(LPAREN);
+	expr = new Expr();
+	token_stream.match(RPAREN);
+}
+
+Mem::Object Mer::Cast::execute()
+{
+	return expr->execute()->Convert(to_type);
 }

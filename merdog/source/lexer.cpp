@@ -29,7 +29,7 @@ TokenMap	Mer::KeyWord{
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) },
 	{ "continue",new Token(CONTINUE) },
 	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
-	{"new",new Token(NEW)},
+	{ "new",new Token(NEW)},
 	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },
 	{ "false",new Token(TFALSE) },
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
