@@ -206,7 +206,7 @@ void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
 //================================================================
 void Mer::FunctionBase::set_index(size_t pos)
 {
-	index = pos;
+	index = (int)pos;
 }
 
 Mer::Function::Function(size_t t, Param * p, Block * bl) :

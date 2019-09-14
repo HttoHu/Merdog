@@ -7,32 +7,21 @@
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
 #include "../include/compound_box.hpp"
-Mer::Variable::Variable(Token * tok) :id(tok)
-{
 
-	auto result = this_namespace->sl_table->find(Id::get_value(tok));
-	if (result == nullptr)
-		throw Error("var " + tok->to_string() + " no found");
-	if (result->es != ESymbol::SVAR)
-		throw Error(tok->to_string() + " must be a symbol");
-	pos = static_cast<VarIdRecorder*> (result)->pos;
+Mer::Variable::Variable(WordRecorder* wr)
+{
+	pos = static_cast<VarIdRecorder*>(wr)->pos;
+	type = wr->get_type();
 }
 
 size_t Mer::Variable::get_type()
 {
-	auto result = this_namespace->sl_table->find(Id::get_value(id));
-	if (result == nullptr)
-		throw Error("id " + id->to_string() + " no found");
-	if (result->es == ESymbol::SVAR)
-	{
-		return static_cast<VarIdRecorder*>(result)->get_type();
-	}
-	throw Error(id->to_string() + " is not a var");
+	return type;
 }
 
 Mer::Mem::Object Mer::Variable::execute()
 {
-	return mem[pos];
+	return mem[pos]->clone();
 }
 
 Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
@@ -80,26 +69,32 @@ Mer::Assign::AssignType Mer::_token_to_assType()
 		return Assign::AssignType::Null;
 	}
 }
-/*
-Mer::ParserNode * Mer::Parser::build_init_list(Namespace *names)
+
+Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info,size_t offset=0)
 {
-	std::string type_name = GIC();
-	auto result = names->sl_table->find(type_name);
-	if (result->es != ESymbol::SSTRUCTURE)
-		throw Error("merdog inner errors. 1");
-	Structure* structure = static_cast<Structure*>(type_vtable[result->get_type()]);
-	token_stream.match(BEGIN);
-	std::map<std::string, Expr*> tmp;// to init InitList;
-	while (token_stream.this_tag() != END)
-	{
-		std::string name = GIC();
-		token_stream.match(COMMA);
-		tmp.insert({ name,new Expr() });
-	}
-	token_stream.match(END);
-	return new InitList(structure, tmp);
+	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
+	token_stream.match(DOT);
+	std::string member_name = Id::get_value(token_stream.this_token());
+	auto usinfo = find_ustructure_t(var_info->get_type());
+	auto member_info = usinfo->mapping.find(member_name);
+	if (member_info == usinfo->mapping.end())
+		throw Error("member " + member_name + " no found");
+	token_stream.match(ID);
+	return new Index(new Variable(var_info->get_type(),pos),member_info->second);
 }
-*/
+
+Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t offset)
+{
+	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
+	token_stream.match(DOT);
+	std::string member_name = Id::get_value(token_stream.this_token());
+	auto usinfo = find_ustructure_t(var_info->get_type());
+	auto member_info = usinfo->mapping.find(member_name);
+	if (member_info == usinfo->mapping.end())
+		throw Error("member " + member_name + " no found");
+	token_stream.match(ID);
+	return new Index(new GVar(var_info,offset), member_info->second);
+}
 
 Mer::ParserNode * Mer::Parser::parse_id()
 {
@@ -168,19 +163,7 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 	{
 	case DOT:
 	{
-		// if a type_code less than 7, it must be a basic type (int real bool string) which doesn't have their members.;
-		if (var_info->get_type() <= BASICTYPE_MAX_CODE)
-		{
-			throw Error("basic-type var doesn't have members");
-		}
-		token_stream.match(DOT);
-		std::string member_name = Id::get_value(token_stream.this_token());
-		auto usinfo = find_ustructure_t(var_info->get_type());
-		auto member_info = usinfo->mapping.find(member_name);
-		if (member_info == usinfo->mapping.end())
-			throw Error("member " + member_name + " no found");
-		token_stream.match(ID);
-		return new Index(new Variable(var_id), member_info->second);
+		return parse_member(var_info);
 	}
 	case LSB:
 	{
@@ -188,7 +171,7 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 		return parse_array(var_info);
 	}
 	default:
-		return new Variable(var_id);
+		return new Variable(var_info);
 	}
 }
 
@@ -320,15 +303,21 @@ Mer::LConV::LConV(Token * t)
 	}
 }
 
-Mer::GVar::GVar(WordRecorder* result,size_t _pos):pos(_pos)
+Mer::GVar::GVar(WordRecorder* result)
 {
+	pos = static_cast<GVarIdRecorder*>(result)->pos;
+	type = result->get_type();
+}
+
+Mer::GVar::GVar(WordRecorder* result, size_t offset)
+{
+	pos = static_cast<GVarIdRecorder*>(result)->pos+offset;
 	type = result->get_type();
 }
 
 
 Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 {
-	
 	auto id_name= token_stream.this_token();
 	token_stream.match(ID);
 	token_stream.match(LSB);
@@ -337,10 +326,20 @@ Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
-		return new Variable(id_name, static_cast<VarIdRecorder*>(var_info)->pos + off);
+		if (var_info->get_type() >= USER_TYPE_INDEX)
+		{
+			if(var_info->es==SGVAR)
+				return parse_member_glo(var_info,off);
+			return parse_member(var_info,off);
+		}
+		return new Variable(var_info);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);
+	if (var_info->get_type() >= USER_TYPE_INDEX)
+	{
+		throw Error("haven't finished yet");
+	}
 	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
 }
 
@@ -351,7 +350,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	token_stream.match(ID);
 	if (token_stream.this_tag() != LSB)
 	{
-		return new GVar(var_info, static_cast<VarIdRecorder*>(var_info)->pos);
+		return new GVar(var_info);
 	}
 	token_stream.match(LSB);
 	if (token_stream.this_tag() == INTEGER)
@@ -359,7 +358,9 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
-		return new GVar(var_info, static_cast<VarIdRecorder*>(var_info)->pos + off);
+		if (var_info->get_type() >= USER_TYPE_INDEX)
+			return parse_member_glo(var_info, off);
+		return new GVar(var_info,  off);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);

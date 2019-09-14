@@ -12,7 +12,7 @@ namespace Mer
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			double d2 = std::static_pointer_cast<Mem::Double>(args[1]->Convert(Mem::BasicType::DOUBLE))->get_value();
-			double ret = fminf(d, d2);
+			double ret =fmin(d, d2);
 			return std::make_shared<Mem::Double>(ret);
 		}
 		Mem::Object _sqrt(std::vector<Mem::Object>& args)

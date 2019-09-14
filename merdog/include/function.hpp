@@ -48,7 +48,7 @@ namespace Mer
 		Function(size_t t, Block *bl = nullptr);
 		void reset_block(Block *b);
 		void reser_param(Param *p);
-		Param *param;
+		Param *param=nullptr;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		Block *get_block() { return blo; }
 		size_t get_type()override { return type; }

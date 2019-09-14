@@ -123,9 +123,11 @@ namespace Mer
 	class Expr :public ParserNode
 	{
 	public:
-		Expr() :is_bool(false),tree(and_or()) {}
+		Expr(size_t t = 0);
 		size_t get_type()override
 		{
+			if (expr_type != 0)
+				return expr_type;
 			if (is_bool)
 			{
 				return Mem::BOOL;

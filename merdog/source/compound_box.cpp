@@ -40,7 +40,7 @@ Mer::UStructure* Mer::find_ustructure_t(size_t type)
 {
 	auto result = type_name_mapping.find(type);
 	if (result == type_name_mapping.end())
-		throw Error("type " + std::to_string(type) + " undefined");
+		throw Error("struct type " + std::to_string(type) + " undefined");
 	auto result2 = ustructure_map.find(result->second);
 	if (result2 == ustructure_map.end())
 		throw Error("Id " +result2->first + " undefined");

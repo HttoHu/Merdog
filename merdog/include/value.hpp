@@ -41,14 +41,15 @@ namespace Mer
 	class GVar :public ParserNode
 	{
 	public:
-		GVar(WordRecorder *result,size_t _pos);
+		GVar(WordRecorder *result);
+		GVar(WordRecorder* result, size_t offset);
 		size_t get_type()override
 		{
 			return type;
 		}
 		Mem::Object execute()override
 		{
-			return mem.static_index(pos);
+			return mem.static_index(pos)->clone();
 		}
 		inline bool constant()const override
 		{
@@ -62,12 +63,12 @@ namespace Mer
 	class Variable :public ParserNode
 	{
 	public:
-		Variable(Token *tok);
-		Variable(Token *tok, size_t _pos) :id(tok), pos(_pos) {}
+		Variable(WordRecorder* wr);
+		Variable(size_t _type, size_t _pos) :type(_type), pos(_pos) {}
 		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
-		Token * id;
+		size_t type;
 		size_t pos;
 	};
 	class FunctionCall :public ParserNode
@@ -95,6 +96,8 @@ namespace Mer
 		ParserNode* parse_glo(WordRecorder* var_info);
 		ParserNode *parse_array(WordRecorder* var_info);
 		ParserNode *parse_id();
+		ParserNode* parse_member(WordRecorder *var_info,size_t offset );
+		ParserNode* parse_member_glo(WordRecorder* var_info, size_t offset);
 		ParserNode *parse_var(WordRecorder* var_info);
 		ParserNode *_parse_id_wn(Namespace *names);
 		//FunctionCall *parse_function_call(Mer::Expr *co_caller,StructureBase *sb);

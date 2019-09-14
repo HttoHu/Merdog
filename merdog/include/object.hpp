@@ -61,7 +61,7 @@ namespace Mer
 			virtual Object operator- (Object v) { throw Error("syntax error"); }
 			virtual Object operator* (Object v) { throw Error("syntax error"); }
 			virtual Object operator/ (Object v) { throw Error("syntax error"); }
-			virtual Object Convert(int type) { throw Error("syntax error"); }
+			virtual Object Convert(size_t type) { throw Error("syntax error"); }
 			virtual Object get_negation()
 			{
 				throw Error("syntax error");
@@ -99,7 +99,7 @@ namespace Mer
 			{
 				return BasicType::BOOL;
 			}
-			Object Convert(int type)override;
+			Object Convert(size_t type)override;
 			Object get_negation()override
 			{
 				return std::make_shared<Bool>(!value);
@@ -217,7 +217,7 @@ namespace Mer
 			{
 				return value;
 			}
-			Object Convert(int type) override;
+			Object Convert(size_t type) override;
 			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
 		private:
 			int value;
@@ -312,7 +312,7 @@ namespace Mer
 			{
 				return value;
 			}
-			Object Convert(int type)override;
+			Object Convert(size_t type)override;
 		private:
 			double value;
 		};
@@ -335,7 +335,7 @@ namespace Mer
 			{
 				return BasicType::STRING;
 			}
-			Object Convert(int type)override
+			Object Convert(size_t type)override
 			{
 				if (type == STRING)
 					return std::make_shared<String>(str);

@@ -344,7 +344,7 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 Mem::Object Mer::LocalVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem[pos + i] = exprs[i]->execute()->clone();
+		mem[pos + i] = exprs[i]->execute();
 	}
 	return Mem::Object(nullptr);
 }
@@ -376,7 +376,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 Mem::Object Mer::GloVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem.static_index(pos + i) = exprs[i]->execute()->clone();
+		mem.static_index(pos + i) = exprs[i]->execute();
 	}
 	return Mem::Object(nullptr);
 }

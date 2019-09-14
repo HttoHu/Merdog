@@ -5,6 +5,7 @@
 #include <map>
 #include "object.hpp"
 #include "parser.hpp"
+#define USER_TYPE_INDEX 8
 namespace Mer
 {
 	class Id;

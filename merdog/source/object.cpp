@@ -109,7 +109,7 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 	}
 }
 
-Mer::Mem::Object  Mer::Mem::Int::Convert(int type)
+Mer::Mem::Object  Mer::Mem::Int::Convert(size_t type)
 {
 	switch (type)
 	{
@@ -131,7 +131,7 @@ Object Mer::Mem::Double::operator=(Object v) {
 	return Convert(Mem::DOUBLE);
 }
 
-Mer::Mem::Object Mer::Mem::Double::Convert(int type)
+Mer::Mem::Object Mer::Mem::Double::Convert(size_t type)
 {
 	switch (type)
 	{
@@ -144,7 +144,7 @@ Mer::Mem::Object Mer::Mem::Double::Convert(int type)
 	}
 }
 
-Mer::Mem::Object Mer::Mem::Bool::Convert(int type)
+Mer::Mem::Object Mer::Mem::Bool::Convert(size_t type)
 {
 	switch (type)
 	{

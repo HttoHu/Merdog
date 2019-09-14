@@ -4,9 +4,13 @@
 */
 #include "../include/expr.hpp"
 #include "../include/value.hpp"
+#include "../include/compound_box.hpp"
 #include "../include/memory.hpp"
 #include "../include/function.hpp"
 using namespace Mer;
+Mer::Expr::Expr(size_t t) :is_bool(false), expr_type(t) {
+	tree = and_or();
+}
 Mer::ParserNode * Mer::Expr::and_or()
 {
 	auto result = nexpr();
@@ -85,6 +89,11 @@ Mer::ParserNode * Mer::Expr::factor()
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
+	case BEGIN:
+	{
+		auto result = find_ustructure_t(expr_type);
+		return new StructureInitList(result->mapping);
+	}
 	case CAST:
 		return new Cast();
 	case TTRUE:
@@ -260,7 +269,7 @@ Mer::InitList::InitList(size_t t,size_t sz):type(t),size(sz)
 	token_stream.match(BEGIN);
 	while (token_stream.this_tag() != Tag::END)
 	{
-		init_v.push_back(new Expr());
+		init_v.push_back(new Expr(t));
 		if (token_stream.this_tag() == Tag::COMMA)
 			token_stream.match(COMMA);
 	}
