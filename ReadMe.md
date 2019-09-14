@@ -5,7 +5,6 @@ Merdog 是一个简单的开源解释器C-Like 语言语法
 
 ![](https://img.shields.io/badge/C--Like-interpreter-brightgreen)
 ![](https://img.shields.io/badge/merdog-easy%20to%20use-orange)
-[![](https://img.shields.io/github/languages/top/HttoHu/Merdog)](http://www.cplusplus.com/)  
 
 ## Merdog 2.1 支持的语法
 1. 基本类型 **int, real, string, bool**
@@ -29,6 +28,7 @@ program main
 使用Mircosoft Visual Studio 2017/2019 和 Clang 编译通过并成功运行.
 
 ## 其他
+* 网站: www.merdog.cn
 * 以 编译原理 为参考书
-* **部分算法来(表达式翻译,和一些语法分析)自Ruslan 的博客 https://ruslanspivak.com/lsbasi-part1/**
-* 邮箱 [Email]huyuantao@outlook.com
+* **部分参考Ruslan 的博客 [How to Build an interpreter](https://ruslanspivak.com/lsbasi-part1/)**
+* 联系 *huyuantao@outlook.com*
