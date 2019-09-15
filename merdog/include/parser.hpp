@@ -92,10 +92,11 @@ namespace Mer
 	{
 	public:
 		Cast();
+		Cast(ParserNode* _expr, size_t type) :expr(_expr), to_type(type) {}
 		Mem::Object execute()override;
 		size_t get_type()override { return to_type; }
 	private:
-		Expr* expr;
+		ParserNode* expr;
 		size_t to_type;
 	};
 	class Return :public ParserNode

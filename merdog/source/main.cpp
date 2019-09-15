@@ -10,7 +10,6 @@
 #include "../include/clib/merdog_io.hpp"
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
-#include <Windows.h>
 std::string get_file_content(const std::string & filename)
 {
 	using namespace std;
@@ -49,7 +48,6 @@ int main(int argc, char* argv[])
 	{
 		std::cout << e.what();
 	}
-	Sleep(100000);
 	return 0;
 }
 #else
@@ -78,8 +76,8 @@ int main()
 	{
 		std::cout << "internal error!";
 	}
+	std::cin.get();
 	std::cout << "\nThe program has exited";
-	Sleep(100000);
 	return 0;
 }
 #endif

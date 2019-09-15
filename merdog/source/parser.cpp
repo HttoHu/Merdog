@@ -323,10 +323,11 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 		sum += a->get_size();
 	}
 	pos = mem.push(sum) - sum;
+	size_t tmp_pos = pos;
 	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos));
 	for (int i = 1; i < vec.size(); i++)
 	{
-		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, pos + vec[i - 1]->get_size()));
+		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, tmp_pos += vec[i - 1]->get_size()));
 	}
 	for (auto& a : vec)
 	{
@@ -356,10 +357,11 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 		sum += a->get_size();
 	}
 	pos = mem.push_to_static(sum) - sum;
+	size_t tmp_pos = pos;
 	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new GVarIdRecorder(type, pos));
 	for (int i = 1; i < vec.size(); i++)
 	{
-		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new GVarIdRecorder(type, pos + vec[i - 1]->get_size()));
+		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new GVarIdRecorder(type,tmp_pos += vec[i - 1]->get_size()));
 	}
 	for (auto& a : vec)
 	{

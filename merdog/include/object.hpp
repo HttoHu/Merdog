@@ -85,7 +85,7 @@ namespace Mer
 			Bool(bool b) :value(b) {}
 			Object operator=(Object v)override
 			{
-				auto tmp = v->Convert(BOOL);
+				auto tmp = v;
 				value = std::static_pointer_cast<Bool>(v)->value;
 				return tmp;
 			}
@@ -106,19 +106,19 @@ namespace Mer
 			}
 			Object operator==(Object v)override
 			{
-				return std::make_shared<Bool>(value == std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
+				return std::make_shared<Bool>(value == std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object operator!=(Object v)override
 			{
-				return std::make_shared<Bool>(value != std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
+				return std::make_shared<Bool>(value != std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object operator&& (Object v)override
 			{
-				return std::make_shared<Bool>(value && std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
+				return std::make_shared<Bool>(value && std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object operator||(Object v)override
 			{
-				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v->Convert(BOOL))->value);
+				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object clone()const override 
 			{
@@ -142,68 +142,68 @@ namespace Mer
 			}
 			Object operator=(Object v)override
 			{
-				auto tmp = v->Convert(INT);
+				auto tmp = v;
 				value = std::static_pointer_cast<Int>(v)->value;
 				return tmp;
 			}
 			Object operator+=(Object v)override
 			{
-				return std::make_shared<Int>(value += std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Int>(value += std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator-=(Object v)override
 			{
-				return std::make_shared<Int>(value -= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Int>(value -= std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator*=(Object v)override
 			{
-				return std::make_shared<Int>(value *= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Int>(value *= std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator/=(Object v)override
 			{
-				return std::make_shared<Int>(value /= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Int>(value /= std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator+ (Object v)override
 			{
-				return std::make_shared<Int>(value + std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Int>(value + std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator- (Object v)override
 			{
 				return std::make_shared<Int>(value -
-					std::static_pointer_cast<Int>(v->Convert(INT))->value);
+					std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator* (Object v)override
 			{
 				return std::make_shared<Int>(value *
-					std::static_pointer_cast<Int>(v->Convert(INT))->value);
+					std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator/ (Object v)override
 			{
 				return std::make_shared<Int>(value /
-					std::static_pointer_cast<Int>(v->Convert(INT))->value);
+					std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator> (Object v)override
 			{
-				return std::make_shared < Bool >(value > std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared < Bool >(value > std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator>= (Object v)override
 			{
-				return std::make_shared<Bool>(value >= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Bool>(value >= std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator< (Object v)override
 			{
-				return std::make_shared<Bool>(value < std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Bool>(value < std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator<= (Object v)override
 			{
-				return std::make_shared<Bool>(value <= std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Bool>(value <= std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator== (Object v)override
 			{
-				return std::make_shared<Bool>(value == std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Bool>(value == std::static_pointer_cast<Int>(v)->value);
 			}
 			Object operator!= (Object v)override
 			{
-				return std::make_shared<Bool>(value != std::static_pointer_cast<Int>(v->Convert(INT))->value);
+				return std::make_shared<Bool>(value != std::static_pointer_cast<Int>(v)->value);
 			}
 			Object clone()const override
 			{
@@ -238,66 +238,66 @@ namespace Mer
 			Object operator+=(Object v)override
 			{
 				return std::make_shared<Double>(value +=
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator-=(Object v)override
 			{
 				return std::make_shared<Double>(value -=
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator*=(Object v)override
 			{
 				return std::make_shared<Double>(value *=
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator/=(Object v)override
 			{
 				return std::make_shared<Double>(value /=
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator+(Object v)override
 			{
 				return std::make_shared<Double>(value +
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator-(Object v)override
 			{
 				return std::make_shared<Double>(value -
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator*(Object v)override
 			{
 				return std::make_shared<Double>(value *
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator/(Object v)override
 			{
 				return std::make_shared<Double>(value /
-					std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+					std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator<(Object v)override
 			{
-				return std::make_shared<Bool>(value < std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value < std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator>(Object v)override
 			{
-				return std::make_shared<Bool>(value > std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value > std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator<=(Object v)override
 			{
-				return std::make_shared<Bool>(value <= std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value <= std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator>=(Object v)override
 			{
-				return std::make_shared<Bool>(value >= std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value >= std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator==(Object v)override
 			{
-				return std::make_shared<Bool>(value == std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value == std::static_pointer_cast<Double>(v)->value);
 			}
 			Object operator!=(Object v)override
 			{
-				return std::make_shared<Bool>(value != std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value);
+				return std::make_shared<Bool>(value != std::static_pointer_cast<Double>(v)->value);
 			}
 			Object clone()const override
 			{
@@ -324,11 +324,11 @@ namespace Mer
 			Object operator+(Object v)override
 			{
 				return std::make_shared<String>(str +
-					std::static_pointer_cast<String>(v->Convert(STRING))->str);
+					std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator=(Object v)override
 			{
-				str = std::static_pointer_cast<String>(v->Convert(STRING))->str;
+				str = std::static_pointer_cast<String>(v)->str;
 				return Convert(Mem::STRING);
 			}
 			size_t get_type()const override
@@ -344,27 +344,27 @@ namespace Mer
 			}
 			Object operator>(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() > std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
+				return std::make_shared<Bool>(str.size() > std::static_pointer_cast<String>(v)->str.size());
 			}
 			Object operator<(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() < std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
+				return std::make_shared<Bool>(str.size() < std::static_pointer_cast<String>(v)->str.size());
 			}
 			Object operator>=(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() >= std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
+				return std::make_shared<Bool>(str.size() >= std::static_pointer_cast<String>(v)->str.size());
 			}
 			Object operator<=(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() <= std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
+				return std::make_shared<Bool>(str.size() <= std::static_pointer_cast<String>(v)->str.size());
 			}
 			Object operator!=(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() != std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
+				return std::make_shared<Bool>(str.size() != std::static_pointer_cast<String>(v)->str.size());
 			}
 			Object operator==(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() == std::static_pointer_cast<String>(v->Convert(STRING))->str.size());
+				return std::make_shared<Bool>(str.size() == std::static_pointer_cast<String>(v)->str.size());
 			}
 			Object operator[](Object v)override
 			{
@@ -387,7 +387,7 @@ namespace Mer
 			InitListObj(size_t sz, size_t type_c) : type_code(type_c),elems(sz) {}
 			virtual Object operator[](Object v)
 			{
-				return elems[std::static_pointer_cast<Int>(v->Convert(INT))->get_value()];
+				return elems[std::static_pointer_cast<Int>(v)->get_value()];
 			}
 			virtual size_t get_type()const
 			{

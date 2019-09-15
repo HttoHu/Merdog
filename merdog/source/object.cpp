@@ -127,7 +127,7 @@ Mer::Mem::Object  Mer::Mem::Int::Convert(size_t type)
 
 Object Mer::Mem::Double::operator=(Object v) {
 
-	value = std::static_pointer_cast<Double>(v->Convert(DOUBLE))->value;
+	value = std::static_pointer_cast<Double>(v)->value;
 	return Convert(Mem::DOUBLE);
 }
 

@@ -3,6 +3,7 @@
 #include "lexer.hpp"
 namespace Mer
 {
+	class Cast;
 	class NonOp :public ParserNode
 	{
 	public:
@@ -53,10 +54,7 @@ namespace Mer
 	class BinOp :public ParserNode
 	{
 	public:
-		BinOp(ParserNode *l, Token *o, ParserNode* r) :left(l), op(o), right(r)
-		{
-
-		}
+		BinOp(ParserNode* l, Token* o, ParserNode* r);
 		Mem::Object execute()override;
 		size_t get_type()override
 		{
@@ -170,7 +168,7 @@ namespace Mer
 			Add, Sub, Div, Mul,
 			Null,
 		};
-		Assign(AssignType a, ParserNode* l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {}
+		Assign(AssignType a, ParserNode* l, Token* o, ParserNode* r);
 		Mem::Object execute()override;
 		virtual ~Assign()
 		{

@@ -161,6 +161,14 @@ Mer::ParserNode * Mer::Expr::factor()
 	}
 }
 
+Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r):left(l), op(o), right(r)
+{
+	if (l->get_type() != r->get_type())
+	{ 
+		right = new Cast(r, l->get_type());
+	}
+}
+
 Mem::Object BinOp::execute()
 {
 	auto left_v = left->execute();
@@ -227,6 +235,7 @@ Mem::Object BinOp::execute()
 	}
 	return Mem::Object(ret);
 }
+
 Mer::Mem::Object Mer::UnaryOp::execute()
 {
 	switch (op->get_tag())
@@ -243,6 +252,11 @@ Mer::Mem::Object Mer::UnaryOp::execute()
 	default:
 		throw Error("no matched operator");
 	}
+}
+
+Mer::Assign::Assign(AssignType a, ParserNode* l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {
+	if (l->get_type() != r->get_type())
+		right =new Cast(r, l->get_type());
 }
 
 Mem::Object Mer::Assign::execute()
@@ -331,7 +345,6 @@ Mer::InitList::~InitList()
 	for (auto &a : init_v)
 		delete a;
 }
-
 
 Mer::ImplicitConvertion::ImplicitConvertion(size_t _type) :type(_type) {}
 
