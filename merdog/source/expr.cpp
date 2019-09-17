@@ -359,6 +359,11 @@ Mem::Object Mer::ContainerIndex::execute()
 	return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 }
 
+size_t Mer::ContainerIndex::get_type()
+{
+	return type;
+}
+
 Mer::EmptyList::EmptyList(size_t t, size_t sz):type_code(t),size(sz)
 {
 	for (size_t i = 0; i < sz; i++)

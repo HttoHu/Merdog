@@ -36,10 +36,12 @@ namespace Mer
 	class ContainerIndex :public ParserNode
 	{
 	public:
-		ContainerIndex(size_t _pos, ParserNode* _expr) :pos(_pos), expr(_expr) {}
+		ContainerIndex(size_t t,size_t _pos, ParserNode* _expr) :type(t),pos(_pos), expr(_expr) {}
 		Mem::Object execute()override;
+		size_t get_type()override;
 	private:
 		size_t pos;
+		size_t type;
 		ParserNode* expr;
 	};
 	class ContainerGloIndex :public ParserNode

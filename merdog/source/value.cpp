@@ -332,7 +332,7 @@ Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 				return parse_member_glo(var_info,off);
 			return parse_member(var_info,off);
 		}
-		return new Variable(var_info);
+		return new Variable(static_cast<VarIdRecorder*>(var_info)->get_type(), static_cast<VarIdRecorder*>(var_info)->pos+off);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);
@@ -340,7 +340,7 @@ Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 	{
 		throw Error("haven't finished yet");
 	}
-	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
+	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->get_type(), static_cast<VarIdRecorder*>(var_info)->pos,expr);
 }
 
 
@@ -364,5 +364,5 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);
-	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, expr);
+	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, static_cast<VarIdRecorder*>(var_info)->get_type(), expr);
 }

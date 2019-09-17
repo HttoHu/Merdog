@@ -7,9 +7,13 @@
 #include <fstream>
 #include <time.h>
 #include "../include/parser.hpp"
+#include "../include/clib/utility.hpp"
 #include "../include/clib/merdog_io.hpp"
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 std::string get_file_content(const std::string & filename)
 {
 	using namespace std;
@@ -57,6 +61,7 @@ int main()
 	{
 		Mer::set_io();
 		Mer::set_maths();
+		Mer::set_utility();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
 		time_t s = clock();
@@ -76,6 +81,9 @@ int main()
 	{
 		std::cout << "internal error!";
 	}
+#ifdef _WIN32
+	Sleep(10000000);
+#endif
 	std::cin.get();
 	std::cout << "\nThe program has exited";
 	return 0;
