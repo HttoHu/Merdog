@@ -48,21 +48,21 @@ void Mer::Memory::check_static()
 }
 void Memory::alloc()
 {
-	capacity *= 2;
-	Mem::Object *tmp = new Mem::Object[capacity];
+	Mem::Object *tmp = new Mem::Object[capacity*2];
 	for (size_t i = 0; i < capacity; i++)
 	{
 		tmp[i] = stack_mem[i];
 	}
 	delete[] stack_mem;
 	stack_mem = tmp;
+	capacity *= 2;
 }
 
 void Mer::Memory::salloc()
 {
 	scapacity *= 2;
 	Mem::Object* tmp = new Mem::Object[scapacity];
-	for (size_t i = 0; i < scapacity; i++)
+	for (size_t i = 0; i < scapacity/2; i++)
 	{
 		tmp[i] = static_mem[i];
 	}

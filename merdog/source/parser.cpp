@@ -333,7 +333,12 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	{
 		if (a->arr())
 		{
-			auto arr = static_cast<InitList*>(a->get_expr())->exprs();
+			std::vector<Expr*> arr;
+			auto exprs_info = a->get_expr();
+			if (typeid(*exprs_info) == typeid(InitList))
+				arr = static_cast<InitList*>(a->get_expr())->exprs();
+			else
+				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
 			exprs.insert(exprs.end(), arr.begin(), arr.end());
 		}
 		else {
@@ -361,7 +366,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new GVarIdRecorder(type, pos));
 	for (int i = 1; i < vec.size(); i++)
 	{
-		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new GVarIdRecorder(type,tmp_pos += vec[i - 1]->get_size()));
+		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new GVarIdRecorder(type, tmp_pos += vec[i - 1]->get_size()));
 	}
 	for (auto& a : vec)
 	{

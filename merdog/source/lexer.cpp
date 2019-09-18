@@ -318,6 +318,10 @@ void Mer::build_token_stream(const std::string &content) {
 				i++;
 				break;
 			}
+			else
+			{
+				throw Error("lexer error!");
+			}
 			token_stream.push_back(new Token(DIV));
 			break;
 		case '+':

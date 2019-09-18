@@ -1,0 +1,14 @@
+program main
+{
+	int arr[11]={0,0,0,0,0,0,0,0,0,0,0};
+	for(int i=0;i<1000;i+=1)
+	{
+		int tmp=std.rand_int(0,10);
+		arr[tmp]+=1;
+	}
+	std.sleep(1000);
+	for (int i=0;i<10;i+=1)
+	{
+		std.cout(i,':',arr[i],'\n');
+	}
+}.

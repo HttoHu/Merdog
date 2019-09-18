@@ -98,8 +98,9 @@ namespace Mer
 	public:
 		EmptyList(size_t t, size_t sz);
 		Mem::Object execute()override;
+		std::vector<Expr*>& exprs() { return init_v; }
 	private:
-		std::vector<Mem::Object> obj_vec;
+		std::vector<Expr*> init_v;
 		size_t type_code;
 		size_t size;
 	};
@@ -124,6 +125,7 @@ namespace Mer
 	{
 	public:
 		Expr(size_t t = 0);
+		Expr(ParserNode* node) :tree(node) {}
 		size_t get_type()override
 		{
 			if (expr_type != 0)
@@ -141,7 +143,7 @@ namespace Mer
 			return tree->execute();
 		}
 		ParserNode *root() { return tree; }
-		inline bool constant()const override
+		bool constant()const override
 		{
 			return false;
 		}

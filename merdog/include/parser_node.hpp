@@ -16,7 +16,7 @@ namespace Mer
 		{
 			return "<empty_node>";
 		}
-		inline virtual bool constant()const
+		virtual bool constant()const
 		{
 			return false;
 		}

@@ -368,13 +368,13 @@ Mer::EmptyList::EmptyList(size_t t, size_t sz):type_code(t),size(sz)
 {
 	for (size_t i = 0; i < sz; i++)
 	{
-		obj_vec.push_back(Mem::create_var_t(t));
+		init_v.push_back(new Expr(new LConV(Mem::create_var_t(t),t)));
 	}
 }
 
 Mem::Object Mer::EmptyList::execute()
 {
-	return std::make_shared<Mem::InitListObj>(std::move(obj_vec), type_code);
+	return nullptr;
 }
 
 Mem::Object Mer::ContainerGloIndex::execute()

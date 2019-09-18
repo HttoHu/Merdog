@@ -15,6 +15,7 @@ namespace Mer
 	{
 	public:
 		LConV(Token *t);
+		LConV(Mem::Object _obj, size_t t) :obj(_obj), type(t) {}
 		size_t get_type()override
 		{
 			return type;
@@ -27,7 +28,7 @@ namespace Mer
 		{
 			return "num";//tok->to_string();
 		}
-		inline bool constant()const override
+		bool constant()const override
 		{
 			return true;
 		}
@@ -51,7 +52,7 @@ namespace Mer
 		{
 			return mem.static_index(pos)->clone();
 		}
-		inline bool constant()const override
+		bool constant()const override
 		{
 			return false;
 		}

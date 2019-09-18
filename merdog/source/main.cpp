@@ -14,7 +14,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
-std::string get_file_content(const std::string & filename)
+std::string get_file_content(const std::string& filename)
 {
 	using namespace std;
 	ifstream ifs(filename);
@@ -33,25 +33,32 @@ int main(int argc, char* argv[])
 	{
 		Mer::set_io();
 		Mer::set_maths();
+		Mer::set_utility();
 		if (argc != 2)
 			throw std::runtime_error("argument error");
-		if (argv[1] == "-v")
+		if (sizeof(argv[1]) >= 2)
 		{
-			std::cout << "3.0";
-			return 0;
+			if (argv[1][0] == '-'&&argv[1][1]=='v')
+			{
+				std::cout << "3.0.1";
+				return 0;
+			}
 		}
 		std::string input_content = get_file_content(argv[1]);
 		Mer::build_token_stream(input_content);
 		Mer::Parser::program()->execute();
 	}
-	catch (std::exception &e)
+	catch (std::exception& e)
 	{
 		std::cout << e.what();
 	}
-	catch (Mer::Error &e)
+	catch (Mer::Error& e)
 	{
 		std::cout << e.what();
 	}
+#ifdef _WIN32
+	Sleep(10000000);
+#endif
 	return 0;
 }
 #else
@@ -67,13 +74,13 @@ int main()
 		time_t s = clock();
 		Mer::Parser::program()->execute();
 		time_t e = clock();
-		std::cout << "\ntime:" << (double)(e - s)*1000 / CLK_TCK <<" ms";
+		std::cout << "\ntime:" << (double)(e - s) * 1000 / CLK_TCK << " ms";
 	}
-	catch (std::exception &e)
+	catch (std::exception& e)
 	{
 		std::cout << e.what();
 	}
-	catch (Mer::Error &e)
+	catch (Mer::Error& e)
 	{
 		std::cout << e.what();
 	}
