@@ -192,7 +192,6 @@ namespace Mer
 		{
 			--pos;
 		}
-		void replace_this(Token* tok);
 		void add(Token* tok);
 		void advance()
 		{

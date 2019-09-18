@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 		std::cout << e.what();
 	}
 #ifdef _WIN32
-	Sleep(10000000);
+	Sleep(1000);
 #endif
 	return 0;
 }

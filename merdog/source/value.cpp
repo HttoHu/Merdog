@@ -76,11 +76,11 @@ Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info,size_t offset=
 	token_stream.match(DOT);
 	std::string member_name = Id::get_value(token_stream.this_token());
 	auto usinfo = find_ustructure_t(var_info->get_type());
-	auto member_info = usinfo->mapping.find(member_name);
-	if (member_info == usinfo->mapping.end())
+	auto member_info = usinfo->STMapping.find(member_name);
+	if (member_info == usinfo->STMapping.end())
 		throw Error("member " + member_name + " no found");
 	token_stream.match(ID);
-	return new Index(new Variable(var_info->get_type(),pos),member_info->second);
+	return new Index(new Variable(member_info->second,pos),member_info->second);
 }
 
 Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t offset)

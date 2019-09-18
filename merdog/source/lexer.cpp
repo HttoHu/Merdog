@@ -318,10 +318,6 @@ void Mer::build_token_stream(const std::string &content) {
 				i++;
 				break;
 			}
-			else
-			{
-				throw Error("lexer error!");
-			}
 			token_stream.push_back(new Token(DIV));
 			break;
 		case '+':
@@ -359,14 +355,6 @@ std::string Mer::GIC()
 	auto ret = Id::get_value(token_stream.this_token());
 	token_stream.match(ID);
 	return ret;
-}
-void Mer::TokenStream::replace_this(Token* tok)
-{
-	if (tok == nullptr)
-		this_token() == new Token(Tag::EPT);
-	else {
-		content[pos] = tok;
-	}
 }
 void Mer::TokenStream::add(Token* tok)
 {
