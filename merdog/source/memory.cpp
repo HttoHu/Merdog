@@ -43,7 +43,7 @@ Mem::Object& Mer::Memory::operator[](size_t in)
 }
 void Mer::Memory::check_static()
 {
-	if (sindex > 0.5L * scapacity)
+	while (sindex > 0.5L * scapacity)
 		salloc();
 }
 void Memory::alloc()

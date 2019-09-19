@@ -53,7 +53,7 @@ namespace Mer
 	private:
 		void check()
 		{
-			if (index+current> 0.5L*capacity)
+			while (index+current> 0.5L*capacity)
 				alloc();
 		}
 		void check_static();
