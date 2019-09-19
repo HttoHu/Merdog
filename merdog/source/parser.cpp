@@ -71,6 +71,7 @@ Block* Mer::Parser::block()
 		case FOR:
 			node = for_statement();
 			break;
+		case DO:
 		case WHILE:
 			node = while_statement();
 			break;

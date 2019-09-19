@@ -10,9 +10,21 @@ namespace Mer
 {
 	namespace Parser
 	{
-		Mer::While * while_statement()
+		Mer::ParserNode * while_statement()
 		{
-			Mer::While *ret = new While();
+			if (token_stream.this_tag ()== DO)
+			{
+				DoWhile* do_while = new DoWhile();
+				token_stream.match(DO);
+				do_while->blo = block();
+				token_stream.match(WHILE);
+				token_stream.match(LPAREN);
+				do_while->condition = new Expr();
+				token_stream.match(RPAREN);
+				token_stream.match(SEMI);
+				return do_while;
+			}
+			While *ret = new While();
 			token_stream.match(WHILE);
 			token_stream.match(LPAREN);
 			ret->condition = new Expr();

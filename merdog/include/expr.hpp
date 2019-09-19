@@ -91,7 +91,48 @@ namespace Mer
 	};
 	class Structure;
 	class CompoundObject;
-	class Expr;
+	class Expr :public ParserNode
+	{
+	public:
+		Expr(size_t t = 0);
+		Expr(ParserNode* node) :tree(node) {}
+		size_t get_type()override
+		{
+			if (expr_type != 0)
+				return expr_type;
+			if (is_bool)
+			{
+				return Mem::BOOL;
+			}
+			if (tree == nullptr)
+				return Mem::BVOID;
+			return tree->get_type();
+		}
+		Mem::Object execute()override
+		{
+			return tree->execute();
+		}
+		ParserNode* root() { return tree; }
+		bool constant()const override
+		{
+			return false;
+		}
+		virtual ~Expr() {
+			if (tree != nullptr)
+				delete tree;
+		}
+		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
+		bool is_bool = true;
+		ParserNode* tree;
+		size_t expr_type;
+	private:
+
+		ParserNode* and_or();
+		ParserNode* expr();
+		ParserNode* nexpr();
+		ParserNode* term();
+		ParserNode* factor();
+	};
 	class Type;
 	class EmptyList :public ParserNode
 	{
@@ -121,48 +162,7 @@ namespace Mer
 		size_t type;
 		size_t size;
 	};
-	class Expr :public ParserNode
-	{
-	public:
-		Expr(size_t t = 0);
-		Expr(ParserNode* node) :tree(node) {}
-		size_t get_type()override
-		{
-			if (expr_type != 0)
-				return expr_type;
-			if (is_bool)
-			{
-				return Mem::BOOL;
-			}
-			if (tree == nullptr)
-				return Mem::BVOID;
-			return tree->get_type();
-		}
-		Mem::Object execute()override
-		{
-			return tree->execute();
-		}
-		ParserNode *root() { return tree; }
-		bool constant()const override
-		{
-			return false;
-		}
-		virtual ~Expr() {
-			if(tree!=nullptr)
-				delete tree;
-		}
-		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
-		bool is_bool = true;
-		ParserNode *tree;
-		size_t expr_type;
-	private:
 
-		ParserNode *and_or();
-		ParserNode *expr();
-		ParserNode *nexpr();
-		ParserNode *term();
-		ParserNode *factor();
-	};
 	class Assign :public ParserNode
 	{
 	public:

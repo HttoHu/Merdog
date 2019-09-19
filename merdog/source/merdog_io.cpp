@@ -54,7 +54,7 @@ namespace Mer
 		{
 			if (args.size() != 0)
 				throw Error("argument size error");
-			std::string obj = 0;
+			std::string obj = "";
 			std::cin >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}

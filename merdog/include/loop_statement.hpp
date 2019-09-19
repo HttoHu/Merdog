@@ -73,9 +73,36 @@ namespace Mer
 		ParserNode *step_action;
 		Block *blo;
 	};
+	class DoWhile :public ParserNode
+	{
+	public:
+		Mem::Object execute()override
+		{
+			blo->new_block();
+			do
+			{
+				try
+				{
+					blo->execute();
+				}
+				catch (Word c)
+				{
+					if (c.type == Word::Type::Break)
+						break;
+					else if (c.type == Word::Type::Continue)
+						continue;
+				}
+			} 
+			while (std::static_pointer_cast<Mem::Bool>(condition->execute())->_value());
+			blo->end_block();
+			return nullptr;
+		}
+		Expr* condition;
+		Block* blo;
+	};
 	namespace Parser
 	{
-		While *while_statement();
+		ParserNode *while_statement();
 		For * for_statement();
 	}
 }

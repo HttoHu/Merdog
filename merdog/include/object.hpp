@@ -13,17 +13,17 @@ namespace Mer
 	class Namespace;
 	class Token;
 	namespace Mem
-	{	
+	{
 
 		class Type;
 		class Value;
 		using Object = std::shared_ptr<Value>;
 
-		extern Namespace *this_namespace;
+		extern Namespace* this_namespace;
 
 		std::string type_to_string(BasicType bt);
-		size_t get_type_code(Token *tok);
-		size_t &type_no();
+		size_t get_type_code(Token* tok);
+		size_t& type_no();
 		// to get a compound type's code like vector<map<int,real>>
 		size_t get_ctype_code();
 		size_t merge_two_type(size_t c, size_t e);
@@ -120,7 +120,7 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v)->value);
 			}
-			Object clone()const override 
+			Object clone()const override
 			{
 				return std::make_shared<Bool>(value);
 			}
@@ -319,7 +319,7 @@ namespace Mer
 		class String :public Value
 		{
 		public:
-			String(const std::string &v) :str(v) {  }
+			String(const std::string& v) :str(v) {  }
 			String(char ch) :str(std::string(1, ch)) {}
 			Object operator+(Object v)override
 			{
@@ -329,7 +329,7 @@ namespace Mer
 			Object operator=(Object v)override
 			{
 				str = std::static_pointer_cast<String>(v)->str;
-				return Convert(Mem::STRING);
+				return std::make_shared<String>(str);
 			}
 			size_t get_type()const override
 			{
@@ -339,32 +339,31 @@ namespace Mer
 			{
 				if (type == STRING)
 					return std::make_shared<String>(str);
-				else
-					throw Error("type-convert failed");
+				throw Error("type-convert failed");
 			}
 			Object operator>(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() > std::static_pointer_cast<String>(v)->str.size());
+				return std::make_shared<Bool>(str > std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator<(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() < std::static_pointer_cast<String>(v)->str.size());
+				return std::make_shared<Bool>(str < std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator>=(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() >= std::static_pointer_cast<String>(v)->str.size());
+				return std::make_shared<Bool>(str >= std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator<=(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() <= std::static_pointer_cast<String>(v)->str.size());
+				return std::make_shared<Bool>(str <= std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator!=(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() != std::static_pointer_cast<String>(v)->str.size());
+				return std::make_shared<Bool>(str != std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator==(Object v)override
 			{
-				return std::make_shared<Bool>(str.size() == std::static_pointer_cast<String>(v)->str.size());
+				return std::make_shared<Bool>(str == std::static_pointer_cast<String>(v)->str);
 			}
 			Object operator[](Object v)override
 			{
@@ -377,14 +376,14 @@ namespace Mer
 			std::string to_string()const override
 			{
 				return str;
-			}		
+			}
 			std::string str;
 		};
 		class InitListObj :public Value
 		{
 		public:
-			InitListObj(std::vector<Object> && lst, size_t type_c) :elems(lst), type_code(type_c) {}
-			InitListObj(size_t sz, size_t type_c) : type_code(type_c),elems(sz) {}
+			InitListObj(std::vector<Object>&& lst, size_t type_c) :elems(lst), type_code(type_c) {}
+			InitListObj(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
 			virtual Object operator[](Object v)
 			{
 				return elems[std::static_pointer_cast<Int>(v)->get_value()];
@@ -397,7 +396,7 @@ namespace Mer
 			{
 				return type_code;
 			}
-		
+
 			size_t type_code;
 			std::vector<Object> elems;
 		};
