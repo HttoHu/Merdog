@@ -8,7 +8,7 @@ Merdog 是一个简单的开源解释器C-Like 语言语法
 
 ## Merdog 支持的语法
 1. 基本类型 **int, real, string, bool**
-2. 基本语句 **if / else / elif / while / for**
+2. 基本语句 **if / else / elif / while / for / switch**
 3. 支持函数的声明和定义
 4. 支持复合变量 struct
 5. 支持数组
@@ -32,3 +32,9 @@ program main
 * 以 编译原理 为参考书
 * **部分参考Ruslan 的博客 [How to Build an interpreter](https://ruslanspivak.com/lsbasi-part1/)**
 * 联系 **huyuantao@outlook.com**
+
+## License
+
+Copyright (c) HttoHu(胡远韬). All rights reserved.
+
+Licensed under the [MIT](LICENSE) license.
