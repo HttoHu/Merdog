@@ -11,6 +11,6 @@ namespace Mer
 	};
 	namespace Parser
 	{
-		If *if_statement();
+		ParserNode *if_statement();
 	}
 }

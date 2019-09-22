@@ -26,8 +26,8 @@ TagStrMap	Mer::TagStr{
 TokenMap	Mer::KeyWord{
 	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
 	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },
-	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) }, {"do",new Token(DO)},{"switch",new Token(SWITCH)},
-	{ "continue",new Token(CONTINUE) },
+	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) }, {"do",new Token(DO)},{"switch",new Token(SWITCH)}, {"case",new Token(CASE)},
+	{ "continue",new Token(CONTINUE) },{"default",new Token(DEFAULT)},
 	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
 	{ "new",new Token(NEW)},
 	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },

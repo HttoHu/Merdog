@@ -10,6 +10,7 @@
 #include "../include/function.hpp"
 #include "../include/loop_statement.hpp"
 #include "../include/environment.hpp"
+#include "../include/switch.hpp"
 #include "../include/compound_box.hpp"
 using namespace Mer;
 bool Mer::global_stmt = true;
@@ -68,6 +69,9 @@ Block* Mer::Parser::block()
 		case BEGIN:
 			node = block();
 			break;
+		case SWITCH:
+			node = switch_statement();
+			break;
 		case FOR:
 			node = for_statement();
 			break;
@@ -90,6 +94,7 @@ Block* Mer::Parser::block()
 	return ret;
 }
 //served for function;
+// !!!! Note that pure_block will run mem.end_block(), but not mem.new_block();
 Block* Mer::Parser::pure_block()
 {
 	token_stream.match(BEGIN);
@@ -107,6 +112,10 @@ Block* Mer::Parser::pure_block()
 		case FOR:
 			node = for_statement();
 			break;
+		case SWITCH:
+			node = switch_statement();
+			break;
+		case DO:
 		case WHILE:
 			node = while_statement();
 			break;

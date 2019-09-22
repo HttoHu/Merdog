@@ -8,7 +8,7 @@ namespace Mer
 {
 	namespace Parser
 	{
-		If * if_statement()
+		ParserNode * if_statement()
 		{
 			If *ret = new If();
 			token_stream.match(IF);

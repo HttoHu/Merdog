@@ -45,28 +45,7 @@ namespace Mer
 	class For :public ParserNode
 	{
 	public:
-		Mem::Object execute()override
-		{
-			blo->new_block();
-			for (init->execute();
-				std::static_pointer_cast<Mem::Bool>(condition->execute())->_value();
-				step_action->execute())
-			{
-				try
-				{
-					blo->execute();
-				}
-				catch (Word c)
-				{
-					if (c.type == Word::Type::Break)
-						break;
-					else if (c.type == Word::Type::Continue)
-						continue;
-				}
-			}
-			blo->end_block();
-			return nullptr;
-		}
+		Mem::Object execute()override;
 
 		ParserNode * init;
 		Expr *condition;
@@ -103,6 +82,6 @@ namespace Mer
 	namespace Parser
 	{
 		ParserNode *while_statement();
-		For * for_statement();
+		ParserNode * for_statement();
 	}
 }
