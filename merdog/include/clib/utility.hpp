@@ -6,5 +6,6 @@ namespace Mer
 	extern SystemFunction* time_record;
 	extern SystemFunction* random_int;
 	extern SystemFunction* sleep;
+	extern SystemFunction* csystem;
 	void set_utility();
 }

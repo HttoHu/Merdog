@@ -1,3 +1,12 @@
+/* 
+*   note that : obj refers to the instance of Mem::Int or Mem::String, Mem::Bool etc.
+*	The Object is a shared_ptr<Value> which is the parent of all objs.
+*	special usage: When we need to get the raw of a Mem::xxx (e.g. Mem::Int) we can use get_raw<int>(obj) ), 
+*	I supposed that the obj memory structure is like that 
+*	| --- virtual_table_pointer(or some other value about parent : x64(8Byte), x86(4Byte) ---|
+*	| int or string , bool, real according the obj type																|
+*	so move 8/4 Byte could get the raw value of the obj.
+*/
 #pragma once
 #include <string>
 #include <memory>
@@ -28,6 +37,10 @@ namespace Mer
 		size_t get_ctype_code();
 		size_t merge_two_type(size_t c, size_t e);
 		Mem::Object create_var_t(size_t type);
+		// every obj extends Value, and override some common operator
+		// size_t get_type() to get the obj's type
+		// clone , copy the obj and return it;
+		// Convert(BasicType), to convert the Obj to another compatible type obj.
 		class Value
 		{
 		public:
@@ -400,10 +413,24 @@ namespace Mer
 			size_t type_code;
 			std::vector<Object> elems;
 		};
-		template<typename T>
-		Object init_obj()
+		class Pointer :public Value
 		{
-			return std::make_shared<T>(0);
+		public:
+
+		private:
+			size_t pos;
+		};
+		// get the raw value of the Mem::xxx 
+		template<typename T>
+		T get_raw(Object obj)
+		{
+			// An UB operation to improve performance, but just be careful, I've tested in Microsoft CL, Clang ,GCC.
+#ifndef SAFE_MOD
+			return *(T*)((char*)obj.get() + sizeof(void*));
+#else
+			throw Error("unsafe calling");
+#endif
 		}
+		
 	}
 }

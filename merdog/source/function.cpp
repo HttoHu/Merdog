@@ -238,7 +238,7 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
-		mem[param_table[i].second] = objs[i];
+		mem[mem.get_current()+param_table[i].second] = objs[i];
 	}
 	auto ret = blo->execute();
 	mem.end_func();

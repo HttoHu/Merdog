@@ -32,10 +32,17 @@ namespace Mer
 #endif
 			return nullptr;
 		}
+		Mem::Object _system(std::vector<Mem::Object>& args)
+		{
+			std::string str = args[0]->to_string();
+			::system(str.c_str());
+			return nullptr;
+		}
 	}
 	SystemFunction* time_record = new SystemFunction(Mem::DOUBLE, _time_record);
 	SystemFunction* random_int=new SystemFunction(Mem::INT,_random_int);
 	SystemFunction* sleep = new SystemFunction(Mem::BVOID, _sleep);
+	SystemFunction* csystem = new SystemFunction(Mem::BVOID, _system);
 }
 
 void Mer::set_utility()
@@ -43,6 +50,8 @@ void Mer::set_utility()
 	mstd->set_new_func("clock", Mer::Mem::DOUBLE, Mer::time_record);
 	mstd->set_new_func("rand_int", Mer::Mem::INT, Mer::random_int);
 	mstd->set_new_func("sleep", Mer::Mem::BVOID, Mer::sleep);
+	root_namespace->set_new_func("system", Mer::Mem::BVOID, Mer::csystem);
 	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 	sleep->set_param_types({ Mer::Mem::BasicType::INT });
+	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
 }

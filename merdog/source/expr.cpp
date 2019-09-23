@@ -356,7 +356,7 @@ Mem::Object Mer::ImplicitConvertion::execute()
 Mem::Object Mer::ContainerIndex::execute()
 {
 	auto tmp = expr->execute();
-	return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+	return mem[mem.get_current()+pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 }
 
 size_t Mer::ContainerIndex::get_type()
@@ -380,5 +380,5 @@ Mem::Object Mer::EmptyList::execute()
 Mem::Object Mer::ContainerGloIndex::execute()
 {
 	auto tmp = expr->execute();
-	return mem.static_index(pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value());
+	return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 }

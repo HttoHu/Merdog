@@ -21,7 +21,7 @@ size_t Mer::Variable::get_type()
 
 Mer::Mem::Object Mer::Variable::execute()
 {
-	return mem[pos];
+	return mem[mem.get_current()+pos];
 }
 
 Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)

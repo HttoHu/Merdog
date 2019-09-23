@@ -5,16 +5,29 @@
 #include "../include/parser.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
-#include "../include/if.hpp"
 #include "../include/namespace.hpp"
 #include "../include/function.hpp"
-#include "../include/loop_statement.hpp"
 #include "../include/environment.hpp"
-#include "../include/switch.hpp"
 #include "../include/compound_box.hpp"
+#include "../include/loop_statement.hpp"
 using namespace Mer;
 bool Mer::global_stmt = true;
 std::vector<ParserNode*> Mer::pre_stmt;
+namespace Mer
+{
+	class For;
+	class If;
+	class Block;
+	namespace Parser
+	{
+		ParserNode* while_statement();
+		ParserNode* for_statement();
+		ParserNode* if_statement();
+		ParserNode* statement();
+		Block* block();
+		ParserNode* switch_statement();
+	}
+}
 Program* Mer::Parser::program()
 {
 	Program* ret = nullptr;
@@ -255,7 +268,7 @@ Mem::Object Mer::Print::execute()
 		std::cout << String::get_value(content);
 		break;
 	case ID:
-		std::cout << mem[pos]->to_string();
+		std::cout << mem[mem.get_current()+pos]->to_string();
 		break;
 	default:
 		throw Error("print: invalid args");
@@ -360,7 +373,7 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 Mem::Object Mer::LocalVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem[pos + i] = exprs[i]->execute();
+		mem[mem.get_current()+pos + i] = exprs[i]->execute();
 	}
 	return Mem::Object(nullptr);
 }
@@ -371,7 +384,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 	{
 		sum += a->get_size();
 	}
-	pos = mem.push_to_static(sum) - sum;
+	pos = mem.push(sum) - sum;
 	size_t tmp_pos = pos;
 	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new GVarIdRecorder(type, pos));
 	for (int i = 1; i < vec.size(); i++)
@@ -393,7 +406,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 Mem::Object Mer::GloVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem.static_index(pos + i) = exprs[i]->execute();
+		mem[pos + i] = exprs[i]->execute();
 	}
 	return Mem::Object(nullptr);
 }

@@ -66,7 +66,7 @@ namespace Mer
 		}
 		Mem::Object& get_value()
 		{
-			return mem.static_index(pos);
+			return mem[pos];
 		}
 		size_t pos;
 	};
