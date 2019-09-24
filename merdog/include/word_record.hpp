@@ -7,13 +7,14 @@ namespace Mer
 	{
 		SFUN,SVAR,SNAME,
 		SGVAR,SSTRUCTURE,
-		STYPE,USVAR
+		STYPE,USVAR, SPOINTER,
 	};
 	struct WordRecorder
 	{
 	public:
 		WordRecorder(ESymbol e, size_t tc = 0) :es(e),type_code(tc) {}
 		ESymbol es;
+		virtual size_t get_pos() { return 0; }
 		virtual std::string to_string() { return""; }
 		size_t get_type() { return type_code; }
 		virtual ~WordRecorder() {}
@@ -23,12 +24,15 @@ namespace Mer
 	struct VarIdRecorder :public WordRecorder
 	{
 	public:
-		VarIdRecorder(size_t type,size_t p,bool is_c=false) 
-			:WordRecorder(SVAR),pos(p),is_const(is_c)
+		VarIdRecorder(size_t type,size_t p,bool is_c=false,WordRecorder wr=SVAR) 
+			:WordRecorder(wr),pos(p),is_const(is_c)
 		{
 			type_code = type;
 		}
 		size_t pos;
+		size_t get_pos()override {
+			return pos + mem.get_current();
+		}
 		std::string to_string()override
 		{
 			return "pos:" + std::to_string(pos);
@@ -63,6 +67,10 @@ namespace Mer
 	{
 	public:
 		GVarIdRecorder(size_t t,size_t _pos) :WordRecorder(SGVAR,t), pos(_pos) {
+		}
+		size_t get_pos()override
+		{
+			return pos;
 		}
 		Mem::Object& get_value()
 		{

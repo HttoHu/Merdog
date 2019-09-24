@@ -37,6 +37,8 @@ namespace Mer
 		size_t push(int size);
 		size_t push();
 		size_t end_block();
+		size_t new_obj();
+		void del_obj(size_t sz);
 		size_t get_current()
 		{
 			return current;
@@ -49,11 +51,23 @@ namespace Mer
 		size_t& get_index() {
 			return index;
 		}
+		void check_heap()
+		{
+			if (heap_index > 0.4 * capacity)
+			{ 
+				alloc();
+				capacity *= 2;
+			}
+		}
 	private:
 		void check()
 		{
 			while (index+current> 0.5L*capacity)
+			{ 
 				alloc();
+				capacity *= 2;
+				heap_pos *= 2;
+			}
 		}
 		//alloc for memory
 		void alloc();
@@ -63,6 +77,9 @@ namespace Mer
 		std::stack<size_t> call_stack;
 		std::vector<size_t> block_flag;
 		Mem::Object *stack_mem;
+		std::stack<size_t>free_pos_stack;
+		size_t heap_index = 1024;
+		size_t heap_pos=0;
 	};
 	extern Memory mem;
 }

@@ -32,6 +32,35 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	return "";
 }
 
+size_t Mer::Mem::get_type_code()
+{
+	auto tok = token_stream.this_tag();
+	token_stream.next();
+	switch (tok)
+	{
+	case VOID_DECL:
+		return BVOID;
+	case INTEGER_DECL:
+		return INT;
+	case REAL_DECL:
+		return DOUBLE;
+	case BOOL_DECL:
+		return BOOL;
+	case STRING_DECL:
+		return STRING;
+	case ID:
+	{
+		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		if (info == nullptr)
+			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
+		return info->get_type();
+
+	}
+	default:
+		throw Error(token_stream.this_token()->to_string() + " unknown type ");
+	}
+}
+
 size_t Mer::Mem::get_type_code(Token* tok)
 {
 	switch (tok->get_tag())
@@ -167,4 +196,7 @@ void Mer::Mem::Type::add_compatible_type(size_t type_code)
 	convertible_types.insert(type_code);
 }
 
-
+Object Mer::Mem::Pointer::operator[](Object v)
+{
+	return mem[std::static_pointer_cast<Int>(v)->get_value() + pos];
+}

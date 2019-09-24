@@ -50,7 +50,6 @@ Program* Mer::Parser::program()
 			token_stream.match(ID);
 			std::string name = Id::get_value(tmp);
 			auto blo = block();
-			token_stream.match(DOT);
 			ret = new Program(tmp, blo);
 			programe_num++;
 			break;
@@ -286,6 +285,11 @@ Mem::Object Mer::Return::execute() {
 
 Mer::NamePart::NamePart()
 {
+	if (token_stream.this_tag() == MUL)
+	{
+		pointer = true;
+		token_stream.match(MUL);
+	}
 	id = token_stream.this_token();
 	token_stream.match(ID);
 	if (token_stream.this_tag() == LSB)
@@ -305,22 +309,28 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	NamePart name_part;
 	id = name_part.get_id();
 	is_arr = name_part.is_array();
+	if (name_part.is_pointer())
+	{
+		type_code++;
+	}
+
+	// manage to process array 
 	if (name_part.is_array())
 	{
 		size = name_part.get_count();
 		if (token_stream.this_tag() == ASSIGN)
 		{
 			token_stream.match(ASSIGN);
-			expr = new InitList(t, name_part.get_count());
+			expr = new InitList(type_code, name_part.get_count());
 		}
 		else {
-			expr = new EmptyList(t, name_part.get_count());
+			expr = new EmptyList(type_code, name_part.get_count());
 		}
 		return;
 	}
-	if (type_name_mapping.find(t) != type_name_mapping.end())
+	if (type_name_mapping.find(type_code) != type_name_mapping.end())
 	{
-		UStructure* result = find_ustructure_t(t);
+		UStructure* result = find_ustructure_t(type_code);
 		if (token_stream.this_tag() == BEGIN)
 			expr = new StructureInitList(result->mapping);
 		else {
@@ -331,7 +341,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	if (token_stream.this_tag() == ASSIGN)
 	{
 		token_stream.match(ASSIGN);
-		expr = new Expr();
+		expr = (new Expr(type_code))->root();
 		if (type_code != expr->get_type())
 			throw Error("type not matched");
 		return;
@@ -403,6 +413,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 		}
 	}
 }
+
 Mem::Object Mer::GloVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {

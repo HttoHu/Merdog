@@ -10,7 +10,7 @@ namespace Mer
 		{
 			line_no = get_line_no();
 		}
-		
+		virtual size_t get_pos() { return 0; }
 		virtual ~ParserNode() {}
 		virtual std::string to_string()
 		{

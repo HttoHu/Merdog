@@ -48,6 +48,10 @@ namespace Mer
 		{
 			return type;
 		}
+		size_t get_pos()override
+		{
+			return pos;
+		}
 		Mem::Object execute()override
 		{
 			return mem[pos]->clone();
@@ -67,6 +71,9 @@ namespace Mer
 		Variable(WordRecorder* wr);
 		Variable(size_t _type, size_t _pos) :type(_type), pos(_pos) {}
 		size_t get_type()override;
+		size_t get_pos()override {
+			return pos + mem.get_current();
+		}
 		Mem::Object execute()override;
 	private:
 		size_t type;

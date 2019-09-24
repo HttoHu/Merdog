@@ -89,6 +89,10 @@ Mer::ParserNode * Mer::Expr::factor()
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
+	case MUL:
+		return new RmRef();
+	case GET_ADD:
+		return new GetAdd();
 	case BEGIN:
 	{
 		auto result = find_ustructure_t(expr_type);
@@ -142,6 +146,8 @@ Mer::ParserNode * Mer::Expr::factor()
 		ParserNode* n = new UnaryOp(result, factor());
 		return n;
 	}
+	case NEW:
+		return new NewExpr();
 	case ID:
 	{
 		ParserNode* id = Parser::parse_id();
@@ -377,8 +383,64 @@ Mem::Object Mer::EmptyList::execute()
 	return nullptr;
 }
 
+size_t Mer::ContainerGloIndex::get_pos()
+{
+	size_t off_set = Mem::get_raw<int>(expr->execute());
+	return off_set + pos;
+}
+
 Mem::Object Mer::ContainerGloIndex::execute()
 {
 	auto tmp = expr->execute();
 	return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+}
+
+Mer::NewExpr::NewExpr()
+{
+	token_stream.match(NEW);
+	size_t type_code = Mem::get_type_code();
+	token_stream.match(LPAREN);
+	expr = (new Expr(type_code))->tree;
+	if (expr->get_type() != type_code)
+	{
+		throw Error("new-type not matched");
+	}
+	token_stream.match(RPAREN);
+}
+
+Mem::Object Mer::NewExpr::execute()
+{
+	auto pos = mem.new_obj();
+	mem[pos] = expr->execute();
+	return std::make_shared<Mem::Int>(pos);
+}
+
+Mer::GetAdd::GetAdd()
+{
+	token_stream.match(GET_ADD);
+	id = (new Expr())->root();
+	type = id->get_type();
+
+}
+
+size_t Mer::GetAdd::get_type()
+{
+	return type+1;
+}
+
+Mem::Object Mer::GetAdd::execute()
+{
+	return std::make_shared<Mem::Pointer>(id->get_pos());
+}
+
+Mer::RmRef::RmRef()
+{
+	token_stream.match(MUL);
+	id = (new Expr())->root();
+	type = id->get_type();
+}
+
+Mem::Object Mer::RmRef::execute()
+{
+	return mem[Mem::get_raw<size_t>(id->execute())];
 }

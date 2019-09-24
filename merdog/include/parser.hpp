@@ -36,10 +36,12 @@ namespace Mer
 		NamePart();
 		size_t get_count() { return count; }
 		bool is_array() { return arr; }
+		bool is_pointer() { return pointer; }
 		Token* get_id() { return id; }
 	private:
 		Token* id;
 		bool arr = false;
+		bool pointer = false;
 		size_t count=0;
 	};
 	class VarDeclUnit
@@ -52,6 +54,7 @@ namespace Mer
 		bool arr() { return is_arr; }
 	private:
 		bool is_arr = false;
+		bool is_p = false;
 		size_t size=1;
 		size_t type_code;
 		Token* id;

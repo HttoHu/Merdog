@@ -31,6 +31,8 @@ namespace Mer
 		extern Namespace* this_namespace;
 
 		std::string type_to_string(BasicType bt);
+		//get type
+		size_t get_type_code();
 		size_t get_type_code(Token* tok);
 		size_t& type_no();
 		// to get a compound type's code like vector<map<int,real>>
@@ -416,7 +418,12 @@ namespace Mer
 		class Pointer :public Value
 		{
 		public:
-
+			Pointer(size_t p) :pos(p) {}
+			Object operator[](Object v)override;
+			std::string to_string()const override
+			{
+				return std::to_string(pos);
+			}
 		private:
 			size_t pos;
 		};

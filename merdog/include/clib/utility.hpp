@@ -7,5 +7,6 @@ namespace Mer
 	extern SystemFunction* random_int;
 	extern SystemFunction* sleep;
 	extern SystemFunction* csystem;
+	extern SystemFunction* alloc_heap;
 	void set_utility();
 }

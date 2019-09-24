@@ -48,6 +48,7 @@ namespace Mer
 	{
 	public:
 		ContainerGloIndex(size_t _pos, ParserNode* _expr) :pos(_pos), expr(_expr) {}
+		size_t get_pos()override;
 		Mem::Object execute()override;
 	private:
 		size_t pos;
@@ -183,6 +184,42 @@ namespace Mer
 		ParserNode* left;
 		Token *op;
 		ParserNode* right;
+	};
+	class GetAdd :public ParserNode
+	{
+	public:
+		GetAdd();
+		size_t get_type()override;
+		Mem::Object execute()override;
+	private:
+		ParserNode* id;
+		size_t type;
+		size_t pos;
+	};
+	class RmRef :public ParserNode
+	{
+	public:
+		RmRef();
+		size_t get_type()override {
+			return type;
+		}
+		Mem::Object execute()override;
+	private:
+		ParserNode* id;
+		size_t type;
+		size_t pos;
+	};
+	class NewExpr:public ParserNode
+	{
+	public:
+		NewExpr();
+		size_t get_type()override {
+			return expr->get_type() + 1;
+		}
+		Mem::Object execute()override;
+	private:
+		ParserNode* expr;
+		
 	};
 	class ImplicitConvertion:public Expr
 	{
