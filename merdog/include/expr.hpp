@@ -126,13 +126,14 @@ namespace Mer
 		bool is_bool = true;
 		ParserNode* tree;
 		size_t expr_type;
-	private:
-
 		ParserNode* and_or();
 		ParserNode* expr();
 		ParserNode* nexpr();
 		ParserNode* term();
 		ParserNode* factor();
+	private:
+
+
 	};
 	class Type;
 	class EmptyList :public ParserNode
@@ -199,7 +200,7 @@ namespace Mer
 	class RmRef :public ParserNode
 	{
 	public:
-		RmRef();
+		RmRef(ParserNode *_id);
 		size_t get_type()override {
 			return type;
 		}
@@ -207,7 +208,6 @@ namespace Mer
 	private:
 		ParserNode* id;
 		size_t type;
-		size_t pos;
 	};
 	class NewExpr:public ParserNode
 	{
@@ -220,6 +220,17 @@ namespace Mer
 	private:
 		ParserNode* expr;
 		
+	};
+	class Delete :public ParserNode
+	{
+	public:
+		Delete();
+		size_t get_type()override {
+			return expr->get_type() + 1;
+		}
+		Mem::Object execute()override;
+	private:
+		ParserNode* expr;
 	};
 	class ImplicitConvertion:public Expr
 	{

@@ -8,5 +8,6 @@ namespace Mer
 	extern SystemFunction* sleep;
 	extern SystemFunction* csystem;
 	extern SystemFunction* alloc_heap;
+	extern SystemFunction* type;
 	void set_utility();
 }

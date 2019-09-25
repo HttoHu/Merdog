@@ -38,6 +38,10 @@ namespace Mer
 #endif
 			return nullptr;
 		}
+		Mem::Object _get_type(std::vector<Mem::Object>& args)
+		{
+			return std::make_shared<Mem::Int>(args[1]->get_type());
+		}
 		Mem::Object _system(std::vector<Mem::Object>& args)
 		{
 			std::string str = args[0]->to_string();
@@ -50,6 +54,7 @@ namespace Mer
 	SystemFunction* sleep = new SystemFunction(Mem::BVOID, _sleep);
 	SystemFunction* csystem = new SystemFunction(Mem::BVOID, _system);
 	SystemFunction* alloc_heap= new SystemFunction(Mem::BVOID, _alloc_heap);
+	SystemFunction* type = new SystemFunction(Mem::BVOID, _get_type);
 }
 
 void Mer::set_utility()
@@ -57,9 +62,11 @@ void Mer::set_utility()
 	mstd->set_new_func("clock", Mer::Mem::DOUBLE, Mer::time_record);
 	mstd->set_new_func("rand_int", Mer::Mem::INT, Mer::random_int);
 	mstd->set_new_func("sleep", Mer::Mem::BVOID, Mer::sleep);
+	root_namespace->set_new_func("type", Mer::Mem::BVOID, Mer::type);
 	root_namespace->set_new_func("system", Mer::Mem::BVOID, Mer::csystem);
 	root_namespace->set_new_func("_heap_mem_check", Mer::Mem::BVOID, Mer::alloc_heap);
 	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 	sleep->set_param_types({ Mer::Mem::BasicType::INT });
+	type->dnt_check_param();
 	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
 }

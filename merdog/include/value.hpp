@@ -92,7 +92,6 @@ namespace Mer
 	};
 
 	struct WordRecorder;
-	Assign::AssignType _token_to_assType();
 
 	namespace Parser
 	{

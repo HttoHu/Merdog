@@ -50,7 +50,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	return func->run(tmp);
 }
 // How to split the method into some smaller functions?? 6-7-18
-Mer::Assign::AssignType Mer::_token_to_assType()
+Mer::Assign::AssignType _token_to_assType()
 {
 	using namespace Mer;
 	switch (token_stream.this_tag())
@@ -96,7 +96,7 @@ Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t of
 	return new Index(new GVar(var_info,offset), member_info->second);
 }
 
-Mer::ParserNode * Mer::Parser::parse_id()
+Mer::ParserNode* Mer::Parser::parse_id()
 {
 	ParserNode *ret = nullptr;
 	auto id = token_stream.this_token();
@@ -127,6 +127,8 @@ Mer::ParserNode * Mer::Parser::parse_id()
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;
+	case ESymbol::SPOINTER:
+		return parse_var(result);
 	case ESymbol::SVAR:
 	{
 		ret = parse_var(result);

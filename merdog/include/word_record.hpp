@@ -24,8 +24,8 @@ namespace Mer
 	struct VarIdRecorder :public WordRecorder
 	{
 	public:
-		VarIdRecorder(size_t type,size_t p,bool is_c=false,WordRecorder wr=SVAR) 
-			:WordRecorder(wr),pos(p),is_const(is_c)
+		VarIdRecorder(size_t type,size_t p,WordRecorder wr=SVAR) 
+			:WordRecorder(wr),pos(p)
 		{
 			type_code = type;
 		}

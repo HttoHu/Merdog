@@ -27,6 +27,19 @@ namespace Mer
 		Block* block();
 		ParserNode* switch_statement();
 	}
+	Mem::Object Program::execute()
+	{
+		for (auto a : pre_stmt)
+		{
+			a->execute();
+		}
+		blo->execute();
+		return nullptr;
+	}
+	std::string Program::to_string()
+	{
+		return identify->to_string();
+	}
 }
 Program* Mer::Parser::program()
 {
@@ -151,6 +164,9 @@ ParserNode* Mer::Parser::statement()
 	ParserNode* node = nullptr;
 	switch (token_stream.this_token()->get_tag())
 	{
+	case DELETE:
+		node = new Delete();
+		break;
 	case ID:
 		node = Parser::parse_id();
 		break;
@@ -184,7 +200,8 @@ ParserNode* Mer::Parser::statement()
 		token_stream.next();
 		break;
 	default:
-		throw Error("Unknown syntax please update the Merdog or find whether you have made a mistake. ");
+		node = new Expr();
+		break;
 	}
 	token_stream.match(SEMI);
 	return node;
@@ -267,7 +284,7 @@ Mem::Object Mer::Print::execute()
 		std::cout << String::get_value(content);
 		break;
 	case ID:
-		std::cout << mem[mem.get_current()+pos]->to_string();
+		std::cout << mem[mem.get_current() + pos]->to_string();
 		break;
 	default:
 		throw Error("print: invalid args");
@@ -311,6 +328,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	is_arr = name_part.is_array();
 	if (name_part.is_pointer())
 	{
+		is_p = true;
 		type_code++;
 	}
 
@@ -343,7 +361,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		token_stream.match(ASSIGN);
 		expr = (new Expr(type_code))->root();
 		if (type_code != expr->get_type())
-			throw Error("type not matched");
+			throw Error("type not matched, from" + std::to_string(type_code) + "to" + std::to_string(expr->get_type()));
 		return;
 	}
 	throw Error("try to init a non-init variable");
@@ -357,10 +375,16 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	}
 	pos = mem.push(sum) - sum;
 	size_t tmp_pos = pos;
-	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos));
+	if (vec[0]->pointer())
+		this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos, ESymbol::SPOINTER));
+	else
+		this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos));
 	for (int i = 1; i < vec.size(); i++)
 	{
-		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, tmp_pos += vec[i - 1]->get_size()));
+		if (vec[i]->pointer())
+			this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, tmp_pos += vec[i - 1]->get_size(), ESymbol::SPOINTER));
+		else
+			this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, tmp_pos += vec[i - 1]->get_size()));
 	}
 	for (auto& a : vec)
 	{
@@ -383,7 +407,7 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 Mem::Object Mer::LocalVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem[mem.get_current()+pos + i] = exprs[i]->execute();
+		mem[mem.get_current() + pos + i] = exprs[i]->execute();
 	}
 	return Mem::Object(nullptr);
 }

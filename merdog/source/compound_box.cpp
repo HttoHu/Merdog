@@ -29,7 +29,8 @@ void Mer::build_ustructure()
 	}
 	token_stream.match(END);
 	ustructure_map.insert({ name,us });
-	Mem::type_index.insert({ name,++Mem::type_counter });
+	Mem::type_counter += 2;
+	Mem::type_index.insert({ name,Mem::type_counter });
 	type_name_mapping.insert({ Mem::type_counter,name });
 	Mer::this_namespace->sl_table->push(name, new WordRecorder(ESymbol::SSTRUCTURE,Mem::type_counter));
 	Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });

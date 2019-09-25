@@ -37,7 +37,7 @@ Mer::ParserNode * Mer::Expr::expr()
 		else if (token_stream.this_token()->get_tag() == MINUS)
 			token_stream.match(MINUS);
 		else
-			throw Error("syntax error");
+			throw Error("expr: syntax error");
 		result = new BinOp(result, tok, term());
 	}
 	return result;
@@ -57,12 +57,13 @@ Mer::ParserNode * Mer::Expr::nexpr()
 		case GT:
 		case LE:
 		case LT:
+		case ASSIGN:
 			token_stream.next();
 			break;
 		default:
 			return result;
 		}
-		result = new BinOp(result, tok, expr());
+		result = new BinOp(result, tok, and_or());
 	}
 	return result;
 }
@@ -78,19 +79,22 @@ Mer::ParserNode * Mer::Expr::term()
 		else if (token_stream.this_token()->get_tag() == DIV)
 			token_stream.match(DIV);
 		else
-			throw Error("syntax error");
+			throw Error("tern: syntax error");
 		result = new BinOp(result, tok, factor());
 	}
 	return result;
 }
 
-Mer::ParserNode * Mer::Expr::factor()
+Mer::ParserNode * Mer::Expr::factor( )
 {
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
+	case DELETE:
+		return new Delete();
 	case MUL:
-		return new RmRef();
+		token_stream.match(MUL);
+		return new RmRef(factor());
 	case GET_ADD:
 		return new GetAdd();
 	case BEGIN:
@@ -150,17 +154,7 @@ Mer::ParserNode * Mer::Expr::factor()
 		return new NewExpr();
 	case ID:
 	{
-		ParserNode* id = Parser::parse_id();
-		if (token_stream.this_tag() == LSB)
-		{
-			auto tmp = token_stream.this_token();
-			token_stream.match(LSB);
-
-			auto ret = new BinOp(id, tmp, new Expr());
-			token_stream.match(RSB);
-			return ret;
-		}
-		return id;
+		return Parser::parse_id();
 	}
 	default:
 		return new NonOp();
@@ -418,7 +412,7 @@ Mem::Object Mer::NewExpr::execute()
 Mer::GetAdd::GetAdd()
 {
 	token_stream.match(GET_ADD);
-	id = (new Expr())->root();
+	id = new Expr();
 	type = id->get_type();
 
 }
@@ -433,14 +427,24 @@ Mem::Object Mer::GetAdd::execute()
 	return std::make_shared<Mem::Pointer>(id->get_pos());
 }
 
-Mer::RmRef::RmRef()
+Mer::RmRef::RmRef(ParserNode* _id):id(_id)
 {
-	token_stream.match(MUL);
-	id = (new Expr())->root();
 	type = id->get_type();
 }
 
 Mem::Object Mer::RmRef::execute()
 {
-	return mem[Mem::get_raw<size_t>(id->execute())];
+	return mem[std::static_pointer_cast<Mem::Pointer>(id->execute())->get_pos()];
+}
+
+Mer::Delete::Delete()
+{
+	token_stream.match(DELETE);
+	expr =(new Expr())->root();
+}
+
+Mem::Object Mer::Delete::execute()
+{
+	mem.del_obj(Mem::get_raw<int>(expr->execute()));
+	return nullptr;
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include "expr.hpp"
 #include "block.hpp"
 namespace Mer
 {
@@ -8,24 +7,13 @@ namespace Mer
 	extern bool global_stmt;
 
 	struct WordRecorder;
-	
+	class Expr;
 	class Program:public ParserNode
 	{
 	public:
 		Program(Token *id,Block* b):identify(id),blo(b) {}
-		Mem::Object execute()override
-		{
-			for (auto a : pre_stmt)
-			{
-				a->execute();
-			}
-			blo->execute();
-			return nullptr;
-		}
-		std::string to_string()override
-		{
-			return identify->to_string();
-		}
+		Mem::Object execute()override;
+		std::string to_string()override;
 	private:
 		Token *identify;
 		Block *blo;
@@ -52,6 +40,7 @@ namespace Mer
 		Token* get_id() { return id; }
 		size_t get_size() { return size; }
 		bool arr() { return is_arr; }
+		bool pointer() { return is_p; }
 	private:
 		bool is_arr = false;
 		bool is_p = false;

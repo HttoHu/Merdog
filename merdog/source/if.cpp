@@ -2,6 +2,7 @@
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
+#include "../include/expr.hpp"
 #include "../include/if.hpp"
 #include "../include/memory.hpp"
 namespace Mer

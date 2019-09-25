@@ -73,4 +73,44 @@ namespace Mer
 		blo->end_block();
 		return nullptr;
 	}
+	Mem::Object While::execute()
+	{
+		blo->new_block();
+		while (std::static_pointer_cast<Mem::Bool>(condition->execute())->_value())
+		{
+			try
+			{
+				blo->execute();
+			}
+			catch (Word c)
+			{
+				if (c.type == Word::Type::Break)
+					break;
+				else if (c.type == Word::Type::Continue)
+					continue;
+			}
+		}
+		blo->end_block();
+		return nullptr;
+	}
+	Mem::Object DoWhile::execute()
+	{
+		blo->new_block();
+		do
+		{
+			try
+			{
+				blo->execute();
+			}
+			catch (Word c)
+			{
+				if (c.type == Word::Type::Break)
+					break;
+				else if (c.type == Word::Type::Continue)
+					continue;
+			}
+		} while (std::static_pointer_cast<Mem::Bool>(condition->execute())->_value());
+		blo->end_block();
+		return nullptr;
+	}
 }

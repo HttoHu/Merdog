@@ -58,38 +58,38 @@ namespace Mer
 			}
 			virtual Object operator+=(Object v)
 			{
-				throw Error("syntax error");
+				throw Error("+=: syntax error");
 			}
 			virtual Object operator-=(Object v)
 			{
-				throw Error("syntax error");
+				throw Error("-=: syntax error");
 			}
 			virtual Object operator*=(Object v)
 			{
-				throw Error("syntax error");
+				throw Error("*=: syntax error");
 			}
 			virtual Object operator/=(Object v)
 			{
-				throw Error("syntax error");
+				throw Error("/=: syntax error");
 			}
-			virtual Object operator+ (Object v) { throw Error("syntax error"); }
-			virtual Object operator- (Object v) { throw Error("syntax error"); }
-			virtual Object operator* (Object v) { throw Error("syntax error"); }
-			virtual Object operator/ (Object v) { throw Error("syntax error"); }
-			virtual Object Convert(size_t type) { throw Error("syntax error"); }
+			virtual Object operator+ (Object v) { throw Error("+: syntax error"); }
+			virtual Object operator- (Object v) { throw Error("-: syntax error"); }
+			virtual Object operator* (Object v) { throw Error("* syntax error"); }
+			virtual Object operator/ (Object v) { throw Error("/: syntax error"); }
+			virtual Object Convert(size_t type) { throw Error("convert: syntax error"); }
 			virtual Object get_negation()
 			{
-				throw Error("syntax error");
+				throw Error("get_negation: syntax error");
 			}
-			virtual Object operator>(Object v) { throw Error("syntax error"); }
-			virtual Object operator<(Object v) { throw Error("syntax error"); }
-			virtual Object operator>=(Object v) { throw Error("syntax error"); }
-			virtual Object operator<=(Object v) { throw Error("syntax error"); }
-			virtual Object operator !=(Object v) { throw Error("syntax error"); }
-			virtual Object operator ==(Object v) { throw Error("syntax error"); }
-			virtual Object operator[](Object v) { throw Error("syntax error"); }
-			virtual Object operator&& (Object v) { throw Error("syntax error"); }
-			virtual Object operator|| (Object v) { throw Error("syntax error"); }
+			virtual Object operator>(Object v) { throw Error(">: syntax error"); }
+			virtual Object operator<(Object v) { throw Error("<: syntax error"); }
+			virtual Object operator>=(Object v) { throw Error(">=: syntax error"); }
+			virtual Object operator<=(Object v) { throw Error("<=: syntax error"); }
+			virtual Object operator !=(Object v) { throw Error("!=: syntax error"); }
+			virtual Object operator ==(Object v) { throw Error("==: syntax error"); }
+			virtual Object operator[](Object v) { throw Error("[]: syntax error"); }
+			virtual Object operator&& (Object v) { throw Error("&&: syntax error"); }
+			virtual Object operator|| (Object v) { throw Error("||: syntax error"); }
 			virtual ~Value() {}
 		private:
 		};
@@ -424,8 +424,9 @@ namespace Mer
 			{
 				return std::to_string(pos);
 			}
+			size_t get_pos() { return pos; }
 		private:
-			size_t pos;
+			int pos;
 		};
 		// get the raw value of the Mem::xxx 
 		template<typename T>
