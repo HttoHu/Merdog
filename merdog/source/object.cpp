@@ -14,22 +14,43 @@ using namespace Mer::Mem;
 
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
+	std::string ret;
+	bool is_p = bt % 2 + 1;
+	if (is_p)
+		bt=BasicType(bt-1);
 	switch (bt)
 	{
 	case Mer::Mem::BVOID:
-		return "void";
+		ret += "void";
+		break;
 	case Mer::Mem::BOOL:
-		return "bool";
+		ret += "bool";
+		break;
 	case Mer::Mem::INT:
-		return "int";
+		ret += "int";
+		break;
 	case Mer::Mem::DOUBLE:
-		return "double";
+		ret += "double";
+		break;
 	case Mer::Mem::STRING:
-		return "string";
+		ret += "string";
+		break;
+	case ID:
+	{
+		auto seeker = type_map.find(bt);
+		if (seeker == type_map.end())
+		{
+			throw Error("type not matched");
+		}
+		ret = seeker->second->to_string();
+	}
 	default:
+		ret+=("!unkown type code :" + std::to_string(bt));
 		break;
 	}
-	return "";
+	if (is_p)
+		ret += "* ";
+	return ret;
 }
 
 size_t Mer::Mem::get_type_code()
@@ -149,7 +170,7 @@ Mer::Mem::Object  Mer::Mem::Int::Convert(size_t type)
 	case BOOL:
 		return std::make_shared<Bool>(value);
 	default:
-		throw Error("int cannot convert to " + type_to_string((BasicType)type));
+		throw Error("int_value:"+std::to_string(value)+ " int cannot convert to " + type_to_string((BasicType)type));
 		break;
 	}
 }
@@ -194,6 +215,11 @@ bool Mer::Mem::Type::convertible(const size_t& t)
 void Mer::Mem::Type::add_compatible_type(size_t type_code)
 {
 	convertible_types.insert(type_code);
+}
+
+Mer::Mem::Object Mer::Mem::Pointer::clone() const
+{
+	return std::make_shared<Mem::Pointer>(pos);
 }
 
 Object Mer::Mem::Pointer::operator[](Object v)

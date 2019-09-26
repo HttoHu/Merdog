@@ -18,7 +18,7 @@ namespace Mer
 				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
 			bool convertible(const size_t &t);
 			void add_compatible_type(size_t type_code);
-			virtual std::string to_string() { return "{TYPE:}" + name + "/n"; }
+			virtual std::string to_string() { return  name; }
 			virtual ~Type() {}
 
 		protected:

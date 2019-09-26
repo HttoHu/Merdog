@@ -8,4 +8,4 @@ coor tmp[2]={{x:198,y:1,z:1},{x:12,y:3,z:3}};
 program main
 {
 	std.cout(tmp[1].x);
-}.
+}

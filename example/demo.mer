@@ -29,4 +29,4 @@ program main
 	{
 		std.cout('the roots are: ',x1,'\t\t',x2);
 	}
-}.
+}

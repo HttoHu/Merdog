@@ -9,4 +9,4 @@ program main
 	int x=2;
 	htto.x=3;
 	std.cout(x);
-}.
+}

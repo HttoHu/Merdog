@@ -8,7 +8,7 @@
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"
-#define MER2_1_1
+#define MER3_1_2
 using namespace Mer;
 std::map<std::string, Function*> Mer::function_table;
 
@@ -49,7 +49,14 @@ ParamFeature Mer::Parser::build_param_feature()
 	}
 	while (true)
 	{
-		size_t type = Mem::get_ctype_code();
+		size_t type = Mem::get_type_code();
+		ESymbol es = SVAR;
+		if (token_stream.this_tag() == MUL)
+		{
+			token_stream.next();
+			type++;
+			es = SPOINTER;
+		}
 		token_stream.match(ID);
 		ret.push_back(type);
 		if (token_stream.this_tag() == COMMA)
@@ -72,11 +79,17 @@ Param * Mer::Parser::build_param()
 	}
 	while (true)
 	{
-		size_t type = Mem::get_ctype_code();
-		auto name = Id::get_value(token_stream.this_token());
-		token_stream.match(ID);
+		size_t type = Mem::get_type_code();
+		ESymbol es = SVAR;
+		if (token_stream.this_tag() == MUL)
+		{
+			token_stream.next();
+			type++;
+			es = SPOINTER;
+		}
+		auto name = new NamePart();
 		size_t pos = mem.push();
-		tsymbol_table->push(name, new VarIdRecorder(type, pos));
+		tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos,es));
 		ret->push_new_param(type, pos);
 		if (token_stream.this_tag() == COMMA)
 			token_stream.match(COMMA);
@@ -175,14 +188,20 @@ bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 	}
 	for (size_t i = 0; i < param_types.size(); i++)
 	{
+		bool is_p = 1 + (types[i] % 2);
 		auto type_seeker = Mem::type_map.find(types[i]);
+		if (is_p)
+		{
+			if (types[i] != param_types[i])
+				return false;
+			continue;
+		}
 		if (type_seeker == Mem::type_map.end())
 		{
 			throw Error("A01 exists an undefined type");
 		}
 		if (!type_seeker->second->convertible(param_types[i]))
 		{
-
 			return false;
 		}
 	}

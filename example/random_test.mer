@@ -11,4 +11,4 @@ program main
 	{
 		std.cout(i,':',arr[i],'\n');
 	}
-}.
+}

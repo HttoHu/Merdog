@@ -12,4 +12,4 @@ function int Fact(int n){
 program main
 {
 	std.cout(Fact(10));
-}.
+}

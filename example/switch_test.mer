@@ -5,4 +5,4 @@ program main
         case 1:
             std.cout('hey');
     }
-}.
+}

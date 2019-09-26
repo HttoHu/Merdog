@@ -5,4 +5,4 @@ program arr_test
 	std.cout(arr[3],'\n\a');
 	string arr2[3]={'you','are','silly'};
 	std.cout(arr2[1]);
-}.
+}

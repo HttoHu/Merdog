@@ -109,6 +109,9 @@ namespace Mer
 				return Mem::BVOID;
 			return tree->get_type();
 		}
+		size_t get_pos() override {
+			return tree->get_pos();
+		}
 		Mem::Object execute()override
 		{
 			return tree->execute();
@@ -200,10 +203,8 @@ namespace Mer
 	class RmRef :public ParserNode
 	{
 	public:
-		RmRef(ParserNode *_id);
-		size_t get_type()override {
-			return type;
-		}
+		RmRef();
+		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
 		ParserNode* id;

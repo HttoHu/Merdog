@@ -6,10 +6,14 @@
 #include "../include/value.hpp"
 #include "../include/compound_box.hpp"
 #include "../include/memory.hpp"
+#include "../include/namespace.hpp"
 #include "../include/function.hpp"
+#include "../include/word_record.hpp"
 using namespace Mer;
 Mer::Expr::Expr(size_t t) :is_bool(false), expr_type(t) {
 	tree = and_or();
+	if (t == 0 || and_or()->get_type() != 0)
+		expr_type = and_or()->get_type();
 }
 Mer::ParserNode * Mer::Expr::and_or()
 {
@@ -93,8 +97,9 @@ Mer::ParserNode * Mer::Expr::factor( )
 	case DELETE:
 		return new Delete();
 	case MUL:
-		token_stream.match(MUL);
-		return new RmRef(factor());
+	{
+		return new RmRef();
+	}
 	case GET_ADD:
 		return new GetAdd();
 	case BEGIN:
@@ -414,7 +419,6 @@ Mer::GetAdd::GetAdd()
 	token_stream.match(GET_ADD);
 	id = new Expr();
 	type = id->get_type();
-
 }
 
 size_t Mer::GetAdd::get_type()
@@ -427,14 +431,26 @@ Mem::Object Mer::GetAdd::execute()
 	return std::make_shared<Mem::Pointer>(id->get_pos());
 }
 
-Mer::RmRef::RmRef(ParserNode* _id):id(_id)
+Mer::RmRef::RmRef()
 {
+	token_stream.match(MUL);
+	auto name = Id::get_value(token_stream.this_token());
+	auto result=this_namespace->sl_table->find(name);
+	if (result == nullptr)
+		throw Error("Var " + name + "no found");
+	id = Parser::parse_var(result);
 	type = id->get_type();
 }
 
+size_t Mer::RmRef::get_type()
+{
+	return type-1;
+}
 Mem::Object Mer::RmRef::execute()
 {
-	return mem[std::static_pointer_cast<Mem::Pointer>(id->execute())->get_pos()];
+	if (mem[1] == nullptr)
+		throw Error("WHAT");
+	return mem[Mem::get_raw<int>(id->execute())];
 }
 
 Mer::Delete::Delete()

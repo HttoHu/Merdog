@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		{
 			if (argv[1][0] == '-'&&argv[1][1]=='v')
 			{
-				std::cout << "3.0.2";
+				std::cout << "3.0.3";
 				return 0;
 			}
 		}

@@ -128,7 +128,7 @@ Mer::ParserNode* Mer::Parser::parse_id()
 		ret = parse_function_call(this_namespace);
 		break;
 	case ESymbol::SPOINTER:
-		return parse_var(result);
+		//return parse_var(result);
 	case ESymbol::SVAR:
 	{
 		ret = parse_var(result);

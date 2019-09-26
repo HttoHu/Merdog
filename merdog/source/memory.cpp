@@ -35,7 +35,7 @@ void Mer::Memory::del_obj(size_t sz)
 }
 Mem::Object& Mer::Memory::operator[](size_t in)
 {
-	return stack_mem[in + current];
+	return stack_mem[in];
 }
 void Memory::alloc()
 {
