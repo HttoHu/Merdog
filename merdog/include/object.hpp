@@ -89,7 +89,7 @@ namespace Mer
 			virtual Object operator ==(Object v) { throw Error("==: syntax error"); }
 			virtual Object operator[](Object v) { throw Error("[]: syntax error"); }
 			virtual Object operator&& (Object v) { throw Error("&&: syntax error"); }
-			virtual Object operator|| (Object v) { throw Error("||: syntax error"); }
+			virtual Object operator|| (Object v) { throw Error("OR: syntax error"); }
 			virtual ~Value() {}
 		private:
 		};

@@ -361,7 +361,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		token_stream.match(ASSIGN);
 		expr = (new Expr(type_code))->root();
 		if (type_code != expr->get_type())
-			throw Error("type not matched, from" + std::to_string(type_code) + "to" + std::to_string(expr->get_type()));
+			throw Error("type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
 	}
 	throw Error("try to init a non-init variable");
@@ -407,7 +407,7 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 Mem::Object Mer::LocalVarDecl::execute()
 {
 	for (int i = 0; i < sum; i++) {
-		mem[mem.get_current() + pos + i] = exprs[i]->execute();
+		mem[mem.get_current() + pos + i] = exprs[i]->execute()->clone();
 	}
 	return Mem::Object(nullptr);
 }

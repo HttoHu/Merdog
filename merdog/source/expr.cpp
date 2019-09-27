@@ -12,8 +12,22 @@
 using namespace Mer;
 Mer::Expr::Expr(size_t t) :is_bool(false), expr_type(t) {
 	tree = and_or();
-	if (t == 0 || and_or()->get_type() != 0)
-		expr_type = and_or()->get_type();
+	if (expr_type == 0 && tree->get_type() != 0)
+	{
+		expr_type = tree->get_type();
+	}
+}
+size_t Mer::Expr::get_type()
+{
+	if (is_bool)
+	{
+		return Mem::BOOL;
+	}
+	if (tree == nullptr)
+		return Mem::BVOID;
+	if (expr_type != 0)
+		return expr_type;
+	return tree->get_type();
 }
 Mer::ParserNode * Mer::Expr::and_or()
 {
@@ -53,7 +67,7 @@ Mer::ParserNode * Mer::Expr::nexpr()
 	while (1)
 	{
 		auto tok = token_stream.this_token();
-		switch (token_stream.this_token()->get_tag())
+		switch (tok->get_tag())
 		{
 		case EQ:
 		case NE:
@@ -61,13 +75,14 @@ Mer::ParserNode * Mer::Expr::nexpr()
 		case GT:
 		case LE:
 		case LT:
+			is_bool = true;
 		case ASSIGN:
 			token_stream.next();
 			break;
 		default:
 			return result;
 		}
-		result = new BinOp(result, tok, and_or());
+		result = new BinOp(result, tok, expr());
 	}
 	return result;
 }
@@ -239,6 +254,25 @@ Mem::Object BinOp::execute()
 		break;
 	}
 	return Mem::Object(ret);
+}
+
+size_t Mer::BinOp::get_type()
+{
+	switch (op->get_tag())
+	{
+	case AND:
+	case OR:
+	case EQ:
+	case NE:
+	case GE:
+	case GT:
+	case LE:
+	case LT:
+		return Mem::BOOL;
+	default:
+		break;
+	}
+	return left->get_type();
 }
 
 Mer::Mem::Object Mer::UnaryOp::execute()

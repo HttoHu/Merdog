@@ -15,7 +15,8 @@ using namespace Mer::Mem;
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
 	std::string ret;
-	bool is_p = bt % 2 + 1;
+	bool is_p = bt % 2|| bt == 0;
+	is_p = !is_p;
 	if (is_p)
 		bt=BasicType(bt-1);
 	switch (bt)
@@ -46,7 +47,7 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	}
 	default:
 		ret+=("!unkown type code :" + std::to_string(bt));
-		break;
+		return ret;
 	}
 	if (is_p)
 		ret += "* ";

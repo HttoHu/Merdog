@@ -30,7 +30,7 @@ namespace Mer
 		Token* id;
 		bool arr = false;
 		bool pointer = false;
-		size_t count=0;
+		size_t count=1;
 	};
 	class VarDeclUnit
 	{

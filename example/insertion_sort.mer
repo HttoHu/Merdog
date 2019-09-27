@@ -1,0 +1,19 @@
+program main
+{
+	int length = 10;
+	int arr[10] = {1,8,3,12,4,12,7,9,0,6};
+	for (int i = 1; i < length; i += 1)
+	{
+		int key = arr[i];
+		int j = i-1;
+		for (; j >=0 && arr[j] >key; j -= 1)
+		{
+			arr[j+1] = arr[j];
+		}
+		arr[j+1] = key;
+	}
+	for (int i = 0; i < length; i += 1)
+	{
+		std.cout(arr[i],'\n');
+	}
+}

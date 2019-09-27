@@ -88,7 +88,7 @@ Param * Mer::Parser::build_param()
 			es = SPOINTER;
 		}
 		auto name = new NamePart();
-		size_t pos = mem.push();
+		size_t pos = mem.push(name->get_count());
 		tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos,es));
 		ret->push_new_param(type, pos);
 		if (token_stream.this_tag() == COMMA)

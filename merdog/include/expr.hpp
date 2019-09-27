@@ -59,10 +59,7 @@ namespace Mer
 	public:
 		BinOp(ParserNode* l, Token* o, ParserNode* r);
 		Mem::Object execute()override;
-		size_t get_type()override
-		{
-			return left->get_type();
-		}
+		size_t get_type()override;
 		virtual ~BinOp()
 		{
 			delete left;
@@ -97,18 +94,7 @@ namespace Mer
 	public:
 		Expr(size_t t = 0);
 		Expr(ParserNode* node) :tree(node) {}
-		size_t get_type()override
-		{
-			if (expr_type != 0)
-				return expr_type;
-			if (is_bool)
-			{
-				return Mem::BOOL;
-			}
-			if (tree == nullptr)
-				return Mem::BVOID;
-			return tree->get_type();
-		}
+		size_t get_type()override;
 		size_t get_pos() override {
 			return tree->get_pos();
 		}
