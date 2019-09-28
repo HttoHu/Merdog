@@ -5,4 +5,6 @@ merdog draw_sin2.mer
 merdog random_test.mer
 merdog struct_arr.mer
 merdog struct1.mer
+merdog insertion_sort.mer
+merdog switch_test.mer
 merdog demo.mer
