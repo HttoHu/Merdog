@@ -227,3 +227,8 @@ Object Mer::Mem::Pointer::operator[](Object v)
 {
 	return mem[std::static_pointer_cast<Int>(v)->get_value() + pos];
 }
+
+Object Mer::Mem::String::operator[](Object v)
+{
+	return std::make_shared<String>(str[std::static_pointer_cast<Int>(v)->get_value()]);
+}

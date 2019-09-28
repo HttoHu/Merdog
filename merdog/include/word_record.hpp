@@ -6,7 +6,7 @@ namespace Mer
 	enum ESymbol
 	{
 		SFUN,SVAR,SNAME,
-		SGVAR,SSTRUCTURE,
+		SGVAR,SSTRUCTURE,SARRAY,
 		STYPE,USVAR, SPOINTER,
 	};
 	struct WordRecorder

@@ -13,7 +13,7 @@ namespace Mer
 	{
 		Mem::Object _time_record(std::vector<Mem::Object>& args)
 		{
-			return std::make_shared<Mem::Double>(clock()*1000.0L/ CLK_TCK);
+			return std::make_shared<Mem::Double>(clock()*1000.0L);
 		}
 		Mem::Object _random_int(std::vector<Mem::Object>& args)
 		{
@@ -34,7 +34,7 @@ namespace Mer
 #ifdef _WIN32
 			Sleep(time);
 #else
-			sleep(time);
+			::sleep(time);
 #endif
 			return nullptr;
 		}

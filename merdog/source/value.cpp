@@ -21,10 +21,10 @@ size_t Mer::Variable::get_type()
 
 Mer::Mem::Object Mer::Variable::execute()
 {
-	return mem[mem.get_current()+pos];
+	return mem[mem.get_current() + pos];
 }
 
-Mer::FunctionCall::FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
+Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, size_t _index, FunctionBase* _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
 {
 	if (!func->check_param(types))
 	{
@@ -42,7 +42,7 @@ size_t Mer::FunctionCall::get_type()
 Mer::Mem::Object Mer::FunctionCall::execute()
 {
 	std::vector<Mem::Object> tmp;
-	for (const auto &a : argument)
+	for (const auto& a : argument)
 	{
 		tmp.push_back(a->execute());
 	}
@@ -70,7 +70,7 @@ Mer::Assign::AssignType _token_to_assType()
 	}
 }
 
-Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info,size_t offset=0)
+Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info, size_t offset = 0)
 {
 	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
 	token_stream.match(DOT);
@@ -80,7 +80,7 @@ Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info,size_t offset=
 	if (member_info == usinfo->STMapping.end())
 		throw Error("member " + member_name + " no found");
 	token_stream.match(ID);
-	return new Index(new Variable(member_info->second,pos),member_info->second);
+	return new Index(new Variable(member_info->second, pos), member_info->second);
 }
 
 Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t offset)
@@ -93,12 +93,12 @@ Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t of
 	if (member_info == usinfo->mapping.end())
 		throw Error("member " + member_name + " no found");
 	token_stream.match(ID);
-	return new Index(new GVar(var_info,offset), member_info->second);
+	return new Index(new GVar(var_info, offset), member_info->second);
 }
 
 Mer::ParserNode* Mer::Parser::parse_id()
 {
-	ParserNode *ret = nullptr;
+	ParserNode* ret = nullptr;
 	auto id = token_stream.this_token();
 	auto result = this_namespace->sl_table->find(Id::get_value(id));
 	if (result == nullptr)
@@ -127,13 +127,11 @@ Mer::ParserNode* Mer::Parser::parse_id()
 	case ESymbol::SFUN:
 		ret = parse_function_call(this_namespace);
 		break;
+	case ESymbol::SARRAY:
 	case ESymbol::SPOINTER:
-		//return parse_var(result);
 	case ESymbol::SVAR:
-	{
 		ret = parse_var(result);
 		break;
-	}
 	default:
 	{
 		auto target_namespace = kill_namespaces();
@@ -157,9 +155,9 @@ Mer::ParserNode* Mer::Parser::parse_id()
 	return node;
 }
 
-Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
+Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 {
-	Token *var_id = token_stream.this_token();
+	Token* var_id = token_stream.this_token();
 	token_stream.match(ID);
 	switch (token_stream.this_tag())
 	{
@@ -179,9 +177,9 @@ Mer::ParserNode * Mer::Parser::parse_var(WordRecorder* var_info)
 
 
 
-Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
+Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 {
-	ParserNode *ret = nullptr;
+	ParserNode* ret = nullptr;
 	auto id = token_stream.this_token();
 	auto result = names->sl_table->find(Id::get_value(id));
 	if (result == nullptr)
@@ -231,7 +229,7 @@ Mer::ParserNode * Mer::Parser::_parse_id_wn(Namespace * names)
 	return new NVModificationAdapter(assignment_type, ret, new Expr());
 }
 
-Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
+Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 {
 	auto id = token_stream.this_token();
 	std::vector<Expr*> exprs;
@@ -262,9 +260,9 @@ Mer::FunctionCall * Mer::Parser::parse_function_call(Namespace *names)
 	return new FunctionCall(param_types, mem.get_index(), result, exprs);
 }
 
-Mer::Namespace * Mer::Parser::kill_namespaces()
+Mer::Namespace* Mer::Parser::kill_namespaces()
 {
-	Namespace *current = this_namespace;
+	Namespace* current = this_namespace;
 	auto result = _find_namespace_driver(current, Id::get_value(token_stream.this_token()));
 	while (result != nullptr)
 	{
@@ -276,7 +274,7 @@ Mer::Namespace * Mer::Parser::kill_namespaces()
 	return current;
 }
 
-Mer::LConV::LConV(Token * t)
+Mer::LConV::LConV(Token* t)
 {
 	switch (t->get_tag())
 	{
@@ -313,28 +311,36 @@ Mer::GVar::GVar(WordRecorder* result)
 
 Mer::GVar::GVar(WordRecorder* result, size_t offset)
 {
-	pos = static_cast<GVarIdRecorder*>(result)->pos+offset;
+	pos = static_cast<GVarIdRecorder*>(result)->pos + offset;
 	type = result->get_type();
 }
 
 
-Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
+Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 {
-	auto id_name= token_stream.this_token();
+	auto id_name = token_stream.this_token();
 	token_stream.match(ID);
 	token_stream.match(LSB);
+	size_t type = static_cast<VarIdRecorder*>(var_info)->get_type();
+	// if the value bewteen [] is a constant.
 	if (token_stream.this_tag() == INTEGER)
 	{
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
+		// if the var is a compound var, like Coor
 		if (var_info->get_type() >= USER_TYPE_INDEX)
 		{
-			if(var_info->es==SGVAR)
-				return parse_member_glo(var_info,off);
-			return parse_member(var_info,off);
+			if (var_info->es == SGVAR)
+				return parse_member_glo(var_info, off);
+			return parse_member(var_info, off);
 		}
-		return new Variable(static_cast<VarIdRecorder*>(var_info)->get_type(), static_cast<VarIdRecorder*>(var_info)->pos+off);
+		// if the var is not an array but supports [] operator.
+		if (var_info->es != SARRAY)
+		{
+			return new Index(new Variable(type, var_info->get_pos()), off);
+		}
+		return new Variable(type, var_info->get_pos() + off);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);
@@ -342,10 +348,15 @@ Mer::ParserNode * Mer::Parser::parse_array(WordRecorder* var_info)
 	{
 		throw Error("haven't finished yet");
 	}
-	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->get_type(), static_cast<VarIdRecorder*>(var_info)->pos,expr);
+	// if the var is not an array but supports [] operator. and the expr of the []is not a constant.
+	if (!var_info->es == SARRAY)
+	{
+		return new BinOp(new Variable(type, var_info->get_pos()), new Token(LSB), expr);
+	}
+	return new ContainerIndex(type, var_info->get_pos(), expr);
 }
 
-
+// the same function of parse_member but used to parse glo var
 Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 {
 	auto id_name = token_stream.this_token();
@@ -362,7 +373,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 		token_stream.match(RSB);
 		if (var_info->get_type() >= USER_TYPE_INDEX)
 			return parse_member_glo(var_info, off);
-		return new GVar(var_info,  off);
+		return new GVar(var_info, off);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);

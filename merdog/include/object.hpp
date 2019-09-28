@@ -380,10 +380,7 @@ namespace Mer
 			{
 				return std::make_shared<Bool>(str == std::static_pointer_cast<String>(v)->str);
 			}
-			Object operator[](Object v)override
-			{
-				return Object(new String(str[std::static_pointer_cast<Int>(v)->get_value()]));
-			}
+			Object operator[](Object v)override;
 			Object clone()const override
 			{
 				return std::make_shared<String>(str);

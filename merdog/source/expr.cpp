@@ -251,7 +251,7 @@ Mem::Object BinOp::execute()
 		ret = left_v->operator[](right_v);
 		return ret;
 	default:
-		break;
+		throw Error("Undefined operator");
 	}
 	return Mem::Object(ret);
 }
@@ -483,7 +483,6 @@ size_t Mer::RmRef::get_type()
 Mem::Object Mer::RmRef::execute()
 {
 	if (mem[1] == nullptr)
-		throw Error("WHAT");
 	return mem[Mem::get_raw<int>(id->execute())];
 }
 
@@ -497,4 +496,9 @@ Mem::Object Mer::Delete::execute()
 {
 	mem.del_obj(Mem::get_raw<int>(expr->execute()));
 	return nullptr;
+}
+
+Mem::Object Mer::Index::execute()
+{
+	return left->execute()->operator[](std::make_shared<Mem::Int>(index));
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "../type.hpp"
 #include "../function.hpp"
-#include "../include/namespace.hpp"
+#include "../namespace.hpp"
 namespace Mer
 {
 	class Namespace;

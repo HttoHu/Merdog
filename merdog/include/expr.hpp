@@ -21,10 +21,7 @@ namespace Mer
 	{
 	public:
 		Index(ParserNode* l, size_t _index) :left(l), index(_index) {}
-		Mem::Object execute()override
-		{
-			return left->execute()->operator[](std::make_shared<Mem::Int>(index));
-		}
+		Mem::Object execute()override;
 		size_t get_type()override
 		{
 			return left->get_type();
