@@ -506,7 +506,17 @@ Mem::Object Mer::Delete::execute()
 	return nullptr;
 }
 
+Mer::Index::Index(ParserNode * l, size_t _index, size_t _type) :left(l), index(_index), type(_type)
+{
+	if (_type == -1)
+		type = left->get_type();
+}
 Mem::Object Mer::Index::execute()
 {
 	return left->execute()->operator[](std::make_shared<Mem::Int>(index));
+}
+
+size_t Mer::Index::get_type()
+{
+	return type;
 }

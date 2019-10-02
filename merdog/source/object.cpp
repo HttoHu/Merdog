@@ -225,7 +225,7 @@ Mer::Mem::Object Mer::Mem::Pointer::clone() const
 
 Object Mer::Mem::Pointer::operator[](Object v)
 {
-	return mem[std::static_pointer_cast<Int>(v)->get_value() + pos];
+	return mem[pos]->operator[](v);
 }
 
 Object Mer::Mem::String::operator[](Object v)

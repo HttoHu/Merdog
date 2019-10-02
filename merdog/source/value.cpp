@@ -70,14 +70,23 @@ Mer::Assign::AssignType _token_to_assType()
 Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info, size_t offset = 0)
 {
 	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
-	token_stream.match(DOT);
+	size_t var_type = var_info->get_type();
+	bool ptr_visit = token_stream.this_tag() == PTRVISIT;
+	if (ptr_visit)
+	{
+		token_stream.match(PTRVISIT);
+		var_type--;
+	}
+	else
+		token_stream.match(DOT);
 	std::string member_name = Id::get_value(token_stream.this_token());
-	auto usinfo = find_ustructure_t(var_info->get_type());
-	auto member_info = usinfo->STMapping.find(member_name);
-	if (member_info == usinfo->STMapping.end())
+	auto usinfo = find_ustructure_t(var_type);
+	auto member_info = usinfo->mapping.find(member_name);
+	if (member_info == usinfo->mapping.end())
 		throw Error("member " + member_name + " no found");
+	auto member_type = usinfo->STMapping.find(member_name);
 	token_stream.match(ID);
-	return new Index(new Variable(member_info->second, pos), member_info->second);
+	return new Index(new Variable(var_info->get_type(), pos), member_info->second, member_type->second);
 }
 
 Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t offset)
@@ -157,6 +166,7 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 	token_stream.match(ID);
 	switch (token_stream.this_tag())
 	{
+	case PTRVISIT:
 	case DOT:
 	{
 		return parse_member(var_info);

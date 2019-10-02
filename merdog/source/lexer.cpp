@@ -9,7 +9,7 @@ using TagStrMap = std::map<Tag, std::string>;
 //==========================================
 size_t Mer::Endl::current_line = 0;
 TagStrMap	Mer::TagStr{
-	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},
+	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},{PTRVISIT,"PTRVISIT"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ DO,"DO" } ,{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },{SWITCH,"SWITCH"},
@@ -333,6 +333,12 @@ void Mer::build_token_stream(const std::string &content) {
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
 				token_stream.push_back(new Token(SSUB));
+				i++;
+				break;
+			}
+			else if (content[i + 1] == '>')
+			{
+				token_stream.push_back(new Token(PTRVISIT));
 				i++;
 				break;
 			}

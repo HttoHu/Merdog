@@ -22,13 +22,11 @@ namespace Mer
 	class Index :public ParserNode
 	{
 	public:
-		Index(ParserNode* l, size_t _index) :left(l), index(_index) {}
+		Index(ParserNode* l, size_t _index, size_t _type = -1);
 		Mem::Object execute()override;
-		size_t get_type()override
-		{
-			return left->get_type();
-		}
+		size_t get_type()override;
 	private:
+		size_t type;
 		ParserNode* left;
 		size_t index;
 	};
