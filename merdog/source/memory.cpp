@@ -24,7 +24,7 @@ size_t Mer::Memory::end_block() {
 size_t Mer::Memory::new_obj()
 {
 	if (free_pos_stack.empty())
-		return heap_pos + (heap_index++);
+		return  heap_index+heap_pos++;
 	auto ret= free_pos_stack.top();
 	free_pos_stack.pop();
 	return ret;

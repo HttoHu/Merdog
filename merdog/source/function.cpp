@@ -55,7 +55,6 @@ ParamFeature Mer::Parser::build_param_feature()
 		{
 			token_stream.next();
 			type++;
-			es = SPOINTER;
 		}
 		token_stream.match(ID);
 		ret.push_back(type);
@@ -85,9 +84,9 @@ Param * Mer::Parser::build_param()
 		{
 			token_stream.next();
 			type++;
-			es = SPOINTER;
 		}
 		auto name = new NamePart();
+
 		size_t pos = mem.push(name->get_count());
 		tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos,es));
 		ret->push_new_param(type, pos);
@@ -180,32 +179,30 @@ Mer::FunctionBase::FunctionBase()
 {
 }
 
-bool Mer::FunctionBase::check_param(const std::vector<size_t>& types)
+void Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 {
 	if (types.size() != param_types.size())
 	{
-		return false;
+		throw Error("argument size error");
+
 	}
 	for (size_t i = 0; i < param_types.size(); i++)
 	{
-		bool is_p = 1 + (types[i] % 2);
-		auto type_seeker = Mem::type_map.find(types[i]);
-		if (is_p)
+		if (types[i] == param_types[i])
 		{
-			if (types[i] != param_types[i])
-				return false;
-			continue;
+			return ;
 		}
+		auto type_seeker = Mem::type_map.find(types[i]);
 		if (type_seeker == Mem::type_map.end())
 		{
-			throw Error("A01 exists an undefined type");
+			throw Error("A01 exists an undefined type : type code "+std::to_string(param_types[i]));
 		}
 		if (!type_seeker->second->convertible(param_types[i]))
 		{
-			return false;
+			throw Error("A02 Error: type not matched type: " + Mem::type_to_string(Mem::BasicType(param_types[i])) + " to " + Mem::type_to_string(Mem::BasicType(types[i])));
 		}
 	}
-	return true;
+	return;
 }
 
 void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
@@ -264,9 +261,8 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	return ret;
 }
 
-bool Mer::SystemFunction::check_param(const std::vector<size_t>& types)
+void Mer::SystemFunction::check_param(const std::vector<size_t>& types)
 {
 	if (check_param_type)
-		return FunctionBase::check_param(types);
-	return true;
+		check_param(types);
 }

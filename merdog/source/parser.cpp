@@ -366,7 +366,24 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	}
 	throw Error("try to init a non-init variable");
 }
-
+inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)
+{
+	if(var_unit->arr())
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type , pos, ESymbol::SARRAY));
+	else if (var_unit->pointer())
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type+1, pos));
+	else
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type, pos));
+}
+inline void _record_glo_id(Mer::VarDeclUnit* var_unit, size_t type, size_t pos)
+{
+	if (var_unit->arr())
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos, ESymbol::SARRAY));
+	else if (var_unit->pointer())
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type+1, pos));
+	else
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos));
+}
 Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 {
 	for (const auto& a : vec)
@@ -376,21 +393,9 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	pos = mem.push(sum) - sum;
 	size_t tmp_pos = pos;
 	// the var may be array ,pointer or a common var.
-	if (vec[0]->pointer())
-		this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type+1, pos, ESymbol::SPOINTER));
-	else if(vec[0]->arr())
-		this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type + 1, pos, ESymbol::SARRAY));
-	else
-		this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new VarIdRecorder(type, pos));
+	_record_id(vec[0], type, pos);
 	for (int i = 1; i < vec.size(); i++)
-	{
-		if (vec[i]->pointer())
-			this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type+1, tmp_pos += vec[i - 1]->get_size(), ESymbol::SPOINTER));
-		else if (vec[0]->arr())
-			this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type + 1, tmp_pos += vec[i - 1]->get_size(), ESymbol::SARRAY));
-		else
-			this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new VarIdRecorder(type, tmp_pos += vec[i - 1]->get_size()));
-	}
+		_record_id(vec[i], type, tmp_pos + vec[i - 1]->get_size());
 	for (auto& a : vec)
 	{
 		if (a->arr())
@@ -425,11 +430,9 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 	}
 	pos = mem.push(sum) - sum;
 	size_t tmp_pos = pos;
-	this_namespace->sl_table->push(Id::get_value(vec[0]->get_id()), new GVarIdRecorder(type, pos));
+	_record_glo_id(vec[0], type, pos);
 	for (int i = 1; i < vec.size(); i++)
-	{
-		this_namespace->sl_table->push(Id::get_value(vec[i]->get_id()), new GVarIdRecorder(type, tmp_pos += vec[i - 1]->get_size()));
-	}
+		_record_glo_id(vec[i], type, tmp_pos + vec[i - 1]->get_size());
 	for (auto& a : vec)
 	{
 		if (a->arr())

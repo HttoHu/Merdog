@@ -38,6 +38,7 @@ namespace Mer
 			case DEFAULT:
 				token_stream.match(DEFAULT);
 				default_line = current_line;
+				have_default = true;
 				token_stream.match(COLON);
 				continue;
 			case CASE:

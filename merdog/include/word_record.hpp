@@ -7,7 +7,7 @@ namespace Mer
 	{
 		SFUN,SVAR,SNAME,
 		SGVAR,SSTRUCTURE,SARRAY,
-		STYPE,USVAR, SPOINTER,
+		STYPE,USVAR
 	};
 	struct WordRecorder
 	{
@@ -58,7 +58,7 @@ namespace Mer
 	public:
 		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
 		{
-			type_code = size_t(Mem::type_counter+=2);
+			type_code = Mem::type_counter+=2;
 		}
 
 	};
@@ -66,7 +66,7 @@ namespace Mer
 	struct GVarIdRecorder:public WordRecorder
 	{
 	public:
-		GVarIdRecorder(size_t t,size_t _pos) :WordRecorder(SGVAR,t), pos(_pos) {
+		GVarIdRecorder(size_t t,size_t _pos,ESymbol e=SGVAR) :WordRecorder(e,t), pos(_pos) {
 		}
 		size_t get_pos()override
 		{

@@ -80,6 +80,7 @@ namespace Mer
 		size_t pos;
 		Token * content;
 	};
+	// to convert type;
 	class Cast :public ParserNode
 	{
 	public:

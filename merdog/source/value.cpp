@@ -26,10 +26,7 @@ Mer::Mem::Object Mer::Variable::execute()
 
 Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, size_t _index, FunctionBase* _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
 {
-	if (!func->check_param(types))
-	{
-		throw Error("A02 type not matched ");
-	}
+	func->check_param(types);
 	std::vector<ParserNode*> tmp;
 	func->convert_arg(argument);
 }
@@ -128,7 +125,6 @@ Mer::ParserNode* Mer::Parser::parse_id()
 		ret = parse_function_call(this_namespace);
 		break;
 	case ESymbol::SARRAY:
-	case ESymbol::SPOINTER:
 	case ESymbol::SVAR:
 		ret = parse_var(result);
 		break;

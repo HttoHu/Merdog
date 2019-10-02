@@ -1,5 +1,6 @@
 #pragma once
 #include "merdog_io.hpp"
+// offer some common maths method.
 namespace Mer
 {
 	class Namespace;

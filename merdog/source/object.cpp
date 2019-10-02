@@ -56,9 +56,9 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 
 size_t Mer::Mem::get_type_code()
 {
-	auto tok = token_stream.this_tag();
+	auto tok = token_stream.this_token();
 	token_stream.next();
-	switch (tok)
+	switch (tok->get_tag())
 	{
 	case VOID_DECL:
 		return BVOID;
@@ -72,7 +72,7 @@ size_t Mer::Mem::get_type_code()
 		return STRING;
 	case ID:
 	{
-		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		auto info = Mer::this_namespace->sl_table->find(Id::get_value(tok));
 		if (info == nullptr)
 			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
 		return info->get_type();
@@ -231,4 +231,9 @@ Object Mer::Mem::Pointer::operator[](Object v)
 Object Mer::Mem::String::operator[](Object v)
 {
 	return std::make_shared<String>(str[std::static_pointer_cast<Int>(v)->get_value()]);
+}
+
+std::string Mer::type_to_string(size_t type_code)
+{
+	return Mem::type_to_string(Mem::BasicType(type_code));
 }

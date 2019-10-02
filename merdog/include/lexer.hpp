@@ -35,7 +35,7 @@ namespace Mer
 		TTRUE, TFALSE,
 		LPAREN, RPAREN,LSB,RSB,
 		ENDOF, ENDL,
-		STRING,
+		STRING,NULLPTR,
 	};
 	extern std::map<Tag, std::string> TagStr;
 	class Token
@@ -168,13 +168,7 @@ namespace Mer
 		{
 			return this_token()->get_tag();
 		}
-		Token *next_token()
-		{
-			if (pos + 1 < content.size())
-				return content[pos + 1];
-			else
-				throw Error("token_stream out of range");
-		}
+		Token* next_token();
 		Token* get_next_token()
 		{
 			auto tmp = content[pos];
@@ -194,15 +188,7 @@ namespace Mer
 			--pos;
 		}
 		void add(Token* tok);
-		void advance()
-		{
-			pos++;
-			if (pos >= content.size())
-			{
-				content.push_back(END_TOKEN);
-				throw Error("to the end of token_stream");
-			}
-		}
+		void advance();
 		void next()
 		{
 			if (this_token()->get_tag() == Tag::ENDL|| this_token()->get_tag() == Tag::EPT)
@@ -212,20 +198,7 @@ namespace Mer
 			}
 			advance();
 		}
-		void match(Tag t)
-		{
-			// to check the token whether it is right, and if matched call advance, or throw an error.
-			// example: match(PLUS); 
-			if (this_token()->get_tag() == Mer::Tag::ENDL)
-			{
-				advance();
-				match(t);
-			}
-			else if (this_token()->get_tag() == t)
-				advance();
-			else
-				throw Error(this_token()->to_string() + " not match with " + TagStr[t]);
-		}
+		void match(Tag t);
 		void print()
 		{
 			for (const auto &a : content)

@@ -21,7 +21,7 @@ TagStrMap	Mer::TagStr{
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
 	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
-	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },
+	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"}
 };
 TokenMap	Mer::KeyWord{
 	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
@@ -35,7 +35,7 @@ TokenMap	Mer::KeyWord{
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
 	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },
-	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) }
+	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) },{"nullptr",new Token(NULLPTR)}
 };
 bool				is_function_args = false;
 //==========================================
@@ -350,15 +350,46 @@ void Mer::build_token_stream(const std::string &content) {
 	}
 	token_stream.push_back(END_TOKEN);
 }
+
 std::string Mer::GIC()
 {
 	auto ret = Id::get_value(token_stream.this_token());
 	token_stream.match(ID);
 	return ret;
 }
+Token* Mer::TokenStream::next_token()
+{
+	if (pos + 1 < content.size())
+		return content[pos + 1];
+	else
+		throw Error("token_stream out of range");
+}
 void Mer::TokenStream::add(Token* tok)
 {
 	content.insert(content.begin() + pos + 1, tok);
+}
+void Mer::TokenStream::advance()
+{
+	pos++;
+	if (pos >= content.size())
+	{
+		content.push_back(END_TOKEN);
+		throw Error("to the end of token_stream");
+	}
+}
+void Mer::TokenStream::match(Tag t)
+{
+	// to check the token whether it is right, and if matched call advance, or throw an error.
+	// example: match(PLUS); 
+	if (this_token()->get_tag() == Mer::Tag::ENDL)
+	{
+		advance();
+		match(t);
+	}
+	else if (this_token()->get_tag() == t)
+		advance();
+	else
+		throw Error(this_token()->to_string() + " not match with " + TagStr[t]);
 }
 void TokenStream::remove_tokens()
 {

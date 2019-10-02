@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "parser_node.hpp"
+// block is the set of santences. 
 namespace Mer
 {
 	class Function;
@@ -15,7 +16,9 @@ namespace Mer
 		void end_block();
 		Mem::Object execute()override;
 	private:
+		//to record the pos of the instruction.
 		int index = 0;
+		// for function;
 		Mem::Object ret=nullptr;
 	};
 

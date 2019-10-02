@@ -21,6 +21,7 @@ namespace Mer
 	class StructureBase;
 	class Namespace;
 	class Token;
+	std::string type_to_string(size_t type_code);
 	namespace Mem
 	{
 

@@ -4,6 +4,7 @@
 namespace Mer
 {
 	class Cast;
+	// the santence do nothing.
 	class NonOp :public ParserNode
 	{
 	public:
@@ -17,6 +18,7 @@ namespace Mer
 		}
 	private:
 	};
+	// to run the operator[]of different objs, you can use BinOp to replace it ,but the performance of Index is better.
 	class Index :public ParserNode
 	{
 	public:
@@ -30,6 +32,11 @@ namespace Mer
 		ParserNode* left;
 		size_t index;
 	};
+	/*
+	to get the elems of an array but
+	 eg. arr[p];
+	 the p is a var so or an expr;
+	*/
 	class ContainerIndex :public ParserNode
 	{
 	public:

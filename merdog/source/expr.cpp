@@ -176,6 +176,9 @@ Mer::ParserNode * Mer::Expr::factor( )
 	{
 		return Parser::parse_id();
 	}
+	case NULLPTR:
+		token_stream.match(NULLPTR);
+		return new LConV(std::make_shared<Mem::Pointer>(-1), expr_type);
 	default:
 		return new NonOp();
 	}
@@ -432,20 +435,26 @@ Mer::NewExpr::NewExpr()
 {
 	token_stream.match(NEW);
 	size_t type_code = Mem::get_type_code();
-	token_stream.match(LPAREN);
-	expr = (new Expr(type_code))->tree;
+	if (token_stream.this_tag() == LPAREN)
+	{
+		expr= (new Expr(type_code))->tree;
+	}
+	else if (token_stream.this_tag() == BEGIN)
+	{
+		auto _result = find_ustructure_t(type_code);
+		expr = new StructureInitList(_result->mapping,type_code);
+	}
 	if (expr->get_type() != type_code)
 	{
-		throw Error("new-type not matched");
+		throw Error("new-type not matched from " + type_to_string(expr->get_type())+" to "+type_to_string(type_code));
 	}
-	token_stream.match(RPAREN);
 }
 
 Mem::Object Mer::NewExpr::execute()
 {
 	auto pos = mem.new_obj();
 	mem[pos] = expr->execute();
-	return std::make_shared<Mem::Int>(pos);
+	return std::make_shared<Mem::Pointer>(pos);
 }
 
 Mer::GetAdd::GetAdd()
@@ -482,7 +491,6 @@ size_t Mer::RmRef::get_type()
 }
 Mem::Object Mer::RmRef::execute()
 {
-	if (mem[1] == nullptr)
 	return mem[Mem::get_raw<int>(id->execute())];
 }
 

@@ -47,6 +47,11 @@ Mer::UStructure* Mer::find_ustructure_t(size_t type)
 		throw Error("Id " +result2->first + " undefined");
 	return result2->second;
 }
+void Mer::UStructure::push_new_children(size_t t, std::string id_name)
+{
+	mapping.insert({ id_name,be++ });
+	STMapping.insert({ id_name,t });
+}
 std::vector<Mem::Object> Mer::UStructure::init()
 {
 	std::vector<Mem::Object> ret;
@@ -56,6 +61,7 @@ std::vector<Mem::Object> Mer::UStructure::init()
 	}
 	return ret;
 }
+
 
 
 Mem::Object Mer::StructureInitList::execute()
@@ -68,7 +74,7 @@ Mem::Object Mer::StructureInitList::execute()
 	return std::make_shared<USObject>(obj_vec);
 }
 
-Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m):vec(m.size())
+Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m, size_t _type_code) :vec(m.size()), type_code(_type_code)
 {
 	token_stream.match(BEGIN);
 	size_t last_index=-1;
@@ -94,7 +100,6 @@ Mer::DefaultInitList::DefaultInitList(const std::map<std::string, size_t>& m)
 {
 	for (auto& a : m)
 	{
-		//std::cout << "TYPE: "<<a.second << std::endl;
 		vec.push_back(Mem::create_var_t(a.second));
 	}
 }

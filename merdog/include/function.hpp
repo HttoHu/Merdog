@@ -25,7 +25,7 @@ namespace Mer
 	{
 	public:
 		FunctionBase();
-		virtual bool check_param(const std::vector<size_t>& types);
+		virtual void check_param(const std::vector<size_t>& types);
 		virtual void convert_arg(std::vector<Expr*> &args);
 		void set_param_types(const std::vector<size_t>& types)
 		{
@@ -71,7 +71,7 @@ namespace Mer
 		{
 			return type;
 		}
-		bool check_param(const std::vector<size_t>& types)override;
+		void check_param(const std::vector<size_t>& types)override;
 		void dnt_check_param()
 		{
 			check_param_type = false;
