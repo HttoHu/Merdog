@@ -352,7 +352,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		if (token_stream.this_tag() == BEGIN)
 			expr = new StructureInitList(result->mapping);
 		else {
-			expr = new DefaultInitList(result->STMapping);
+			expr = new DefaultInitList(type_code);
 		}
 		return;
 	}

@@ -71,6 +71,7 @@ Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info, size_t offset
 {
 	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
 	size_t var_type = var_info->get_type();
+	// -> 
 	bool ptr_visit = token_stream.this_tag() == PTRVISIT;
 	if (ptr_visit)
 	{

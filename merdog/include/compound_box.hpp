@@ -20,7 +20,6 @@ namespace Mer
 	class UStructure
 	{
 	public:
-
 		using SIM=std::map<std::string, int>;
 		// add new member
 		void push_new_children(size_t t, std::string id_name);
@@ -29,8 +28,11 @@ namespace Mer
 		SIM mapping;
 		// get the member type by the name of it. Take care, you should be aware that mapping and STMapping is totally different.
 		std::map<std::string, size_t> STMapping;
+		void push_init(Mem::Object obj) { init_vec.push_back(obj); }
 	private:
+		std::vector<Mem::Object> init_vec;
 		// the index to new member is used in build phase. 
+
 		int be = 0;
 	};
 	// an object which create user-def struct obj.
@@ -71,7 +73,7 @@ namespace Mer
 	class DefaultInitList :public ParserNode
 	{
 	public:
-		DefaultInitList(const std::map<std::string, size_t>& m);
+		DefaultInitList(size_t type);
 		Mem::Object execute()override;
 	private:
 		std::vector<Mem::Object> vec;

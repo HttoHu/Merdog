@@ -76,7 +76,6 @@ size_t Mer::Mem::get_type_code()
 		if (info == nullptr)
 			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
 		return info->get_type();
-
 	}
 	default:
 		throw Error(token_stream.this_token()->to_string() + " unknown type ");
@@ -216,6 +215,12 @@ bool Mer::Mem::Type::convertible(const size_t& t)
 void Mer::Mem::Type::add_compatible_type(size_t type_code)
 {
 	convertible_types.insert(type_code);
+}
+
+Mer::Mem::Object Mer::Mem::Pointer::operator=(Object v)
+{
+	pos = std::static_pointer_cast<Pointer>(v)->pos;
+	return std::make_shared<Pointer>(pos);
 }
 
 Mer::Mem::Object Mer::Mem::Pointer::clone() const

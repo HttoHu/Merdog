@@ -1,2 +1,2 @@
-clang source\*.cpp -O merdog.exe
+clang source\*.cpp -o merdog.exe
 delay

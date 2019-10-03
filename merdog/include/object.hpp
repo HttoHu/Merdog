@@ -417,6 +417,7 @@ namespace Mer
 		{
 		public:
 			Pointer(size_t p) :pos(p) {}
+			Mem::Object operator=(Object v)override;
 			Mem::Object clone()const override;
 			Object operator[](Object v)override;
 			std::string to_string()const override
