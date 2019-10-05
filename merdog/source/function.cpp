@@ -87,7 +87,7 @@ Param * Mer::Parser::build_param()
 		}
 		auto name = new NamePart();
 
-		size_t pos = mem.push(name->get_count());
+		size_t pos = mem.push(name->get_count())-1;
 		tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos,es));
 		ret->push_new_param(type, pos);
 		if (token_stream.this_tag() == COMMA)
@@ -128,10 +128,13 @@ void Mer::Parser::build_function()
 		temp->param = build_param();
 		// we use pure_block because we should push the param to the block, 
 		// so we need to create a preserved memory for param.
+		Mer::global_stmt() = false;
 		Block *blo = pure_block();
+		Mer::global_stmt() = true;
 		temp->reset_block(blo);
 		temp->is_completed = true;
 		tsymbol_table->end_block();
+
 		return;
 	}
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
@@ -150,7 +153,9 @@ void Mer::Parser::build_function()
 	Param *param = build_param();
 	Function *ret = new Function(rtype, param, nullptr);
 	this_namespace->functions.insert({ name,ret });
+	Mer::global_stmt() = false;
 	Block *blo = pure_block();
+	Mer::global_stmt() = true;
 	ret->reset_block(blo);
 	ret->is_completed = true;
 	tsymbol_table->end_block();
@@ -269,5 +274,5 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 void Mer::SystemFunction::check_param(const std::vector<size_t>& types)
 {
 	if (check_param_type)
-		check_param(types);
+		FunctionBase::check_param(types);
 }

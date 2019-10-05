@@ -127,6 +127,8 @@ Mer::ParserNode * Mer::Expr::factor( )
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
+	case NEW:
+		return new NewExpr();
 	case DELETE:
 		return new Delete();
 	case MUL:
@@ -188,8 +190,6 @@ Mer::ParserNode * Mer::Expr::factor( )
 		ParserNode* n = new UnaryOp(result, factor());
 		return n;
 	}
-	case NEW:
-		return new NewExpr();
 	case ID:
 	{
 		return Parser::parse_id();

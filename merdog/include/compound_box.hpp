@@ -42,14 +42,8 @@ namespace Mer
 	public:
 		USObject(const std::vector<Mem::Object>& _vec):vec(_vec) { }
 		// assign , init etc.
-		Mem::Object operator=(Mem::Object v)override
-		{
-			// I am trying to do as much as possible check before runtime
-			auto a = std::static_pointer_cast<USObject>(v);
-			vec = a->vec;
-			return a;
-		}
-		Mem::Object clone()const override { return std::make_shared<USObject>(vec); }
+		Mem::Object operator=(Mem::Object v)override;
+		Mem::Object clone()const override;
 		/*
 			user-def struct obj is a single obj, and its members are all pushed into a vector<Object>. When you need obtain the member 
 			of user-def struct obj, you need get its postion of the struct.

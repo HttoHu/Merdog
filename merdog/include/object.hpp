@@ -1,8 +1,8 @@
-/* 
+/*
 *   note that : obj refers to the instance of Mem::Int or Mem::String, Mem::Bool etc.
 *	The Object is a shared_ptr<Value> which is the parent of all objs.
-*	special usage: When we need to get the raw of a Mem::xxx (e.g. Mem::Int) we can use get_raw<int>(obj) ), 
-*	I supposed that the obj memory structure is like that 
+*	special usage: When we need to get the raw of a Mem::xxx (e.g. Mem::Int) we can use get_raw<int>(obj) ),
+*	I supposed that the obj memory structure is like that
 *	| --- virtual_table_pointer(or some other value about parent : x64(8Byte), x86(4Byte) ---|
 *	| int or string , bool, real according the obj type																|
 *	so move 8/4 Byte could get the raw value of the obj.
@@ -353,9 +353,7 @@ namespace Mer
 			}
 			Object Convert(size_t type)override
 			{
-				if (type == STRING)
-					return std::make_shared<String>(str);
-				throw Error("type-convert failed");
+				return std::make_shared<String>(str);
 			}
 			Object operator>(Object v)override
 			{
@@ -419,6 +417,7 @@ namespace Mer
 			Pointer(size_t p) :pos(p) {}
 			Mem::Object operator=(Object v)override;
 			Mem::Object operator==(Object v)override;
+			Mem::Object operator!=(Object v)override;
 			Mem::Object clone()const override;
 			Object operator[](Object v)override;
 			std::string to_string()const override
@@ -440,6 +439,6 @@ namespace Mer
 			throw Error("unsafe calling");
 #endif
 		}
-		
+
+		}
 	}
-}

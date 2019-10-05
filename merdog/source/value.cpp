@@ -19,6 +19,10 @@ size_t Mer::Variable::get_type()
 	return type;
 }
 
+size_t Mer::Variable::get_pos() {
+	return pos;
+}
+
 Mer::Mem::Object Mer::Variable::execute()
 {
 	return mem[mem.get_current() + pos];
@@ -50,6 +54,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 
 Mer::ParserNode* Mer::Parser::parse_id()
 {
+
 	auto id = token_stream.this_token();
 	auto result = this_namespace->sl_table->find(Id::get_value(id));
 	if (result == nullptr)

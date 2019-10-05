@@ -233,6 +233,11 @@ Mer::Mem::Object Mer::Mem::Pointer::operator==(Object v)
 	return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->pos == pos);
 }
 
+Mer::Mem::Object Mer::Mem::Pointer::operator!=(Object v)
+{
+	return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->pos != pos);
+}
+
 Mer::Mem::Object Mer::Mem::Pointer::clone() const
 {
 	return std::make_shared<Mem::Pointer>(pos);

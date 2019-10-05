@@ -137,3 +137,20 @@ Mem::Object Mer::DefaultInitList::execute()
 		ret[i] = vec[i]->clone();
 	return std::make_shared<USObject>(ret);
 }
+
+Mem::Object Mer::USObject::operator=(Mem::Object v) {
+	// I am trying to do as much as possible check before runtime
+	auto a = v->clone();
+	this->vec = std::static_pointer_cast<USObject>(v)->vec;
+	return a;
+}
+
+Mem::Object Mer::USObject::clone() const
+{
+	std::vector<Mem::Object> ret_vec(vec.size());
+	for (int i = 0; i < ret_vec.size(); i++)
+	{
+		ret_vec[i] = vec[i]->clone();
+	}
+	return std::make_shared<USObject>(ret_vec);
+}

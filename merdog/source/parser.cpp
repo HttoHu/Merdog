@@ -1,4 +1,4 @@
-/*
+﻿/*function
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
@@ -11,7 +11,6 @@
 #include "../include/compound_box.hpp"
 #include "../include/loop_statement.hpp"
 using namespace Mer;
-bool Mer::global_stmt = true;
 std::vector<ParserNode*> Mer::pre_stmt;
 namespace Mer
 {
@@ -40,6 +39,11 @@ namespace Mer
 	{
 		return identify->to_string();
 	}
+	bool & global_stmt()
+	{
+		static bool ret = true;
+		return ret;
+	}
 }
 Program* Mer::Parser::program()
 {
@@ -57,7 +61,7 @@ Program* Mer::Parser::program()
 			break;
 		case PROGRAM:
 		{
-			global_stmt = false;
+			global_stmt() = false;
 			token_stream.match(PROGRAM);
 			auto tmp = token_stream.this_token();
 			token_stream.match(ID);
@@ -128,17 +132,16 @@ Block* Mer::Parser::pure_block()
 	while (token_stream.this_tag() != END)
 	{
 		ParserNode* node;
-
 		switch (token_stream.this_tag())
 		{
 		case BEGIN:
 			node = block();
 			break;
-		case FOR:
-			node = for_statement();
-			break;
 		case SWITCH:
 			node = switch_statement();
+			break;
+		case FOR:
+			node = for_statement();
 			break;
 		case DO:
 		case WHILE:
@@ -172,7 +175,8 @@ ParserNode* Mer::Parser::statement()
 		token_stream.match(RETURN);
 		auto expr = new Expr();
 		if (expr->get_type() != this_func_type) {
-			throw Error("return type doesn't correspond with function type");
+			if (!(expr->get_type() % 2 + 1 && this_func_type % 2 + 1))
+				throw Error("return type doesn't correspond with function type");
 		}
 		node = new Return(expr, current_function_block);
 		break;
@@ -207,17 +211,18 @@ ParserNode* Mer::Parser::statement()
 
 ParserNode* Mer::Parser::var_decl()
 {
-	size_t type = Mem::get_type_code(token_stream.this_token());
+	size_t type = Mem::get_type_code();
 	std::vector<VarDeclUnit*> units;
-	token_stream.next();
 	units.push_back(new VarDeclUnit(type));
 	while (token_stream.this_tag() != SEMI)
 	{
 		token_stream.match(COMMA);
 		units.push_back(new VarDeclUnit(type));
 	}
-	if (global_stmt)
+	if (global_stmt())
+	{
 		return new GloVarDecl(units, type);
+	}
 	return new LocalVarDecl(units, type);
 }
 
@@ -327,7 +332,6 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		is_p = true;
 		type_code++;
 	}
-
 	// manage to process array 
 	if (name_part.is_array())
 	{
@@ -347,19 +351,25 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		UStructure* result = find_ustructure_t(type_code);
 		if (token_stream.this_tag() == BEGIN)
 			expr = new StructureInitList(result->mapping);
-		else {
+		else if (token_stream.this_tag() == ASSIGN)
+		{
+			goto tt;
+		}
+		else
+		{
 			expr = new DefaultInitList(type_code);
 		}
 		return;
 	}
 	if (token_stream.this_tag() == ASSIGN)
 	{
-		token_stream.match(ASSIGN);
+tt:		token_stream.match(ASSIGN);
 		expr = (new Expr(type_code))->root();
 		if (type_code != expr->get_type())
 			throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
 	}
+
 	throw Error("::VarDeclUnit::VarDeclUnit(size_t t) : try to init a non-init variable");
 }
 inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)

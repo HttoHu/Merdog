@@ -66,12 +66,12 @@ int main()
 {
 	try
 	{
+		time_t s = clock();
 		Mer::set_io();
 		Mer::set_maths();
 		Mer::set_utility();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
-		time_t s = clock();
 		Mer::Parser::program()->execute();
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) * 1000 / CLK_TCK << " ms";

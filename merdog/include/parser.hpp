@@ -4,7 +4,7 @@ namespace Mer
 {
 	extern std::vector<ParserNode*> pre_stmt;
 	// to ensure variables which declared outside are assigned to global locations
-	extern bool global_stmt;
+	bool& global_stmt();
 
 	struct WordRecorder;
 	class Expr;
