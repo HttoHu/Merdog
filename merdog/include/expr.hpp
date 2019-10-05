@@ -117,13 +117,14 @@ namespace Mer
 		bool is_bool = true;
 		ParserNode* tree;
 		size_t expr_type;
+		ParserNode* assign();
 		ParserNode* and_or();
 		ParserNode* expr();
 		ParserNode* nexpr();
 		ParserNode* term();
+		ParserNode* member_visit();
 		ParserNode* factor();
 	private:
-
 
 	};
 	class Type;
@@ -156,27 +157,6 @@ namespace Mer
 		size_t size;
 	};
 
-	class Assign :public ParserNode
-	{
-	public:
-		enum AssignType
-		{
-			None,
-			Add, Sub, Div, Mul,
-			Null,
-		};
-		Assign(AssignType a, ParserNode* l, Token* o, ParserNode* r);
-		Mem::Object execute()override;
-		virtual ~Assign()
-		{
-			delete right;
-		}
-	private:
-		AssignType asType;
-		ParserNode* left;
-		Token *op;
-		ParserNode* right;
-	};
 	class GetAdd :public ParserNode
 	{
 	public:

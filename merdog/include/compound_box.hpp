@@ -23,6 +23,8 @@ namespace Mer
 		using SIM=std::map<std::string, int>;
 		// add new member
 		void push_new_children(size_t t, std::string id_name);
+		// first: member type second: member pos
+		std::pair<size_t, size_t > get_member_info(std::string member_name);
 		std::vector<Mem::Object> init();
 		// get the member position by the name of it.
 		SIM mapping;

@@ -183,9 +183,3 @@ void Mer::Parser::create_namespace_var()
 	}
 	token_stream.match(SEMI);
 }
-
-Mer::NVModificationAdapter::NVModificationAdapter(Assign::AssignType mt, ParserNode * o, Expr * e)
-	:mtype(mt), expr(e)
-{
-	obj = o->execute();
-}

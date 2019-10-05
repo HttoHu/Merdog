@@ -96,16 +96,11 @@ namespace Mer
 	namespace Parser
 	{
 
-		/*
-		ParserNode *build_init_list(Namespace *names);
-		*/
-
 		ParserNode* parse_glo(WordRecorder* var_info);
 		ParserNode *parse_array(WordRecorder* var_info);
 		ParserNode *parse_id();
-		ParserNode* parse_member(WordRecorder *var_info,size_t offset );
-		ParserNode* parse_member_glo(WordRecorder* var_info, size_t offset);
 		ParserNode *parse_var(WordRecorder* var_info);
+		// parse id with namespace.
 		ParserNode *_parse_id_wn(Namespace *names);
 		//FunctionCall *parse_function_call(Mer::Expr *co_caller,StructureBase *sb);
 		FunctionCall *parse_function_call(Namespace *names);

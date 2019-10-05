@@ -40,43 +40,6 @@ namespace Mer
 	* syntax analysis, the local var will convert to a postion, however, global var will created in parser 
 	* stage, so global var always be a object, and the Assign classes don't handle such situation. 
 	*/
-	class NVModificationAdapter:public ParserNode// Namespace Variable Modification Adapter. 
-	{
-	public:
-		NVModificationAdapter(Assign::AssignType mt, ParserNode *o, Expr *e);
-		Mem::Object execute()override
-		{
-			switch (mtype)
-			{
-			case Mer::Assign::None:
-				obj->operator=(expr->execute());
-				break;
-			case Mer::Assign::Add:
-				obj->operator+=(expr->execute());
-				break;
-			case Mer::Assign::Sub:
-				obj->operator-=(expr->execute());
-				break;
-			case Mer::Assign::Div:
-				obj->operator/=(expr->execute());
-				break;
-			case Mer::Assign::Mul:
-				obj->operator*=(expr->execute());
-				break;
-			default:
-				throw Error("Error A21");
-			}
-			return nullptr;
-		}
-		std::string to_string()override
-		{
-			return "class NVModificationAdapter";
-		}
-	private:
-		Assign::AssignType mtype;
-		Mem::Object obj;
-		Expr *expr;
-	};
 	namespace Parser
 	{
 		Mer::Namespace * _find_namespace_driver(Mer::Namespace *current, const std::string &name);

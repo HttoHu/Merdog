@@ -102,9 +102,14 @@ Param * Mer::Parser::build_param()
 void Mer::Parser::build_function()
 {
 	token_stream.match(FUNCTION);
-	size_t rtype = Mem::get_type_code(token_stream.this_token());
+	size_t rtype = Mem::get_type_code();
+	// if the ret type is a pointer
+	if (token_stream.this_tag() == MUL)
+	{
+		token_stream.next();
+		rtype++;
+	}
 	this_func_type = rtype;
-	token_stream.next();
 	this_namespace->sl_table->new_block();
 	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.next();

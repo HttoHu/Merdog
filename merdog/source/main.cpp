@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		{
 			if (argv[1][0] == '-'&&argv[1][1]=='v')
 			{
-				std::cout << "3.0.4";
+				std::cout << "3.0.5";
 				return 0;
 			}
 		}
@@ -95,14 +95,4 @@ int main()
 	std::cout << "\nThe program has exited";
 	return 0;
 }
-
-void test()
-{
-	using namespace Mer;
-	time_t s = clock();
-	time_t e = clock();
-	std::cout << "\ntime:" << (double)(e - s) * 1000 / CLK_TCK << " ms";
-	std::cin.get();
-}
-
 #endif

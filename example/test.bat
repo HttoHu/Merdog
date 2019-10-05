@@ -8,3 +8,4 @@ merdog struct1.mer
 merdog insertion_sort.mer
 merdog switch_test.mer
 merdog demo.mer
+merdog pointer_test.mer

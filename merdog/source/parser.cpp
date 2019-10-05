@@ -167,9 +167,6 @@ ParserNode* Mer::Parser::statement()
 	case DELETE:
 		node = new Delete();
 		break;
-	case ID:
-		node = Parser::parse_id();
-		break;
 	case RETURN:
 	{
 		token_stream.match(RETURN);
@@ -214,7 +211,6 @@ ParserNode* Mer::Parser::var_decl()
 	std::vector<VarDeclUnit*> units;
 	token_stream.next();
 	units.push_back(new VarDeclUnit(type));
-	//std::cout << token_stream.this_token()->to_string();
 	while (token_stream.this_tag() != SEMI)
 	{
 		token_stream.match(COMMA);
@@ -361,10 +357,10 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		token_stream.match(ASSIGN);
 		expr = (new Expr(type_code))->root();
 		if (type_code != expr->get_type())
-			throw Error("type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
+			throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
 	}
-	throw Error("try to init a non-init variable");
+	throw Error("::VarDeclUnit::VarDeclUnit(size_t t) : try to init a non-init variable");
 }
 inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)
 {

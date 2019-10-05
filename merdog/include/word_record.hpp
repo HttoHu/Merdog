@@ -150,7 +150,6 @@ namespace Mer
 		void push(std::string id, WordRecorder *wr)
 		{
 			data.front().insert({ id,wr });
-			//std::cout << id << "   " << wr->to_string() << std::endl;
 		}
 		void print();
 	private:

@@ -21,6 +21,8 @@ std::string Mer::run_interpreter(const std::string&file_content)
 		Mer::build_token_stream(file_content);
 		Mer::Parser::program()->execute();
 		token_stream.clear();
+//		for (auto &a : del_parser_node_table)
+	//		delete a;
 	}
 	catch (std::exception &e)
 	{

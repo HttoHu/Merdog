@@ -11,7 +11,7 @@
 #include "../include/word_record.hpp"
 using namespace Mer;
 Mer::Expr::Expr(size_t t) :is_bool(false), expr_type(t) {
-	tree = and_or();
+	tree = assign();
 	if (expr_type == 0 && tree->get_type() != 0)
 	{
 		expr_type = tree->get_type();
@@ -28,6 +28,17 @@ size_t Mer::Expr::get_type()
 	if (expr_type != 0)
 		return expr_type;
 	return tree->get_type();
+}
+ParserNode * Mer::Expr::assign()
+{
+	auto result = and_or();
+	while (token_stream.this_tag() == ASSIGN || token_stream.this_tag() == SADD|| token_stream.this_tag() == SSUB || token_stream.this_tag() == SMUL || token_stream.this_tag() == SDIV)
+	{
+		auto tok = token_stream.this_token();
+		token_stream.next();
+		result = new BinOp(result, tok, and_or());
+	}
+	return result;
 }
 Mer::ParserNode * Mer::Expr::and_or()
 {
@@ -50,12 +61,7 @@ Mer::ParserNode * Mer::Expr::expr()
 	while (token_stream.this_token()->get_tag() == PLUS || token_stream.this_token()->get_tag() == MINUS)
 	{
 		auto tok = token_stream.this_token();
-		if (token_stream.this_token()->get_tag() == PLUS)
-			token_stream.match(PLUS);
-		else if (token_stream.this_token()->get_tag() == MINUS)
-			token_stream.match(MINUS);
-		else
-			throw Error("expr: syntax error");
+		token_stream.next();
 		result = new BinOp(result, tok, term());
 	}
 	return result;
@@ -76,7 +82,6 @@ Mer::ParserNode * Mer::Expr::nexpr()
 		case LE:
 		case LT:
 			is_bool = true;
-		case ASSIGN:
 			token_stream.next();
 			break;
 		default:
@@ -89,21 +94,34 @@ Mer::ParserNode * Mer::Expr::nexpr()
 
 Mer::ParserNode * Mer::Expr::term()
 {
-	auto result = factor();
+	auto result = member_visit();
 	while (token_stream.this_token()->get_tag() == MUL || token_stream.this_token()->get_tag() == DIV)
 	{
 		auto tok = token_stream.this_token();
-		if (token_stream.this_token()->get_tag() == MUL)
-			token_stream.match(MUL);
-		else if (token_stream.this_token()->get_tag() == DIV)
-			token_stream.match(DIV);
-		else
-			throw Error("tern: syntax error");
-		result = new BinOp(result, tok, factor());
+		token_stream.next();
+		result = new BinOp(result, tok, member_visit());
 	}
 	return result;
 }
 
+ParserNode * Mer::Expr::member_visit()
+{
+	auto result = factor();
+	while (token_stream.this_token()->get_tag() == DOT || token_stream.this_token()->get_tag() == PTRVISIT)
+	{
+		auto tok = token_stream.this_token();
+		token_stream.next();
+		auto member_id = token_stream.this_token();
+		token_stream.match(ID);
+		size_t type_code = result->get_type();
+		// find struct info
+		auto ustruct = find_ustructure_t(type_code+(type_code%2-1));
+		// find member index and type;
+		auto seeker = ustruct->get_member_info(Id::get_value(member_id));
+		result = new Index(result, seeker.second, seeker.first);
+	}
+	return result;
+}
 Mer::ParserNode * Mer::Expr::factor( )
 {
 	auto result = token_stream.this_token();
@@ -188,6 +206,8 @@ Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r):left(l), op(o), right(
 {
 	if (l->get_type() != r->get_type())
 	{ 
+		if (l->get_type() % 2 != 1 || r->get_type() % 2 != 1)
+			return;
 		right = new Cast(r, l->get_type());
 	}
 }
@@ -296,29 +316,6 @@ Mer::Mem::Object Mer::UnaryOp::execute()
 	}
 }
 
-Mer::Assign::Assign(AssignType a, ParserNode* l, Token* o, ParserNode* r) :asType(a), left(l), op(o), right(r) {
-	if (l->get_type() != r->get_type())
-		right =new Cast(r, l->get_type());
-}
-
-Mem::Object Mer::Assign::execute()
-{
-	switch (asType)
-	{
-	case Mer::Assign::None:
-		return left->execute()->operator=(right->execute());
-	case Mer::Assign::Add:
-		return left->execute()->operator+=(right->execute());
-	case Mer::Assign::Sub:
-		return left->execute()->operator-=(right->execute());
-	case Mer::Assign::Div:
-		return left->execute()->operator/=(right->execute());
-	case Mer::Assign::Mul:
-		return left->execute()->operator*=(right->execute());
-	default:
-		throw Error("unkonwn assignment type");
-	}
-}
 
 Mer::InitList::InitList(size_t t,size_t sz):type(t),size(sz)
 {
@@ -444,6 +441,10 @@ Mer::NewExpr::NewExpr()
 		auto _result = find_ustructure_t(type_code);
 		expr = new StructureInitList(_result->mapping,type_code);
 	}
+	else if (token_stream.this_tag() == SEMI)
+	{
+		expr = new LConV(Mem::create_var_t(type_code),type_code);
+	}
 	if (expr->get_type() != type_code)
 	{
 		throw Error("new-type not matched from " + type_to_string(expr->get_type())+" to "+type_to_string(type_code));
@@ -497,7 +498,9 @@ Mem::Object Mer::RmRef::execute()
 Mer::Delete::Delete()
 {
 	token_stream.match(DELETE);
-	expr =(new Expr())->root();
+	auto tmp = new Expr();
+	expr = tmp->root();
+	delete expr;
 }
 
 Mem::Object Mer::Delete::execute()

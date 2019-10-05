@@ -1,6 +1,6 @@
 /*
-* MIT License
-* Copyright (c) 2019 Htto Hu
+*	MIT License
+*	Copyright (c) 2019 Htto Hu
 */
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
@@ -46,66 +46,10 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	func->set_index(index);
 	return func->run(tmp);
 }
-// How to split the method into some smaller functions?? 6-7-18
-Mer::Assign::AssignType _token_to_assType()
-{
-	using namespace Mer;
-	switch (token_stream.this_tag())
-	{
-	case ASSIGN:
-		return Assign::AssignType::None;
-	case SADD:
-		return Assign::AssignType::Add;
-	case SSUB:
-		return Assign::AssignType::Sub;
-	case SMUL:
-		return Assign::AssignType::Mul;
-	case SDIV:
-		return Assign::AssignType::Div;
-	default:
-		return Assign::AssignType::Null;
-	}
-}
 
-Mer::ParserNode* Mer::Parser::parse_member(WordRecorder* var_info, size_t offset = 0)
-{
-	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
-	size_t var_type = var_info->get_type();
-	// -> 
-	bool ptr_visit = token_stream.this_tag() == PTRVISIT;
-	if (ptr_visit)
-	{
-		token_stream.match(PTRVISIT);
-		var_type--;
-	}
-	else
-		token_stream.match(DOT);
-	std::string member_name = Id::get_value(token_stream.this_token());
-	auto usinfo = find_ustructure_t(var_type);
-	auto member_info = usinfo->mapping.find(member_name);
-	if (member_info == usinfo->mapping.end())
-		throw Error("member " + member_name + " no found");
-	auto member_type = usinfo->STMapping.find(member_name);
-	token_stream.match(ID);
-	return new Index(new Variable(var_info->get_type(), pos), member_info->second, member_type->second);
-}
-
-Mer::ParserNode* Mer::Parser::parse_member_glo(WordRecorder* var_info, size_t offset)
-{
-	size_t pos = static_cast<VarIdRecorder*>(var_info)->pos + offset;
-	token_stream.match(DOT);
-	std::string member_name = Id::get_value(token_stream.this_token());
-	auto usinfo = find_ustructure_t(var_info->get_type());
-	auto member_info = usinfo->mapping.find(member_name);
-	if (member_info == usinfo->mapping.end())
-		throw Error("member " + member_name + " no found");
-	token_stream.match(ID);
-	return new Index(new GVar(var_info, offset), member_info->second);
-}
 
 Mer::ParserNode* Mer::Parser::parse_id()
 {
-	ParserNode* ret = nullptr;
 	auto id = token_stream.this_token();
 	auto result = this_namespace->sl_table->find(Id::get_value(id));
 	if (result == nullptr)
@@ -113,52 +57,35 @@ Mer::ParserNode* Mer::Parser::parse_id()
 		auto target_namespace = kill_namespaces();
 		if (target_namespace == nullptr)
 			throw Error("Merdog is broken");
-		ret = _parse_id_wn(target_namespace);
-		return ret;
+		return _parse_id_wn(target_namespace);
 	}
 	switch (result->es)
 	{
 	case ESymbol::SGVAR:
 	{
-		ret = parse_glo(result);
-		break;
+		return parse_glo(result);
 	}
 	case ESymbol::SSTRUCTURE:
 	{
-		return var_decl();;
+		return var_decl();
 	}
 	case ESymbol::STYPE:// Build-in Type but not basic type 
 	{
 		return static_cast<BuildInClass*>(result)->create_var();
 	}
 	case ESymbol::SFUN:
-		ret = parse_function_call(this_namespace);
-		break;
+		return parse_function_call(this_namespace);
 	case ESymbol::SARRAY:
 	case ESymbol::SVAR:
-		ret = parse_var(result);
-		break;
+		return parse_var(result);
 	default:
 	{
 		auto target_namespace = kill_namespaces();
 		if (target_namespace == nullptr)
 			throw Error("unsupported id type");
-		ret = _parse_id_wn(target_namespace);
-		return ret;
+		return _parse_id_wn(target_namespace);
 	}
 	}
-	//std::cout << "This Token:" << token_stream.this_token()->to_string();
-	Mer::Assign::AssignType assignment_type = _token_to_assType();
-	if (_token_to_assType() == Assign::AssignType::Null)
-	{
-		return ret;
-	}
-	token_stream.next();
-	auto expr = new Expr();
-	auto node = new Assign(assignment_type, ret, id, expr->root());
-	expr->tree = nullptr;
-	delete expr;
-	return node;
 }
 
 Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
@@ -167,11 +94,6 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 	token_stream.match(ID);
 	switch (token_stream.this_tag())
 	{
-	case PTRVISIT:
-	case DOT:
-	{
-		return parse_member(var_info);
-	}
 	case LSB:
 	{
 		token_stream.back();
@@ -186,54 +108,22 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 
 Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 {
-	ParserNode* ret = nullptr;
 	auto id = token_stream.this_token();
 	auto result = names->sl_table->find(Id::get_value(id));
 	if (result == nullptr)
 		throw Error(id->to_string() + " no found");
 	switch (result->es)
 	{
-		/*
-	case ESymbol::SSTRUCTURE:
-	{
-		ret = build_init_list(names);
-		break;
-	}*/
 	case ESymbol::SFUN:
 
-		ret = parse_function_call(names);
-		break;
+		return parse_function_call(names);
 	case ESymbol::SGVAR:
 	{
-		ret = parse_glo(result);
-		break;
+		return parse_glo(result);
 	}
 	default:
 		throw Error("Unsupported id type");
 	}
-	Assign::AssignType assignment_type;
-	switch (token_stream.this_tag())
-	{
-	case ASSIGN:
-		assignment_type = Assign::AssignType::None;
-		break;
-	case SADD:
-		assignment_type = Assign::AssignType::Add;
-		break;
-	case SSUB:
-		assignment_type = Assign::AssignType::Sub;
-		break;
-	case SMUL:
-		assignment_type = Assign::AssignType::Mul;
-		break;
-	case SDIV:
-		assignment_type = Assign::AssignType::Div;
-		break;
-	default:
-		return ret;
-	}
-	token_stream.next();
-	return new NVModificationAdapter(assignment_type, ret, new Expr());
 }
 
 Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
@@ -335,13 +225,6 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
-		// if the var is a compound var, like Coor
-		if (var_info->get_type() >= USER_TYPE_INDEX)
-		{
-			if (var_info->es == SGVAR)
-				return parse_member_glo(var_info, off);
-			return parse_member(var_info, off);
-		}
 		// if the var is not an array but supports [] operator.
 		if (var_info->es != SARRAY)
 		{
@@ -378,8 +261,6 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
-		if (var_info->get_type() >= USER_TYPE_INDEX)
-			return parse_member_glo(var_info, off);
 		return new GVar(var_info, off);
 	}
 	auto expr = new Expr();

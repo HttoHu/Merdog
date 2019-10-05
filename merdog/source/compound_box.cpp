@@ -72,9 +72,22 @@ void Mer::UStructure::push_new_children(size_t t, std::string id_name)
 	mapping.insert({ id_name,be++ });
 	STMapping.insert({ id_name,t });
 }
+std::pair<size_t, size_t> Mer::UStructure::get_member_info(std::string member_name)
+{
+	auto result = mapping.find(member_name);
+	if (result == mapping.end())
+		throw Error("member " + member_name + " no found!");
+	auto type_result = STMapping.find(member_name);
+	return { type_result->second,result->second };
+}
 std::vector<Mem::Object> Mer::UStructure::init()
 {
-	return init_vec;
+	std::vector<Mem::Object> ret(init_vec.size());
+	for (int i = 0; i < ret.size(); i++)
+	{
+		ret[i] = init_vec[i]->clone();
+	}
+	return ret;
 }
 
 
