@@ -271,6 +271,11 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	return ret;
 }
 
+void Mer::Function::set_function_block()
+{
+
+}
+
 void Mer::SystemFunction::check_param(const std::vector<size_t>& types)
 {
 	if (check_param_type)

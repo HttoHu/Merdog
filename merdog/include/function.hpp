@@ -52,10 +52,11 @@ namespace Mer
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
 		Block *get_block() { return blo; }
 		size_t get_type()override { return type; }
-		
+		void set_function_block();
 	private:
 		size_t param_size;
 		size_t type;
+		std::vector<ParserNode*> stmts;
 		Block *blo;
 	};
 	class SystemFunction :public FunctionBase 

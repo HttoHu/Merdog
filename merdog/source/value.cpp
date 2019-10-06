@@ -45,7 +45,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	std::vector<Mem::Object> tmp;
 	for (const auto& a : argument)
 	{
-		tmp.push_back(a->execute());
+		tmp.push_back(a->execute()->clone());
 	}
 	func->set_index(index);
 	return func->run(tmp);
