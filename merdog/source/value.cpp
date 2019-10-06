@@ -51,6 +51,17 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	return func->run(tmp);
 }
 
+std::string Mer::FunctionCall::to_string()
+{
+	std::string str="function_pos:";
+	str += std::to_string(func->index);
+	str += "(";
+	for (auto &a : argument)
+		str += a->to_string();
+	str += ")";
+	return str;
+}
+
 
 Mer::ParserNode* Mer::Parser::parse_id()
 {

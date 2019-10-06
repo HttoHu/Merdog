@@ -53,4 +53,26 @@ namespace Mer
 		mem.end_block();
 		return nullptr;
 	}
+	Mem::Object IfTrueToAOrB::execute()
+	{
+		if (std::static_pointer_cast<Mem::Bool>(expr->execute())->_value())
+		{ 
+			*pc = *true_tag-1;
+		}
+		else
+			*pc = *false_tag-1;
+		return nullptr;
+	}
+	std::string IfTrueToAOrB::to_string()
+	{
+		return "if " + expr->to_string() + " is true goto " + std::to_string(*true_tag) + " or " + std::to_string(*false_tag);
+	}
+	Mem::Object IfWithJmpTable::execute()
+	{
+		for (auto &a : jmp_table)
+		{
+			*pc = a.second;
+		}
+		return nullptr;
+	}
 }

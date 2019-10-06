@@ -4,6 +4,7 @@
 */
 #include "../include/block.hpp"
 #include "../include/memory.hpp"
+std::vector<Mer::ParserNode*> *Mer::current_ins_table=nullptr;
 void Mer::Block::new_block()
 {
 	mem.new_block();

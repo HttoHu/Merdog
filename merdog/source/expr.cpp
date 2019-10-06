@@ -298,6 +298,11 @@ size_t Mer::BinOp::get_type()
 	return left->get_type();
 }
 
+std::string Mer::BinOp::to_string()
+{
+	return left->to_string() + op->to_string() + right->to_string();
+}
+
 Mer::Mem::Object Mer::UnaryOp::execute()
 {
 	switch (op->get_tag())

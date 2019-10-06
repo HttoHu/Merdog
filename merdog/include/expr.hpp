@@ -62,6 +62,7 @@ namespace Mer
 		BinOp(ParserNode* l, Token* o, ParserNode* r);
 		Mem::Object execute()override;
 		size_t get_type()override;
+		std::string to_string()override;
 		virtual ~BinOp()
 		{
 			delete left;
@@ -80,6 +81,9 @@ namespace Mer
 		size_t get_type()override
 		{
 			return expr->get_type();
+		}
+		std::string to_string()override {
+			return op->to_string() + expr->to_string();
 		}
 		virtual ~UnaryOp()
 		{
@@ -104,6 +108,7 @@ namespace Mer
 		{
 			return tree->execute();
 		}
+		std::string to_string()override { return tree->to_string(); }
 		ParserNode* root() { return tree; }
 		bool constant()const override
 		{

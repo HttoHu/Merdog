@@ -41,7 +41,7 @@ namespace Mer
 	}
 	bool & global_stmt()
 	{
-		static bool ret = true;
+		static bool ret = false;
 		return ret;
 	}
 }
@@ -82,6 +82,30 @@ Program* Mer::Parser::program()
 		}
 	}
 
+}
+
+Mer::ParserNode * Mer::Parser::get_node()
+{
+	ParserNode* node;
+	switch (token_stream.this_tag())
+	{
+	case SWITCH:
+		node = switch_statement();
+		break;
+	case FOR:
+		node = for_statement();
+		break;
+	case WHILE:
+		node = while_statement();
+		break;
+	case IF:
+		node = if_statement();
+		break;
+	default:
+		node = statement();
+		break;
+	}
+	return node;
 }
 
 Block* Mer::Parser::block()

@@ -10,7 +10,9 @@
 #include "../include/parser.hpp"
 #include "../include/clib/maths.hpp"
 
+std::vector<size_t *> Mer::_pcs;
 std::string Mer::output_buff = "";
+std::vector<std::pair<Mer::PosPtr,Mer::PosPtr>> Mer::_nearest_loop_pos;
 std::string Mer::run_interpreter(const std::string&file_content)
 {
 	output_buff = "";
@@ -37,4 +39,23 @@ std::string Mer::run_interpreter(const std::string&file_content)
 		return ret;
 	}
 	return output_buff;
+}
+
+void Mer::new_loop(PosPtr a, PosPtr b)
+{
+	_nearest_loop_pos.push_back(std::make_pair(a,b));
+}
+
+void Mer::end_loop()
+{
+	_nearest_loop_pos.pop_back();
+}
+
+Mer::PosPtr & Mer::loop_start()
+{
+	return _nearest_loop_pos.back().first;
+}
+Mer::PosPtr & Mer::loop_end()
+{
+	return _nearest_loop_pos.back().second;
 }

@@ -54,6 +54,9 @@ namespace Mer
 	public:
 		LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t);
 		Mem::Object execute()override;
+		std::string to_string()override {
+			return type_to_string(type);
+		}
 	private:
 		size_t pos;
 		size_t sum;
@@ -109,6 +112,7 @@ namespace Mer
 	namespace Parser
 	{
 		Program* program();
+		ParserNode* get_node();
 		Block* block();
 		Block* pure_block();
 		ParserNode *statement();

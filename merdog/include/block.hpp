@@ -6,6 +6,7 @@ namespace Mer
 {
 	class Function;
 	class Return;
+	extern std::vector<ParserNode*> *current_ins_table;
 	class Block:public ParserNode
 	{
 	public:
@@ -21,5 +22,4 @@ namespace Mer
 		// for function;
 		Mem::Object ret=nullptr;
 	};
-
 }

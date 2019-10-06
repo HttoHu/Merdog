@@ -11,6 +11,7 @@
 #include "../include/clib/merdog_io.hpp"
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
+#include "../include/loop_statement.hpp"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -72,7 +73,8 @@ int main()
 		Mer::set_utility();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
-		Mer::Parser::program()->execute();
+		Mer::Parser::demo();
+		//Mer::Parser::program()->execute();
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) * 1000 / CLK_TCK << " ms";
 	}

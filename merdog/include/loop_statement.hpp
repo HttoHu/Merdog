@@ -2,6 +2,7 @@
 #include "parser.hpp"
 namespace Mer
 {
+	using PosPtr = std::shared_ptr<size_t>;
 	class Expr;
 	class Word :public ParserNode
 	{
@@ -34,15 +35,23 @@ namespace Mer
 		ParserNode *step_action;
 		Block *blo;
 	};
-	class DoWhile :public ParserNode
+	class Goto :public ParserNode
 	{
 	public:
-		Mem::Object execute()override;
-		Expr* condition;
-		Block* blo;
+		Goto(size_t *_index, PosPtr _target) :index(_index),target(_target) {}
+		Mem::Object execute();
+		std::string to_string()override;
+	private:
+		size_t *index;
+		PosPtr target;
 	};
 	namespace Parser
 	{
+//pdel
+		void do_while();
+		void demo();
+		void build_while();
+		void build_if();
 		ParserNode *while_statement();
 		ParserNode * for_statement();
 	}

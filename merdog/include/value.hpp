@@ -26,7 +26,7 @@ namespace Mer
 		}
 		std::string to_string()override
 		{
-			return "num";//tok->to_string();
+			return obj->to_string();//tok->to_string();
 		}
 		bool constant()const override
 		{
@@ -72,6 +72,10 @@ namespace Mer
 		Variable(size_t _type, size_t _pos) :type(_type), pos(_pos) {}
 		size_t get_type()override;
 		size_t get_pos()override;
+		std::string to_string()override
+		{
+			return "(" + type_to_string(type) + ")" + std::to_string(pos);
+		}
 		Mem::Object execute()override;
 	private:
 		size_t type;
@@ -83,6 +87,7 @@ namespace Mer
 		FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * fun, std::vector<Expr*>& exprs);
 		size_t get_type()override;
 		Mem::Object execute()override;
+		std::string to_string()override;
 	private:
 		size_t index;
 		FunctionBase * func;
