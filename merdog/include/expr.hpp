@@ -115,8 +115,6 @@ namespace Mer
 			return false;
 		}
 		virtual ~Expr() {
-			if (tree != nullptr)
-				delete tree;
 		}
 		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
 		bool is_bool = true;

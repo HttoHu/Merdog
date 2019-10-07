@@ -11,12 +11,13 @@
 #include "../include/environment.hpp"
 namespace Mer
 {
-	extern std::vector<ParserNode*> *current_ins_table;
-	extern std::vector<size_t *> _pcs;
+	extern std::vector<ParserNode*>* current_ins_table;
+	extern std::vector<size_t*> _pcs;
 	namespace Parser
 	{
 #pragma region NEW
-
+		void switch_driver();
+		void build_for();
 		void public_part()
 		{
 			while (token_stream.this_tag() != END)
@@ -35,6 +36,12 @@ namespace Mer
 					token_stream.match(CONTINUE);
 					token_stream.match(SEMI);
 					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
+					break;
+				case FOR:
+					build_for();
+					break;
+				case SWITCH:
+					switch_driver();
 					break;
 				case WHILE:
 					build_while();
@@ -81,9 +88,9 @@ namespace Mer
 			_pcs.push_back(new size_t(0));
 			do_while();
 			for (int i = 0; i < current_ins_table->size(); i += 1)
-				 std::cout << "<Line:" + std::to_string(i) + ">" << (*current_ins_table)[i]->to_string() << std::endl;
+				std::cout << "<Line:" + std::to_string(i) + ">" << (*current_ins_table)[i]->to_string() << std::endl;
 			current_ins_table->push_back(new NonOp());
-			size_t *pc = _pcs.back();
+			size_t* pc = _pcs.back();
 			time_t s = clock();
 			for (*pc = 0; *pc < current_ins_table->size(); (*pc)++)
 			{
@@ -120,7 +127,7 @@ namespace Mer
 		{
 			token_stream.match(IF);
 			token_stream.match(LPAREN);
-			PosPtr end_pos=std::make_shared<size_t>(0);
+			PosPtr end_pos = std::make_shared<size_t>(0);
 			Expr* node = new Expr();
 			token_stream.match(RPAREN);
 			// new block
@@ -162,39 +169,47 @@ namespace Mer
 				token_stream.match(END);
 				mem.end_block();
 				this_namespace->sl_table->end_block();
-				current_ins_table->push_back(new Goto(_pcs.back(), std::make_shared<size_t>(current_ins_table->size()+1)));
+				current_ins_table->push_back(new Goto(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1)));
 			}
 			else
 				*end_pos = current_ins_table->size();
 			auto tmp = new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL);
-			iwjt->jmp_table.push_back({tmp, end_pos });
+			iwjt->jmp_table.push_back({ tmp, end_pos });
 
 		}
+		template<typename KeyType>
+		void build_switch(PosPtr& default_pos, std::map<KeyType, PosPtr>& case_set);
 		void switch_driver() {
 			token_stream.match(SWITCH);
 			token_stream.match(LPAREN);
 			auto expr = new Expr();
 			token_stream.match(RPAREN);
 			size_t type = expr->get_type();
+			ParserNode* node;
+			if (type == Mem::INT)
+				node = new IntCaseSet(_pcs.back(), expr);
+			else if (type == Mem::STRING)
+				node = new StrCaseSet(_pcs.back(), expr);
+			else
+				throw Error("Unsupported case type!");
+			current_ins_table->push_back(node);
 			switch (type)
 			{
 			case Mem::BasicType::INT:
-				build_switch<Mem::Int>(expr);
+				build_switch<int>(static_cast<IntCaseSet*>(node)->default_pos, static_cast<IntCaseSet*>(node)->jmp_table);
 				break;
 			case Mem::BasicType::STRING:
-				build_switch<Mem::String>(expr);
+				build_switch<std::string>(static_cast<StrCaseSet*>(node)->default_pos, static_cast<StrCaseSet*>(node)->jmp_table);
 				break;
 			default:
 				throw Error("unsupported type to switch");
 			}
 		}
 		template<typename KeyType>
-		void build_switch(ParserNode *expr){
+		void build_switch(PosPtr& default_pos, std::map<KeyType, PosPtr>& case_set) {
 			PosPtr end_pos = std::make_shared<size_t>(0);
-			auto case_set = new CaseSet<KeyType>(_pcs.back(), expr);
+			default_pos = end_pos;
 			token_stream.match(BEGIN);
-			size_t current_line = 0;
-			bool have_default = false;
 			mem.new_block();
 			this_namespace->sl_table->new_block();
 			while (token_stream.this_tag() != END)
@@ -204,65 +219,130 @@ namespace Mer
 				{
 				case DEFAULT:
 					token_stream.match(DEFAULT);
-					default_line = current_line;
-					have_default = true;
 					token_stream.match(COLON);
-					continue;
+					default_pos = std::make_shared<size_t>(current_ins_table->size() - 1);
+					break;
 				case CASE:
 					token_stream.match(CASE);
 					if (typeid(KeyType) == typeid(int))
 					{
 						int v = Mer::Integer::get_value(token_stream.this_token());
-						tag_map.insert({ *(KeyType*)(&v),current_line });
+						case_set.insert({ *(KeyType*)(&v),std::make_shared<size_t>(current_ins_table->size() - 1) });
 					}
 					else if (typeid(KeyType) == typeid(std::string))
 					{
 						std::string v = Mer::String::get_value(token_stream.this_token());
-						tag_map.insert({ *(KeyType*)(&v),current_line });
+						case_set.insert({ *(KeyType*)(&v),std::make_shared<size_t>(current_ins_table->size() - 1) });
 					}
 					else
 						throw Error("unsupported case tag");
 					token_stream.next();
 					token_stream.match(COLON);
 					continue;
-				case BEGIN:
-					node = Parser::block();
-					break;
-				case FOR:
-					node = Parser::for_statement();
-					break;
 				case DO:
+					do_while();
+					break;
 				case WHILE:
-					node = Parser::while_statement();
+					build_while();
 					break;
 				case SWITCH:
-					node = Parser::switch_statement();
+					switch_driver();
+					break;
+				case FOR:
+					build_for();
 					break;
 				case IF:
-					node = Parser::if_statement();
+					build_if();
 					break;
 				case BREAK:
 					token_stream.match(BREAK);
-					node = new Break(&ins_index);
-					break_vec.push_back(static_cast<Break*>(node));
 					token_stream.match(SEMI);
+					current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
+					break;
+				case CONTINUE:
+					token_stream.match(CONTINUE);
+					token_stream.match(SEMI);
+					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
 					break;
 				default:
-					node = Parser::statement();
+					current_ins_table->push_back(statement());
 					break;
 				}
-				current_line++;
-				ins_table.push_back(node);
+			}
+			token_stream.match(END);
+			mem.end_block();
+			this_namespace->sl_table->end_block();
+			*end_pos = current_ins_table->size();
+		}
+		/*
+			var_part;
+			goto t;
+		start	    step expr;
+		t	if.... x:y
+			node;
+			node;
+			goto start;
+
+		*/
+		void build_for()
+		{
+			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
+
+			PosPtr end_pos = std::make_shared<size_t>(0);
+			// register the start_pos and end_pos to environment
+			ParserNode* compare_part;
+			// new block
+			mem.new_block();
+			this_namespace->sl_table->new_block();
+
+			new_loop(start_pos, end_pos);
+			token_stream.match(FOR);
+			token_stream.match(LPAREN);
+			if(token_stream.this_tag()!=SEMI)
+			{ 
+				current_ins_table->push_back(var_decl());
+				++*start_pos;
+			}
+			token_stream.match(SEMI);
+			if (token_stream.this_tag() == SEMI)
+			{
+				compare_part = new LConV(std::make_shared<Mem::Bool>(true), Mem::BOOL);
+			}
+			else
+			{
+				compare_part = Expr().root();
+			}
+			token_stream.match(SEMI);
+			if (token_stream.this_tag() != RPAREN)
+			{
+				++* start_pos;
+				current_ins_table->push_back(new Goto(_pcs.back(), std::make_shared<size_t>(*start_pos + 1)));
+				// start pos is step
+				current_ins_table->push_back(Expr().root());
+			}
+			token_stream.match(RPAREN);
+
+			token_stream.match(BEGIN);
+
+			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(current_ins_table->size()+1), end_pos, compare_part));
+			public_part();
+			current_ins_table->push_back(new Goto(_pcs.back(), start_pos));
+			token_stream.match(END);
+			*end_pos = current_ins_table->size();
+			// end_block, block;
+			end_loop();
+			mem.end_block();
+			this_namespace->sl_table->end_block();
 		}
 #pragma endregion
-		Mer::ParserNode * while_statement()
+		Mer::ParserNode* while_statement()
 		{
 			if (token_stream.this_tag() == DO)
 			{
 				do_while();
 				return nullptr;
 			}
-			While *ret = new While();
+			While* ret = new While();
 			token_stream.match(WHILE);
 			token_stream.match(LPAREN);
 			ret->condition = new Expr();
@@ -270,11 +350,11 @@ namespace Mer
 			ret->blo = block();
 			return ret;
 		}
-		ParserNode * for_statement()
+		ParserNode* for_statement()
 		{
 			mem.new_block();
 			this_namespace->sl_table->new_block();
-			For *ret = new For();
+			For* ret = new For();
 			token_stream.match(FOR);
 			token_stream.match(LPAREN);
 			ret->init = statement();
@@ -288,6 +368,19 @@ namespace Mer
 			this_namespace->sl_table->end_block();
 			return ret;
 		}
+	}
+	Mem::Object IntCaseSet::execute()
+	{
+		auto result = jmp_table.find(Mem::get_raw<int>(expr->execute()));
+		if (result == jmp_table.end())
+			* pc = *default_pos;
+		else
+			*pc = *(result->second);
+		return nullptr;
+	}
+	std::string IntCaseSet::to_string()
+	{
+		return std::string();
 	}
 	Mem::Object For::execute()
 	{
@@ -349,5 +442,14 @@ namespace Mer
 	std::string Continue::to_string()
 	{
 		return "continue " + std::to_string(*target - 1);
+	}
+	Mem::Object StrCaseSet::execute()
+	{
+		auto result = jmp_table.find(Mem::get_raw<std::string>(expr->execute()));
+		if (result == jmp_table.end())
+			* pc = *default_pos;
+		else
+			*pc = *(result->second);
+		return nullptr;
 	}
 }

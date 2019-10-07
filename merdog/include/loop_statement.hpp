@@ -1,5 +1,7 @@
 #pragma once
 #include "parser.hpp"
+#include <memory>
+#include <map>
 namespace Mer
 {
 	using PosPtr = std::shared_ptr<size_t>;
@@ -55,24 +57,28 @@ namespace Mer
 		size_t *index;
 		PosPtr target;
 	};
-	template<typename Key>
-	class CaseSet: public ParserNode
+	class IntCaseSet: public ParserNode
 	{
 	public:
-		CaseSet(size_t *_pc,Expr* _expr) :pc(_pc),expr(_expr) {}
-		Mem::Object execute()override
-		{
-			auto result = jmp_table.find(expr->execute());
-			if (result == jmp_table.end())
-				*pc = *default_pos;
-			else
-				*pc = *result.second;
-		}
-		std::map<Key, PosPtr> jmp_table;
+		IntCaseSet(size_t *_pc,ParserNode* _expr) :pc(_pc),expr(_expr) {}
+		std::map<int, PosPtr> jmp_table;
+		Mem::Object execute()override;
+		std::string to_string()override;
 		size_t *pc;
 		PosPtr default_pos;
 	private:
-		Expr* expr;
+		ParserNode* expr;
+	};
+	class StrCaseSet : public ParserNode
+	{
+	public:
+		StrCaseSet(size_t* _pc, ParserNode* _expr) :pc(_pc), expr(_expr) {}
+		std::map<std::string, PosPtr> jmp_table;
+		Mem::Object execute()override;
+		size_t* pc;
+		PosPtr default_pos;
+	private:
+		ParserNode* expr;
 	};
 	namespace Parser
 	{
