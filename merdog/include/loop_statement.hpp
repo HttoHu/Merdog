@@ -63,7 +63,7 @@ namespace Mer
 		Mem::Object execute()override
 		{
 			auto result = jmp_table.find(expr->execute());
-			if (result == jmp_table.end(_pcs.back()))
+			if (result == jmp_table.end())
 				*pc = *default_pos;
 			else
 				*pc = *result.second;
