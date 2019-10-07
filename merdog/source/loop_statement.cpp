@@ -170,7 +170,90 @@ namespace Mer
 			iwjt->jmp_table.push_back({tmp, end_pos });
 
 		}
-
+		void switch_driver() {
+			token_stream.match(SWITCH);
+			token_stream.match(LPAREN);
+			auto expr = new Expr();
+			token_stream.match(RPAREN);
+			size_t type = expr->get_type();
+			switch (type)
+			{
+			case Mem::BasicType::INT:
+				build_switch<Mem::Int>(expr);
+				break;
+			case Mem::BasicType::STRING:
+				build_switch<Mem::String>(expr);
+				break;
+			default:
+				throw Error("unsupported type to switch");
+			}
+		}
+		template<typename KeyType>
+		void build_switch(ParserNode *expr){
+			PosPtr end_pos = std::make_shared<size_t>(0);
+			auto case_set = new CaseSet<KeyType>(_pcs.back(), expr);
+			token_stream.match(BEGIN);
+			size_t current_line = 0;
+			bool have_default = false;
+			mem.new_block();
+			this_namespace->sl_table->new_block();
+			while (token_stream.this_tag() != END)
+			{
+				ParserNode* node;
+				switch (token_stream.this_tag())
+				{
+				case DEFAULT:
+					token_stream.match(DEFAULT);
+					default_line = current_line;
+					have_default = true;
+					token_stream.match(COLON);
+					continue;
+				case CASE:
+					token_stream.match(CASE);
+					if (typeid(KeyType) == typeid(int))
+					{
+						int v = Mer::Integer::get_value(token_stream.this_token());
+						tag_map.insert({ *(KeyType*)(&v),current_line });
+					}
+					else if (typeid(KeyType) == typeid(std::string))
+					{
+						std::string v = Mer::String::get_value(token_stream.this_token());
+						tag_map.insert({ *(KeyType*)(&v),current_line });
+					}
+					else
+						throw Error("unsupported case tag");
+					token_stream.next();
+					token_stream.match(COLON);
+					continue;
+				case BEGIN:
+					node = Parser::block();
+					break;
+				case FOR:
+					node = Parser::for_statement();
+					break;
+				case DO:
+				case WHILE:
+					node = Parser::while_statement();
+					break;
+				case SWITCH:
+					node = Parser::switch_statement();
+					break;
+				case IF:
+					node = Parser::if_statement();
+					break;
+				case BREAK:
+					token_stream.match(BREAK);
+					node = new Break(&ins_index);
+					break_vec.push_back(static_cast<Break*>(node));
+					token_stream.match(SEMI);
+					break;
+				default:
+					node = Parser::statement();
+					break;
+				}
+				current_line++;
+				ins_table.push_back(node);
+		}
 #pragma endregion
 		Mer::ParserNode * while_statement()
 		{

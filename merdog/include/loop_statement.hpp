@@ -55,6 +55,25 @@ namespace Mer
 		size_t *index;
 		PosPtr target;
 	};
+	template<typename Key>
+	class CaseSet: public ParserNode
+	{
+	public:
+		CaseSet(size_t *_pc,Expr* _expr) :pc(_pc),expr(_expr) {}
+		Mem::Object execute()override
+		{
+			auto result = jmp_table.find(expr->execute());
+			if (result == jmp_table.end(_pcs.back()))
+				*pc = *default_pos;
+			else
+				*pc = *result.second;
+		}
+		std::map<Key, PosPtr> jmp_table;
+		size_t *pc;
+		PosPtr default_pos;
+	private:
+		Expr* expr;
+	};
 	namespace Parser
 	{
 //pdel
