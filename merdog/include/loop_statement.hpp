@@ -35,6 +35,16 @@ namespace Mer
 		ParserNode *step_action;
 		Block *blo;
 	};
+	class Continue :public ParserNode
+	{
+	public:
+		Continue(size_t *_index, PosPtr _target) :index(_index),target(_target) {}
+		Mem::Object execute();
+		std::string to_string()override;
+	private:
+		size_t *index;
+		PosPtr target;
+	};
 	class Goto :public ParserNode
 	{
 	public:

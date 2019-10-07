@@ -7,6 +7,7 @@
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
 #include "../include/if.hpp"
+#include <ctime>
 #include "../include/environment.hpp"
 namespace Mer
 {
@@ -22,6 +23,9 @@ namespace Mer
 			{
 				switch (token_stream.this_tag())
 				{
+				case IF:
+					build_if();
+					break;
 				case BREAK:
 					token_stream.match(BREAK);
 					token_stream.match(SEMI);
@@ -30,7 +34,7 @@ namespace Mer
 				case CONTINUE:
 					token_stream.match(CONTINUE);
 					token_stream.match(SEMI);
-					current_ins_table->push_back(new Goto(_pcs.back(), loop_start()));
+					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
 					break;
 				case WHILE:
 					build_while();
@@ -47,7 +51,7 @@ namespace Mer
 		void do_while()
 		{
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
-			PosPtr end_pos=std::make_shared<size_t>(0);
+			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
 			new_loop(start_pos, end_pos);
 			token_stream.match(DO);
@@ -61,8 +65,8 @@ namespace Mer
 			token_stream.match(LPAREN);
 			Expr* node = new Expr();
 			token_stream.match(RPAREN);
-			
-			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos), std::make_shared<size_t>(current_ins_table->size() + 1),node));
+
+			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos), std::make_shared<size_t>(current_ins_table->size() + 1), node));
 			*end_pos = current_ins_table->size();
 			// delete the record of start_pos and end_pos, cause the two var is thoroughly used.
 			end_loop();
@@ -76,40 +80,24 @@ namespace Mer
 			current_ins_table = new std::vector<Mer::ParserNode*>;
 			_pcs.push_back(new size_t(0));
 			do_while();
-			for(int i=0;i<current_ins_table->size();i+=1)
-				std::cout<<"<Line:"+std::to_string(i)+">"<< (*current_ins_table)[i]->to_string()<<std::endl;
+			for (int i = 0; i < current_ins_table->size(); i += 1)
+				 std::cout << "<Line:" + std::to_string(i) + ">" << (*current_ins_table)[i]->to_string() << std::endl;
 			current_ins_table->push_back(new NonOp());
 			size_t *pc = _pcs.back();
+			time_t s = clock();
 			for (*pc = 0; *pc < current_ins_table->size(); (*pc)++)
 			{
 				(*current_ins_table)[*pc]->execute();
 			}
+			time_t e = clock();
+			std::cout << "\ntime:" << (double)(e - s) * 1000 / CLK_TCK << " ms";
 		}
 		void build_while()
 		{
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
 			PosPtr end_pos = std::make_shared<size_t>(0);
-			token_stream.match(WHILE);
-			token_stream.match(LPAREN);
-			Expr* node = new Expr();
-			token_stream.match(RPAREN);
-			// new block
-			mem.new_block();
-			this_namespace->sl_table->new_block();
-			token_stream.match(BEGIN);
-			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos+1), end_pos, node));
-			public_part();
-			current_ins_table->push_back(new Goto(_pcs.back(), start_pos));
-			token_stream.match(END);
-			*end_pos = current_ins_table->size();
-			// end_block;
-			mem.end_block();
-			this_namespace->sl_table->end_block();
-		}
-		void build_if()
-		{
-			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
-			PosPtr end_pos = std::make_shared<size_t>(0);
+			// register the start_pos and end_pos to environment
+			new_loop(start_pos, end_pos);
 			token_stream.match(WHILE);
 			token_stream.match(LPAREN);
 			Expr* node = new Expr();
@@ -120,17 +108,73 @@ namespace Mer
 			token_stream.match(BEGIN);
 			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos + 1), end_pos, node));
 			public_part();
+			current_ins_table->push_back(new Goto(_pcs.back(), start_pos));
 			token_stream.match(END);
 			*end_pos = current_ins_table->size();
-			// end_block;
+			// end_block, block;
+			end_loop();
 			mem.end_block();
 			this_namespace->sl_table->end_block();
+		}
+		void build_if()
+		{
+			token_stream.match(IF);
+			token_stream.match(LPAREN);
+			PosPtr end_pos=std::make_shared<size_t>(0);
+			Expr* node = new Expr();
+			token_stream.match(RPAREN);
+			// new block
+			mem.new_block();
+			this_namespace->sl_table->new_block();
+			token_stream.match(BEGIN);
+			auto iwjt = new IfWithJmpTable(_pcs.back());
+			current_ins_table->push_back(iwjt);
+			iwjt->jmp_table.push_back({ node,std::make_shared<size_t>(current_ins_table->size()) });
+			public_part();
+			// end_block;
+			token_stream.match(END);
+			mem.end_block();
+			this_namespace->sl_table->end_block();
+			while (token_stream.this_tag() == ELSE_IF)
+			{
+				token_stream.match(ELSE_IF);
+				token_stream.match(LPAREN);
+				auto expr = new Expr();
+				token_stream.match(RPAREN);
+				mem.new_block();
+				this_namespace->sl_table->new_block();
+				token_stream.match(BEGIN);
+				iwjt->jmp_table.push_back({ expr,std::make_shared<size_t>(current_ins_table->size()) });
+				public_part();
+				token_stream.match(END);
+				mem.end_block();
+				this_namespace->sl_table->end_block();
+				current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
+			}
+			if (token_stream.this_tag() == ELSE)
+			{
+				*end_pos = current_ins_table->size();
+				token_stream.match(ELSE);
+				mem.new_block();
+				this_namespace->sl_table->new_block();
+				token_stream.match(BEGIN);
+				public_part();
+				token_stream.match(END);
+				mem.end_block();
+				this_namespace->sl_table->end_block();
+				current_ins_table->push_back(new Goto(_pcs.back(), std::make_shared<size_t>(current_ins_table->size()+1)));
+			}
+			else
+				*end_pos = current_ins_table->size();
+			auto tmp = new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL);
+			iwjt->jmp_table.push_back({tmp, end_pos });
+
 		}
 
 #pragma endregion
 		Mer::ParserNode * while_statement()
 		{
-			if (token_stream.this_tag ()== DO)
+			if (token_stream.this_tag() == DO)
 			{
 				do_while();
 				return nullptr;
@@ -153,9 +197,9 @@ namespace Mer
 			ret->init = statement();
 			ret->condition = new Expr();
 			token_stream.match(SEMI);
-			
+
 			ret->step_action = new Expr();
-			
+
 			token_stream.match(RPAREN);
 			ret->blo = pure_block();
 			this_namespace->sl_table->end_block();
@@ -212,6 +256,15 @@ namespace Mer
 	}
 	std::string Goto::to_string()
 	{
-		return "goto" + std::to_string(*target);
+		return "goto " + std::to_string(*target);
+	}
+	Mem::Object Continue::execute()
+	{
+		*index = *target - 2;
+		return nullptr;
+	}
+	std::string Continue::to_string()
+	{
+		return "continue " + std::to_string(*target - 1);
 	}
 }

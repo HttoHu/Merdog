@@ -71,8 +71,25 @@ namespace Mer
 	{
 		for (auto &a : jmp_table)
 		{
-			*pc = a.second;
+			if (std::static_pointer_cast<Mem::Bool>(a.first->execute())->_value())
+			{
+				*pc = *a.second-1;
+				return nullptr;
+			}
 		}
 		return nullptr;
+	}
+	std::string IfWithJmpTable::to_string()
+	{
+		std::string ret = "if-else";
+		for (auto &a : jmp_table)
+		{
+			ret += "(";
+			ret += a.first->to_string();
+			ret += " : ";
+			ret += std::to_string(*a.second);
+			ret += ")-";
+		}
+		return ret;
 	}
 }

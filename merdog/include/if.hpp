@@ -30,10 +30,12 @@ namespace Mer
 	class IfWithJmpTable :public ParserNode
 	{
 	public:
-		IfWithJmpTable(size_t *_pc, const std::vector<std::pair<Expr*, size_t>>& jt) :pc(_pc), jmp_table(jt) {}
+		IfWithJmpTable(size_t *_pc) :pc(_pc) {}
 		Mem::Object execute()override;
+		std::string to_string()override;
+		std::vector<std::pair<ParserNode*, PosPtr>> jmp_table;
 	private:
 		size_t *pc;
-		std::vector<std::pair<Expr*, size_t>> jmp_table;
+
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "lexer.hpp"
 #include <utility>
+#include <memory>
 namespace Mer
 {
 	using PosPtr = std::shared_ptr<size_t>;
