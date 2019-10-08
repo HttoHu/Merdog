@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		{
 			if (argv[1][0] == '-'&&argv[1][1]=='v')
 			{
-				std::cout << "3.0.5";
+				std::cout << "3.0.6";
 				return 0;
 			}
 		}

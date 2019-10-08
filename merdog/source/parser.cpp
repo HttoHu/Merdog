@@ -38,7 +38,7 @@ namespace Mer
 	}
 	bool & global_stmt()
 	{
-		static bool ret = false;
+		static bool ret = true;
 		return ret;
 	}
 }

@@ -76,8 +76,8 @@ namespace Mer
 		}
 		void build_function_block()
 		{
-			token_stream.match(BEGIN);
 			this_block_size = std::make_shared<size_t>(0);
+			token_stream.match(BEGIN);
 			public_part();
 			*this_block_size = current_ins_table->size();
 			token_stream.match(END);
