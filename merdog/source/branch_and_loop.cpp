@@ -6,16 +6,17 @@
 #include "../include/namespace.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
-#include "../include/if.hpp"
 #include <ctime>
 #include "../include/environment.hpp"
 namespace Mer
 {
+	std::vector<Mer::ParserNode*>* Mer::current_ins_table = nullptr;
+	PosPtr Mer::this_block_size = nullptr;
 	extern std::vector<ParserNode*>* current_ins_table;
 	extern std::vector<size_t*> _pcs;
+	Mem::Object Mer::function_ret=nullptr;
 	namespace Parser
 	{
-#pragma region NEW
 		void switch_driver();
 		void build_for();
 		void public_part()
@@ -37,6 +38,11 @@ namespace Mer
 					token_stream.match(SEMI);
 					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
 					break;
+				case RETURN:
+					token_stream.match(RETURN);
+					token_stream.match(SEMI);
+					current_ins_table->push_back(new Return(_pcs.back(), new Expr()));
+					break;
 				case FOR:
 					build_for();
 					break;
@@ -50,10 +56,32 @@ namespace Mer
 					do_while();
 					break;
 				default:
-					current_ins_table->push_back(get_node());
+					current_ins_table->push_back(statement());
 					break;
 				}
 			}
+		}
+		void build_block()
+		{
+			mem.new_block();
+			this_namespace->sl_table->new_block();
+			this_block_size= std::make_shared<size_t>(0);
+			token_stream.match(BEGIN);
+			public_part();
+			*this_block_size = current_ins_table->size();
+			token_stream.match(END);
+			mem.end_block();
+			this_namespace->sl_table->end_block();
+		}
+		void build_function_block()
+		{
+			token_stream.match(BEGIN);
+			this_block_size = std::make_shared<size_t>(0);
+			public_part();
+			*this_block_size = current_ins_table->size();
+			token_stream.match(END);
+			mem.end_block();
+			this_namespace->sl_table->end_block();
 		}
 		void do_while()
 		{
@@ -82,11 +110,11 @@ namespace Mer
 			this_namespace->sl_table->end_block();
 			token_stream.match(SEMI);
 		}
-		void demo()
+		void branch_and_loop()
 		{
 			current_ins_table = new std::vector<Mer::ParserNode*>;
 			_pcs.push_back(new size_t(0));
-			do_while();
+			public_part();
 			for (int i = 0; i < current_ins_table->size(); i += 1)
 				std::cout << "<Line:" + std::to_string(i) + ">" << (*current_ins_table)[i]->to_string() << std::endl;
 			current_ins_table->push_back(new NonOp());
@@ -264,6 +292,11 @@ namespace Mer
 					token_stream.match(SEMI);
 					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
 					break;
+				case RETURN:
+					token_stream.match(RETURN);
+					token_stream.match(SEMI);
+					current_ins_table->push_back(new Return(_pcs.back(), new Expr()));
+					break;
 				default:
 					current_ins_table->push_back(statement());
 					break;
@@ -334,41 +367,47 @@ namespace Mer
 			mem.end_block();
 			this_namespace->sl_table->end_block();
 		}
-#pragma endregion
-		Mer::ParserNode* while_statement()
+	}
+	Mem::Object IfTrueToAOrB::execute()
+	{
+		if (std::static_pointer_cast<Mem::Bool>(expr->execute())->_value())
 		{
-			if (token_stream.this_tag() == DO)
+			*pc = *true_tag - 1;
+		}
+		else
+			*pc = *false_tag - 1;
+		return nullptr;
+	}
+	std::string IfTrueToAOrB::to_string()
+	{
+		return "if " + expr->to_string() + " is true goto " + std::to_string(*true_tag) + " or " + std::to_string(*false_tag);
+	}
+	Mem::Object IfWithJmpTable::execute()
+	{
+		for (auto& a : jmp_table)
+		{
+			if (std::static_pointer_cast<Mem::Bool>(a.first->execute())->_value())
 			{
-				do_while();
+				*pc = *a.second - 1;
 				return nullptr;
 			}
-			While* ret = new While();
-			token_stream.match(WHILE);
-			token_stream.match(LPAREN);
-			ret->condition = new Expr();
-			token_stream.match(RPAREN);
-			ret->blo = block();
-			return ret;
 		}
-		ParserNode* for_statement()
-		{
-			mem.new_block();
-			this_namespace->sl_table->new_block();
-			For* ret = new For();
-			token_stream.match(FOR);
-			token_stream.match(LPAREN);
-			ret->init = statement();
-			ret->condition = new Expr();
-			token_stream.match(SEMI);
-
-			ret->step_action = new Expr();
-
-			token_stream.match(RPAREN);
-			ret->blo = pure_block();
-			this_namespace->sl_table->end_block();
-			return ret;
-		}
+		return nullptr;
 	}
+	std::string IfWithJmpTable::to_string()
+	{
+		std::string ret = "if-else";
+		for (auto& a : jmp_table)
+		{
+			ret += "(";
+			ret += a.first->to_string();
+			ret += " : ";
+			ret += std::to_string(*a.second);
+			ret += ")-";
+		}
+		return ret;
+	}
+
 	Mem::Object IntCaseSet::execute()
 	{
 		auto result = jmp_table.find(Mem::get_raw<int>(expr->execute()));
@@ -382,57 +421,14 @@ namespace Mer
 	{
 		return std::string();
 	}
-	Mem::Object For::execute()
-	{
-		blo->new_block();
-		for (init->execute();
-			std::static_pointer_cast<Mem::Bool>(condition->execute())->_value();
-			step_action->execute())
-		{
-			try
-			{
-				blo->execute();
-			}
-			catch (Word c)
-			{
-				if (c.type == Word::Type::Break)
-					break;
-				else if (c.type == Word::Type::Continue)
-					continue;
-			}
-		}
-		blo->end_block();
-		return nullptr;
-	}
-	Mem::Object While::execute()
-	{
-		blo->new_block();
-		while (std::static_pointer_cast<Mem::Bool>(condition->execute())->_value())
-		{
-			try
-			{
-				blo->execute();
-			}
-			catch (Word c)
-			{
-				if (c.type == Word::Type::Break)
-					break;
-				else if (c.type == Word::Type::Continue)
-					continue;
-			}
-		}
-		blo->end_block();
-		return nullptr;
-	}
-	Mem::Object Goto::execute()
-	{
-		// when the execute run over, the index will inc 1 so -1 is neccessary
-		*index = *target - 1;
-		return nullptr;
-	}
 	std::string Goto::to_string()
 	{
 		return "goto " + std::to_string(*target);
+	}
+	Mem::Object Goto::execute()
+	{
+		*index = *target - 1;
+		return nullptr;
 	}
 	Mem::Object Continue::execute()
 	{
@@ -450,6 +446,12 @@ namespace Mer
 			* pc = *default_pos;
 		else
 			*pc = *(result->second);
+		return nullptr;
+	}
+	Mem::Object Return::execute()
+	{
+		function_ret = expr->execute();
+		*pc = *this_block_size;
 		return nullptr;
 	}
 }

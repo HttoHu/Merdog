@@ -9,7 +9,7 @@
 #include "../include/function.hpp"
 #include "../include/environment.hpp"
 #include "../include/compound_box.hpp"
-#include "../include/loop_statement.hpp"
+#include "../include/branch_and_loop.hpp"
 using namespace Mer;
 std::vector<ParserNode*> Mer::pre_stmt;
 namespace Mer
@@ -19,12 +19,8 @@ namespace Mer
 	class Block;
 	namespace Parser
 	{
-		ParserNode* while_statement();
-		ParserNode* for_statement();
-		ParserNode* if_statement();
 		ParserNode* statement();
 		Block* block();
-		ParserNode* switch_statement();
 	}
 	Mem::Object Program::execute()
 	{
@@ -32,7 +28,8 @@ namespace Mer
 		{
 			a->execute();
 		}
-		blo->execute();
+		for (*pc = 0; *pc < stmts.size(); ++ * pc)
+			stmts[*pc]->execute();
 		return nullptr;
 	}
 	std::string Program::to_string()
@@ -66,8 +63,10 @@ Program* Mer::Parser::program()
 			auto tmp = token_stream.this_token();
 			token_stream.match(ID);
 			std::string name = Id::get_value(tmp);
-			auto blo = block();
-			ret = new Program(tmp, blo);
+			ret = new Program(tmp);
+			_pcs.push_back(ret->pc);
+			current_ins_table = &(ret->stmts);
+			Parser::build_block();
 			programe_num++;
 			break;
 		}
@@ -84,108 +83,6 @@ Program* Mer::Parser::program()
 
 }
 
-Mer::ParserNode * Mer::Parser::get_node()
-{
-	ParserNode* node;
-	switch (token_stream.this_tag())
-	{
-	case SWITCH:
-		node = switch_statement();
-		break;
-	case FOR:
-		node = for_statement();
-		break;
-	case WHILE:
-		node = while_statement();
-		break;
-	case IF:
-		node = if_statement();
-		break;
-	default:
-		node = statement();
-		break;
-	}
-	return node;
-}
-
-Block* Mer::Parser::block()
-{
-	mem.new_block();
-	this_namespace->sl_table->new_block();
-	token_stream.match(BEGIN);
-	Block* ret = new Block();
-	while (token_stream.this_tag() != END)
-	{
-		ParserNode* node;
-		switch (token_stream.this_tag())
-		{
-		case BEGIN:
-			node = block();
-			break;
-		case SWITCH:
-			node = switch_statement();
-			break;
-		case FOR:
-			node = for_statement();
-			break;
-		case DO:
-		case WHILE:
-			node = while_statement();
-			break;
-		case IF:
-			node = if_statement();
-			break;
-		default:
-			node = statement();
-			break;
-		}
-		ret->ins_table.push_back(node);
-	}
-	token_stream.match(END);
-	mem.end_block();
-	this_namespace->sl_table->end_block();
-	return ret;
-}
-//served for function;
-// !!!! Note that pure_block will run mem.end_block(), but not mem.new_block();
-Block* Mer::Parser::pure_block()
-{
-	token_stream.match(BEGIN);
-	Block* ret = new Block();
-	current_function_block = ret;
-	while (token_stream.this_tag() != END)
-	{
-		ParserNode* node;
-		switch (token_stream.this_tag())
-		{
-		case BEGIN:
-			node = block();
-			break;
-		case SWITCH:
-			node = switch_statement();
-			break;
-		case FOR:
-			node = for_statement();
-			break;
-		case DO:
-		case WHILE:
-			node = while_statement();
-			break;
-		case IF:
-			node = if_statement();
-			break;
-		default:
-			node = statement();
-			break;
-		}
-		ret->ins_table.push_back(node);
-	}
-	token_stream.match(END);
-
-	mem.end_block();
-	return ret;
-}
-
 ParserNode* Mer::Parser::statement()
 {
 	ParserNode* node = nullptr;
@@ -194,30 +91,11 @@ ParserNode* Mer::Parser::statement()
 	case DELETE:
 		node = new Delete();
 		break;
-	case RETURN:
-	{
-		token_stream.match(RETURN);
-		auto expr = new Expr();
-		if (expr->get_type() != this_func_type) {
-			if (!(expr->get_type() % 2 + 1 && this_func_type % 2 + 1))
-				throw Error("return type doesn't correspond with function type");
-		}
-		node = new Return(expr, current_function_block);
-		break;
-	}
 	case BOOL_DECL:
 	case INTEGER_DECL:
 	case REAL_DECL:
 	case STRING_DECL:
 		node = var_decl();
-		break;
-	case BREAK:
-		node = new Word(Word::Break);
-		token_stream.match(BREAK);
-		break;
-	case CONTINUE:
-		node = new Word(Word::Continue);
-		token_stream.match(CONTINUE);
 		break;
 	case PRINT:
 		token_stream.match(PRINT);
@@ -314,14 +192,6 @@ Mem::Object Mer::Print::execute()
 	default:
 		throw Error("print: invalid args");
 	}
-	return nullptr;
-}
-
-Mem::Object Mer::Return::execute() {
-
-	block->index = block->ins_table.size();
-
-	block->ret = expr->execute();
 	return nullptr;
 }
 

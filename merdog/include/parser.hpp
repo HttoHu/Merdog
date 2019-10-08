@@ -1,5 +1,5 @@
 #pragma once
-#include "block.hpp"
+#include "parser_node.hpp"
 namespace Mer
 {
 	extern std::vector<ParserNode*> pre_stmt;
@@ -11,12 +11,13 @@ namespace Mer
 	class Program:public ParserNode
 	{
 	public:
-		Program(Token *id,Block* b):identify(id),blo(b) {}
+		Program(Token *id):identify(id) {}
 		Mem::Object execute()override;
 		std::string to_string()override;
+		std::vector<ParserNode*> stmts;
+		size_t* pc = new size_t(0);
 	private:
 		Token *identify;
-		Block *blo;
 	};
 	class NamePart
 	{
@@ -95,26 +96,9 @@ namespace Mer
 		ParserNode* expr;
 		size_t to_type;
 	};
-	class Return :public ParserNode
-	{
-	public:
-		Return(Expr* e,Block *blo) :expr(e), block(blo) 
-		{
-			if (block == nullptr)
-				throw Error("What hell it was");
-		}
-		Mem::Object execute()override;
-		Expr* get_expr() { return expr; }
-	private:
-		Expr *expr;
-		Block *block;
-	};
 	namespace Parser
 	{
 		Program* program();
-		ParserNode* get_node();
-		Block* block();
-		Block* pure_block();
 		ParserNode *statement();
 		ParserNode *var_decl();
 		size_t get_type();

@@ -44,20 +44,18 @@ namespace Mer
 	class Function : public FunctionBase
 	{
 	public:
-		Function(size_t t, Param *p, Block *bl = nullptr) ;
-		Function(size_t t, Block *bl = nullptr);
-		void reset_block(Block *b);
+		Function(size_t t, Param *p);
+		Function(size_t t);
 		void reser_param(Param *p);
 		Param *param=nullptr;
 		Mem::Object run(std::vector<Mem::Object> &objs)override;
-		Block *get_block() { return blo; }
 		size_t get_type()override { return type; }
 		void set_function_block();
+		std::vector<ParserNode*> stmts;
+		size_t* pc=new size_t(0);
 	private:
 		size_t param_size;
 		size_t type;
-		std::vector<ParserNode*> stmts;
-		Block *blo;
 	};
 	class SystemFunction :public FunctionBase 
 	{

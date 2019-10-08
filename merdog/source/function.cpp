@@ -8,6 +8,8 @@
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"
+#include "../include/environment.hpp"
+#include "../include/branch_and_loop.hpp"
 #define MER3_1_2
 using namespace Mer;
 std::map<std::string, Function*> Mer::function_table;
@@ -129,12 +131,11 @@ void Mer::Parser::build_function()
 		// we use pure_block because we should push the param to the block, 
 		// so we need to create a preserved memory for param.
 		Mer::global_stmt() = false;
-		Block *blo = pure_block();
+		_pcs.push_back(temp->pc);
+		current_ins_table = &(temp->stmts);
+		Parser::build_function_block();
 		Mer::global_stmt() = true;
-		temp->reset_block(blo);
 		temp->is_completed = true;
-		tsymbol_table->end_block();
-
 		return;
 	}
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
@@ -151,14 +152,15 @@ void Mer::Parser::build_function()
 	// create a function and return it.
 	mem.new_block();
 	Param *param = build_param();
-	Function *ret = new Function(rtype, param, nullptr);
+	Function *ret = new Function(rtype, param);
 	this_namespace->functions.insert({ name,ret });
 	Mer::global_stmt() = false;
-	Block *blo = pure_block();
+	_pcs.push_back(ret->pc);
+	current_ins_table = &(ret->stmts);
+	Parser::build_function_block();
+
 	Mer::global_stmt() = true;
-	ret->reset_block(blo);
 	ret->is_completed = true;
-	tsymbol_table->end_block();
 
 }
 
@@ -225,7 +227,6 @@ void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
 			Expr *tmp=new ImplicitConvertion(param_types[i]);
 			tmp->tree=args[i]->tree;
 			args[i] = tmp;
-
 		}
 	}
 }
@@ -235,8 +236,8 @@ void Mer::FunctionBase::set_index(size_t pos)
 	index = (int)pos;
 }
 
-Mer::Function::Function(size_t t, Param * p, Block * bl) :
-	type(t), param(p), blo(bl)
+Mer::Function::Function(size_t t, Param * p) :
+	type(t), param(p)
 {
 	for (const auto &a : param->get_param_table())
 	{
@@ -244,11 +245,8 @@ Mer::Function::Function(size_t t, Param * p, Block * bl) :
 	}
 }
 
-Mer::Function::Function(size_t t, Block * bl) :type(t), blo(bl) {}
+Mer::Function::Function(size_t t) :type(t) {}
 
-void Mer::Function::reset_block(Block * b) {
-	blo = b;
-}
 
 void Mer::Function::reser_param(Param * p)
 {
@@ -266,9 +264,10 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	{
 		mem[mem.get_current()+param_table[i].second] = objs[i];
 	}
-	auto ret = blo->execute();
+	for (*pc = 0; *pc < stmts.size(); ++ * pc)
+		stmts[*pc]->execute();
 	mem.end_func();
-	return ret;
+	return function_ret;
 }
 
 void Mer::Function::set_function_block()
