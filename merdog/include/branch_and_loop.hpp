@@ -6,15 +6,17 @@ namespace Mer
 {
 	using PosPtr = std::shared_ptr<size_t>;
 	extern std::vector<ParserNode*>* current_ins_table;
+	extern size_t current_function_rety;
 	extern PosPtr this_block_size;
 	extern Mem::Object function_ret;
 	class Expr;
 	class Return : public ParserNode
 	{
 	public:
-		Return(size_t *_pc,Expr* _expr) :pc(_pc),expr(_expr) {}
+		Return(size_t* _pc, Expr* _expr);
 		Mem::Object execute()override;
 	private:
+		PosPtr des;
 		size_t* pc;
 		Expr* expr;
 	};

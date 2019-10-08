@@ -13,7 +13,7 @@ namespace Mer
 	{
 		Mem::Object _time_record(std::vector<Mem::Object>& args)
 		{
-			return std::make_shared<Mem::Double>(clock()*1000.0L);
+			return std::make_shared<Mem::Int>(clock());
 		}
 		Mem::Object _random_int(std::vector<Mem::Object>& args)
 		{
@@ -49,7 +49,7 @@ namespace Mer
 			return nullptr;
 		}
 	}
-	SystemFunction* time_record = new SystemFunction(Mem::DOUBLE, _time_record);
+	SystemFunction* time_record = new SystemFunction(Mem::INT, _time_record);
 	SystemFunction* random_int=new SystemFunction(Mem::INT,_random_int);
 	SystemFunction* sleep = new SystemFunction(Mem::BVOID, _sleep);
 	SystemFunction* csystem = new SystemFunction(Mem::BVOID, _system);
@@ -59,7 +59,7 @@ namespace Mer
 
 void Mer::set_utility()
 {
-	mstd->set_new_func("clock", Mer::Mem::DOUBLE, Mer::time_record);
+	mstd->set_new_func("clock", Mer::Mem::INT, Mer::time_record);
 	mstd->set_new_func("rand_int", Mer::Mem::INT, Mer::random_int);
 	mstd->set_new_func("sleep", Mer::Mem::BVOID, Mer::sleep);
 	root_namespace->set_new_func("type", Mer::Mem::BVOID, Mer::type);

@@ -112,6 +112,7 @@ void Mer::Parser::build_function()
 		rtype++;
 	}
 	this_func_type = rtype;
+	current_function_rety = rtype;
 	this_namespace->sl_table->new_block();
 	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.next();
@@ -264,8 +265,10 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	{
 		mem[mem.get_current()+param_table[i].second] = objs[i];
 	}
+	size_t tmp = *pc;
 	for (*pc = 0; *pc < stmts.size(); ++ * pc)
 		stmts[*pc]->execute();
+	*pc = tmp;
 	mem.end_func();
 	return function_ret;
 }

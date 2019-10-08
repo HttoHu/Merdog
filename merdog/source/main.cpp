@@ -27,7 +27,7 @@ std::string get_file_content(const std::string& filename)
 	return file_content;
 }
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 int main(int argc, char* argv[])
 {
 	try

@@ -10,6 +10,7 @@
 #include "../include/environment.hpp"
 namespace Mer
 {
+	size_t Mer::current_function_rety=0;
 	std::vector<Mer::ParserNode*>* Mer::current_ins_table = nullptr;
 	PosPtr Mer::this_block_size = nullptr;
 	extern std::vector<ParserNode*>* current_ins_table;
@@ -40,8 +41,8 @@ namespace Mer
 					break;
 				case RETURN:
 					token_stream.match(RETURN);
-					token_stream.match(SEMI);
 					current_ins_table->push_back(new Return(_pcs.back(), new Expr()));
+					token_stream.match(SEMI);
 					break;
 				case FOR:
 					build_for();
@@ -448,10 +449,16 @@ namespace Mer
 			*pc = *(result->second);
 		return nullptr;
 	}
+	Return::Return(size_t* _pc, Expr* _expr) :pc(_pc), expr(_expr)
+	{
+		if (current_function_rety != expr->get_type())
+			throw Error("return type not matched with function return type");
+		des = this_block_size;
+	}
 	Mem::Object Return::execute()
 	{
 		function_ret = expr->execute();
-		*pc = *this_block_size;
+		*pc = *des;
 		return nullptr;
 	}
 }
