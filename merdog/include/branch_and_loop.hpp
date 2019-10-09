@@ -83,6 +83,7 @@ namespace Mer
 		Mem::Object execute()override;
 		std::string to_string()override;
 		std::vector<std::pair<ParserNode*, PosPtr>> jmp_table;
+		PosPtr end_pos;
 	private:
 		size_t* pc;
 

@@ -1,0 +1,157 @@
+struct Info
+{
+	string name;
+	int id;
+}
+struct Node
+{
+	Info data;
+	Node* next = nullptr;
+}
+Node* head = new Node;
+function void insert(Info i)
+{
+	if (head->next == nullptr)
+	{
+		head->next = new Node;
+		head->next->data = i;
+		return;
+	}
+	Node* tmp = head->next;
+	head->next = new Node;
+	head->next->data = i;
+	head->next->next = tmp;
+}
+function void delete_node(Node* pre_node)
+{
+	if (pre_node->next == nullptr)
+	{
+		return;
+	}
+	Node* node = pre_node->next->next;
+	delete pre_node->next;
+	pre_node->next = node;
+}
+function void delete_by_id(int mid)
+{
+	Node* tmp = head;
+	while (tmp != nullptr)
+	{
+		if (tmp->next != nullptr)
+		{
+			if (tmp->next->data.id == mid)
+			{
+				delete_node(tmp);
+				return;
+			}
+		}
+		tmp = tmp->next;
+	}
+	std.cout('student no found\n');
+}
+function Info find_student_by_id(int id)
+{
+	Node* tmp = head;
+	while (tmp != nullptr)
+	{
+		if (tmp->data.id == id)
+		{
+			return tmp->data;
+		}
+		tmp = tmp->next;
+	}
+}
+function Info find_student_by_name(string name)
+{
+	Node* tmp = head;
+	while (tmp != nullptr)
+	{
+		if (tmp->data.name == name)
+		{
+			return tmp->data;
+		}
+		tmp = tmp->next;
+	}
+}
+function void print_data(Info i)
+{
+	std.cout('name:', i.name, '\n');
+	std.cout('id:', i.id, '\n');
+}
+function void print_list()
+{
+	std.cout('=================\n');
+	Node* tmp = head->next;
+	while (tmp != nullptr)
+	{
+		print_data(tmp->data);
+		tmp = tmp->next;
+	}
+	std.cout('=================\n');
+}
+function void print_ui()
+{
+	std.cout('1. view all members\n');
+	std.cout('2. insert new member\n');
+	std.cout('3. delete a member\n');
+	std.cout('4. clear screen:\n');
+	std.cout('5. find a member\n');
+	std.cout('please input a number:');
+}
+program main
+{
+	int key = 0;
+	while (true)
+	{
+		print_ui();
+		key = std.input_int();
+		string mname = '';
+		int mid = 0;
+		int id = 1;
+		switch (key)
+		{
+		case 2:
+			std.cout('name:');
+			mname = std.input_string();
+			std.cout('id:');
+			mid = std.input_int();
+			Info tmp{name:mname,id : mid};
+			insert(tmp);
+			break;
+		case 1:
+			print_list();
+			break;
+		case 3:
+			std.cout('input member id:');
+			mid = std.input_int();
+			delete_by_id(mid);
+			break;
+		case 4:
+			system('cls');
+			break;
+		case 5:
+			std.cout('by id(1), or by name(2): ');
+			key = std.input_int();
+			if (key == 1)
+			{
+				std.cout('input id: ');
+				mid = std.input_int();
+				Info tmp = find_student_by_id(mid);
+				std.cout('name:', tmp.name);
+			}
+			elif(key == 2)
+			{
+				std.cout('input name: ');
+				mname = std.input_string();
+				Info tmp = find_student_by_name(mname);
+				std.cout('id:', tmp.id);
+			}
+			else
+			{
+				std.cout('illegal number');
+			}
+			break;
+		}
+		std.cout('\n');
+	}
+}

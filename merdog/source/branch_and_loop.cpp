@@ -10,12 +10,12 @@
 #include "../include/environment.hpp"
 namespace Mer
 {
-	size_t Mer::current_function_rety=0;
+	size_t Mer::current_function_rety = 0;
 	std::vector<Mer::ParserNode*>* Mer::current_ins_table = nullptr;
 	PosPtr Mer::this_block_size = nullptr;
 	extern std::vector<ParserNode*>* current_ins_table;
 	extern std::vector<size_t*> _pcs;
-	Mem::Object Mer::function_ret=nullptr;
+	Mem::Object Mer::function_ret = nullptr;
 	namespace Parser
 	{
 		void switch_driver();
@@ -66,13 +66,14 @@ namespace Mer
 		{
 			mem.new_block();
 			this_namespace->sl_table->new_block();
-			this_block_size= std::make_shared<size_t>(0);
+			this_block_size = std::make_shared<size_t>(0);
 			token_stream.match(BEGIN);
 			public_part();
 			*this_block_size = current_ins_table->size();
 			token_stream.match(END);
 			mem.end_block();
 			this_namespace->sl_table->end_block();
+
 		}
 		void build_function_block()
 		{
@@ -154,6 +155,7 @@ namespace Mer
 		}
 		void build_if()
 		{
+			bool have_else=false;
 			token_stream.match(IF);
 			token_stream.match(LPAREN);
 			PosPtr end_pos = std::make_shared<size_t>(0);
@@ -164,9 +166,11 @@ namespace Mer
 			this_namespace->sl_table->new_block();
 			token_stream.match(BEGIN);
 			auto iwjt = new IfWithJmpTable(_pcs.back());
+			iwjt->end_pos = end_pos;
 			current_ins_table->push_back(iwjt);
 			iwjt->jmp_table.push_back({ node,std::make_shared<size_t>(current_ins_table->size()) });
 			public_part();
+			current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
 			// end_block;
 			token_stream.match(END);
 			mem.end_block();
@@ -183,13 +187,14 @@ namespace Mer
 				iwjt->jmp_table.push_back({ expr,std::make_shared<size_t>(current_ins_table->size()) });
 				public_part();
 				token_stream.match(END);
+				current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
 				mem.end_block();
 				this_namespace->sl_table->end_block();
-				current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
 			}
 			if (token_stream.this_tag() == ELSE)
 			{
-				*end_pos = current_ins_table->size();
+				have_else = true;
+				iwjt->jmp_table.push_back({ new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), std::make_shared<size_t>(current_ins_table->size()) });
 				token_stream.match(ELSE);
 				mem.new_block();
 				this_namespace->sl_table->new_block();
@@ -198,13 +203,10 @@ namespace Mer
 				token_stream.match(END);
 				mem.end_block();
 				this_namespace->sl_table->end_block();
-				current_ins_table->push_back(new Goto(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1)));
 			}
-			else
-				*end_pos = current_ins_table->size();
-			auto tmp = new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL);
-			iwjt->jmp_table.push_back({ tmp, end_pos });
-
+			if(!have_else)
+				iwjt->jmp_table.push_back({ new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), end_pos});
+			*end_pos = current_ins_table->size();
 		}
 		template<typename KeyType>
 		void build_switch(PosPtr& default_pos, std::map<KeyType, PosPtr>& case_set);
@@ -332,10 +334,10 @@ namespace Mer
 			new_loop(start_pos, end_pos);
 			token_stream.match(FOR);
 			token_stream.match(LPAREN);
-			if(token_stream.this_tag()!=SEMI)
-			{ 
+			if (token_stream.this_tag() != SEMI)
+			{
 				current_ins_table->push_back(var_decl());
-				++*start_pos;
+				++* start_pos;
 			}
 			token_stream.match(SEMI);
 			if (token_stream.this_tag() == SEMI)
@@ -358,7 +360,7 @@ namespace Mer
 
 			token_stream.match(BEGIN);
 
-			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(current_ins_table->size()+1), end_pos, compare_part));
+			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1), end_pos, compare_part));
 			public_part();
 			current_ins_table->push_back(new Goto(_pcs.back(), start_pos));
 			token_stream.match(END);
