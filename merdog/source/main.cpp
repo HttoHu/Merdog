@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		{
 			if (argv[1][0] == '-'&&argv[1][1]=='v')
 			{
-				std::cout << "3.0.6";
+				std::cout << "3.1.0";
 				return 0;
 			}
 		}
@@ -71,7 +71,7 @@ int main()
 		Mer::set_io();
 		Mer::set_maths();
 		Mer::set_utility();
-		std::string input_content = get_file_content("test.c");
+		std::string input_content = get_file_content("test.cm");
 		Mer::build_token_stream(input_content);
 		//time_t s = clock();
 		Mer::Parser::program()->execute();

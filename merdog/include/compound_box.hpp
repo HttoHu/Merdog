@@ -48,7 +48,8 @@ namespace Mer
 			user-def struct obj is a single obj, and its members are all pushed into a vector<Object>. When you need obtain the member 
 			of user-def struct obj, you need get its postion of the struct.
 		*/
-		virtual Mem::Object operator[](Mem::Object v)
+		std::string to_string()const override;
+		Mem::Object operator[](Mem::Object v)override
 		{
 			return vec[std::static_pointer_cast<Mem::Int>(v)->get_value()];
 		}

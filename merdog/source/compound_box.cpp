@@ -154,3 +154,13 @@ Mem::Object Mer::USObject::clone() const
 	}
 	return std::make_shared<USObject>(ret_vec);
 }
+
+std::string Mer::USObject::to_string() const
+{
+	std::string ret = "";
+	for (auto& a : vec)
+	{
+		ret+= a->to_string()+ "     ";
+	}
+	return ret;
+}

@@ -295,7 +295,9 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	// the var may be array ,pointer or a common var.
 	_record_id(vec[0], type, pos);
 	for (int i = 1; i < vec.size(); i++)
-		_record_id(vec[i], type, tmp_pos + vec[i - 1]->get_size());
+	{
+		_record_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
+	}
 	for (auto& a : vec)
 	{
 		if (a->arr())
@@ -332,7 +334,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 	size_t tmp_pos = pos;
 	_record_glo_id(vec[0], type, pos);
 	for (int i = 1; i < vec.size(); i++)
-		_record_glo_id(vec[i], type, tmp_pos + vec[i - 1]->get_size());
+		_record_glo_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 	for (auto& a : vec)
 	{
 		if (a->arr())

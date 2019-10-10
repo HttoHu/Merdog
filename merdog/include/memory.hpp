@@ -20,7 +20,7 @@ namespace Mer
 		}
 		size_t new_block()
 		{
-			block_flag.push_back(index);
+			//block_flag.push_back(index);
 			return index;
 		}
 		void new_func(int siz)

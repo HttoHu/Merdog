@@ -448,7 +448,8 @@ Mer::NewExpr::NewExpr()
 	}
 	else if (token_stream.this_tag() == SEMI)
 	{
-		expr = new LConV(Mem::create_var_t(type_code),type_code);
+		auto insertion = Mem::create_var_t(type_code);
+		expr = new LConV(insertion,type_code);
 	}
 	if (expr->get_type() != type_code)
 	{
@@ -459,7 +460,7 @@ Mer::NewExpr::NewExpr()
 Mem::Object Mer::NewExpr::execute()
 {
 	auto pos = mem.new_obj();
-	mem[pos] = expr->execute();
+	mem[pos] = expr->execute()->clone();
 	return std::make_shared<Mem::Pointer>(pos);
 }
 

@@ -69,6 +69,11 @@ namespace Mer
 			this_block_size = std::make_shared<size_t>(0);
 			token_stream.match(BEGIN);
 			public_part();
+			for (int i = 0; i < current_ins_table->size(); i++)
+			{
+				std::cout <<"<Line "<<i+1<<" >"<< (*current_ins_table)[i]->to_string() << std::endl;
+			}
+
 			*this_block_size = current_ins_table->size();
 			token_stream.match(END);
 			mem.end_block();
@@ -93,7 +98,6 @@ namespace Mer
 			new_loop(start_pos, end_pos);
 			token_stream.match(DO);
 			// new block
-			mem.new_block();
 			this_namespace->sl_table->new_block();
 			token_stream.match(BEGIN);
 			public_part();
@@ -102,7 +106,6 @@ namespace Mer
 			token_stream.match(LPAREN);
 			Expr* node = new Expr();
 			token_stream.match(RPAREN);
-
 			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos), std::make_shared<size_t>(current_ins_table->size() + 1), node));
 			*end_pos = current_ins_table->size();
 			// delete the record of start_pos and end_pos, cause the two var is thoroughly used.
@@ -111,23 +114,6 @@ namespace Mer
 			mem.end_block();
 			this_namespace->sl_table->end_block();
 			token_stream.match(SEMI);
-		}
-		void branch_and_loop()
-		{
-			current_ins_table = new std::vector<Mer::ParserNode*>;
-			_pcs.push_back(new size_t(0));
-			public_part();
-			for (int i = 0; i < current_ins_table->size(); i += 1)
-				std::cout << "<Line:" + std::to_string(i) + ">" << (*current_ins_table)[i]->to_string() << std::endl;
-			current_ins_table->push_back(new NonOp());
-			size_t* pc = _pcs.back();
-			time_t s = clock();
-			for (*pc = 0; *pc < current_ins_table->size(); (*pc)++)
-			{
-				(*current_ins_table)[*pc]->execute();
-			}
-			time_t e = clock();
-			std::cout << "\ntime:" << (double)(e - s) * 1000 / CLK_TCK << " ms";
 		}
 		void build_while()
 		{
@@ -328,9 +314,8 @@ namespace Mer
 			// register the start_pos and end_pos to environment
 			ParserNode* compare_part;
 			// new block
-			mem.new_block();
 			this_namespace->sl_table->new_block();
-
+			mem.new_block();
 			new_loop(start_pos, end_pos);
 			token_stream.match(FOR);
 			token_stream.match(LPAREN);
@@ -383,7 +368,7 @@ namespace Mer
 	}
 	std::string IfTrueToAOrB::to_string()
 	{
-		return "if " + expr->to_string() + " is true goto " + std::to_string(*true_tag) + " or " + std::to_string(*false_tag);
+		return "if " + expr->to_string() + " is true goto " + std::to_string(1+*true_tag) + " or " + std::to_string(1+*false_tag);
 	}
 	Mem::Object IfWithJmpTable::execute()
 	{
@@ -426,7 +411,7 @@ namespace Mer
 	}
 	std::string Goto::to_string()
 	{
-		return "goto " + std::to_string(*target);
+		return "goto " + std::to_string(1+*target);
 	}
 	Mem::Object Goto::execute()
 	{

@@ -36,18 +36,15 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	case Mer::Mem::STRING:
 		ret += "string";
 		break;
-	case ID:
-	{
-		auto seeker = type_map.find(bt);
-		if (seeker == type_map.end())
-		{
-			throw Error("type not matched");
-		}
-		ret = seeker->second->to_string();
-	}
 	default:
-		ret+=("!unkown type code :" + std::to_string(bt));
-		return ret;
+		auto seeker = type_name_mapping.find(bt);
+		if (seeker == type_name_mapping.end())
+		{
+			ret += ("!unkown type :" + std::to_string(bt));
+		}
+		else
+			ret = seeker->second;
+		break;
 	}
 	if (is_p)
 		ret += "* ";
