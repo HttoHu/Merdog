@@ -54,7 +54,7 @@ namespace Mer
 		}
 		Mem::Object execute()override
 		{
-			return mem[pos]->clone();
+			return mem[pos];
 		}
 		bool constant()const override
 		{

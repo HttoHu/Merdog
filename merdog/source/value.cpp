@@ -255,7 +255,7 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		throw Error("haven't finished yet");
 	}
 	// if the var is not an array but supports [] operator. and the expr of the []is not a constant.
-	if (!var_info->es == SARRAY)
+	if (!(var_info->es == SARRAY))
 	{
 		return new BinOp(new Variable(type, var_info->get_pos()), new Token(LSB), expr);
 	}
