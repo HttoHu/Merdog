@@ -159,7 +159,6 @@ void Mer::Parser::build_function()
 	_pcs.push_back(ret->pc);
 	current_ins_table = &(ret->stmts);
 	Parser::build_function_block();
-
 	Mer::global_stmt() = true;
 	ret->is_completed = true;
 

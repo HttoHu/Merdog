@@ -17,8 +17,8 @@ size_t Mer::Memory::push()
 	return index++;
 }
 size_t Mer::Memory::end_block() {
-	//index = block_flag.back();
-	//block_flag.pop_back();
+	index = block_flag.back();
+	block_flag.pop_back();
 	return index;
 }
 size_t Mer::Memory::new_obj()

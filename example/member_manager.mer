@@ -49,6 +49,23 @@ function void delete_by_id(int mid)
 	}
 	std.cout('student no found\n');
 }
+function void delete_by_name(string name)
+{
+	Node* tmp = head;
+	while (tmp != nullptr)
+	{
+		if (tmp->next != nullptr)
+		{
+			if (tmp->next->data.name == name)
+			{
+				delete_node(tmp);
+				return;
+			}
+		}
+		tmp = tmp->next;
+	}
+	std.cout('student no found\n');
+}
 function Info find_student_by_id(int id)
 {
 	Node* tmp = head;
@@ -93,9 +110,10 @@ function void print_ui()
 {
 	std.cout('1. view all members\n');
 	std.cout('2. insert new member\n');
-	std.cout('3. delete a member\n');
+	std.cout('3. delete a member by id\n');
 	std.cout('4. clear screen:\n');
 	std.cout('5. find a member\n');
+	std.cout('6. delete a member by name\n');
 	std.cout('please input a number:');
 }
 program main
@@ -128,6 +146,11 @@ program main
 			break;
 		case 4:
 			system('cls');
+			break;
+		case 6:
+			std.cout('input member name:');
+			mname = std.input_string();
+			delete_by_name(mname);
 			break;
 		case 5:
 			std.cout('by id(1), or by name(2): ');

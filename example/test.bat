@@ -9,5 +9,5 @@ merdog insertion_sort.mer
 merdog switch_test.mer
 merdog pointer_test.mer
 merdog insertion_sort.mer
-merdog member_manager.mer
 merdog demo.mer
+merdog member_manager.mer

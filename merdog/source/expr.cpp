@@ -504,14 +504,12 @@ Mem::Object Mer::RmRef::execute()
 Mer::Delete::Delete()
 {
 	token_stream.match(DELETE);
-	auto tmp = new Expr();
-	expr = tmp->root();
-	delete expr;
+	expr = Expr().root();
 }
 
 Mem::Object Mer::Delete::execute()
 {
-	mem.del_obj(Mem::get_raw<int>(expr->execute()));
+	mem.del_obj(Mem::get_raw<size_t>(expr->execute()));
 	return nullptr;
 }
 

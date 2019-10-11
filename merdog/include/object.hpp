@@ -426,7 +426,7 @@ namespace Mer
 			}
 			size_t get_pos() { return pos; }
 		private:
-			int pos;
+			size_t pos;
 		};
 		// get the raw value of the Mem::xxx 
 		template<typename T>

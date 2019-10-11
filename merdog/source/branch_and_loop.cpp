@@ -69,10 +69,6 @@ namespace Mer
 			this_block_size = std::make_shared<size_t>(0);
 			token_stream.match(BEGIN);
 			public_part();
-			for (int i = 0; i < current_ins_table->size(); i++)
-			{
-				std::cout <<"<Line "<<i+1<<" >"<< (*current_ins_table)[i]->to_string() << std::endl;
-			}
 
 			*this_block_size = current_ins_table->size();
 			token_stream.match(END);
