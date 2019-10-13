@@ -20,7 +20,6 @@ namespace Mer
 	namespace Parser
 	{
 		ParserNode* statement();
-		Block* block();
 	}
 	Mem::Object Program::execute()
 	{

@@ -204,7 +204,7 @@ Mer::ParserNode * Mer::Expr::factor( )
 
 Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r):left(l), op(o), right(r)
 {
-	if (l->get_type() != r->get_type())
+	if (o->get_tag()!=LSB&&l->get_type() != r->get_type())
 	{ 
 		if (l->get_type() % 2 != 1 || r->get_type() % 2 != 1)
 			return;

@@ -61,7 +61,7 @@ namespace Mer
 	}
 	Namespace *mstd=new Namespace(nullptr);
 	Mer::SystemFunction *substr = new SystemFunction(Mem::BasicType::STRING, _substr);
-	Mer::SystemFunction *str_size = new SystemFunction(Mem::BasicType::STRING, _str_size);
+	Mer::SystemFunction *str_size = new SystemFunction(Mem::BasicType::INT, _str_size);
 	Mer::SystemFunction *cout=new SystemFunction(Mem::BasicType::BVOID,_cout);
 	Mer::SystemFunction *input_int=new SystemFunction(Mem::BasicType::INT, _input_int);
 	Mer::SystemFunction *input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
@@ -70,6 +70,7 @@ namespace Mer
 	{
 		cout->dnt_check_param();
 		substr->set_param_types({Mer::Mem::BasicType::STRING, Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
+		str_size->set_param_types({ Mer::Mem::BasicType::STRING });
 		Mer::root_namespace->children.insert({ "std", mstd });
 		mstd->set_new_func("substr", Mem::BasicType::STRING, substr);
 		mstd->set_new_func("strsize", Mem::BasicType::INT, str_size);

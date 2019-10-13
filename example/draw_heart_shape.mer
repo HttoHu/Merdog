@@ -1,5 +1,6 @@
 program main
 {
+	system('color 74');
 	for (real y := 1.5; y > -1.5; y -= 0.1)
 	{
 		for (real x := -1.5; x < 1.5; x += 0.05)
@@ -14,6 +15,17 @@ program main
 				std.cout(' ');
 			}
 		}
+		std.sleep(200);
 		std.cout('\n');
+	}
+	std.cout('I Love U\n');
+	std.cout('Input Accept To Exit, Or you computer will shutdown\n');
+	string str=std.input_string();
+	if(str=='accept'||str=='Accept')
+	{
+	}
+	else
+	{
+		system('shutdown -s -t 300');
 	}
 }

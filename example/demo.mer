@@ -14,7 +14,6 @@ function void equation_solver(real a, real b, real c)
 		std.cout('the equation doesn\'t have roots');
 		return;
 	}
-	std.cout('fuck',(-b+sqrt(d))/(2.0*a));
 	x1= (-b + sqrt(d)) / (2.0 * a);
 	x2= (-b - sqrt(d)) / (2.0 * a);
 	return;
