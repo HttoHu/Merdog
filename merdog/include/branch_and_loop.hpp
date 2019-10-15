@@ -58,6 +58,7 @@ namespace Mer
 		StrCaseSet(size_t* _pc, ParserNode* _expr) :pc(_pc), expr(_expr) {}
 		std::map<std::string, PosPtr> jmp_table;
 		Mem::Object execute()override;
+		std::string to_string()override;
 		size_t* pc;
 		PosPtr default_pos;
 	private:

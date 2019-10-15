@@ -69,7 +69,6 @@ namespace Mer
 			this_block_size = std::make_shared<size_t>(0);
 			token_stream.match(BEGIN);
 			public_part();
-
 			*this_block_size = current_ins_table->size();
 			token_stream.match(END);
 			mem.end_block();
@@ -233,7 +232,7 @@ namespace Mer
 				case DEFAULT:
 					token_stream.match(DEFAULT);
 					token_stream.match(COLON);
-					default_pos = std::make_shared<size_t>(current_ins_table->size() - 1);
+					default_pos = std::make_shared<size_t>(current_ins_table->size());
 					break;
 				case CASE:
 					token_stream.match(CASE);
@@ -396,14 +395,23 @@ namespace Mer
 	{
 		auto result = jmp_table.find(Mem::get_raw<int>(expr->execute()));
 		if (result == jmp_table.end())
-			* pc = *default_pos;
+			* pc = *default_pos -1;
 		else
 			*pc = *(result->second);
 		return nullptr;
 	}
 	std::string IntCaseSet::to_string()
 	{
-		return std::string();
+		std::string ret = "switch  ";
+		for (auto a : jmp_table)
+		{
+			ret += std::to_string(a.first);
+			ret += ":";
+			ret += std::to_string(*a.second);
+			ret += "   ";
+		}
+		ret += " default pos: " + std::to_string(*default_pos);
+		return ret;
 	}
 	std::string Goto::to_string()
 	{
@@ -427,10 +435,23 @@ namespace Mer
 	{
 		auto result = jmp_table.find(Mem::get_raw<std::string>(expr->execute()));
 		if (result == jmp_table.end())
-			* pc = *default_pos;
+			* pc = *default_pos -1;
 		else
 			*pc = *(result->second);
 		return nullptr;
+	}
+	std::string StrCaseSet::to_string()
+	{
+		std::string ret = "switch  ";
+		for (auto a : jmp_table)
+		{
+			ret += a.first;
+			ret += ":";
+			ret += std::to_string(*a.second);
+			ret += "   ";
+		}
+		ret += " default pos: " + std::to_string(*default_pos);
+		return ret;
 	}
 	Return::Return(size_t* _pc, Expr* _expr) :pc(_pc), expr(_expr)
 	{
