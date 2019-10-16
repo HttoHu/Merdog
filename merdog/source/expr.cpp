@@ -114,8 +114,21 @@ ParserNode * Mer::Expr::member_visit()
 		auto member_id = token_stream.this_token();
 		token_stream.match(ID);
 		size_t type_code = result->get_type();
+		// member function
+
 		// find struct info
+
 		auto ustruct = find_ustructure_t(type_code+(type_code%2-1));
+		if (token_stream.this_tag() == LPAREN)
+		{
+			// get type code
+			auto func = ustruct->member_function_table.find(Id::get_value(member_id));
+			if (func == ustruct->member_function_table.end())
+				throw Error(" member functioon " + Id::get_value(member_id) + " no found");
+			result = Parser::parse_call_by_function(func->second,new GetAdd(result));
+			continue;
+
+		}
 		// find member index and type;
 		auto seeker = ustruct->get_member_info(Id::get_value(member_id));
 		result = new Index(result, seeker.second, seeker.first);
@@ -467,7 +480,7 @@ Mem::Object Mer::NewExpr::execute()
 Mer::GetAdd::GetAdd()
 {
 	token_stream.match(GET_ADD);
-	id = new Expr();
+	id = Expr().root();
 	type = id->get_type();
 }
 

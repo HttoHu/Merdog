@@ -14,6 +14,7 @@
 namespace Mer
 {
 	class Id;
+	class FunctionBase;
 	using TVar=std::pair<size_t, Mem::Object>;
 	using TName=std::pair<std::string, size_t>;
 	// the class to record the struct infomation. 
@@ -31,10 +32,13 @@ namespace Mer
 		// get the member type by the name of it. Take care, you should be aware that mapping and STMapping is totally different.
 		std::map<std::string, size_t> STMapping;
 		void push_init(Mem::Object obj) { init_vec.push_back(obj); }
+		WordRecorder* find_id_info(const std::string &id);
+		std::map<std::string, FunctionBase*> member_function_table;
 	private:
+		std::map<std::string, WordRecorder*> structure_member_table;
 		std::vector<Mem::Object> init_vec;
 		// the index to new member is used in build phase. 
-
+		friend void build_ustructure();
 		int be = 0;
 	};
 	// an object which create user-def struct obj.

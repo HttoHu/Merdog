@@ -164,12 +164,12 @@ namespace Mer
 	{
 	public:
 		GetAdd();
+		GetAdd(ParserNode* tmp) :id(tmp), type(tmp->get_type()) {}
 		size_t get_type()override;
 		Mem::Object execute()override;
 	private:
 		ParserNode* id;
 		size_t type;
-		size_t pos;
 	};
 	class RmRef :public ParserNode
 	{

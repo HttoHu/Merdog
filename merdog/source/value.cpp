@@ -28,7 +28,7 @@ Mer::Mem::Object Mer::Variable::execute()
 	return mem[mem.get_current() + pos];
 }
 
-Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, size_t _index, FunctionBase* _func, std::vector<Expr*>& exprs) :index(_index), func(_func), argument(exprs)
+Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, size_t _index, FunctionBase* _func, std::vector<ParserNode*>& exprs) :index(_index), func(_func), argument(exprs)
 {
 	func->check_param(types);
 	std::vector<ParserNode*> tmp;
@@ -78,21 +78,16 @@ Mer::ParserNode* Mer::Parser::parse_id()
 	switch (result->es)
 	{
 	case ESymbol::SGVAR:
-	{
 		return parse_glo(result);
-	}
 	case ESymbol::SSTRUCTURE:
-	{
 		return var_decl();
-	}
 	case ESymbol::STYPE:// Build-in Type but not basic type 
-	{
 		return static_cast<BuildInClass*>(result)->create_var();
-	}
 	case ESymbol::SFUN:
 		return parse_function_call(this_namespace);
 	case ESymbol::SARRAY:
 	case ESymbol::SVAR:
+	case ESymbol::MVAR:
 		return parse_var(result);
 	default:
 	{
@@ -108,6 +103,11 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 {
 	Token* var_id = token_stream.this_token();
 	token_stream.match(ID);
+	// if var is struct member
+	if(var_info->es==ESymbol::MVAR)
+	{
+		return new Index(new Variable((size_t)(Mem::type_counter)+1,0), var_info->get_pos(), var_info->get_pos());
+	}
 	switch (token_stream.this_tag())
 	{
 	case LSB:
@@ -145,7 +145,7 @@ Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 {
 	auto id = token_stream.this_token();
-	std::vector<Expr*> exprs;
+	std::vector<ParserNode*> exprs;
 	// to check the param's type.
 	std::vector<size_t> param_types;
 	names->sl_table->type_check(id, Mer::ESymbol::SFUN);
@@ -165,12 +165,40 @@ Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 	while (token_stream.this_tag() == COMMA)
 	{
 		token_stream.match(COMMA);
-		auto param_unit2 = new Expr();
+		auto param_unit2 = Expr().root();
 		param_types.push_back(param_unit2->get_type());
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
 	return new FunctionCall(param_types, mem.get_index(), result, exprs);
+}
+
+Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase*f, ParserNode* parent)
+{
+	std::vector<ParserNode*> exprs;
+	// to check the param's type.
+	std::vector<size_t> param_types;
+	//get ref of parent
+	param_types.push_back(parent->get_type());
+	exprs.push_back(parent);
+	token_stream.match(LPAREN);
+	if (token_stream.this_tag() == RPAREN)
+	{
+		token_stream.match(RPAREN);
+		return new FunctionCall(param_types, mem.get_index(), f, exprs);
+	}
+	auto param_unit = new Expr();
+	param_types.push_back(param_unit->get_type());
+	exprs.push_back(param_unit);
+	while (token_stream.this_tag() == COMMA)
+	{
+		token_stream.match(COMMA);
+		auto param_unit2 = new Expr();
+		param_types.push_back(param_unit2->get_type());
+		exprs.push_back(param_unit2);
+	}
+	token_stream.match(RPAREN);
+	return new FunctionCall(param_types, mem.get_index(), f, exprs);
 }
 
 Mer::Namespace* Mer::Parser::kill_namespaces()

@@ -21,8 +21,20 @@ void Mer::build_ustructure()
 	token_stream.match(ID);
 	token_stream.match(BEGIN);
 	UStructure* us = new UStructure();
+	tsymbol_table->new_block();
 	while (token_stream.this_tag() != END)
 	{
+		// parse member function;
+		if (token_stream.this_tag() == FUNCTION)
+		{
+			is_struct_member_function = true;
+			std::pair<std::string,Function*> tmp=Parser::_build_function();
+			// push function 
+			us->member_function_table.insert({ tmp.first,tmp.second });
+			// record function id
+			us->structure_member_table.insert({ tmp.first,new FuncIdRecorder(tmp.second->get_type()) });
+			continue;
+		}
 		size_t type = Mem::get_type_code();
 		// when its type is a pointer
 		if (token_stream.this_tag() == MUL)
@@ -30,8 +42,13 @@ void Mer::build_ustructure()
 			token_stream.match(MUL);
 			type++;
 		}
+		// record
 		std::string mem_name = Id::get_value(token_stream.this_token());
 		us->push_new_children(type, mem_name);
+		auto id_recorder = new MVarRecorder(type, (us->be) - 1);
+		tsymbol_table->push(mem_name, id_recorder);
+		us->structure_member_table.insert({ mem_name,id_recorder });
+
 		token_stream.match(ID);
 		// process init_value
 		if (token_stream.this_tag() == ASSIGN)
@@ -49,6 +66,7 @@ void Mer::build_ustructure()
 		}
 		token_stream.match(SEMI);
 	}
+	tsymbol_table->end_block();
 	token_stream.match(END);
 	ustructure_map.insert({ name,us });
 	Mem::type_index.insert({ name,Mem::type_counter });
@@ -88,6 +106,14 @@ std::vector<Mem::Object> Mer::UStructure::init()
 		ret[i] = init_vec[i]->clone();
 	}
 	return ret;
+}
+
+Mer::WordRecorder* Mer::UStructure::find_id_info(const std::string& id)
+{
+	auto result = structure_member_table.find(id);
+	if (result == structure_member_table.end())
+		throw Error("member " + id + " no found!");
+	return result->second;
 }
 
 

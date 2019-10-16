@@ -12,11 +12,13 @@
 #include "../include/branch_and_loop.hpp"
 #define MER3_1_2
 using namespace Mer;
+
+bool Mer::is_struct_member_function=false
+;
 std::map<std::string, Function*> Mer::function_table;
 
 Block *Mer::current_function_block = nullptr;
 
-size_t Mer::this_func_type;
 //=============================================================
 bool	is_function_statement()
 {
@@ -29,7 +31,7 @@ bool	is_function_statement()
 				throw Error("Reached end of the file");
 			index++;
 		}
-		if (token_stream.this_token(index + 1)->get_tag() == SEMI)
+		if (token_stream.this_token(size_t(index) + 1)->get_tag() == SEMI)
 		{
 			return true;
 		}
@@ -44,11 +46,17 @@ ParamFeature Mer::Parser::build_param_feature()
 {
 	ParamFeature ret;
 	token_stream.match(LPAREN);
+	if (is_struct_member_function)
+	{
+		ret.push_back((size_t)(Mem::type_counter) + 1);
+		is_struct_member_function = false;
+	}
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
 		return ret;
 	}
+	//the first arg of member function is the obj of the structure, 
 	while (true)
 	{
 		size_t type = Mem::get_type_code();
@@ -73,6 +81,12 @@ Param * Mer::Parser::build_param()
 {
 	Param *ret = new Param();
 	token_stream.match(LPAREN);
+	// 	the first arg of member function is the obj of the structure, 
+	if (is_struct_member_function)
+	{
+		ret->push_new_param((size_t)(Mem::type_counter)+1, mem.push());
+		is_struct_member_function = false;
+	}
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
@@ -100,6 +114,38 @@ Param * Mer::Parser::build_param()
 	token_stream.match(RPAREN);
 	return ret;
 }
+std::pair<std::string, Function*> Parser::_build_function()
+{
+	using namespace Mer;
+	using namespace Parser;
+	token_stream.match(FUNCTION);
+	size_t rtype = Mem::get_type_code();
+	// if the ret type is a pointer
+
+	if (token_stream.this_tag() == MUL)
+	{
+		token_stream.next();
+		rtype++;
+	}
+	current_function_rety = rtype;
+	this_namespace->sl_table->new_block();
+	std::string name = Id::get_value(token_stream.this_token());
+	token_stream.next();
+
+	mem.new_block();
+	Param* param = build_param();
+	Function* ret = new Function(rtype, param);
+	Mer::global_stmt() = false;
+	_pcs.push_back(ret->pc);
+	// bind function block to it, and when you call build_function_block, the function block will be built.
+	current_ins_table = &(ret->stmts);
+	Parser::build_function_block();
+	// continue to tag other statement to global stmt.
+	Mer::global_stmt() = true;
+
+	ret->is_completed = true;
+	return { name,ret };
+}
 
 void Mer::Parser::build_function()
 {
@@ -111,7 +157,6 @@ void Mer::Parser::build_function()
 		token_stream.next();
 		rtype++;
 	}
-	this_func_type = rtype;
 	current_function_rety = rtype;
 	this_namespace->sl_table->new_block();
 	std::string name = Id::get_value(token_stream.this_token());
@@ -195,7 +240,7 @@ void Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 {
 	if (types.size() != param_types.size())
 	{
-		throw Error("argument size error");
+		throw Error("A03 argument size error expect "+std::to_string(param_types.size())+" but receive "+std::to_string(types.size()));
 
 	}
 	for (size_t i = 0; i < param_types.size(); i++)
@@ -207,7 +252,7 @@ void Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 		auto type_seeker = Mem::type_map.find(types[i]);
 		if (type_seeker == Mem::type_map.end())
 		{
-			throw Error("A01 exists an undefined type : type code "+std::to_string(param_types[i]));
+			throw Error("A01 exists an undefined type : type code "+std::to_string(types[i]));
 		}
 		if (!type_seeker->second->convertible(param_types[i]))
 		{
@@ -217,7 +262,7 @@ void Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 	return;
 }
 
-void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
+void Mer::FunctionBase::convert_arg(std::vector<ParserNode*>& args)
 {
 	// ensure you have checked the args' type.
 	for (size_t i = 0; i < args.size(); i++)
@@ -225,7 +270,7 @@ void Mer::FunctionBase::convert_arg(std::vector<Expr*>& args)
 		if (args[i]->get_type() != param_types[i])
 		{
 			Expr *tmp=new ImplicitConvertion(param_types[i]);
-			tmp->tree=args[i]->tree;
+			tmp->tree = args[i];
 			args[i] = tmp;
 		}
 	}
@@ -262,6 +307,7 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
+		//std::cout<<
 		mem[mem.get_current()+param_table[i].second] = objs[i];
 	}
 	size_t tmp = *pc;

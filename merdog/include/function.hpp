@@ -25,8 +25,9 @@ namespace Mer
 	{
 	public:
 		FunctionBase();
+
 		virtual void check_param(const std::vector<size_t>& types);
-		virtual void convert_arg(std::vector<Expr*> &args);
+		virtual void convert_arg(std::vector<ParserNode*> &args);
 		void set_param_types(const std::vector<size_t>& types)
 		{
 			param_types = types;
@@ -65,7 +66,7 @@ namespace Mer
 		{
 			return func(objs);
 		}
-		void convert_arg(std::vector<Expr*> &args)override{}
+		void convert_arg(std::vector<ParserNode*> &args)override{}
 		size_t get_type()override
 		{
 			return type;
@@ -83,11 +84,14 @@ namespace Mer
 
 	namespace Parser
 	{
+		// build param type_code vec;
 		ParamFeature build_param_feature();
-		Param *build_param();
+		// build param which contains nameinfo and type_code;
+		Param* build_param();
 		void build_function();
+		std::pair<std::string,Function*> _build_function();
 	}
 	extern Block *current_function_block;
-	extern size_t this_func_type;
+	extern bool is_struct_member_function;
 	extern std::map<std::string, Function*> function_table;
 }

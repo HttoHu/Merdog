@@ -96,11 +96,6 @@ ParserNode* Mer::Parser::statement()
 	case STRING_DECL:
 		node = var_decl();
 		break;
-	case PRINT:
-		token_stream.match(PRINT);
-		node = new Print(token_stream.this_token());
-		token_stream.next();
-		break;
 	default:
 		node = new Expr();
 		break;
