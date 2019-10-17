@@ -106,7 +106,7 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 	// if var is struct member
 	if(var_info->es==ESymbol::MVAR)
 	{
-		return new Index(new Variable((size_t)(Mem::type_counter)+1,0), var_info->get_pos(), var_info->get_pos());
+		return new Index(new Variable((size_t)(Mem::type_counter)+1,0), var_info->get_pos(), var_info->get_type());
 	}
 	switch (token_stream.this_tag())
 	{
