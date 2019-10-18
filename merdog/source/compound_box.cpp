@@ -74,7 +74,7 @@ void Mer::build_ustructure()
 	Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
 }
 
-
+    
 Mer::UStructure* Mer::find_ustructure_t(size_t type)
 {
 	auto result = type_name_mapping.find(type);
@@ -83,6 +83,16 @@ Mer::UStructure* Mer::find_ustructure_t(size_t type)
 	auto result2 = ustructure_map.find(result->second);
 	if (result2 == ustructure_map.end())
 		throw Error("Id " + result2->first + " undefined");
+	return result2->second;           
+}
+Mer::UStructure* Mer::find_ustructure(size_t type)
+{
+	auto result = type_name_mapping.find(type);
+	if (result == type_name_mapping.end())
+		return nullptr;
+	auto result2 = ustructure_map.find(result->second);
+	if (result2 == ustructure_map.end())
+		return nullptr;
 	return result2->second;
 }
 void Mer::UStructure::push_new_children(size_t t, std::string id_name)
@@ -118,16 +128,6 @@ Mer::WordRecorder* Mer::UStructure::find_id_info(const std::string& id)
 
 
 
-Mem::Object Mer::StructureInitList::execute()
-{
-	std::vector<Mem::Object> obj_vec(vec.size());
-	for (size_t i = 0; i < vec.size(); i++)
-	{
-		obj_vec[i] = vec[i]->execute();
-	}
-	return std::make_shared<USObject>(obj_vec);
-}
-
 Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m, size_t _type_code) :vec(m.size()), type_code(_type_code)
 {
 	token_stream.match(BEGIN);
@@ -139,7 +139,7 @@ Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m, s
 			throw Error("struct_obj init Error: Not exits member " + member_suffix->to_string());
 		token_stream.match(ID);
 		token_stream.match(COLON);
-		vec[result->second] = new Expr();
+		vec[result->second] = Expr().root();
 		if (token_stream.this_tag() == END)
 		{
 			token_stream.match(END);
@@ -153,40 +153,10 @@ Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m, s
 Mer::DefaultInitList::DefaultInitList(size_t type)
 {
 	auto ustruct = find_ustructure_t(type);
-	vec = ustruct->init();
-}
-
-Mem::Object Mer::DefaultInitList::execute()
-{
-	std::vector<Mem::Object> ret(vec.size());
-	for (int i = 0; i < ret.size(); i++)
-		ret[i] = vec[i]->clone();
-	return std::make_shared<USObject>(ret);
-}
-
-Mem::Object Mer::USObject::operator=(Mem::Object v) {
-	// I am trying to do as much as possible check before runtime
-	auto a = v->clone();
-	this->vec = std::static_pointer_cast<USObject>(v)->vec;
-	return a;
-}
-
-Mem::Object Mer::USObject::clone() const
-{
-	std::vector<Mem::Object> ret_vec(vec.size());
-	for (int i = 0; i < ret_vec.size(); i++)
+	auto tmp_vec = ustruct->init();
+	for (const auto& a : tmp_vec)
 	{
-		ret_vec[i] = vec[i]->clone();
+		vec.push_back(new LConV(a, a->get_type()));
 	}
-	return std::make_shared<USObject>(ret_vec);
 }
 
-std::string Mer::USObject::to_string() const
-{
-	std::string ret = "";
-	for (auto& a : vec)
-	{
-		ret+= a->to_string()+ "     ";
-	}
-	return ret;
-}

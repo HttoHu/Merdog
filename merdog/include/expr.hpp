@@ -38,7 +38,7 @@ namespace Mer
 	class ContainerIndex :public ParserNode
 	{
 	public:
-		ContainerIndex(size_t t,size_t _pos, ParserNode* _expr) :type(t),pos(_pos), expr(_expr) {}
+		ContainerIndex(size_t t, size_t _pos, ParserNode* _expr) :type(t), pos(_pos), expr(_expr) {}
 		Mem::Object execute()override;
 		size_t get_type()override;
 	private:
@@ -69,14 +69,14 @@ namespace Mer
 			delete right;
 		}
 	private:
-		ParserNode *left;
-		Token *op;
-		ParserNode *right;
+		ParserNode* left;
+		Token* op;
+		ParserNode* right;
 	};
 	class UnaryOp :public ParserNode
 	{
 	public:
-		UnaryOp(Token *t, ParserNode* e) :op(t), expr(e) {}
+		UnaryOp(Token* t, ParserNode* e) :op(t), expr(e) {}
 		Mem::Object execute()override;
 		size_t get_type()override
 		{
@@ -90,7 +90,7 @@ namespace Mer
 			delete expr;
 		}
 	private:
-		Token * op;
+		Token* op;
 		ParserNode* expr;
 	};
 	class Structure;
@@ -135,27 +135,26 @@ namespace Mer
 	{
 	public:
 		EmptyList(size_t t, size_t sz);
-		Mem::Object execute()override;
-		std::vector<Expr*>& exprs() { return init_v; }
+		std::vector<ParserNode*>& exprs() { return init_v; }
 	private:
-		std::vector<Expr*> init_v;
+		std::vector<ParserNode*> init_v;
 		size_t type_code;
 		size_t size;
 	};
-	class InitList:public ParserNode
+	class InitList :public ParserNode
 	{
 	public:
-		InitList(size_t t,size_t sz);
+		InitList(size_t t, size_t sz);
 		Mem::Object execute()override;
 		std::vector<Mem::Object> get_array();
-		std::vector<Expr*>& exprs() { return init_v; }
+		std::vector<ParserNode*>& exprs() { return init_v; }
 		size_t get_type()override
 		{
 			return type;
 		}
 		virtual ~InitList();
 	private:
-		std::vector<Expr*> init_v;
+		std::vector<ParserNode*> init_v;
 		size_t type;
 		size_t size;
 	};
@@ -181,17 +180,30 @@ namespace Mer
 		ParserNode* id;
 		size_t type;
 	};
-	class NewExpr:public ParserNode
+	class NewComplex :public ParserNode
 	{
 	public:
-		NewExpr();
+		NewComplex(size_t _t);
 		size_t get_type()override {
-			return expr->get_type() + 1;
+			return type_code+1;
 		}
 		Mem::Object execute()override;
 	private:
+		std::vector<ParserNode*> expr;
+		size_t type_code;
+	};
+	class NewExpr :public ParserNode
+	{
+	public:
+		NewExpr(size_t _t);
+		size_t get_type()override {
+			return type_code + 1;
+		}
+		Mem::Object execute()override;
+	private:
+		size_t type_code;
 		ParserNode* expr;
-		
+
 	};
 	class Delete :public ParserNode
 	{
@@ -204,7 +216,7 @@ namespace Mer
 	private:
 		ParserNode* expr;
 	};
-	class ImplicitConvertion:public Expr
+	class ImplicitConvertion :public Expr
 	{
 	public:
 		ImplicitConvertion(size_t _type);
@@ -212,4 +224,10 @@ namespace Mer
 	private:
 		size_t type;
 	};
+
+
+	namespace Parser
+	{
+		ParserNode* new_statement();
+	}
 }

@@ -29,10 +29,10 @@ size_t Mer::Expr::get_type()
 		return expr_type;
 	return tree->get_type();
 }
-ParserNode * Mer::Expr::assign()
+ParserNode* Mer::Expr::assign()
 {
 	auto result = and_or();
-	while (token_stream.this_tag() == ASSIGN || token_stream.this_tag() == SADD|| token_stream.this_tag() == SSUB || token_stream.this_tag() == SMUL || token_stream.this_tag() == SDIV)
+	while (token_stream.this_tag() == ASSIGN || token_stream.this_tag() == SADD || token_stream.this_tag() == SSUB || token_stream.this_tag() == SMUL || token_stream.this_tag() == SDIV)
 	{
 		auto tok = token_stream.this_token();
 		token_stream.next();
@@ -40,7 +40,7 @@ ParserNode * Mer::Expr::assign()
 	}
 	return result;
 }
-Mer::ParserNode * Mer::Expr::and_or()
+Mer::ParserNode* Mer::Expr::and_or()
 {
 	auto result = nexpr();
 	while (token_stream.this_tag() == AND || token_stream.this_tag() == OR)
@@ -54,7 +54,7 @@ Mer::ParserNode * Mer::Expr::and_or()
 
 }
 
-Mer::ParserNode * Mer::Expr::expr()
+Mer::ParserNode* Mer::Expr::expr()
 {
 	auto result = term();
 
@@ -67,7 +67,7 @@ Mer::ParserNode * Mer::Expr::expr()
 	return result;
 }
 
-Mer::ParserNode * Mer::Expr::nexpr()
+Mer::ParserNode* Mer::Expr::nexpr()
 {
 	auto result = expr();
 	while (1)
@@ -92,7 +92,7 @@ Mer::ParserNode * Mer::Expr::nexpr()
 	return result;
 }
 
-Mer::ParserNode * Mer::Expr::term()
+Mer::ParserNode* Mer::Expr::term()
 {
 	auto result = member_visit();
 	while (token_stream.this_token()->get_tag() == MUL || token_stream.this_token()->get_tag() == DIV)
@@ -104,7 +104,7 @@ Mer::ParserNode * Mer::Expr::term()
 	return result;
 }
 
-ParserNode * Mer::Expr::member_visit()
+ParserNode* Mer::Expr::member_visit()
 {
 	auto result = factor();
 	while (token_stream.this_token()->get_tag() == DOT || token_stream.this_token()->get_tag() == PTRVISIT)
@@ -118,30 +118,38 @@ ParserNode * Mer::Expr::member_visit()
 
 		// find struct info
 
-		auto ustruct = find_ustructure_t(type_code+(type_code%2-1));
+		auto ustruct = find_ustructure_t(type_code + (type_code % 2 - 1));
 		if (token_stream.this_tag() == LPAREN)
 		{
 			// get type code
 			auto func = ustruct->member_function_table.find(Id::get_value(member_id));
 			if (func == ustruct->member_function_table.end())
 				throw Error(" member functioon " + Id::get_value(member_id) + " no found");
-			result = Parser::parse_call_by_function(func->second,new GetAdd(result));
+			result = Parser::parse_call_by_function(func->second, new GetAdd(result));
 			continue;
 
 		}
 		// find member index and type;
 		auto seeker = ustruct->get_member_info(Id::get_value(member_id));
-		result = new Index(result, seeker.second, seeker.first);
+		//std::cout << "POS:"<<result->get_pos() + seeker.first;
+		if (tok->get_tag() == DOT)
+			result = new Variable(seeker.first, result->get_pos() + seeker.second);
+		else if (tok->get_tag() == PTRVISIT)
+		{
+			result = new Index(result, seeker.second, seeker.first);
+		}
+		else
+			throw Error("parser has exited!");
 	}
 	return result;
 }
-Mer::ParserNode * Mer::Expr::factor( )
+Mer::ParserNode* Mer::Expr::factor()
 {
 	auto result = token_stream.this_token();
 	switch (result->get_tag())
 	{
 	case NEW:
-		return new NewExpr();
+		return Parser::new_statement();
 	case DELETE:
 		return new Delete();
 	case MUL:
@@ -194,7 +202,7 @@ Mer::ParserNode * Mer::Expr::factor( )
 	case MINUS:
 	{
 		token_stream.next();
-		ParserNode *n = new UnaryOp(result, factor());
+		ParserNode* n = new UnaryOp(result, factor());
 		return n;
 	}
 	case PLUS:
@@ -215,10 +223,10 @@ Mer::ParserNode * Mer::Expr::factor( )
 	}
 }
 
-Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r):left(l), op(o), right(r)
+Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r) :left(l), op(o), right(r)
 {
-	if (o->get_tag()!=LSB&&l->get_type() != r->get_type())
-	{ 
+	if (o->get_tag() != LSB && l->get_type() != r->get_type())
+	{
 		if (l->get_type() % 2 != 1 || r->get_type() % 2 != 1)
 			return;
 		right = new Cast(r, l->get_type());
@@ -335,19 +343,19 @@ Mer::Mem::Object Mer::UnaryOp::execute()
 }
 
 
-Mer::InitList::InitList(size_t t,size_t sz):type(t),size(sz)
+Mer::InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
 {
 	token_stream.match(BEGIN);
 	while (token_stream.this_tag() != Tag::END)
 	{
-		init_v.push_back(new Expr(t));
+		init_v.push_back(Expr(t).root());
 		if (token_stream.this_tag() == Tag::COMMA)
 			token_stream.match(COMMA);
 	}
 	token_stream.match(END);
 	if (init_v.size() == 1 && sz > 1)
 	{
-		init_v = std::vector<Expr*>(sz, init_v[0]);
+		init_v = std::vector<ParserNode*>(sz, init_v[0]);
 		return;
 	}
 	if (init_v.size() != sz)
@@ -356,7 +364,7 @@ Mer::InitList::InitList(size_t t,size_t sz):type(t),size(sz)
 	for (int i = 1; i < init_v.size(); i++)
 	{
 		if (type != init_v[i - 1]->get_type())
-		{ 
+		{
 			throw Error("there is a type-distinction in an init list.");
 		}
 	}
@@ -368,15 +376,15 @@ Mem::Object Mer::InitList::execute()
 	std::vector<Mem::Object> v(init_v.size());
 	if (v.size() == 1 && size > 1)
 	{
-		auto tmp= init_v[0]->execute();
+		auto tmp = init_v[0]->execute();
 		v = std::vector<Mem::Object>(size, tmp);
-		return std::make_shared<Mem::InitListObj>(std::move(v),type);
+		return std::make_shared<Mem::InitListObj>(std::move(v), type);
 	}
 	for (size_t i = 0; i < v.size(); i++)
 	{
 		v[i] = init_v[i]->execute();
 	}
-	return std::make_shared<Mem::InitListObj>(std::move(v),type);
+	return std::make_shared<Mem::InitListObj>(std::move(v), type);
 }
 
 std::vector<Mem::Object> Mer::InitList::get_array()
@@ -399,7 +407,7 @@ std::vector<Mem::Object> Mer::InitList::get_array()
 
 Mer::InitList::~InitList()
 {
-	for (auto &a : init_v)
+	for (auto& a : init_v)
 		delete a;
 }
 
@@ -413,7 +421,7 @@ Mem::Object Mer::ImplicitConvertion::execute()
 Mem::Object Mer::ContainerIndex::execute()
 {
 	auto tmp = expr->execute();
-	return mem[mem.get_current()+pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+	return mem[mem.get_current() + pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 }
 
 size_t Mer::ContainerIndex::get_type()
@@ -421,18 +429,14 @@ size_t Mer::ContainerIndex::get_type()
 	return type;
 }
 
-Mer::EmptyList::EmptyList(size_t t, size_t sz):type_code(t),size(sz)
+Mer::EmptyList::EmptyList(size_t t, size_t sz) :type_code(t), size(sz)
 {
 	for (size_t i = 0; i < sz; i++)
 	{
-		init_v.push_back(new Expr(new LConV(Mem::create_var_t(t),t)));
+		init_v.push_back(new LConV(Mem::create_var_t(t), t));
 	}
 }
 
-Mem::Object Mer::EmptyList::execute()
-{
-	return nullptr;
-}
 
 size_t Mer::ContainerGloIndex::get_pos()
 {
@@ -446,27 +450,20 @@ Mem::Object Mer::ContainerGloIndex::execute()
 	return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 }
 
-Mer::NewExpr::NewExpr()
+Mer::NewExpr::NewExpr(size_t _t) :type_code(_t)
 {
-	token_stream.match(NEW);
-	size_t type_code = Mem::get_type_code();
 	if (token_stream.this_tag() == LPAREN)
 	{
-		expr= (new Expr(type_code))->tree;
-	}
-	else if (token_stream.this_tag() == BEGIN)
-	{
-		auto _result = find_ustructure_t(type_code);
-		expr = new StructureInitList(_result->mapping,type_code);
+		expr = (new Expr(type_code))->tree;
 	}
 	else if (token_stream.this_tag() == SEMI)
 	{
 		auto insertion = Mem::create_var_t(type_code);
-		expr = new LConV(insertion,type_code);
+		expr = new LConV(insertion, type_code);
 	}
 	if (expr->get_type() != type_code)
 	{
-		throw Error("new-type not matched from " + type_to_string(expr->get_type())+" to "+type_to_string(type_code));
+		throw Error("new-type not matched from " + type_to_string(expr->get_type()) + " to " + type_to_string(type_code));
 	}
 }
 
@@ -486,7 +483,7 @@ Mer::GetAdd::GetAdd()
 
 size_t Mer::GetAdd::get_type()
 {
-	return type+1;
+	return type + 1;
 }
 
 Mem::Object Mer::GetAdd::execute()
@@ -498,7 +495,7 @@ Mer::RmRef::RmRef()
 {
 	token_stream.match(MUL);
 	auto name = Id::get_value(token_stream.this_token());
-	auto result=this_namespace->sl_table->find(name);
+	auto result = this_namespace->sl_table->find(name);
 	if (result == nullptr)
 		throw Error("Var " + name + "no found");
 	id = Parser::parse_var(result);
@@ -507,7 +504,7 @@ Mer::RmRef::RmRef()
 
 size_t Mer::RmRef::get_type()
 {
-	return type-1;
+	return type - 1;
 }
 Mem::Object Mer::RmRef::execute()
 {
@@ -526,7 +523,7 @@ Mem::Object Mer::Delete::execute()
 	return nullptr;
 }
 
-Mer::Index::Index(ParserNode * l, size_t _index, size_t _type) :left(l), index(_index), type(_type)
+Mer::Index::Index(ParserNode* l, size_t _index, size_t _type) :left(l), index(_index), type(_type)
 {
 	if (_type == -1)
 		type = left->get_type();
@@ -539,4 +536,43 @@ Mem::Object Mer::Index::execute()
 size_t Mer::Index::get_type()
 {
 	return type;
+}
+
+ParserNode* Mer::Parser::new_statement()
+{
+	token_stream.match(NEW);
+	size_t type_code = Mem::get_type_code();
+	if (type_name_mapping.find(type_code) != type_name_mapping.end())
+	{
+		return new NewComplex(type_code);
+	}
+	return new NewExpr(type_code);
+}
+
+Mer::NewComplex::NewComplex(size_t _t) :type_code(_t)
+{
+	if (token_stream.this_tag() == BEGIN)
+	{
+		auto _result = find_ustructure_t(type_code);
+		//particular mem leak;
+		expr = (new StructureInitList(_result->mapping, type_code))->get_exprs();
+	}
+
+	else if (token_stream.this_tag() == SEMI)
+	{
+		//particular mem leak;
+		expr = (new DefaultInitList(type_code))->get_exprs();
+	}
+}
+
+Mem::Object Mer::NewComplex::execute()
+{
+	size_t start_pos=mem.new_obj();
+	mem[start_pos] = expr[0]->execute()->clone();
+	for (size_t i = 1; i < expr.size(); i++)
+	{
+		size_t tmp = mem.new_obj();
+		mem[tmp] = expr[i]->execute()->clone();
+	}
+	return std::make_shared<Mem::Pointer>(start_pos);
 }

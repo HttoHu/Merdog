@@ -189,21 +189,30 @@ Mem::Object Mer::Print::execute()
 	return nullptr;
 }
 
-Mer::NamePart::NamePart()
+Mer::NamePart::NamePart(size_t _type_code):type_code(_type_code)
 {
+	// pointer
 	if (token_stream.this_tag() == MUL)
 	{
 		pointer = true;
 		token_stream.match(MUL);
 	}
+	// structure
+
 	id = token_stream.this_token();
 	token_stream.match(ID);
+	auto struct_result = find_ustructure(_type_code);
+	if (struct_result != nullptr)
+	{
+		count = struct_result->STMapping.size();
+	}
+	// array
 	if (token_stream.this_tag() == LSB)
 	{
 		arr = true;
 		token_stream.match(LSB);
 		auto c = token_stream.this_token();
-		count = Integer::get_value(c);
+		count *= Integer::get_value(c);
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
 	}
@@ -212,17 +221,11 @@ Mer::NamePart::NamePart()
 
 Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 {
-	NamePart name_part;
+	NamePart name_part(t);
 	id = name_part.get_id();
-	is_arr = name_part.is_array();
-	if (name_part.is_pointer())
-	{
-		is_p = true;
-		type_code++;
-	}
-	// manage to process array 
 	if (name_part.is_array())
 	{
+		is_array = true;
 		size = name_part.get_count();
 		if (token_stream.this_tag() == ASSIGN)
 		{
@@ -234,8 +237,18 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		}
 		return;
 	}
+
+	if (name_part.is_pointer())
+	{
+		is_pointer= true;
+		type_code++;
+	}
+	// manage to process array 
+
 	if (type_name_mapping.find(type_code) != type_name_mapping.end())
 	{
+		is_struct = true;
+		size = name_part.get_count();
 		UStructure* result = find_ustructure_t(type_code);
 		if (token_stream.this_tag() == BEGIN)
 			expr = new StructureInitList(result->mapping);
@@ -252,28 +265,27 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	if (token_stream.this_tag() == ASSIGN)
 	{
 tt:		token_stream.match(ASSIGN);
-		expr = (new Expr(type_code))->root();
+		expr =  Expr(type_code).root();
 		if (type_code != expr->get_type())
 			throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
 	}
-
 	throw Error("::VarDeclUnit::VarDeclUnit(size_t t) : try to init a non-init variable");
 }
 inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)
 {
-	if(var_unit->arr())
+	if(var_unit->is_array)
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type , pos, ESymbol::SARRAY));
-	else if (var_unit->pointer())
+	else if (var_unit->is_pointer)
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type+1, pos));
 	else
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type, pos));
 }
 inline void _record_glo_id(Mer::VarDeclUnit* var_unit, size_t type, size_t pos)
 {
-	if (var_unit->arr())
+	if (var_unit->is_array)		
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos, ESymbol::SARRAY));
-	else if (var_unit->pointer())
+	else if (var_unit->is_pointer)
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type+1, pos));
 	else
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos));
@@ -294,9 +306,9 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	}
 	for (auto& a : vec)
 	{
-		if (a->arr())
+		if (a->is_array)
 		{
-			std::vector<Expr*> arr;
+			std::vector<ParserNode*> arr;
 			auto exprs_info = a->get_expr();
 			if (typeid(*exprs_info) == typeid(InitList))
 				arr = static_cast<InitList*>(a->get_expr())->exprs();
@@ -304,14 +316,25 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
 			exprs.insert(exprs.end(), arr.begin(), arr.end());
 		}
+		else if (a->is_struct)
+		{
+			std::vector<ParserNode*> arr;
+			auto exprs_info = a->get_expr();
+			if (typeid(*exprs_info) == typeid(StructureInitList))
+				arr = static_cast<StructureInitList*>(a->get_expr())->get_exprs();
+			else
+				arr = static_cast<DefaultInitList*>(a->get_expr())->get_exprs();
+			exprs.insert(exprs.end(), arr.begin(), arr.end());
+		}
 		else {
-			exprs.push_back(static_cast<Expr*>(a->get_expr()));
+			exprs.push_back(a->get_expr());
 		}
 	}
 }
 
 Mem::Object Mer::LocalVarDecl::execute()
 {
+	//std::cout << sum;
 	for (int i = 0; i < sum; i++) {
 		mem[mem.get_current() + pos + i] = exprs[i]->execute()->clone();
 	}
@@ -331,13 +354,13 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 		_record_glo_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 	for (auto& a : vec)
 	{
-		if (a->arr())
+		if (a->is_array)
 		{
 			auto arr = static_cast<InitList*>(a->get_expr())->exprs();
 			exprs.insert(exprs.end(), arr.begin(), arr.end());
 		}
 		else {
-			exprs.push_back(static_cast<Expr*>(a->get_expr()));
+			exprs.push_back(static_cast<ParserNode*>(a->get_expr()));
 		}
 	}
 }

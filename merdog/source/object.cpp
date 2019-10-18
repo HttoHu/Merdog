@@ -151,13 +151,6 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 		return std::make_shared<Bool>(true);
 	case STRING:
 		return std::make_shared<String>("");
-	case ID:
-	{
-		auto t = find_ustructure_t(type);
-		return std::make_shared<USObject>(t->init());
-	}
-	default:
-		return std::make_shared<USObject>(find_ustructure_t(type)->init());
 	}
 }
 
@@ -242,7 +235,7 @@ Mer::Mem::Object Mer::Mem::Pointer::clone() const
 
 Object Mer::Mem::Pointer::operator[](Object v)
 {
-	return mem[pos]->operator[](v);
+	return mem[pos + Mem::get_raw<int>(v)];
 }
 
 Object Mer::Mem::String::operator[](Object v)

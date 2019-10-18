@@ -101,7 +101,7 @@ Param * Mer::Parser::build_param()
 			token_stream.next();
 			type++;
 		}
-		auto name = new NamePart();
+		auto name = new NamePart(type);
 
 		size_t pos = mem.push(name->get_count())-1;
 		tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos,es));
