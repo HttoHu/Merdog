@@ -235,7 +235,7 @@ Mer::Mem::Object Mer::Mem::Pointer::clone() const
 
 Object Mer::Mem::Pointer::operator[](Object v)
 {
-	return mem[pos + Mem::get_raw<int>(v)];
+	return mem[pos + Mem::get_raw<size_t>(v)];
 }
 
 Object Mer::Mem::String::operator[](Object v)
@@ -246,4 +246,24 @@ Object Mer::Mem::String::operator[](Object v)
 std::string Mer::type_to_string(size_t type_code)
 {
 	return Mem::type_to_string(Mem::BasicType(type_code));
+}
+
+Object Mer::Mem::Head::operator=(Object v)
+{
+	auto v_pos = std::static_pointer_cast<Head>(v)->pos;
+	for (int i = 0; i < obj_size; i ++)
+	{
+		mem[i + pos] = mem[i + v_pos]->clone();
+	}
+	return v;
+}
+
+Object Mer::Mem::Head::operator[](Object v)
+{
+	return mem[pos + Mem::get_raw<size_t>(v) + mem.get_current() ];
+}
+
+Object Mer::Mem::Head::clone() const
+{
+	return std::make_shared<Head>(pos - 1, type, obj_size);
 }

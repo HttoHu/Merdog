@@ -390,11 +390,11 @@ namespace Mer
 			}
 			std::string str;
 		};
-		class InitListObj :public Value
+		class ObjList :public Value
 		{
 		public:
-			InitListObj(std::vector<Object>&& lst, size_t type_c) :elems(lst), type_code(type_c) {}
-			InitListObj(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
+			ObjList(std::vector<Object>&& lst, size_t type_c) :elems(lst), type_code(type_c) {}
+			ObjList(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
 			virtual Object operator[](Object v)
 			{
 				return elems[std::static_pointer_cast<Int>(v)->get_value()];
@@ -427,6 +427,22 @@ namespace Mer
 			size_t get_pos() { return pos; }
 		private:
 			size_t pos;
+		};
+		// head contains type and obj_size, for instance 
+		// coor has two member x and y, and when you create a coor obj, we should push a head to the memory
+		// to know some info of struct, anothor example is array. 
+		// the obj applies to pass function none-basic argument, and return array or structure.
+		class Head :public Value
+		{
+		public:
+			Head(size_t _pos, size_t _type,size_t sz) :pos(_pos+1lu),type(_type),obj_size(sz) {}
+			Object operator=(Object v)override;
+			Object operator[](Object v)override;
+			Object clone()const override;
+		private:
+			size_t type;
+			size_t pos;
+			size_t obj_size;
 		};
 		// get the raw value of the Mem::xxx 
 		template<typename T>

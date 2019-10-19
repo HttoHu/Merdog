@@ -216,7 +216,6 @@ Mer::NamePart::NamePart(size_t _type_code):type_code(_type_code)
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
 	}
-
 }
 
 Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
@@ -226,7 +225,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	if (name_part.is_array())
 	{
 		is_array = true;
-		size = name_part.get_count();
+		size = name_part.get_count()+1;
 		if (token_stream.this_tag() == ASSIGN)
 		{
 			token_stream.match(ASSIGN);
@@ -248,7 +247,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	if (type_name_mapping.find(type_code) != type_name_mapping.end())
 	{
 		is_struct = true;
-		size = name_part.get_count();
+		size = name_part.get_count()+1;
 		UStructure* result = find_ustructure_t(type_code);
 		if (token_stream.this_tag() == BEGIN)
 			expr = new StructureInitList(result->mapping);
@@ -308,6 +307,8 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	{
 		if (a->is_array)
 		{
+			// insert head on the array front.
+			exprs.push_back(new LConV(std::make_shared<Mem::Head>(pos, type, a->get_size()-1),type));
 			std::vector<ParserNode*> arr;
 			auto exprs_info = a->get_expr();
 			if (typeid(*exprs_info) == typeid(InitList))
@@ -318,6 +319,8 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 		}
 		else if (a->is_struct)
 		{
+			// insert head on the structure front.
+			exprs.push_back(new LConV(std::make_shared<Mem::Head>(pos, type, a->get_size() - 1), type));
 			std::vector<ParserNode*> arr;
 			auto exprs_info = a->get_expr();
 			if (typeid(*exprs_info) == typeid(StructureInitList))
@@ -334,7 +337,6 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 
 Mem::Object Mer::LocalVarDecl::execute()
 {
-	//std::cout << sum;
 	for (int i = 0; i < sum; i++) {
 		mem[mem.get_current() + pos + i] = exprs[i]->execute()->clone();
 	}

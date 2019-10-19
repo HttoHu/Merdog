@@ -10,6 +10,7 @@
 
 Mer::Variable::Variable(WordRecorder* wr)
 {
+	// cos head, we need add 1 to get real pos;
 	pos = static_cast<VarIdRecorder*>(wr)->pos;
 	type = wr->get_type();
 }
@@ -272,9 +273,11 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		// if the var is not an array but supports [] operator.
 		if (var_info->es != SARRAY)
 		{
+		
 			return new Index(new Variable(type, var_info->get_pos()), off);
 		}
-		return new Variable(type, var_info->get_pos() + off);
+		// over head
+		return new Variable(type, var_info->get_pos() + (size_t)(off)+1);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);

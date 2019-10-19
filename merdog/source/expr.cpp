@@ -133,7 +133,7 @@ ParserNode* Mer::Expr::member_visit()
 		auto seeker = ustruct->get_member_info(Id::get_value(member_id));
 		//std::cout << "POS:"<<result->get_pos() + seeker.first;
 		if (tok->get_tag() == DOT)
-			result = new Variable(seeker.first, result->get_pos() + seeker.second);
+			result = new Variable(seeker.first, result->get_pos() + seeker.second+1);
 		else if (tok->get_tag() == PTRVISIT)
 		{
 			result = new Index(result, seeker.second, seeker.first);
@@ -378,13 +378,13 @@ Mem::Object Mer::InitList::execute()
 	{
 		auto tmp = init_v[0]->execute();
 		v = std::vector<Mem::Object>(size, tmp);
-		return std::make_shared<Mem::InitListObj>(std::move(v), type);
+		return std::make_shared<Mem::ObjList>(std::move(v), type);
 	}
 	for (size_t i = 0; i < v.size(); i++)
 	{
 		v[i] = init_v[i]->execute();
 	}
-	return std::make_shared<Mem::InitListObj>(std::move(v), type);
+	return std::make_shared<Mem::ObjList>(std::move(v), type);
 }
 
 std::vector<Mem::Object> Mer::InitList::get_array()
@@ -536,6 +536,11 @@ Mem::Object Mer::Index::execute()
 size_t Mer::Index::get_type()
 {
 	return type;
+}
+
+size_t Mer::Index::get_pos()
+{
+	return Mem::get_raw<int>(left->execute())+index;
 }
 
 ParserNode* Mer::Parser::new_statement()

@@ -25,6 +25,8 @@ namespace Mer
 		Index(ParserNode* l, size_t _index, size_t _type = -1);
 		Mem::Object execute()override;
 		size_t get_type()override;
+		// just for struct pointer!!!
+		size_t get_pos()override;
 	private:
 		size_t type;
 		ParserNode* left;

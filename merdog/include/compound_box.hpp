@@ -74,7 +74,6 @@ namespace Mer
 		std::vector<ParserNode*> vec;
 		size_t type_code;
 	};
-
 	// you can get the struct_info by its name
 	extern std::map<std::string, UStructure*> ustructure_map;
 	// get the struct name by its type code.
