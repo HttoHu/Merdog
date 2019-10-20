@@ -187,11 +187,12 @@ namespace Mer
 	public:
 		NewComplex(size_t _t);
 		size_t get_type()override {
-			return type_code+1;
+			return type_code;
 		}
 		Mem::Object execute()override;
 	private:
 		std::vector<ParserNode*> expr;
+		size_t count;
 		size_t type_code;
 	};
 	class NewExpr :public ParserNode

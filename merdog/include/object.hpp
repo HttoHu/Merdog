@@ -440,8 +440,8 @@ namespace Mer
 			Object operator[](Object v)override;
 			Object clone()const override;
 		private:
-			size_t type;
 			size_t pos;
+			size_t type;
 			size_t obj_size;
 		};
 		// get the raw value of the Mem::xxx 

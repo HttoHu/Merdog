@@ -201,11 +201,6 @@ Mer::NamePart::NamePart(size_t _type_code):type_code(_type_code)
 
 	id = token_stream.this_token();
 	token_stream.match(ID);
-	auto struct_result = find_ustructure(_type_code);
-	if (struct_result != nullptr)
-	{
-		count = struct_result->STMapping.size();
-	}
 	// array
 	if (token_stream.this_tag() == LSB)
 	{
@@ -245,22 +240,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	// manage to process array 
 
 	if (type_name_mapping.find(type_code) != type_name_mapping.end())
-	{
 		is_struct = true;
-		size = name_part.get_count()+1;
-		UStructure* result = find_ustructure_t(type_code);
-		if (token_stream.this_tag() == BEGIN)
-			expr = new StructureInitList(result->mapping);
-		else if (token_stream.this_tag() == ASSIGN)
-		{
-			goto tt;
-		}
-		else
-		{
-			expr = new DefaultInitList(type_code);
-		}
-		return;
-	}
 	if (token_stream.this_tag() == ASSIGN)
 	{
 tt:		token_stream.match(ASSIGN);
@@ -315,18 +295,6 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 				arr = static_cast<InitList*>(a->get_expr())->exprs();
 			else
 				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
-			exprs.insert(exprs.end(), arr.begin(), arr.end());
-		}
-		else if (a->is_struct)
-		{
-			// insert head on the structure front.
-			exprs.push_back(new LConV(std::make_shared<Mem::Head>(pos, type, a->get_size() - 1), type));
-			std::vector<ParserNode*> arr;
-			auto exprs_info = a->get_expr();
-			if (typeid(*exprs_info) == typeid(StructureInitList))
-				arr = static_cast<StructureInitList*>(a->get_expr())->get_exprs();
-			else
-				arr = static_cast<DefaultInitList*>(a->get_expr())->get_exprs();
 			exprs.insert(exprs.end(), arr.begin(), arr.end());
 		}
 		else {

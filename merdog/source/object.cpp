@@ -235,7 +235,7 @@ Mer::Mem::Object Mer::Mem::Pointer::clone() const
 
 Object Mer::Mem::Pointer::operator[](Object v)
 {
-	return mem[pos + Mem::get_raw<size_t>(v)];
+	return mem[pos + Mem::get_raw<int>(v)];
 }
 
 Object Mer::Mem::String::operator[](Object v)
@@ -260,10 +260,10 @@ Object Mer::Mem::Head::operator=(Object v)
 
 Object Mer::Mem::Head::operator[](Object v)
 {
-	return mem[pos + Mem::get_raw<size_t>(v) + mem.get_current() ];
+	return mem[pos + Mem::get_raw<int>(v)];
 }
 
 Object Mer::Mem::Head::clone() const
 {
-	return std::make_shared<Head>(pos - 1, type, obj_size);
+	return std::make_shared<Head>(pos-1, type, obj_size);
 }

@@ -560,6 +560,7 @@ Mer::NewComplex::NewComplex(size_t _t) :type_code(_t)
 	{
 		auto _result = find_ustructure_t(type_code);
 		//particular mem leak;
+		count = _result->mapping.size();
 		expr = (new StructureInitList(_result->mapping, type_code))->get_exprs();
 	}
 
@@ -579,5 +580,5 @@ Mem::Object Mer::NewComplex::execute()
 		size_t tmp = mem.new_obj();
 		mem[tmp] = expr[i]->execute()->clone();
 	}
-	return std::make_shared<Mem::Pointer>(start_pos);
+	return std::make_shared<Mem::Head>(start_pos-1,type_code,count);
 }
