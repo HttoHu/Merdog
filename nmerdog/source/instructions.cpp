@@ -1,9 +1,10 @@
 #include "../include/instructions.hpp"
 #include "../include/memory.hpp"
 #include <stdio.h>
+
 void mer::ins::push(const instruction_param& p)
 {
-	for (size_t i = 0; i < p.first; i++)
+	for (int i = 0; i < p.first; i++)
 	{
 		*memory[reg::rsp++] = (char)(p.second >> (8 * i));
 	}

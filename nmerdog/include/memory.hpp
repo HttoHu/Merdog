@@ -24,14 +24,15 @@
 */
 #pragma once
 #include <iostream>
-#define MERDOG_MEM_SIZE 4096
+#define MERDOG_MEM_SIZE 4096*10
+#define LIT_END_POS=4096;
 namespace mer
 {
 	class Memory
 	{
 	public:
 		Memory();
-		char* operator[](size_t index)
+		char* operator[](int index)
 		{
 			return mem + index;
 		}
@@ -39,12 +40,15 @@ namespace mer
 		{
 			delete[]mem;
 		}
+		
 	private:
+		int size = MERDOG_MEM_SIZE;
+		void alloc();
 		char* mem;
 	};
 	extern Memory memory;
 	template<typename _Ty>
-	_Ty& data_cast(size_t sz) {
+	_Ty& data_cast(int sz) {
 		return *(_Ty*)(memory[sz]);
 	}
 }

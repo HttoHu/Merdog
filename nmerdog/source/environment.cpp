@@ -2,8 +2,7 @@
 namespace mer
 {
 	// def some vars.
-	size_t pc = 0;
-	int64_t reg::rsp = 0;
+	int64_t Reg[16] = { 0 };
 	std::vector<std::pair<instruction, instruction_param >> ins_table;
 	void run()
 	{
@@ -15,7 +14,7 @@ namespace mer
 				pc++;
 			}
 		}
-		catch (size_t a)
+		catch (index_type a)
 		{
 			std::cout << "program has exited, exit code " << a<<std::endl;
 		}

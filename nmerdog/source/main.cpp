@@ -1,11 +1,19 @@
 #include <iostream>
 #include <time.h>
+#include <fstream>
 #include "../include/instructions.hpp"
-/*
-45 F8 03 00 00 00 mov         dword ptr [a],3
-	 5: 	a = 34;
-0062346F C7 45 F8 22 00 00 00 mov         dword ptr [a],22h
-*/
+
+std::string get_file_content(const std::string& filename)
+{
+	using namespace std;
+	ifstream ifs(filename);
+	if (!ifs)
+	{
+		throw std::runtime_error("invalid file");
+	}
+	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+	return file_content;
+}
 int main()
 {
 	char ad = 32;
