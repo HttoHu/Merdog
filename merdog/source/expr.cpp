@@ -107,7 +107,7 @@ Mer::ParserNode* Mer::Expr::term()
 ParserNode* Mer::Expr::member_visit()
 {
 	auto result = factor();
-	while (token_stream.this_token()->get_tag() == DOT || token_stream.this_token()->get_tag() == PTRVISIT)
+	while (token_stream.this_token()->get_tag() == DOT)
 	{
 		auto tok = token_stream.this_token();
 		token_stream.next();
@@ -132,14 +132,7 @@ ParserNode* Mer::Expr::member_visit()
 		// find member index and type;
 		auto seeker = ustruct->get_member_info(Id::get_value(member_id));
 		//std::cout << "POS:"<<result->get_pos() + seeker.first;
-		if (tok->get_tag() == DOT)
-			result = new Variable(seeker.first, result->get_pos() + seeker.second+1);
-		else if (tok->get_tag() == PTRVISIT)
-		{
-			result = new Index(result, seeker.second, seeker.first);
-		}
-		else
-			throw Error("parser has exited!");
+		result = new Index(result, seeker.second, seeker.first);
 	}
 	return result;
 }
@@ -217,6 +210,11 @@ Mer::ParserNode* Mer::Expr::factor()
 	}
 	case NULLPTR:
 		token_stream.match(NULLPTR);
+		if(expr_type>BASICTYPE_MAX_CODE)
+		{
+			auto result = find_ustructure_t(expr_type);
+			return new LConV(std::make_shared<Mem::Head>(-1,expr_type,result->mapping.size()), expr_type);
+		}
 		return new LConV(std::make_shared<Mem::Pointer>(-1), expr_type);
 	default:
 		return new NonOp();
@@ -540,7 +538,7 @@ size_t Mer::Index::get_type()
 
 size_t Mer::Index::get_pos()
 {
-	return Mem::get_raw<int>(left->execute())+index;
+	return Mem::get_raw<int>(left->execute()) + index;
 }
 
 ParserNode* Mer::Parser::new_statement()
@@ -573,12 +571,12 @@ Mer::NewComplex::NewComplex(size_t _t) :type_code(_t)
 
 Mem::Object Mer::NewComplex::execute()
 {
-	size_t start_pos=mem.new_obj();
+	size_t start_pos = mem.new_obj();
 	mem[start_pos] = expr[0]->execute()->clone();
 	for (size_t i = 1; i < expr.size(); i++)
 	{
 		size_t tmp = mem.new_obj();
 		mem[tmp] = expr[i]->execute()->clone();
 	}
-	return std::make_shared<Mem::Head>(start_pos-1,type_code,count);
+	return std::make_shared<Mem::Head>(start_pos - 1, type_code, count);
 }

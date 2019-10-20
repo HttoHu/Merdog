@@ -103,7 +103,7 @@ Param * Mer::Parser::build_param()
 		}
 		auto name = new NamePart(type);
 		size_t pos = mem.push(name->get_count())-1;
-		if (name->is_array)
+		if (name->is_array())
 		{
 			pos -= mem.get_current();
 			tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos, es));

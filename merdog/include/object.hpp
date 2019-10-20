@@ -15,7 +15,7 @@
 #include <vector>
 #include "type.hpp"
 #include "error.hpp"
-#define BASICTYPE_MAX_CODE 7
+const int BASICTYPE_MAX_CODE = 7;
 namespace Mer
 {
 	class StructureBase;
