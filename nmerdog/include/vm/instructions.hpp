@@ -1,6 +1,6 @@
 #pragma once
-#include "environment.hpp"
-#include "memory.hpp"
+#include "../environment.hpp"
+#include "../memory.hpp"
 namespace mer
 {
 	class Memory;

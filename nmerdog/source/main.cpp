@@ -1,7 +1,7 @@
 #include <iostream>
 #include <time.h>
 #include <fstream>
-#include "../include/instructions.hpp"
+#include "../include/vm/instructions.hpp"
 
 std::string get_file_content(const std::string& filename)
 {

@@ -3,18 +3,23 @@
 #include <set>
 #include <tuple>
 #include <vector>
+#include <bitset>
+#define RSP 0
+#define RAX 1
+#define RBX 2
 namespace mer
 {
 	struct instruction_param
 	{
-		int first;
-		int second;
-		int dest;
+		int64_t first;
+		int64_t  second;
+		int64_t  dest;
 	};
 	using instruction = void(*)(const instruction_param & p);
 	// rsp <=Reg[0]
 	// rax <=Reg[1]
-	std::set<int> residual_reg;
+	// rbx <=Reg[2]
+	std::bitset<16> residual_register;
 	extern int64_t Reg[16];
 	void init_merdog();
 	void run();
