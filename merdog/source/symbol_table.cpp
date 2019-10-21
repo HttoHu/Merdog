@@ -1,4 +1,4 @@
-#include "symbol_table.hpp"
+#include "../include/symbol_table.hpp"
 
 std::string mer::get_tmp_var_name(bool c)
 {

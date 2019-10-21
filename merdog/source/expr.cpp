@@ -14,5 +14,7 @@ namespace mer
 	std::string BinOp::get_gen()
 	{
 		std::string ret = left->get_gen();
+		ret += right->get_gen();
+		return ret;
 	}
 }
