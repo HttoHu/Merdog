@@ -1,33 +1,39 @@
 #pragma once
-#include <string>
-#include "object.hpp"
-namespace Mer
+#include "lexer.hpp"
+#include <memory>
+namespace mer
 {
+	class Type;
+	enum class NodeTag:int {
+		CINTV
+	};
 	class ParserNode
 	{
 	public:
-		ParserNode()
-		{
-			line_no = get_line_no();
-		}
-		virtual size_t get_pos() { return 0; }
+		enum NodeTag {
+			CINTV=0,
+			BINOP,
+		};
+		ParserNode(NodeTag nt) : node_tag(nt) {}
 		virtual ~ParserNode() {}
-		virtual std::string to_string()
+		virtual std::string get_gen();
+		virtual std::string to_string();
+		virtual Type* get_type();
+		virtual void* get_data() { return nullptr; }
+
+		void set_type(Type* t)
 		{
-			return "<empty_node>";
+			type = t
 		}
-		virtual bool constant()const
-		{
-			return false;
-		}
-		virtual size_t get_type()
-		{
-			return 0;
-		}
-		virtual Mem::Object execute() 
-		{
-			throw std::runtime_error("called by an indefinite var");
-		}
-		size_t line_no;
+		NodeTag get_tag() { return node_tag; }
+	protected:
+		Type* type;
+		NodeTag node_tag;
 	};
+	template<typename _Ty>
+	_Ty void_cast(void* p)
+	{
+		return *(_Ty*)(p);
+	}
+	using Node = std::shared_ptr<ParserNode>;
 }

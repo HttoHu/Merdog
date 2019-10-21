@@ -1,85 +1,54 @@
+/*
+	MIT License
+
+	Copyright (c) 2019 Htto Hu
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+*/
 #pragma once
-#include <vector>
-#include <stack>
-#include <map>
-#include <set>
-#include "object.hpp"
-namespace Mer
+#include <iostream>
+#define MERDOG_MEM_SIZE 4096*10
+#define LIT_END_POS=4096;
+namespace mer
 {
-	//stack_mem include static_mem
-	/*
-		we use get_current() as off_set to get the stack_obj's add.
-	*/
 	class Memory
 	{
 	public:
-		Memory()
+		Memory();
+		char* operator[](int index)
 		{
-			stack_mem = new Mem::Object[capacity];
-			block_flag.push_back(0);
+			return mem + index;
 		}
-		size_t new_block()
-		{
-			block_flag.push_back(index);
-			return index;
-		}
-		void new_func(int siz)
-		{
-			current += siz;
-			call_stack.push(siz);
-		}
-		void end_func()
-		{
-			current -= call_stack.top();
-
-			call_stack.pop();
-		}
-		size_t push(int size);
-		size_t push();
-		size_t end_block();
-		size_t new_obj();
-		void del_obj(size_t sz);
-		size_t get_current()
-		{
-			return current;
-		}
-		Mem::Object& operator[]  (size_t in);
 		~Memory()
 		{
-			delete[] stack_mem;
+			delete[]mem;
 		}
-		size_t& get_index() {
-			return index;
-		}
-		void check_heap()
-		{
-			if (heap_index > 0.4 * capacity)
-			{ 
-				alloc();
-				capacity *= 2;
-			}
-		}
+		
 	private:
-		void check()
-		{
-			while (index+current> 0.5L*capacity)
-			{ 
-				alloc();
-				capacity *= 2;
-				heap_pos *= 2;
-			}
-		}
-		//alloc for memory
+		int size = MERDOG_MEM_SIZE;
 		void alloc();
-		size_t index = 0;
-		size_t current = 0;
-		size_t capacity = 2048;
-		std::stack<size_t> call_stack;
-		std::vector<size_t> block_flag;
-		Mem::Object *stack_mem;
-		std::stack<size_t>free_pos_stack;
-		size_t heap_index = 1024;
-		size_t heap_pos=0;
+		char* mem;
 	};
-	extern Memory mem;
+	extern Memory memory;
+	template<typename _Ty>
+	_Ty& data_cast(int sz) {
+		return *(_Ty*)(memory[sz]);
+	}
 }

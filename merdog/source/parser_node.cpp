@@ -9,12 +9,8 @@ namespace mer
 	{
 		 return "empty node";
 	}
-	instruction ParserNode::get_instruction()
+	Type* ParserNode::get_type()
 	{
-		return nullptr;
-	}
-	size_t ParserNode::get_type()
-	{
-		return 0;
+		return type;
 	}
 }

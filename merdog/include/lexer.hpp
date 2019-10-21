@@ -13,30 +13,31 @@
 #include <string>
 #include <iostream>
 #include "error.hpp"
-namespace Mer
+namespace mer
 {
 	enum Tag
 	{
-		EPT,
+		EPT=0,
 		IMPORT, NAMESPACE, STRUCT,
 		PRINT, CAST,
-		SADD, SSUB, SMUL, SDIV, GET_ADD,PTRVISIT,
+		SADD, SSUB, SMUL, SDIV, GET_ADD, PTRVISIT,
 		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
 		PROGRAM,
 		GE, LE, GT, LT, NE, EQ,
 		FUNCTION, RETURN,
-		IF, ELSE_IF, ELSE, DO,WHILE, FOR, BREAK, CONTINUE,SWITCH,CASE,
+		IF, ELSE_IF, ELSE, DO, WHILE, FOR, BREAK, CONTINUE, SWITCH, CASE,
 		DEFAULT,
-		NEW,DELETE,
+		NEW, DELETE,
 		NOT, AND, OR,
 		REF, BEGIN, END, SEMI, DOT, COMMA,
 		ID, INTEGER, REAL, COLON,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
 		TTRUE, TFALSE,
-		LPAREN, RPAREN,LSB,RSB,
+		LPAREN, RPAREN, LSB, RSB,
 		ENDOF, ENDL,
-		STRING,NULLPTR,
+		STRING, NULLPTR,
 	};
+	using index_type = int;
 	extern std::map<Tag, std::string> TagStr;
 	class Token
 	{
@@ -60,24 +61,24 @@ namespace Mer
 	class Id final :public Token
 	{
 	public:
-		Id(const std::string &str) :Token(ID), id_name(str)
+		Id(const std::string& str) :Token(ID), id_name(str)
 		{
 			id_table().front().insert({ id_name ,this });
 		}
-		static std::string get_value(Token *tok)
+		static std::string get_value(Token* tok)
 		{
 			if (tok->check(ID))
 				return static_cast<Id*>(tok)->id_name;
-			throw Mer::Error(tok->to_string() +  "-convert failed(Token can't convert to Id).");
+			throw mer::Error(tok->to_string() + "-convert failed(Token can't convert to Id).");
 		}
-		static std::deque<std::map<std::string, Id*>> &id_table()
+		static std::deque<std::map<std::string, Id*>>& id_table()
 		{
 			static std::deque<std::map<std::string, Id*>> ret(1);
 			return ret;
 		}
 		static Id* find(std::string str)
 		{
-			for (size_t i = 0; i < id_table().size(); i++)
+			for (index_type i = 0; i < id_table().size(); i++)
 			{
 				auto result = id_table()[i].find(str);
 				if (result == id_table()[i].end())
@@ -92,10 +93,10 @@ namespace Mer
 		static void print()
 		{
 			int index = 0;
-			for (const auto &a : id_table())
+			for (const auto& a : id_table())
 			{
 				std::cout << "No " << index << " ";
-				for (const auto &b : a)
+				for (const auto& b : a)
 				{
 					std::cout << b.first << "  ";
 				}
@@ -110,13 +111,13 @@ namespace Mer
 	class Integer :public Token
 	{
 	public:
-		Integer(int n) :Token(INTEGER), 
+		Integer(int n) :Token(INTEGER),
 			value(n) {}
-		static int get_value(Token *tok)
+		static int get_value(Token* tok)
 		{
 			if (tok->check(INTEGER))
 				return static_cast<Integer*>(tok)->value;
-			throw Mer::Error("type-convert failed(Token can't convert to Integer).");
+			throw mer::Error("type-convert failed(Token can't convert to Integer).");
 		}
 		std::string to_string()const override {
 			return "<Integer:" + std::to_string(value) + ">";
@@ -128,10 +129,10 @@ namespace Mer
 	{
 	public:
 		Real(double d) :Token(REAL), value(d) {}
-		static double get_value(Token *tok)
+		static double get_value(Token* tok)
 		{
 			return static_cast<Real*>(tok)->value;
-			throw Mer::Error("type-convert failed(Token can't convert to Real).");
+			throw mer::Error("type-convert failed(Token can't convert to Real).");
 		}
 		std::string to_string()const override
 		{
@@ -144,7 +145,7 @@ namespace Mer
 	{
 	public:
 		TokenStream() = default;
-		void push_back(Mer::Token* tok)
+		void push_back(mer::Token* tok)
 		{
 			content.push_back(tok);
 		}
@@ -152,11 +153,13 @@ namespace Mer
 		{
 			content.pop_back();
 		}
-		Token* this_token(size_t sz)
+		void back_to(index_type index);
+		index_type current_index();
+		Token* this_token(index_type sz)
 		{
 			/*while (content[pos+sz]->get_tag() == Tag::ENDL)
 				advance();*/
-			return content[pos+sz];
+			return content[pos + sz];
 		}
 		Token* this_token()
 		{
@@ -175,48 +178,34 @@ namespace Mer
 			advance();
 			return tmp;
 		}
-		void back() {
-			if (this_token()->get_tag() == Tag::ENDL || this_token()->get_tag() == Tag::EPT)
-			{
-				dec();
-				back();
-			}
-			dec();
-		}
-		void dec()
-		{
-			--pos;
-		}
+		void back();
+
 		void add(Token* tok);
 		void advance();
-		void next()
-		{
-			if (this_token()->get_tag() == Tag::ENDL|| this_token()->get_tag() == Tag::EPT)
-			{
-				advance();
-				next();
-			}
-			advance();
-		}
+		void next();
 		void match(Tag t);
 		void print()
 		{
-			for (const auto &a : content)
+			for (const auto& a : content)
 				std::cout << a->to_string();
 		}
 		std::vector<Token*>& _get_content()
 		{
 			return content;
 		}
-		size_t _get_pos()
+		index_type _get_pos()
 		{
 			return pos;
 		}
 		void remove_tokens();
 		void clear();
 	private:
+		void dec()
+		{
+			--pos;
+		}
 		std::vector<Token*> content;
-		size_t pos = 0;
+		index_type pos = 0;
 	};
 	class Endl :public Token
 	{
@@ -225,24 +214,24 @@ namespace Mer
 		{
 			line_no = ++current_line;
 		}
-		static size_t get_value(Token* tok);
+		static index_type get_value(Token* tok);
 
-		static size_t current_line;
+		static index_type current_line;
 		std::string to_string()const override;
-		
+
 	private:
-		size_t line_no;
+		index_type line_no;
 	};
 	class String :public Token
 	{
 	public:
-		static std::string get_value(Token *tok)
+		static std::string get_value(Token* tok)
 		{
 			if (tok->get_tag() != Tag::STRING)
 				throw Error(tok->to_string() + " is not a string");
 			return static_cast<String*>(tok)->value;
 		}
-		String(const std::string&str) :Token(Tag::STRING), value(str) {}
+		String(const std::string& str) :Token(Tag::STRING), value(str) {}
 		std::string to_string()const override
 		{
 			return "<str:" + value + ">";
@@ -250,12 +239,12 @@ namespace Mer
 	private:
 		std::string value;
 	};
-	Token* parse_number(const std::string &str, size_t &pos);
-	Token* parse_word(const std::string &str, size_t &pos);
-	Token* parse_string(const std::string &str, size_t &pos);
-	void build_token_stream(const std::string &content);
+	Token* parse_number(const std::string& str, index_type& pos);
+	Token* parse_word(const std::string& str, index_type& pos);
+	Token* parse_string(const std::string& str, index_type& pos);
+	void build_token_stream(const std::string& content);
 	extern TokenStream token_stream;
-	size_t get_line_no();
+	int get_line_no();
 
 	std::string GIC();
 }

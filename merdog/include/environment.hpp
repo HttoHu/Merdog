@@ -1,17 +1,28 @@
 #pragma once
-#include "lexer.hpp"
-#include <utility>
-#include <memory>
-namespace Mer
+#include <iostream>
+#include <set>
+#include <tuple>
+#include <vector>
+#include <bitset>
+#define RSP 0
+#define RAX 1
+#define RBX 2
+namespace mer
 {
-	using PosPtr = std::shared_ptr<size_t>;
-	extern std::string output_buff;
-	std::string run_interpreter(const std::string&file_content);
-	//std::vector<ParserNode*> del_parser_node_table;
-	extern std::vector<size_t *> _pcs;
-	extern std::vector<std::pair<PosPtr, PosPtr>> _nearest_loop_pos;
-	void new_loop(PosPtr a,PosPtr b);
-	void end_loop();
-	PosPtr& loop_start();
-	PosPtr& loop_end();
+	struct instruction_param
+	{
+		int64_t first;
+		int64_t  second;
+		int64_t  dest;
+	};
+	using instruction = void(*)(const instruction_param & p);
+	// rsp <=Reg[0]
+	// rax <=Reg[1]
+	// rbx <=Reg[2]
+	std::bitset<16> residual_register;
+	extern int64_t Reg[16];
+	void init_merdog();
+	void run();
+	extern int pc;
+	extern std::vector<std::pair<instruction,instruction_param >> ins_table;
 }
