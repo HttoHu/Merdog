@@ -8,5 +8,5 @@ std::string mer::get_tmp_var_name(bool c)
 		index = 0;
 		return "";
 	}
-	return "^" + std::to_string(index++);
+	return "%" + std::to_string(index++);
 }

@@ -6,7 +6,7 @@ namespace mer
 
 
 
-	void create_value_type(std::string name, size_t length);
+	void create_value_type(std::string name, size_t length)
 	{
 		type_map.insert({ name,new Type(Value,name,length) });
 	}

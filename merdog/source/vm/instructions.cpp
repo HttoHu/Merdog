@@ -1,7 +1,7 @@
 #include "../../include/vm/instructions.hpp"
 #include "../../include/memory.hpp"
 #include <stdio.h>
-
+int mer::pc=0;
 void mer::ins::push(const instruction_param& p)
 {
 	for (int i = 0; i < p.first; i++)

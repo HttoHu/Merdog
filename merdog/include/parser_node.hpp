@@ -17,13 +17,13 @@ namespace mer
 		ParserNode(NodeTag nt) : node_tag(nt) {}
 		virtual ~ParserNode() {}
 		virtual std::string get_gen();
+		//get tmp var name;
 		virtual std::string to_string();
 		virtual Type* get_type();
 		virtual void* get_data() { return nullptr; }
-
 		void set_type(Type* t)
 		{
-			type = t
+			type = t;
 		}
 		NodeTag get_tag() { return node_tag; }
 	protected:

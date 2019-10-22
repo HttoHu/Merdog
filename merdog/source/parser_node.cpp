@@ -3,7 +3,7 @@ namespace mer
 {
 	std::string mer::ParserNode::get_gen()
 	{
-		return "empty node";
+		return "";
 	}
 	std::string ParserNode::to_string()
 	{

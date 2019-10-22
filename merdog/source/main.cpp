@@ -1,8 +1,9 @@
 #include <iostream>
 #include <time.h>
 #include <fstream>
-#include "../include/vm/instructions.hpp"
-
+#include "../include/lexer.hpp"
+#include "../include/expr.hpp"
+#include "../include/environment.hpp"
 std::string get_file_content(const std::string& filename)
 {
 	using namespace std;
@@ -16,16 +17,23 @@ std::string get_file_content(const std::string& filename)
 }
 int main()
 {
-	char ad = 32;
-	char bd = 0;
-	using namespace mer;
-	ins_table.push_back({ ins::push,{sizeof(char),32,0x00} });
-	ins_table.push_back({ ins::add<char>,{0x0,0x0,0x1} });
-	ins_table.push_back({ ins::exit,{0x0,0x00,0x0} });
-
-	run();
-
-	std::cout << (int)data_cast<char>(1)<<std::endl;
+	try
+	{
+		mer::init_merdog();
+		std::string input_file = get_file_content("test.mer");
+		mer::build_token_stream(input_file);
+		mer::Node tmp = mer::analyse_expr::expr();
+		//mer::token_stream.print();
+		std::cout << tmp->get_gen();
+	}
+	catch (mer::Error &e)
+	{
+		std::cout << e.what();
+	}
+	catch (...)
+	{
+		std::cout << "Damn 未经处理的异常";
+	}
 	std::cin.get();
 	return 0;
 }

@@ -7,7 +7,7 @@ using namespace mer;
 using TokenMap = std::map<std::string, Token*>;
 using TagStrMap = std::map<Tag, std::string>;
 //==========================================
-size_t mer::Endl::current_line = 0;
+int mer::Endl::current_line = 0;
 TagStrMap	mer::TagStr{
 	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},{PTRVISIT,"PTRVISIT"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
@@ -41,7 +41,7 @@ bool				is_function_args = false;
 //==========================================
 Token* mer::END_TOKEN = new Token(ENDOF);
 TokenStream mer::token_stream;
-Token* mer::parse_number(const std::string& str, size_t& pos)
+Token* mer::parse_number(const std::string& str, int& pos)
 {
 	int ret = 0;
 	for (; pos < str.size(); pos++)
@@ -72,6 +72,27 @@ Token* mer::parse_number(const std::string& str, size_t& pos)
 		}
 	}
 	return new Integer(ret);
+}
+
+std::string mer::tag_to_sign(Tag t)
+{
+	switch (t)
+	{
+	case PLUS:
+		return "+";
+		break;
+	case MINUS:
+		return "-";
+		break;
+	case DIV:
+		return "/";
+		break;
+	case MUL:
+		return "*";
+		break;
+	default:
+		throw Error("unkown sign!");
+	}
 }
 
 Token* mer::parse_word(const std::string& str, index_type& pos)
@@ -159,7 +180,7 @@ Token* mer::parse_string(const std::string& str, index_type& pos)
 void mer::build_token_stream(const std::string& content) {
 	std::string tmp_str;
 	token_stream.push_back(new Endl());
-	for (size_t i = 0; i < content.size(); i++)
+	for (int i = 0; i < content.size(); i++)
 	{
 		switch (content[i])
 		{

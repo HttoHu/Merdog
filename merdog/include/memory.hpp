@@ -25,7 +25,7 @@
 #pragma once
 #include <iostream>
 #define MERDOG_MEM_SIZE 4096*10
-#define LIT_END_POS=4096;
+#define LIT_END_POS 4096;
 namespace mer
 {
 	class Memory

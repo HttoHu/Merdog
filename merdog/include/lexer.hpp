@@ -39,6 +39,8 @@ namespace mer
 	};
 	using index_type = int;
 	extern std::map<Tag, std::string> TagStr;
+
+	std::string tag_to_sign(Tag t);
 	class Token
 	{
 	public:

@@ -19,7 +19,7 @@ namespace mer
 	// rsp <=Reg[0]
 	// rax <=Reg[1]
 	// rbx <=Reg[2]
-	std::bitset<16> residual_register;
+	extern std::bitset<16> residual_register;
 	extern int64_t Reg[16];
 	void init_merdog();
 	void run();
