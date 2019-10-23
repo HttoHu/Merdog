@@ -10,9 +10,13 @@ namespace mer
 	class ParserNode
 	{
 	public:
+		// to identify the node's type.
 		enum NodeTag {
 			CINTV=0,
 			BINOP,
+			NONOP,
+			LOCAL_VARDECl,
+			VARIABLE,
 		};
 		ParserNode(NodeTag nt) : node_tag(nt) {}
 		virtual ~ParserNode() {}

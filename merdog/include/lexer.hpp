@@ -241,9 +241,9 @@ namespace mer
 	private:
 		std::string value;
 	};
-	Token* parse_number(const std::string& str, index_type& pos);
-	Token* parse_word(const std::string& str, index_type& pos);
-	Token* parse_string(const std::string& str, index_type& pos);
+	Token* parse_number(const std::string& str, int& pos);
+	Token* parse_word(const std::string& str, int& pos);
+	Token* parse_string(const std::string& str, int & pos);
 	void build_token_stream(const std::string& content);
 	extern TokenStream token_stream;
 	int get_line_no();

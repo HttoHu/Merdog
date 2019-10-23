@@ -40,6 +40,8 @@ namespace mer
 		TypeProperty type_property;
 		std::string type_name;
 	};
+	// we don't name the function as get_type , because if we do so, we will be puzzled between ParserNode::get_type() and mer::get_type();
+	Type* process_type();
 	void create_value_type(std::string name,size_t length);
 
 }

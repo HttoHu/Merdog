@@ -78,24 +78,30 @@ std::string mer::tag_to_sign(Tag t)
 {
 	switch (t)
 	{
+	case ASSIGN:
+		return "=";
+	case SADD:
+		return "+=";
+	case SSUB:
+		return "-=";
+	case SMUL:
+		return "*=";
+	case SDIV:
+		return "/=";
 	case PLUS:
 		return "+";
-		break;
 	case MINUS:
 		return "-";
-		break;
 	case DIV:
 		return "/";
-		break;
 	case MUL:
 		return "*";
-		break;
 	default:
 		throw Error("unkown sign!");
 	}
 }
 
-Token* mer::parse_word(const std::string& str, index_type& pos)
+Token* mer::parse_word(const std::string& str, int& pos)
 {
 	std::string ret;
 	bool first_char = true;
@@ -132,7 +138,7 @@ Token* mer::parse_word(const std::string& str, index_type& pos)
 	else
 		return new Id(ret);
 }
-Token* mer::parse_string(const std::string& str, index_type& pos)
+Token* mer::parse_string(const std::string& str, int& pos)
 {
 	std::string value;
 	if (str[pos] == '\'')

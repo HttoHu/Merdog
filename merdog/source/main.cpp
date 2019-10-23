@@ -3,6 +3,7 @@
 #include <fstream>
 #include "../include/lexer.hpp"
 #include "../include/expr.hpp"
+#include "../include/parser.hpp"
 #include "../include/environment.hpp"
 std::string get_file_content(const std::string& filename)
 {
@@ -19,12 +20,18 @@ int main()
 {
 	try
 	{
+		std::vector<mer::Node> instructions;
 		mer::init_merdog();
 		std::string input_file = get_file_content("test.mer");
 		mer::build_token_stream(input_file);
-		mer::Node tmp = mer::analyse_expr::expr();
-		//mer::token_stream.print();
-		std::cout << tmp->get_gen();
+		while (mer::token_stream.this_tag() != mer::ENDOF)
+		{
+			instructions.push_back(mer::parse_statement::statement());
+		}
+		for (auto& a : instructions)
+		{
+			std::cout << a->get_gen();
+		}
 	}
 	catch (mer::Error &e)
 	{
@@ -34,6 +41,7 @@ int main()
 	{
 		std::cout << "Damn 未经处理的异常";
 	}
-	std::cin.get();
+	while(1)
+		std::cin.get();
 	return 0;
 }
