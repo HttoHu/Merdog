@@ -21,7 +21,7 @@ namespace mer
 		IMPORT, NAMESPACE, STRUCT,
 		PRINT, CAST,
 		SADD, SSUB, SMUL, SDIV, GET_ADD, PTRVISIT,
-		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
+		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,CHAR_DECL,
 		PROGRAM,
 		GE, LE, GT, LT, NE, EQ,
 		FUNCTION, RETURN,
@@ -30,7 +30,7 @@ namespace mer
 		NEW, DELETE,
 		NOT, AND, OR,
 		REF, BEGIN, END, SEMI, DOT, COMMA,
-		ID, INTEGER, REAL, COLON,
+		ID, INTEGER, REAL, COLON,CHAR,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
 		TTRUE, TFALSE,
 		LPAREN, RPAREN, LSB, RSB,
@@ -39,7 +39,7 @@ namespace mer
 	};
 	using index_type = int;
 	extern std::map<Tag, std::string> TagStr;
-
+	extern std::map<char, char> escape_character_table;
 	std::string tag_to_sign(Tag t);
 	class Token
 	{
@@ -216,7 +216,7 @@ namespace mer
 		{
 			line_no = ++current_line;
 		}
-		static index_type get_value(Token* tok);
+		static int get_value(Token* tok);
 
 		static index_type current_line;
 		std::string to_string()const override;
@@ -241,6 +241,19 @@ namespace mer
 	private:
 		std::string value;
 	};
+	class Char :public Token
+	{
+	public:
+		static char get_value(Token* tok);
+		Char (char c):Token(Tag::CHAR),ch(c){}
+		std::string to_string()const override
+		{
+			return "<char: " + std::string(1,ch) + ">";
+		}
+	private:
+		char ch;
+	};
+	Token* parse_char(const std::string& str, int& pos);
 	Token* parse_number(const std::string& str, int& pos);
 	Token* parse_word(const std::string& str, int& pos);
 	Token* parse_string(const std::string& str, int & pos);

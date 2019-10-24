@@ -17,13 +17,8 @@ namespace mer
 	class BinOp final :public ParserNode
 	{
 	public:
-		BinOp(Node l, Token* _op, Node r) :ParserNode(BINOP),left(l), op(_op), right(r) 
-		{
-			set_type(left->get_type());
-			if (get_type() == nullptr)
-				throw Error("我日了狗了1");
-		}
-		std::string get_gen()override;
+		BinOp(Node l, Token* _op, Node r);
+		void emit_gen()override;
 		std::string to_string()override
 		{
 			return var_name;

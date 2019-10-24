@@ -21,6 +21,7 @@ namespace mer
 	// rbx <=Reg[2]
 	extern std::bitset<16> residual_register;
 	extern int64_t Reg[16];
+	extern std::vector<std::string> ir_instructions;
 	void init_merdog();
 	void run();
 	extern int pc;

@@ -61,6 +61,8 @@ namespace mer
 		}
 		void push( WordRecorder* wr)
 		{
+			if (data.front().find(wr->get_name()) != data.front().end())
+				throw Error("symbol redefined!");
 			data.front().insert({wr->get_name(),wr });
 		}
 		void print();

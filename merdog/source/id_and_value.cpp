@@ -24,4 +24,37 @@ namespace mer
 		auto result = find_recorder_by_id(n);
 		set_type(result->type);
 	}
+	RealV::RealV(double v):value(v), ParserNode(ParserNode::REAL_VALUE)
+	{
+		set_type(type_map["real"]);
+	}
+	RealV::RealV():ParserNode(ParserNode::REAL_VALUE)
+	{
+		value = Real::get_value(token_stream.this_token());
+		token_stream.next();
+		set_type(type_map["real"]);
+	}
+	std::string RealV::to_string()
+	{
+		return "f"+std::to_string(value);
+	}
+	BoolV::BoolV(bool v) :ParserNode(ParserNode::BOOL_VALUE) ,value(v)
+	{
+		set_type(type_map["bool"]);
+	}
+	BoolV::BoolV() :ParserNode(ParserNode::BOOL_VALUE)
+	{
+		value = token_stream.this_tag() == TTRUE;
+		token_stream.next();
+		set_type(type_map["bool"]);
+	}
+	CharV::CharV(char v):ParserNode(ParserNode::CHAR_VALUE),value(v)
+	{
+		set_type(type_map["char"]);
+	}
+	CharV::CharV():ParserNode(ParserNode::CHAR_VALUE){
+		value = Char::get_value(token_stream.this_token());
+		token_stream.next();
+		set_type(type_map["char"]);
+	}
 }

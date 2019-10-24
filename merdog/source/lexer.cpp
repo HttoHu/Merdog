@@ -8,12 +8,25 @@ using TokenMap = std::map<std::string, Token*>;
 using TagStrMap = std::map<Tag, std::string>;
 //==========================================
 int mer::Endl::current_line = 0;
+std::map<char, char> mer::escape_character_table = {
+	{'r','\r'},{'n','\n'},{'b','\b'},{'t','\t'},{'a','\a'},{'0','\0'}
+};
+char _convert_escape(char c)
+{
+	auto result = escape_character_table.find(c);
+	if (result == escape_character_table.end())
+	{
+		throw Error(" illegal escape char");
+	}
+	return result->second;
+}
+
 TagStrMap	mer::TagStr{
 	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},{PTRVISIT,"PTRVISIT"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ DO,"DO" } ,{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },{SWITCH,"SWITCH"},
-	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{ VOID_DECL,"VOID_DECL" },
+	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{ VOID_DECL,"VOID_DECL" },{CHAR_DECL,"CHAR_DECL"},
 	{ PLUS,"PLUS" },{ MINUS,"MINUS" },{ MUL,"MUL" },{ DIV,"DIV" },{DELETE,"DELETE"},
 	{ GE,"GE" },{ GT,"GT" },{ LE,"LE" },{ LT,"LT" },{ EQ,"EQ" },{ NE,"NE" },
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
@@ -21,7 +34,7 @@ TagStrMap	mer::TagStr{
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
 	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
-	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"}
+	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"}, {ENDOF,"END_FILE"}
 };
 TokenMap	mer::KeyWord{
 	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
@@ -34,13 +47,31 @@ TokenMap	mer::KeyWord{
 	{ "false",new Token(TFALSE) },
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
-	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },
+	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },{"char",new Token(CHAR_DECL)},
 	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) },{"nullptr",new Token(NULLPTR)}
 };
 bool				is_function_args = false;
 //==========================================
 Token* mer::END_TOKEN = new Token(ENDOF);
 TokenStream mer::token_stream;
+
+Token* mer::parse_char(const std::string& str, int& pos)
+{
+	// ignore \'
+	pos++;
+	if (str[pos] == '\\')
+	{
+		char result = _convert_escape(str[++pos]);
+		if (str[pos] != '\'')
+			throw Error("illegal escape character!");
+		return new Char(result);
+	}
+	char result = str[pos++];
+	if (str[pos] != '\'')
+		throw Error("illegal character!");
+	return new Char(result);
+}
+
 Token* mer::parse_number(const std::string& str, int& pos)
 {
 	int ret = 0;
@@ -112,6 +143,8 @@ Token* mer::parse_word(const std::string& str, int& pos)
 			first_char = false;
 			if (isalpha(str[pos]) || str[pos] == '_')
 				ret += str[pos];
+			else
+				throw Error("illegal Symbol");
 			continue;
 		}
 		else
@@ -141,13 +174,13 @@ Token* mer::parse_word(const std::string& str, int& pos)
 Token* mer::parse_string(const std::string& str, int& pos)
 {
 	std::string value;
-	if (str[pos] == '\'')
+	if (str[pos] == '\"')
 		pos++;
 	else
-		throw Error("a string-literal must start with\'");
+		throw Error("a string-literal must start with\"");
 	for (; pos < str.size(); pos++)
 	{
-		if (str[pos] == '\'')
+		if (str[pos] == '\"')
 			break;
 		if (str[pos] == '\\')
 		{
@@ -191,6 +224,9 @@ void mer::build_token_stream(const std::string& content) {
 		switch (content[i])
 		{
 		case '\'':
+			token_stream.push_back(parse_char(content, i));
+			break;
+		case '\"':
 			token_stream.push_back(parse_string(content, i));
 			break;
 		case '\r':
@@ -501,7 +537,7 @@ std::string Endl::to_string()const
 {
 	return "\n";
 }
-index_type Endl::get_value(Token* tok)
+int Endl::get_value(Token* tok)
 {
 	if (tok->get_tag() == ENDL)
 	{
@@ -509,4 +545,11 @@ index_type Endl::get_value(Token* tok)
 	}
 	else
 		throw Error("convert failed");
+}
+
+char mer::Char::get_value(Token* tok)
+{
+	if (tok->get_tag() != Tag::CHAR)
+		throw Error(tok->to_string() + " is not a string");
+	return static_cast<Char*>(tok)->ch;
 }

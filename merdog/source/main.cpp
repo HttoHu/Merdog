@@ -23,14 +23,17 @@ int main()
 		std::vector<mer::Node> instructions;
 		mer::init_merdog();
 		std::string input_file = get_file_content("test.mer");
+		std::string tmp;
 		mer::build_token_stream(input_file);
 		while (mer::token_stream.this_tag() != mer::ENDOF)
 		{
 			instructions.push_back(mer::parse_statement::statement());
 		}
 		for (auto& a : instructions)
+			a->emit_gen();
+		for (auto& a : mer::ir_instructions)
 		{
-			std::cout << a->get_gen();
+			std::cout << a<<std::endl;
 		}
 	}
 	catch (mer::Error &e)

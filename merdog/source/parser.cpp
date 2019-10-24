@@ -4,11 +4,25 @@
 #include "../include/symbol_table.hpp"
 namespace mer
 {
+
 	namespace analyse_expr {
 		Node create_expr();
 	}
 
-
+	bool _is_value_node(ParserNode::NodeTag t)
+	{
+		switch (t)
+		{
+		case mer::ParserNode::VARIABLE:
+		case mer::ParserNode::CINTV:
+		case mer::ParserNode::REAL_VALUE:
+		case mer::ParserNode::BOOL_VALUE:
+		case mer::ParserNode::CHAR_VALUE:
+			return true;
+		default:
+			return false;
+		}
+	}
 	NamePart::NamePart()
 	{
 		name = Id::get_value(token_stream.this_token());
@@ -34,22 +48,30 @@ namespace mer
 		}
 		set_type(t);
 	}
-	std::string LocalVarDecl::get_gen()
+	void LocalVarDecl::emit_gen()
 	{
 		std::string type_name = get_type()->name();
 		std::string ret;
 		for (auto& a : units)
 		{
-			std::string var_name= a->get_name_part().get_name();
-			ret += a->expr->get_gen();
+			std::string var_name = a->get_name_part().get_name();
+			a->expr->emit_gen();
 			ret += type_name + " %" + var_name;
 			if (a->expr->get_tag() != NONOP)
 			{
-				ret += "=" + a->expr->to_string();
+				// if the expr is bin , try to assign a var type to it. we don't assign type to value_node, cause the different mechanism to 
+				// binop and value_node
+				if(a->expr->get_tag()==BINOP)
+					a->expr->set_type(get_type());
+				std::string tmp = a->expr->to_string();
+				if (!a->expr->get_type()->same(get_type())&&_is_value_node(a->expr->get_tag()))
+				{
+					tmp = type_convert(a->expr->get_type(), get_type(), a->expr);
+				}
+				ret += "=" + tmp;
 			}
-			ret += "\n";
+			ir_instructions.push_back(ret);
 		}
-		return ret;
 	}
 
 	namespace parse_statement
@@ -61,6 +83,7 @@ namespace mer
 			case INTEGER_DECL:
 			case STRING_DECL:
 			case BOOL_DECL:
+			case CHAR_DECL:
 			case REAL_DECL:
 				return var_decl();
 			default:

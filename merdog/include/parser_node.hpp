@@ -4,9 +4,6 @@
 namespace mer
 {
 	class Type;
-	enum class NodeTag:int {
-		CINTV
-	};
 	class ParserNode
 	{
 	public:
@@ -17,10 +14,13 @@ namespace mer
 			NONOP,
 			LOCAL_VARDECl,
 			VARIABLE,
+			REAL_VALUE,
+			BOOL_VALUE,
+			CHAR_VALUE
 		};
 		ParserNode(NodeTag nt) : node_tag(nt) {}
 		virtual ~ParserNode() {}
-		virtual std::string get_gen();
+		virtual void emit_gen();
 		//get tmp var name;
 		virtual std::string to_string();
 		virtual Type* get_type();
@@ -34,10 +34,12 @@ namespace mer
 		Type* type;
 		NodeTag node_tag;
 	};
+	using Node = std::shared_ptr<ParserNode>;
+	std::string type_convert(Type* s, Type* dest, Node n);
 	template<typename _Ty>
 	_Ty void_cast(void* p)
 	{
 		return *(_Ty*)(p);
 	}
-	using Node = std::shared_ptr<ParserNode>;
+
 }

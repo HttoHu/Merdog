@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <set>
 namespace mer
 {
 	enum TypeProperty
@@ -27,6 +28,9 @@ namespace mer
 		virtual std::string name()const {
 			return type_name;
 		}
+		void set_convertible_type(const std::set<Type*>&_table);
+		bool same(Type* t);
+		bool convertible(Type* t);
 		TypeProperty get_property()const {
 			return type_property;
 		}
@@ -35,6 +39,7 @@ namespace mer
 		}
 		virtual ~Type() {}
 	private:
+		std::set<Type*>convertible_set;
 		size_t type_length;
 		int type_code;
 		TypeProperty type_property;

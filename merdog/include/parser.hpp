@@ -3,6 +3,7 @@
 #include "parser_node.hpp"
 namespace mer
 {
+	extern std::vector<std::string> ir_instructions;
 	class Type;
 	// NamePart parse the var_name and its attached property for instance , a[3] , a[3] is an array and be packed to name_part
 	class NamePart
@@ -39,7 +40,7 @@ namespace mer
 	{
 	public:
 		LocalVarDecl(std::vector<VarDeclUnitPtr>& vec, Type *t);
-		std::string get_gen()override;
+		void emit_gen()override;
 	private:
 		std::vector<VarDeclUnitPtr> units;
 	};
