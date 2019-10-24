@@ -151,6 +151,13 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 		return std::make_shared<Bool>(true);
 	case STRING:
 		return std::make_shared<String>("");
+	case ID:
+	{
+		auto t = find_ustructure_t(type);
+		return std::make_shared<USObject>(t->init());
+	}
+	default:
+		return std::make_shared<USObject>(find_ustructure_t(type)->init());
 	}
 }
 
@@ -214,28 +221,28 @@ void Mer::Mem::Type::add_compatible_type(size_t type_code)
 
 Mer::Mem::Object Mer::Mem::Pointer::operator=(Object v)
 {
-	pos = std::static_pointer_cast<Pointer>(v)->pos;
-	return std::make_shared<Pointer>(pos);
+	obj = v;
+	return std::make_shared<Pointer>(obj);
 }
 
 Mer::Mem::Object Mer::Mem::Pointer::operator==(Object v)
 {
-	return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->pos == pos);
+	return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->obj == obj);
 }
 
 Mer::Mem::Object Mer::Mem::Pointer::operator!=(Object v)
 {
-	return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->pos != pos);
+	return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->obj != obj);
 }
 
 Mer::Mem::Object Mer::Mem::Pointer::clone() const
 {
-	return std::make_shared<Mem::Pointer>(pos);
+	return std::make_shared<Mem::Pointer>(obj);
 }
 
 Object Mer::Mem::Pointer::operator[](Object v)
 {
-	return mem[pos + Mem::get_raw<int>(v)];
+	return obj->operator[](v);
 }
 
 Object Mer::Mem::String::operator[](Object v)
@@ -246,24 +253,4 @@ Object Mer::Mem::String::operator[](Object v)
 std::string Mer::type_to_string(size_t type_code)
 {
 	return Mem::type_to_string(Mem::BasicType(type_code));
-}
-
-Object Mer::Mem::Head::operator=(Object v)
-{
-	auto v_pos = std::static_pointer_cast<Head>(v)->pos;
-	for (int i = 0; i < obj_size; i ++)
-	{
-		mem[i + pos] = mem[i + v_pos]->clone();
-	}
-	return v;
-}
-
-Object Mer::Mem::Head::operator[](Object v)
-{
-	return mem[pos + Mem::get_raw<int>(v)];
-}
-
-Object Mer::Mem::Head::clone() const
-{
-	return std::make_shared<Head>(pos-1, type, obj_size);
 }

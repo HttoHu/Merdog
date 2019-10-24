@@ -24,7 +24,7 @@ namespace Mer
 		using SIM=std::map<std::string, int>;
 		// add new member
 		void push_new_children(size_t t, std::string id_name);
-		// first: type second: off_set
+		// first: member type second: member pos
 		std::pair<size_t, size_t > get_member_info(std::string member_name);
 		std::vector<Mem::Object> init();
 		// get the member position by the name of it.
@@ -42,6 +42,25 @@ namespace Mer
 		int be = 0;
 	};
 	// an object which create user-def struct obj.
+	class USObject :public Mem::Value {
+	public:
+		USObject(const std::vector<Mem::Object>& _vec):vec(_vec) { }
+		// assign , init etc.
+		Mem::Object operator=(Mem::Object v)override;
+		Mem::Object clone()const override;
+		/*
+			user-def struct obj is a single obj, and its members are all pushed into a vector<Object>. When you need obtain the member 
+			of user-def struct obj, you need get its postion of the struct.
+		*/
+		std::string to_string()const override;
+		Mem::Object operator[](Mem::Object v)override
+		{
+			return vec[std::static_pointer_cast<Mem::Int>(v)->get_value()];
+		}
+	private:
+		std::vector<Mem::Object> vec;
+	};
+
 	/*
 		for instance 
 		= merdog code =
@@ -56,9 +75,9 @@ namespace Mer
 	{
 	public:
 		DefaultInitList(size_t type);
-		std::vector<ParserNode*>& get_exprs() { return vec; }
+		Mem::Object execute()override;
 	private:
-		std::vector<ParserNode*> vec;
+		std::vector<Mem::Object> vec;
 	};
 	// the purpose of two class t is to distinguish bewtween init_without argument and init_with argument.
 	class StructureInitList:public ParserNode
@@ -68,12 +87,13 @@ namespace Mer
 		size_t get_type()override{
 			return type_code;
 		}
-		std::vector<ParserNode*>& get_exprs() { return vec; }
+		Mem::Object execute()override;
 		virtual ~StructureInitList() {}
 	private:
-		std::vector<ParserNode*> vec;
+		std::vector<Expr*> vec;
 		size_t type_code;
 	};
+
 	// you can get the struct_info by its name
 	extern std::map<std::string, UStructure*> ustructure_map;
 	// get the struct name by its type code.
@@ -81,8 +101,7 @@ namespace Mer
 	// to build the struct , records different information and push the struct to the ustructure_map
 	void build_ustructure();
 	
+	//StructureDecl* structobj_decl();
 	Mer::UStructure* find_ustructure_t(size_t type);
-	// if struct haven't found, return nullptr
-	Mer::UStructure* find_ustructure(size_t type);
 	
 }

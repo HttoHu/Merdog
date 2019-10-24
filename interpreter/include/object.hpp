@@ -15,7 +15,7 @@
 #include <vector>
 #include "type.hpp"
 #include "error.hpp"
-const int BASICTYPE_MAX_CODE = 7;
+#define BASICTYPE_MAX_CODE 7
 namespace Mer
 {
 	class StructureBase;
@@ -390,11 +390,11 @@ namespace Mer
 			}
 			std::string str;
 		};
-		class ObjList :public Value
+		class InitListObj :public Value
 		{
 		public:
-			ObjList(std::vector<Object>&& lst, size_t type_c) :elems(lst), type_code(type_c) {}
-			ObjList(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
+			InitListObj(std::vector<Object>&& lst, size_t type_c) :elems(lst), type_code(type_c) {}
+			InitListObj(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
 			virtual Object operator[](Object v)
 			{
 				return elems[std::static_pointer_cast<Int>(v)->get_value()];
@@ -414,35 +414,21 @@ namespace Mer
 		class Pointer :public Value
 		{
 		public:
-			Pointer(size_t p) :pos(p) {}
+			Pointer(size_t s) = delete;
+			Pointer(Object _obj):obj(_obj) {}
 			Mem::Object operator=(Object v)override;
 			Mem::Object operator==(Object v)override;
 			Mem::Object operator!=(Object v)override;
 			Mem::Object clone()const override;
+			Mem::Object execute() { return obj; }
 			Object operator[](Object v)override;
 			std::string to_string()const override
 			{
-				return std::to_string(pos);
+				return "pointer "+obj->to_string();
 			}
-			size_t get_pos() { return pos; }
 		private:
-			size_t pos;
-		};
-		// head contains type and obj_size, for instance 
-		// coor has two member x and y, and when you create a coor obj, we should push a head to the memory
-		// to know some info of struct, anothor example is array. 
-		// the obj applies to pass function none-basic argument, and return array or structure.
-		class Head :public Value
-		{
-		public:
-			Head(size_t _pos, size_t _type,size_t sz) :pos(_pos+1lu),type(_type),obj_size(sz) {}
-			Object operator=(Object v)override;
-			Object operator[](Object v)override;
-			Object clone()const override;
-		private:
-			size_t pos;
-			size_t type;
-			size_t obj_size;
+
+			Object obj;
 		};
 		// get the raw value of the Mem::xxx 
 		template<typename T>

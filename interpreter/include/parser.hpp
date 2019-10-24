@@ -22,13 +22,12 @@ namespace Mer
 	class NamePart
 	{
 	public:
-		NamePart(size_t _type_code);
+		NamePart();
 		size_t get_count() { return count; }
 		bool is_array() { return arr; }
 		bool is_pointer() { return pointer; }
 		Token* get_id() { return id; }
 	private:
-		size_t type_code;
 		Token* id;
 		bool arr = false;
 		bool pointer = false;
@@ -41,11 +40,11 @@ namespace Mer
 		ParserNode* get_expr() { return expr; }
 		Token* get_id() { return id; }
 		size_t get_size() { return size; }
-		bool is_pointer=false;
-		bool is_array=false;
-		bool is_struct=false;
+		bool arr() { return is_arr; }
+		bool pointer() { return is_p; }
 	private:
-
+		bool is_arr = false;
+		bool is_p = false;
 		size_t size=1;
 		size_t type_code;
 		Token* id;
@@ -62,7 +61,7 @@ namespace Mer
 	private:
 		size_t pos;
 		size_t sum;
-		std::vector<ParserNode*> exprs;
+		std::vector<Expr*> exprs;
 		size_t type;
 	};
 	class GloVarDecl :public ParserNode
@@ -73,7 +72,7 @@ namespace Mer
 	private:
 		size_t pos=0;
 		size_t sum;
-		std::vector<ParserNode*> exprs;
+		std::vector<Expr*> exprs;
 		size_t type;
 	};
 	class Print :public ParserNode
