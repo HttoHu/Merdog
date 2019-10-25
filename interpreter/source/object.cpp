@@ -15,10 +15,10 @@ using namespace Mer::Mem;
 std::string Mer::Mem::type_to_string(BasicType bt)
 {
 	std::string ret;
-	bool is_p = bt % 2|| bt == 0;
+	bool is_p = bt % 2 || bt == 0;
 	is_p = !is_p;
 	if (is_p)
-		bt=BasicType(bt-1);
+		bt = BasicType(bt - 1);
 	switch (bt)
 	{
 	case Mer::Mem::BVOID:
@@ -161,6 +161,13 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 	}
 }
 
+Object Mer::Mem::Int::operator=(Object v)
+{
+	auto tmp = v;
+	value = std::static_pointer_cast<Int>(v)->value;
+	return tmp;
+}
+
 Mer::Mem::Object  Mer::Mem::Int::Convert(size_t type)
 {
 	switch (type)
@@ -172,7 +179,7 @@ Mer::Mem::Object  Mer::Mem::Int::Convert(size_t type)
 	case BOOL:
 		return std::make_shared<Bool>(value);
 	default:
-		throw Error("int_value:"+std::to_string(value)+ " int cannot convert to " + type_to_string((BasicType)type));
+		throw Error("int_value:" + std::to_string(value) + " int cannot convert to " + type_to_string((BasicType)type));
 		break;
 	}
 }
@@ -219,6 +226,10 @@ void Mer::Mem::Type::add_compatible_type(size_t type_code)
 	convertible_types.insert(type_code);
 }
 
+Mer::Mem::Pointer::Pointer(Object _obj) :obj(_obj)
+{
+}
+
 Mer::Mem::Object Mer::Mem::Pointer::operator=(Object v)
 {
 	obj = std::static_pointer_cast<Pointer>(v)->obj;
@@ -243,6 +254,10 @@ Mer::Mem::Object Mer::Mem::Pointer::clone() const
 Object Mer::Mem::Pointer::operator[](Object v)
 {
 	return obj->operator[](v);
+}
+
+Mer::Mem::Pointer::~Pointer()
+{
 }
 
 Object Mer::Mem::String::operator[](Object v)

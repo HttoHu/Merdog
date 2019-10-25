@@ -91,7 +91,7 @@ namespace Mer
 			virtual Object operator[](Object v) { throw Error("[]: syntax error"); }
 			virtual Object operator&& (Object v) { throw Error("&&: syntax error"); }
 			virtual Object operator|| (Object v) { throw Error("OR: syntax error"); }
-			virtual ~Value() {}
+			virtual ~Value() { }
 		private:
 		};
 		class Int;
@@ -156,12 +156,7 @@ namespace Mer
 			{
 				return BasicType::INT;
 			}
-			Object operator=(Object v)override
-			{
-				auto tmp = v;
-				value = std::static_pointer_cast<Int>(v)->value;
-				return tmp;
-			}
+			Object operator=(Object v)override;
 			Object operator+=(Object v)override
 			{
 				return std::make_shared<Int>(value += std::static_pointer_cast<Int>(v)->value);
@@ -415,7 +410,7 @@ namespace Mer
 		{
 		public:
 			Pointer(size_t s) = delete;
-			Pointer(Object _obj):obj(_obj) {}
+			Pointer(Object _obj);
 			Mem::Object operator=(Object v)override;
 			Mem::Object operator==(Object v)override;
 			Mem::Object operator!=(Object v)override;
@@ -426,11 +421,13 @@ namespace Mer
 			{
 				return "pointer "+obj->to_string();
 			}
-		private:
+			~Pointer();
 
+		private:
 			Object obj;
 		};
-		// get the raw value of the Mem::xxx 
+
+	
 		template<typename T>
 		T get_raw(Object obj)
 		{

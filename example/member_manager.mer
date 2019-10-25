@@ -29,7 +29,6 @@ function void delete_node(Node* pre_node)
 		return;
 	}
 	Node* node = pre_node->next->next;
-	delete pre_node->next;
 	pre_node->next = node;
 }
 function void delete_by_id(int mid)

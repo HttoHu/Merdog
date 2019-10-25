@@ -87,9 +87,6 @@ ParserNode* Mer::Parser::statement()
 	ParserNode* node = nullptr;
 	switch (token_stream.this_token()->get_tag())
 	{
-	case DELETE:
-		node = new Delete();
-		break;
 	case BOOL_DECL:
 	case INTEGER_DECL:
 	case REAL_DECL:
@@ -160,34 +157,6 @@ WordRecorder* Mer::Parser::get_current_info()
 }
 
 
-Mer::Print::Print(Token* tok) :content(tok)
-{
-	if (tok->get_tag() == ID)
-	{
-		auto result = this_namespace->sl_table->find(Id::get_value(tok));
-		if (result == nullptr)
-			throw Error(tok->to_string() + " no found the definition");
-		if (result->es != ESymbol::SVAR)
-			throw Error("print must pass a variable");
-		pos = static_cast<VarIdRecorder*>(result)->pos;
-	}
-}
-
-Mem::Object Mer::Print::execute()
-{
-	switch (content->get_tag())
-	{
-	case STRING:
-		std::cout << String::get_value(content);
-		break;
-	case ID:
-		std::cout << mem[mem.get_current() + pos]->to_string();
-		break;
-	default:
-		throw Error("print: invalid args");
-	}
-	return nullptr;
-}
 
 Mer::NamePart::NamePart()
 {

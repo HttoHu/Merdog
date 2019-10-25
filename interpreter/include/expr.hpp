@@ -193,6 +193,7 @@ namespace Mer
 		ParserNode* expr;
 		
 	};
+	// !!! delete has been discarded
 	class Delete :public ParserNode
 	{
 	public:

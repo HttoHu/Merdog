@@ -75,15 +75,6 @@ namespace Mer
 		std::vector<Expr*> exprs;
 		size_t type;
 	};
-	class Print :public ParserNode
-	{
-	public:
-		Print(Token *tok);
-		Mem::Object execute()override;
-	private:
-		size_t pos;
-		Token * content;
-	};
 	// to convert type;
 	class Cast :public ParserNode
 	{

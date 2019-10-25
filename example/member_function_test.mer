@@ -1,0 +1,23 @@
+struct Coor
+{
+	int x;
+	int y;
+}
+struct Node
+{
+	Coor coor;
+
+	Node* next=nullptr;
+	
+	function void printf()
+	{
+		std.cout('(',coor.x,',',coor.y,')');
+	}
+}
+program main
+{
+	Node a;
+	a.coor.x=1;
+	a.coor.y=2;
+	a.printf();
+}

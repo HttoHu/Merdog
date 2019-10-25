@@ -142,8 +142,6 @@ Mer::ParserNode* Mer::Expr::factor()
 	{
 	case NEW:
 		return new NewExpr();
-	case DELETE:
-		return new Delete();
 	case MUL:
 	{
 		return new RmRef();
@@ -219,8 +217,8 @@ Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r) :left(l), op(o), right
 {
 	if (o->get_tag() != LSB && l->get_type() != r->get_type())
 	{
-		/*if (std::abs((int)l->get_type()-(int)r->get_type())==1&&(l->get_type() % 2 != 1 || r->get_type() % 2 != 1))
-			return;*/
+		if (!(l->get_type() % 2 && r->get_type() % 2))
+			return;
 		right = new Cast(r, l->get_type());
 	}
 }
@@ -472,9 +470,7 @@ Mer::NewExpr::NewExpr()
 
 Mem::Object Mer::NewExpr::execute()
 {
-	auto pos = mem.new_obj();
-	mem[pos] = expr->execute()->clone();
-	return std::make_shared<Mem::Pointer>(mem[pos]);
+	return std::make_shared<Mem::Pointer>(expr->execute()->clone());
 }
 
 Mer::GetAdd::GetAdd()
@@ -500,7 +496,7 @@ Mer::RmRef::RmRef()
 	auto name = Id::get_value(token_stream.this_token());
 	auto result = this_namespace->sl_table->find(name);
 	if (result == nullptr)
-		throw Error("Var " + name + "no found");
+		throw Error("Var " + name + " no found");
 	id = Parser::parse_var(result);
 	type = id->get_type();
 }
@@ -523,7 +519,6 @@ Mer::Delete::Delete()
 
 Mem::Object Mer::Delete::execute()
 {
-	//mem.del_obj(Mem::get_raw<size_t>(expr->execute()));
 	return nullptr;
 }
 

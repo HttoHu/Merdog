@@ -148,7 +148,7 @@ Token*Mer::parse_string(const std::string & str, size_t & pos)
 				value += '\'';
 				break;
 			default:
-				throw Error("no matched escape character");
+				throw std::logic_error("<Line:"+std::to_string(Endl::current_line)+"> no matched escape character");
 			}
 		}
 		else
