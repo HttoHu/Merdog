@@ -221,7 +221,7 @@ void Mer::Mem::Type::add_compatible_type(size_t type_code)
 
 Mer::Mem::Object Mer::Mem::Pointer::operator=(Object v)
 {
-	obj = v;
+	obj = std::static_pointer_cast<Pointer>(v)->obj;
 	return std::make_shared<Pointer>(obj);
 }
 

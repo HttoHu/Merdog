@@ -420,7 +420,7 @@ namespace Mer
 			Mem::Object operator==(Object v)override;
 			Mem::Object operator!=(Object v)override;
 			Mem::Object clone()const override;
-			Mem::Object execute() { return obj; }
+			Mem::Object rm_ref() { return obj; }
 			Object operator[](Object v)override;
 			std::string to_string()const override
 			{
