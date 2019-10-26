@@ -1,7 +1,7 @@
 /*
 		MIT License
 
-		Copyright (c) 2019 胡远韬
+		Copyright (c) 2019 HttoHu
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -47,12 +47,15 @@ namespace Mer
 	{
 	public:
 		NamePart();
-		size_t get_count() { return count; }
+		size_t& get_count() { return count; }
 		bool is_array() { return arr; }
+		bool is_auto_array() { return auto_array; }
 		bool is_pointer() { return pointer; }
 		Token* get_id() { return id; }
 	private:
 		Token* id;
+		// int a[]={1,2,3};
+		bool auto_array;
 		bool arr = false;
 		bool pointer = false;
 		size_t count=1;
@@ -63,7 +66,7 @@ namespace Mer
 		VarDeclUnit(size_t t);
 		ParserNode* get_expr() { return expr; }
 		Token* get_id() { return id; }
-		size_t get_size() { return size; }
+		size_t& get_size() { return size; }
 		bool arr() { return is_arr; }
 		bool pointer() { return is_p; }
 	private:

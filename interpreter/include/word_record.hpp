@@ -1,7 +1,7 @@
 /*
 		MIT License
 
-		Copyright (c) 2019 胡远韬
+		Copyright (c) 2019 HttoHu
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -164,7 +164,7 @@ namespace Mer
 		}
 		WordRecorder* find(std::string id)
 		{
-			for (int i=0;i<data.size();i++)
+			for (size_t i=0;i<data.size();i++)
 			{
 				auto result = data[i].find(id);
 				if (result != data[i].end())

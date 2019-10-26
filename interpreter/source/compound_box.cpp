@@ -101,7 +101,7 @@ std::pair<size_t, size_t> Mer::UStructure::get_member_info(std::string member_na
 std::vector<Mem::Object> Mer::UStructure::init()
 {
 	std::vector<Mem::Object> ret(init_vec.size());
-	for (int i = 0; i < ret.size(); i++)
+	for (size_t i = 0; i < ret.size(); i++)
 	{
 		ret[i] = init_vec[i]->clone();
 	}
@@ -159,7 +159,7 @@ Mer::DefaultInitList::DefaultInitList(size_t type)
 Mem::Object Mer::DefaultInitList::execute()
 {
 	std::vector<Mem::Object> ret(vec.size());
-	for (int i = 0; i < ret.size(); i++)
+	for (size_t i = 0; i < ret.size(); i++)
 		ret[i] = vec[i]->clone();
 	return std::make_shared<USObject>(ret);
 }
@@ -174,7 +174,7 @@ Mem::Object Mer::USObject::operator=(Mem::Object v) {
 Mem::Object Mer::USObject::clone() const
 {
 	std::vector<Mem::Object> ret_vec(vec.size());
-	for (int i = 0; i < ret_vec.size(); i++)
+	for (size_t i = 0; i < ret_vec.size(); i++)
 	{
 		ret_vec[i] = vec[i]->clone();
 	}

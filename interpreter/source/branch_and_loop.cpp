@@ -226,7 +226,6 @@ namespace Mer
 			this_namespace->sl_table->new_block();
 			while (token_stream.this_tag() != END)
 			{
-				ParserNode* node;
 				switch (token_stream.this_tag())
 				{
 				case DEFAULT:

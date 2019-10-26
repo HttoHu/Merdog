@@ -1,7 +1,7 @@
 /*
 		MIT License
 
-		Copyright (c) 2019 胡远韬
+		Copyright (c) 2019 HttoHu
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -169,6 +169,7 @@ namespace Mer
 	class InitList:public ParserNode
 	{
 	public:
+		// if sz is -1, the size will get from init_v.size();
 		InitList(size_t t,size_t sz);
 		Mem::Object execute()override;
 		std::vector<Mem::Object> get_array();
@@ -177,6 +178,7 @@ namespace Mer
 		{
 			return type;
 		}
+		size_t get_ele_count() { return size; }
 		virtual ~InitList();
 	private:
 		std::vector<Expr*> init_v;

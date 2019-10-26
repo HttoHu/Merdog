@@ -171,6 +171,12 @@ Mer::NamePart::NamePart()
 	{
 		arr = true;
 		token_stream.match(LSB);
+		if (token_stream.this_tag() == RSB)
+		{
+			token_stream.match(RSB);
+			auto_array = true;
+			return;
+		}
 		auto c = token_stream.this_token();
 		count = Integer::get_value(c);
 		token_stream.match(INTEGER);
@@ -192,14 +198,26 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	// manage to process array 
 	if (name_part.is_array())
 	{
-		size = name_part.get_count();
-		if (token_stream.this_tag() == ASSIGN)
+		// if the array's size is deduced by init_list.
+		if (name_part.is_auto_array())
 		{
 			token_stream.match(ASSIGN);
-			expr = new InitList(type_code, name_part.get_count());
+			// -1 represent an auto init_list;
+			auto initl= new InitList(type_code, -1);
+			size = initl->get_ele_count();
+			expr = initl;
 		}
-		else {
-			expr = new EmptyList(type_code, name_part.get_count());
+		else
+		{
+			size = name_part.get_count();
+			if (token_stream.this_tag() == ASSIGN)
+			{
+				token_stream.match(ASSIGN);
+				expr = new InitList(type_code, name_part.get_count());
+			}
+			else {
+				expr = new EmptyList(type_code, name_part.get_count());
+			}
 		}
 		return;
 	}
@@ -257,7 +275,7 @@ Mer::LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(
 	size_t tmp_pos = pos;
 	// the var may be array ,pointer or a common var.
 	_record_id(vec[0], type, pos);
-	for (int i = 1; i < vec.size(); i++)
+	for (size_t i = 1; i < vec.size(); i++)
 	{
 		_record_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 	}
@@ -296,7 +314,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 	pos = mem.push(sum) - sum;
 	size_t tmp_pos = pos;
 	_record_glo_id(vec[0], type, pos);
-	for (int i = 1; i < vec.size(); i++)
+	for (size_t i = 1; i < vec.size(); i++)
 		_record_glo_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 	for (auto& a : vec)
 	{
@@ -313,7 +331,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 
 Mem::Object Mer::GloVarDecl::execute()
 {
-	for (int i = 0; i < sum; i++) {
+	for (size_t i = 0; i < sum; i++) {
 		mem[pos + i] = exprs[i]->execute();
 	}
 	return Mem::Object(nullptr);

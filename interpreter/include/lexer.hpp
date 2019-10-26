@@ -15,9 +15,9 @@
 #include "error.hpp"
 namespace Mer
 {
-	enum Tag
+	enum Tag:unsigned char
 	{
-		EPT,
+		EPT=0,
 		IMPORT, NAMESPACE, STRUCT,
 		PRINT, CAST,
 		SADD, SSUB, SMUL, SDIV, GET_ADD,PTRVISIT,
@@ -130,8 +130,9 @@ namespace Mer
 		Real(double d) :Token(REAL), value(d) {}
 		static double get_value(Token *tok)
 		{
+			if(tok->get_tag()!=REAL)
+				throw Mer::Error("type-convert failed(Token can't convert to Real).");
 			return static_cast<Real*>(tok)->value;
-			throw Mer::Error("type-convert failed(Token can't convert to Real).");
 		}
 		std::string to_string()const override
 		{

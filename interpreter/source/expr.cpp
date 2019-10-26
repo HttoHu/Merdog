@@ -348,10 +348,12 @@ Mer::InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
 		init_v = std::vector<Expr*>(sz, init_v[0]);
 		return;
 	}
-	if (init_v.size() != sz)
+	if (sz == -1)
+		size = init_v.size();
+	else if (init_v.size() != sz)
 		throw Error("Error, array overflow");
 
-	for (int i = 1; i < init_v.size(); i++)
+	for (size_t i = 1; i < init_v.size(); i++)
 	{
 		if (type != init_v[i - 1]->get_type())
 		{
