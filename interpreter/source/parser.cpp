@@ -40,6 +40,17 @@ namespace Mer
 		static bool ret = true;
 		return ret;
 	}
+	SizeOf::SizeOf()
+	{
+
+		token_stream.match(SIZEOF);
+		token_stream.match(LPAREN);
+		auto result= this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
+		obj = std::make_shared<Mem::Int>(result->count);
+		token_stream.next();
+		token_stream.match(RPAREN);
+
+	}
 }
 Program* Mer::Parser::program()
 {
@@ -250,7 +261,11 @@ tt:		token_stream.match(ASSIGN);
 inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)
 {
 	if(var_unit->arr())
-		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type , pos, ESymbol::SARRAY));
+	{
+		auto array_id_recorder = new VarIdRecorder(type, pos, ESymbol::SARRAY);
+		array_id_recorder->count = var_unit->get_size();
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), array_id_recorder);
+	}
 	else if (var_unit->pointer())
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type+1, pos));
 	else
@@ -259,7 +274,11 @@ inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)
 inline void _record_glo_id(Mer::VarDeclUnit* var_unit, size_t type, size_t pos)
 {
 	if (var_unit->arr())
-		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos, ESymbol::SARRAY));
+	{ 
+		auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SARRAY);
+		glo_arr_id_recorder->count = var_unit->get_size();
+		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()),glo_arr_id_recorder);
+	}
 	else if (var_unit->pointer())
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type+1, pos));
 	else

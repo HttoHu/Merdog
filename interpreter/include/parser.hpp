@@ -114,6 +114,18 @@ namespace Mer
 		ParserNode* expr;
 		size_t to_type;
 	};
+	// get the element count of array
+	class SizeOf :public ParserNode
+	{
+	public:
+		SizeOf();
+		Mem::Object execute()override
+		{
+			return obj;
+		}
+	private:
+		Mem::Object obj;
+	};
 	namespace Parser
 	{
 		Program* program();

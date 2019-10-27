@@ -201,6 +201,8 @@ Mer::ParserNode* Mer::Expr::factor()
 		ParserNode* n = new UnaryOp(result, factor());
 		return n;
 	}
+	case SIZEOF:
+		return new SizeOf();
 	case ID:
 	{
 		return Parser::parse_id();

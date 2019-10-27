@@ -38,6 +38,7 @@ namespace Mer
 	public:
 		WordRecorder(ESymbol e, size_t tc = 0) :es(e),type_code(tc) {}
 		ESymbol es;
+		int count = 1;
 		virtual size_t get_pos() { return 0; }
 		virtual std::string to_string() { return""; }
 		size_t get_type() { return type_code; }
@@ -61,21 +62,8 @@ namespace Mer
 		{
 			return "pos:" + std::to_string(pos);
 		}
-		bool known()
-		{
-			return is_const;
-		}
-		Mem::Object value()
-		{
-			if (is_const)
-			{
-				return obj;
-			}
-			throw Error("the var don't have an unknown value before execute.");
-		}
+		// to get array size;
 	private:
-		bool is_const;
-		Mem::Object obj;
 	};
 	struct MVarRecorder :public WordRecorder
 	{

@@ -21,11 +21,11 @@ TagStrMap	Mer::TagStr{
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
 	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
-	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"}
+	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"},{SIZEOF,"SIZEOF"},
 };
 TokenMap	Mer::KeyWord{
 	{ "import",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
-	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },
+	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },{"sizeof",new Token(SIZEOF)},
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) }, {"do",new Token(DO)},{"switch",new Token(SWITCH)}, {"case",new Token(CASE)},
 	{ "continue",new Token(CONTINUE) },{"default",new Token(DEFAULT)},
 	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
@@ -41,7 +41,7 @@ bool				is_function_args = false;
 //==========================================
 Token* Mer::END_TOKEN = new Token(ENDOF);
 TokenStream Mer::token_stream;
-Token* Mer::parse_number(const std::string &str, size_t &pos)
+Token* Mer::parse_number(const std::string& str, size_t& pos)
 {
 	int ret = 0;
 	for (; pos < str.size(); pos++)
@@ -74,7 +74,7 @@ Token* Mer::parse_number(const std::string &str, size_t &pos)
 	return new Integer(ret);
 }
 
-Token*	Mer::parse_word(const std::string &str, size_t &pos)
+Token* Mer::parse_word(const std::string& str, size_t& pos)
 {
 	std::string ret;
 	bool first_char = true;
@@ -111,16 +111,14 @@ Token*	Mer::parse_word(const std::string &str, size_t &pos)
 	else
 		return new Id(ret);
 }
-Token*Mer::parse_string(const std::string & str, size_t & pos)
+Token* Mer::parse_string(const std::string& str, size_t& pos)
 {
 	std::string value;
-	if (str[pos] == '\'')
-		pos++;
-	else
-		throw Error("a string-literal must start with\'");
+	// jump over '
+	pos++;
 	for (; pos < str.size(); pos++)
 	{
-		if (str[pos] == '\'')
+		if (str[pos] == '\"')
 			break;
 		if (str[pos] == '\\')
 		{
@@ -144,11 +142,14 @@ Token*Mer::parse_string(const std::string & str, size_t & pos)
 			case '\\':
 				value += '\\';
 				break;
+			case '\"':
+				value += '\"';
+				break;
 			case '\'':
 				value += '\'';
 				break;
 			default:
-				throw std::logic_error("<Line:"+std::to_string(Endl::current_line)+"> no matched escape character");
+				throw std::logic_error("<Line:" + std::to_string(Endl::current_line) + "> no matched escape character");
 			}
 		}
 		else
@@ -156,14 +157,14 @@ Token*Mer::parse_string(const std::string & str, size_t & pos)
 	}
 	return new String(value);
 }
-void Mer::build_token_stream(const std::string &content) {
+void Mer::build_token_stream(const std::string& content) {
 	std::string tmp_str;
 	token_stream.push_back(new Endl());
 	for (size_t i = 0; i < content.size(); i++)
 	{
 		switch (content[i])
 		{
-		case '\'':
+		case '\"':
 			token_stream.push_back(parse_string(content, i));
 			break;
 		case '\r':
@@ -401,7 +402,7 @@ void TokenStream::remove_tokens()
 {
 	int index = -1;
 	// delete literal_const and endl value
-	for (const auto &a : content)
+	for (const auto& a : content)
 	{
 		index++;
 		switch (a->get_tag())
@@ -422,9 +423,9 @@ void TokenStream::remove_tokens()
 	}
 	Endl::current_line = 0;
 	// delete Ids
-	for (auto &a : Id::id_table())
+	for (auto& a : Id::id_table())
 	{
-		for (auto &b : a)
+		for (auto& b : a)
 		{
 			delete b.second;
 		}
