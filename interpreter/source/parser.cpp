@@ -189,6 +189,7 @@ Mer::NamePart::NamePart()
 			return;
 		}
 		auto c = token_stream.this_token();
+		// get element count
 		count = Integer::get_value(c);
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);

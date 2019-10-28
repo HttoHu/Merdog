@@ -141,6 +141,11 @@ size_t Mer::Mem::merge_two_type(size_t c, size_t e)
 
 Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 {
+	// pointer
+	if (type % 2==0)
+	{
+		return std::make_shared<Pointer>(nullptr);
+	}
 	switch (type)
 	{
 	case INT:
