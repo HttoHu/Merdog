@@ -1,0 +1,14 @@
+struct Coor
+{
+	int x;
+	int y;
+	function void print_c()
+	{
+		std.cout("(",x,",",y,")");
+	}
+}
+program main
+{
+	Coor*p[]={new Coor{x:1,y:2},new Coor{x:3,y:1},new Coor{x:1,y:2},new Coor{x:4,y:5}};
+	p[1]->print_c();
+}

@@ -11,7 +11,7 @@ function void equation_solver(real a, real b, real c)
 	if (d < 0)
 	{
 		have_roots=false;
-		std.cout('the equation doesn\'t have roots');
+		std.cout("the equation doesn\"t have roots");
 		return;
 	}
 	x1= (-b + sqrt(d)) / (2.0 * a);
@@ -20,13 +20,13 @@ function void equation_solver(real a, real b, real c)
 }
 program main
 {
-	std.cout('welcome to use equation solver\nplease input the a b c\n');
+	std.cout("welcome to use equation solver\nplease input the a b c\n");
 	real a = std.input_real();
 	real b = std.input_real();
 	real c = std.input_real();
 	equation_solver(a,b,c);
 	if(have_roots)
 	{
-		std.cout('the roots are: ',x1,'\t\t',x2);
+		std.cout("the roots are: ",x1,"\t\t",x2);
 	}
 }

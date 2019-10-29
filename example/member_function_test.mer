@@ -11,7 +11,7 @@ struct Node
 	
 	function void printf()
 	{
-		std.cout('(',coor.x,',',coor.y,')');
+		std.cout("(",coor.x,",",coor.y,")");
 	}
 }
 program main

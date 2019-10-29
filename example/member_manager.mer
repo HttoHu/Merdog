@@ -46,7 +46,7 @@ function void delete_by_id(int mid)
 		}
 		tmp = tmp->next;
 	}
-	std.cout('student no found\n');
+	std.cout("student no found\n");
 }
 function void delete_by_name(string name)
 {
@@ -63,7 +63,7 @@ function void delete_by_name(string name)
 		}
 		tmp = tmp->next;
 	}
-	std.cout('student no found\n');
+	std.cout("student no found\n");
 }
 function Info find_student_by_id(int id)
 {
@@ -91,29 +91,29 @@ function Info find_student_by_name(string name)
 }
 function void print_data(Info i)
 {
-	std.cout('name:', i.name, '\n');
-	std.cout('id:', i.id, '\n');
+	std.cout("name:", i.name, "\n");
+	std.cout("id:", i.id, "\n");
 }
 function void print_list()
 {
-	std.cout('=================\n');
+	std.cout("=================\n");
 	Node* tmp = head->next;
 	while (tmp != nullptr)
 	{
 		print_data(tmp->data);
 		tmp = tmp->next;
 	}
-	std.cout('=================\n');
+	std.cout("=================\n");
 }
 function void print_ui()
 {
-	std.cout('1. view all members\n');
-	std.cout('2. insert new member\n');
-	std.cout('3. delete a member by id\n');
-	std.cout('4. clear screen:\n');
-	std.cout('5. find a member\n');
-	std.cout('6. delete a member by name\n');
-	std.cout('please input a number:');
+	std.cout("1. view all members\n");
+	std.cout("2. insert new member\n");
+	std.cout("3. delete a member by id\n");
+	std.cout("4. clear screen:\n");
+	std.cout("5. find a member\n");
+	std.cout("6. delete a member by name\n");
+	std.cout("please input a number:");
 }
 program main
 {
@@ -122,15 +122,15 @@ program main
 	{
 		print_ui();
 		key = std.input_int();
-		string mname = '';
+		string mname = "";
 		int mid = 0;
 		int id = 1;
 		switch (key)
 		{
 		case 2:
-			std.cout('name:');
+			std.cout("name:");
 			mname = std.input_string();
-			std.cout('id:');
+			std.cout("id:");
 			mid = std.input_int();
 			Info tmp{name:mname,id : mid};
 			insert(tmp);
@@ -139,41 +139,41 @@ program main
 			print_list();
 			break;
 		case 3:
-			std.cout('input member id:');
+			std.cout("input member id:");
 			mid = std.input_int();
 			delete_by_id(mid);
 			break;
 		case 4:
-			system('cls');
+			system("cls");
 			break;
 		case 6:
-			std.cout('input member name:');
+			std.cout("input member name:");
 			mname = std.input_string();
 			delete_by_name(mname);
 			break;
 		case 5:
-			std.cout('by id(1), or by name(2): ');
+			std.cout("by id(1), or by name(2): ");
 			key = std.input_int();
 			if (key == 1)
 			{
-				std.cout('input id: ');
+				std.cout("input id: ");
 				mid = std.input_int();
 				Info tmp = find_student_by_id(mid);
-				std.cout('name:', tmp.name);
+				std.cout("name:", tmp.name);
 			}
 			elif(key == 2)
 			{
-				std.cout('input name: ');
+				std.cout("input name: ");
 				mname = std.input_string();
 				Info tmp = find_student_by_name(mname);
-				std.cout('id:', tmp.id);
+				std.cout("id:", tmp.id);
 			}
 			else
 			{
-				std.cout('illegal number');
+				std.cout("illegal number");
 			}
 			break;
 		}
-		std.cout('\n');
+		std.cout("\n");
 	}
 }

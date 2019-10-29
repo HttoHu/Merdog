@@ -9,6 +9,6 @@ program main
 	std.sleep(1000);
 	for (int i=0;i<10;i+=1)
 	{
-		std.cout(i,':',arr[i],'\n');
+		std.cout(i,":",arr[i],"\n");
 	}
 }

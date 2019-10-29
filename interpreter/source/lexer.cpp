@@ -436,7 +436,6 @@ void TokenStream::remove_tokens()
 
 	// delete container
 	content.clear();
-	//throw Error("HEY"+std::to_string(content.size()));
 }
 void TokenStream::clear()
 {
