@@ -21,7 +21,7 @@ namespace Mer
 		IMPORT, NAMESPACE, STRUCT,
 		PRINT, CAST,
 		SADD, SSUB, SMUL, SDIV, GET_ADD,PTRVISIT,
-		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,
+		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL,CHAR_DECL,
 		PROGRAM,
 		GE, LE, GT, LT, NE, EQ,
 		FUNCTION, RETURN,
@@ -30,7 +30,7 @@ namespace Mer
 		NEW,DELETE,
 		NOT, AND, OR,
 		REF, BEGIN, END, SEMI, DOT, COMMA,
-		ID, INTEGER, REAL, COLON,
+		ID, INTEGER, REAL,CHAR_LIT, COLON,
 		PLUS, MINUS, MUL, DIV, ASSIGN,
 		TTRUE, TFALSE,
 		LPAREN, RPAREN,LSB,RSB,
@@ -251,12 +251,26 @@ namespace Mer
 	private:
 		std::string value;
 	};
+	class CharToken :public Token
+	{
+	public:
+		static char get_value(Token* t) {
+			return static_cast<CharToken*>(t)->ch;
+		}
+		CharToken(char c) :Token(Tag::CHAR_LIT), ch(c) {}
+		std::string to_string()const override
+		{
+			return "<char: " + std::string(1, ch) + ">";
+		}
+	private:
+		char ch;
+	};
 	Token* parse_number(const std::string &str, size_t &pos);
 	Token* parse_word(const std::string &str, size_t &pos);
 	Token* parse_string(const std::string &str, size_t &pos);
 	void build_token_stream(const std::string &content);
 	extern TokenStream token_stream;
 	size_t get_line_no();
-
-	std::string GIC();
+	Token* parse_char(const std::string& str, size_t& pos);
+	std::string get_this_id_string_value();
 }

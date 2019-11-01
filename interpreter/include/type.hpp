@@ -32,7 +32,7 @@ namespace Mer
 	{
 		enum BasicType
 		{
-			ARRAY=-2,NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7
+			ARRAY=-2,NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7,CHAR=9
 		};
 		class Type
 		{
@@ -60,8 +60,16 @@ namespace Mer
 			size_t container_type;
 			size_t element_type;
 		};
+		/* 
+			* operator_type for instance []
+			* for instance string tmp;
+			* the type of tmp[3] is char 
+		*/
+		extern std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
 		extern std::map<std::string, size_t> type_index;
 		extern std::map<size_t, Type*> type_map;
 		extern int type_counter;
+		// get the operator function type
+		size_t find_op_type(size_t ty, std::string op);
 	}
 }

@@ -4,7 +4,7 @@
 */
 #include "../include/word_record.hpp"
 using namespace Mer;
-
+std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
 void Mer::SymbolTable::print()
 {
 	for (const auto& a : data)

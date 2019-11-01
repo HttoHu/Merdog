@@ -37,7 +37,7 @@
 #include <vector>
 #include "type.hpp"
 #include "error.hpp"
-#define BASICTYPE_MAX_CODE 7
+#define BASICTYPE_MAX_CODE 9
 namespace Mer
 {
 	class StructureBase;
@@ -448,7 +448,95 @@ namespace Mer
 		private:
 			Object obj;
 		};
-
+		class Char :public Value
+		{
+		public:
+			Char(char v) :value(v) {}
+			std::string to_string()const override
+			{
+				return std::string(1, value);
+			}
+			size_t get_type()const override
+			{
+				return BasicType::CHAR;
+			}
+			Object operator=(Object v)override;
+			Object operator+=(Object v)override
+			{
+				return std::make_shared<Int>(value += std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator-=(Object v)override
+			{
+				return std::make_shared<Int>(value -= std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator*=(Object v)override
+			{
+				return std::make_shared<Int>(value *= std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator/=(Object v)override
+			{
+				return std::make_shared<Int>(value /= std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator+ (Object v)override
+			{
+				return std::make_shared<Int>(value + std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator- (Object v)override
+			{
+				return std::make_shared<Char>(value -
+					std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator* (Object v)override
+			{
+				return std::make_shared<Char>(value *
+					std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator/ (Object v)override
+			{
+				return std::make_shared<Char>(value /
+					std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator> (Object v)override
+			{
+				return std::make_shared < Bool >(value > std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator>= (Object v)override
+			{
+				return std::make_shared<Bool>(value >= std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator< (Object v)override
+			{
+				return std::make_shared<Bool>(value < std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator<= (Object v)override
+			{
+				return std::make_shared<Bool>(value <= std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator== (Object v)override
+			{
+				return std::make_shared<Bool>(value == std::static_pointer_cast<Char>(v)->value);
+			}
+			Object operator!= (Object v)override
+			{
+				return std::make_shared<Bool>(value != std::static_pointer_cast<Char>(v)->value);
+			}
+			Object clone()const override
+			{
+				return std::make_shared<Char>(value);
+			}
+			Object get_negation()override
+			{
+				return std::make_shared<Char>(-value);
+			}
+			int get_value()
+			{
+				return value;
+			}
+			Object Convert(size_t type) override;
+			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
+		private:
+			int value;
+		};
 	
 		template<typename T>
 		T get_raw(Object obj)

@@ -57,6 +57,8 @@ size_t Mer::Mem::get_type_code()
 	token_stream.next();
 	switch (tok->get_tag())
 	{
+	case CHAR_DECL:
+		return CHAR ;
 	case VOID_DECL:
 		return BVOID;
 	case INTEGER_DECL:
@@ -83,6 +85,8 @@ size_t Mer::Mem::get_type_code(Token* tok)
 {
 	switch (tok->get_tag())
 	{
+	case CHAR_DECL:
+		return CHAR;
 	case VOID_DECL:
 		return BVOID;
 	case INTEGER_DECL:
@@ -148,6 +152,8 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 	}
 	switch (type)
 	{
+	case CHAR:
+		return std::make_shared<Char>(0);
 	case INT:
 		return std::make_shared<Int>(0);
 	case DOUBLE:
@@ -183,6 +189,8 @@ Mer::Mem::Object  Mer::Mem::Int::Convert(size_t type)
 		return std::make_shared<Double>(value);
 	case BOOL:
 		return std::make_shared<Bool>(value);
+	case CHAR:
+		return std::make_shared<Char>(value);
 	default:
 		throw Error("int_value:" + std::to_string(value) + " int cannot convert to " + type_to_string((BasicType)type));
 		break;
@@ -267,10 +275,34 @@ Mer::Mem::Pointer::~Pointer()
 
 Object Mer::Mem::String::operator[](Object v)
 {
-	return std::make_shared<String>(str[std::static_pointer_cast<Int>(v)->get_value()]);
+	return std::make_shared<Char>(str[std::static_pointer_cast<Int>(v)->get_value()]);
 }
 
 std::string Mer::type_to_string(size_t type_code)
 {
 	return Mem::type_to_string(Mem::BasicType(type_code));
+}
+
+Object Mer::Mem::Char::operator=(Object v)
+{
+	auto tmp = v;
+	value = std::static_pointer_cast<Char>(v)->value;
+	return tmp;
+}
+
+Object Mer::Mem::Char::Convert(size_t type)
+{
+	switch (type)
+	{
+	case STRING:
+		return std::make_shared<String>(value);
+	case BOOL:
+		return std::make_shared<Bool>(value);
+	case INT:
+		return std::make_shared<Int>(value);
+	case CHAR:
+		return std::make_shared<Char>(value);
+	default:
+		throw Error("type-convert error");
+	}
 }

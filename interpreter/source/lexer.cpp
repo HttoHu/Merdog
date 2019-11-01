@@ -13,7 +13,7 @@ TagStrMap	Mer::TagStr{
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ DO,"DO" } ,{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },{SWITCH,"SWITCH"},
-	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{ VOID_DECL,"VOID_DECL" },
+	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{ VOID_DECL,"VOID_DECL" },{CHAR_DECL,"CHAR_DECL"},
 	{ PLUS,"PLUS" },{ MINUS,"MINUS" },{ MUL,"MUL" },{ DIV,"DIV" },{DELETE,"DELETE"},
 	{ GE,"GE" },{ GT,"GT" },{ LE,"LE" },{ LT,"LT" },{ EQ,"EQ" },{ NE,"NE" },
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
@@ -30,14 +30,28 @@ TokenMap	Mer::KeyWord{
 	{ "continue",new Token(CONTINUE) },{"default",new Token(DEFAULT)},
 	{ "function",new Token(FUNCTION) },{ "return",new Token(RETURN) },
 	{ "new",new Token(NEW)},{"delete",new Token(DELETE)},
-	{ "print",new Token(PRINT) },{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },
+	{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },
 	{ "false",new Token(TFALSE) },
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
-	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },
+	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },{"char",new Token(CHAR_DECL)},
 	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) },{"nullptr",new Token(NULLPTR)}
 };
 bool				is_function_args = false;
+
+std::map<char, char> escape_character_table = {
+	{'r','\r'},{'n','\n'},{'b','\b'},{'t','\t'},{'a','\a'},{'0','\0'}
+};
+char _convert_escape(char c)
+{
+	auto result = escape_character_table.find(c);
+	if (result == escape_character_table.end())
+	{
+		throw Error(" illegal escape char");
+	}
+	return result->second;
+}
+
 //==========================================
 Token* Mer::END_TOKEN = new Token(ENDOF);
 TokenStream Mer::token_stream;
@@ -125,32 +139,8 @@ Token* Mer::parse_string(const std::string& str, size_t& pos)
 			pos++;
 			if (pos >= str.size())
 				throw Error("out of range");
-			switch (str[pos])
-			{
-			case 'a':
-				value += '\a';
-				break;
-			case 'b':
-				value += '\b';
-				break;
-			case 'n':
-				value += '\n';
-				break;
-			case 't':
-				value += '\t';
-				break;
-			case '\\':
-				value += '\\';
-				break;
-			case '\"':
-				value += '\"';
-				break;
-			case '\'':
-				value += '\'';
-				break;
-			default:
-				throw std::logic_error("<Line:" + std::to_string(Endl::current_line) + "> no matched escape character");
-			}
+			char tmp = _convert_escape(str[pos]);
+			value += tmp;
 		}
 		else
 			value += str[pos];
@@ -164,6 +154,9 @@ void Mer::build_token_stream(const std::string& content) {
 	{
 		switch (content[i])
 		{
+		case '\'':
+			token_stream.push_back(parse_char(content, i));
+			break;
 		case '\"':
 			token_stream.push_back(parse_string(content, i));
 			break;
@@ -358,7 +351,7 @@ void Mer::build_token_stream(const std::string& content) {
 	token_stream.push_back(END_TOKEN);
 }
 
-std::string Mer::GIC()
+std::string Mer::get_this_id_string_value()
 {
 	auto ret = Id::get_value(token_stream.this_token());
 	token_stream.match(ID);
@@ -443,6 +436,22 @@ void TokenStream::clear()
 	pos = 0;
 }
 
+Token* Mer::parse_char(const std::string& str, size_t& pos)
+{
+	// ignore \'
+	pos++;
+	if (str[pos] == '\\')
+	{
+		char result = _convert_escape(str[++pos]);
+		if (str[++pos] != '\'')
+			throw Error("illegal escape character!");
+		return new CharToken(result);
+	}
+	char result = str[pos++];
+	if (str[pos] != '\'')
+		throw Error("illegal character!");
+	return new CharToken(result);
+}
 
 std::string Endl::to_string()const
 {

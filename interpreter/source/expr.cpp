@@ -172,22 +172,12 @@ Mer::ParserNode* Mer::Expr::factor()
 		token_stream.match(RPAREN);
 		return v;
 	}
+	case CHAR_LIT:
 	case REAL:
-	{
-		token_stream.match(REAL);
-
-		return new LConV(result);
-	}
 	case STRING:
-	{
-		token_stream.match(STRING);
-		return new LConV(result);
-	}
 	case INTEGER:
-	{
-		token_stream.match(INTEGER);
+		token_stream.next();
 		return new LConV(result);
-	}
 	case NOT:
 	case MINUS:
 	{

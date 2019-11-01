@@ -239,6 +239,10 @@ Mer::LConV::LConV(Token* t)
 		type = Mem::STRING;
 		obj = std::make_shared<Mem::String>(String::get_value(t));
 		break;
+	case CHAR_LIT:
+		type = Mem::CHAR;
+		obj = std::make_shared<Mem::Char>(CharToken::get_value(t));
+		break;
 	default:
 		throw Error("syntax error");
 	}
@@ -272,7 +276,7 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		// if the var is not an array but supports [] operator.
 		if (var_info->es != SARRAY)
 		{
-			return new Index(new Variable(type, var_info->get_pos()), off);
+			return new Index(new Variable(Mem::find_op_type(type,"[]"), var_info->get_pos()), off);
 		}
 		return new Variable(type, var_info->get_pos() + off);
 	}

@@ -79,7 +79,7 @@ Mer::Namespace * Mer::Parser::find_namespace(const std::string & name)
 Mer::Namespace * Mer::Parser::build_namespace() {
 	Namespace *nns = new Namespace(this_namespace);
 	token_stream.match(NAMESPACE);
-	std::string nnname = GIC();
+	std::string nnname = get_this_id_string_value();
 	this_namespace->children.insert({ nnname,nns });
 	this_namespace = nns;
 	token_stream.match(BEGIN);

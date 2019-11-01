@@ -98,6 +98,7 @@ ParserNode* Mer::Parser::statement()
 	ParserNode* node = nullptr;
 	switch (token_stream.this_token()->get_tag())
 	{
+	case CHAR_DECL:
 	case BOOL_DECL:
 	case INTEGER_DECL:
 	case REAL_DECL:
@@ -134,6 +135,9 @@ size_t Mer::Parser::get_type()
 {
 	switch (token_stream.this_tag())
 	{
+	case CHAR_DECL:
+		token_stream.match(CHAR_DECL);
+		return Mem::CHAR;
 	case VOID_DECL:
 		token_stream.match(VOID_DECL);
 		return Mem::BVOID;
