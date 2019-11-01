@@ -12,6 +12,7 @@
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
+#define MERDOG_VERSION "3.1.5"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -39,9 +40,9 @@ int main(int argc, char* argv[])
 			throw std::runtime_error("argument error");
 		if (sizeof(argv[1]) >= 2)
 		{
-			if (argv[1][0] == '-'&&argv[1][1]=='v')
+			if (argv[1][0] == '-' && argv[1][1] == 'v')
 			{
-				std::cout << "3.1.4";
+				std::cout << MERDOG_VERSION;
 				return 0;
 			}
 		}
@@ -49,11 +50,11 @@ int main(int argc, char* argv[])
 		Mer::build_token_stream(input_content);
 		Mer::Parser::program()->execute();
 	}
-	catch (std::exception& e)
+	catch (std::exception & e)
 	{
 		std::cout << e.what();
 	}
-	catch (Mer::Error& e)
+	catch (Mer::Error & e)
 	{
 		std::cout << e.what();
 	}
@@ -77,11 +78,11 @@ int main()
 		Mer::Parser::program()->execute();
 		//time_t e = clock();
 	}
-	catch (std::exception& e)
+	catch (std::exception & e)
 	{
 		std::cout << e.what();
 	}
-	catch (Mer::Error& e)
+	catch (Mer::Error & e)
 	{
 		std::cout << e.what();
 	}
