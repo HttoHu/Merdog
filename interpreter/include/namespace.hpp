@@ -43,8 +43,7 @@ namespace Mer
 		std::map<std::string, FunctionBase*> functions;
 		std::vector<Namespace*> using_namespaces;
 		SymbolTable *sl_table;
-		void set_new_func(const std::string &name, size_t 
-			, FunctionBase* func);
+		void Mer::Namespace::set_new_func(const std::string & name, FunctionBase * func);
 		void set_new_var(const std::string &name,size_t type, Mem::Object obj);
 
 

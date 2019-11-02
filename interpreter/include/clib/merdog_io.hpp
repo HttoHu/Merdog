@@ -44,4 +44,5 @@ namespace Mer
 	extern Mer::SystemFunction *input_real;
 	// get a std::string value from the input stream
 	extern Mer::SystemFunction *input_string;
+	extern Mer::SystemFunction *input_char;
 }

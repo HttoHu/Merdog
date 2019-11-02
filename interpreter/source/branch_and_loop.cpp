@@ -202,11 +202,16 @@ namespace Mer
 				node = new IntCaseSet(_pcs.back(), expr);
 			else if (type == Mem::STRING)
 				node = new StrCaseSet(_pcs.back(), expr);
+			else if(type==Mem::CHAR)
+				node = new CharCaseSet(_pcs.back(), expr);
 			else
 				throw Error("Unsupported case type!");
 			current_ins_table->push_back(node);
 			switch (type)
 			{
+			case Mem::BasicType::CHAR:
+				build_switch<char>(static_cast<CharCaseSet*>(node)->default_pos, static_cast<CharCaseSet*>(node)->jmp_table);
+				break;
 			case Mem::BasicType::INT:
 				build_switch<int>(static_cast<IntCaseSet*>(node)->default_pos, static_cast<IntCaseSet*>(node)->jmp_table);
 				break;
@@ -243,6 +248,11 @@ namespace Mer
 					else if (typeid(KeyType) == typeid(std::string))
 					{
 						std::string v = Mer::String::get_value(token_stream.this_token());
+						case_set.insert({ *(KeyType*)(&v),std::make_shared<size_t>(current_ins_table->size() - 1) });
+					}
+					else if (typeid(KeyType) == typeid(char))
+					{
+						char v = Mer::CharToken::get_value(token_stream.this_token());
 						case_set.insert({ *(KeyType*)(&v),std::make_shared<size_t>(current_ins_table->size() - 1) });
 					}
 					else
@@ -462,6 +472,15 @@ namespace Mer
 	{
 		function_ret = expr->execute();
 		*pc = *des;
+		return nullptr;
+	}
+	Mem::Object CharCaseSet::execute()
+	{
+		auto result = jmp_table.find(Mem::get_raw<char>(expr->execute()));
+		if (result == jmp_table.end())
+			* pc = *default_pos - 1;
+		else
+			*pc = *(result->second);
 		return nullptr;
 	}
 }

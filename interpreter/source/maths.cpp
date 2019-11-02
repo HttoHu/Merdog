@@ -104,16 +104,15 @@ namespace Mer
 		arcos->set_param_types({ Mem::DOUBLE });
 		artan->set_param_types({ Mem::DOUBLE });
 		abs->set_param_types({ Mem::DOUBLE });
-		//mstd->children.insert({ "maths", maths });
-		maths->set_new_func("min2", Mem::DOUBLE, min);
-		maths->set_new_func("sqrt",Mem::DOUBLE,sqrt);
-		maths->set_new_func("mod", Mem::INT, mod);
-		maths->set_new_func("tan", Mem::DOUBLE,tan);
-		maths->set_new_func("sin", Mem::DOUBLE, sin);
-		maths->set_new_func("cos", Mem::DOUBLE, cos);
-		maths->set_new_func("arsin", Mem::DOUBLE, arsin);
-		maths->set_new_func("arcos", Mem::DOUBLE, arcos);
-		maths->set_new_func("artan", Mem::DOUBLE, artan);
-		maths->set_new_func("abs", Mem::DOUBLE, abs);
+		maths->set_new_func("min2", min);
+		maths->set_new_func("sqrt",sqrt);
+		maths->set_new_func("mod", mod);
+		maths->set_new_func("tan", tan);
+		maths->set_new_func("sin", sin);
+		maths->set_new_func("cos",  cos);
+		maths->set_new_func("arsin", arsin);
+		maths->set_new_func("arcos", arcos);
+		maths->set_new_func("artan",  artan);
+		maths->set_new_func("abs", abs);
 	}
 }

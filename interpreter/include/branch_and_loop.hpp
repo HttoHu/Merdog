@@ -64,6 +64,17 @@ namespace Mer
 		size_t *index;
 		PosPtr target;
 	};
+	class CharCaseSet :public ParserNode
+	{
+	public:
+		CharCaseSet(size_t *_pc, ParserNode* _expr) :pc(_pc), expr(_expr) {}
+		std::map<char, PosPtr> jmp_table;
+		Mem::Object execute()override;
+		size_t *pc;
+		PosPtr default_pos;
+	private:
+		ParserNode* expr;
+	};
 	class IntCaseSet: public ParserNode
 	{
 	public:
