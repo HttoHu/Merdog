@@ -145,6 +145,7 @@ size_t Mer::Mem::merge_two_type(size_t c, size_t e)
 
 Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 {
+
 	// pointer
 	if (type % 2==0)
 	{
@@ -162,11 +163,6 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 		return std::make_shared<Bool>(true);
 	case STRING:
 		return std::make_shared<String>("");
-	case ID:
-	{
-		auto t = find_ustructure_t(type);
-		return std::make_shared<USObject>(t->init());
-	}
 	default:
 		return std::make_shared<USObject>(find_ustructure_t(type)->init());
 	}

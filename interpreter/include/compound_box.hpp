@@ -56,6 +56,7 @@ namespace Mer
 		// get the member type by the name of it. Take care, you should be aware that mapping and STMapping is totally different.
 		std::map<std::string, size_t> STMapping;
 		void push_init(Mem::Object obj) { init_vec.push_back(obj); }
+		void print();
 		WordRecorder* find_id_info(const std::string &id);
 		std::map<std::string, FunctionBase*> member_function_table;
 	private:

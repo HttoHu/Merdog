@@ -108,6 +108,21 @@ std::vector<Mem::Object> Mer::UStructure::init()
 	return ret;
 }
 
+void Mer::UStructure::print()
+{
+	std::cout << "------Name-Type-Map------\n";
+	for (auto a : STMapping)
+	{
+		std::cout << "name:" << a.first << "\t\t\t" << "type: " << a.second << std::endl;
+	}
+	std::cout << "------Name-Position_Map------\n";
+	for (auto a : mapping)
+	{
+		std::cout << "name:" << a.first << "\t\t\t" << "position: " << a.second << std::endl;
+	}
+	std::cout << "-----------------------------------\n";
+}
+
 Mer::WordRecorder* Mer::UStructure::find_id_info(const std::string& id)
 {
 	auto result = structure_member_table.find(id);
