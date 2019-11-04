@@ -28,6 +28,7 @@
 #include <functional>
 #include <map>
 #include "object.hpp"
+
 #include "parser.hpp"
 /* 
 	from 1-7 is basic type 
@@ -59,11 +60,12 @@ namespace Mer
 		void print();
 		WordRecorder* find_id_info(const std::string &id);
 		std::map<std::string, FunctionBase*> member_function_table;
-	private:
-		std::map<std::string, WordRecorder*> structure_member_table;
 		std::vector<Mem::Object> init_vec;
-		// the index to new member is used in build phase. 
+		std::map<std::string, WordRecorder*> structure_member_table;
+	private:
+
 		friend void build_ustructure();
+		// the index to new member is used in build phase. 
 		int be = 0;
 	};
 	// an object which create user-def struct obj.

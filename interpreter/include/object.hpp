@@ -30,6 +30,7 @@
 *	so move 8/4 Byte could get the raw value of the obj.
 */
 #pragma once
+#include <any>
 #include <string>
 #include <memory>
 #include <set>
@@ -537,7 +538,28 @@ namespace Mer
 		private:
 			int value;
 		};
-	
+		class AnyObj :public Mem::Value {
+		public:
+			template<typename T>
+			AnyObj(const T& t) :obj(t) {}
+			template<typename T>
+			AnyObj& operator=(const T& t)
+			{
+				obj = t;
+				return *this;
+			}
+			template<typename T>
+			AnyObj& operator==(T&& t)noexcept {
+				obj = t;
+			}
+			template<typename T>
+			T& cast() {
+				return std::any_cast<T&>(obj);
+			}
+			Mem::Object clone()const override;
+		private:
+			std::any obj;
+		};
 		template<typename T>
 		T get_raw(Object obj)
 		{

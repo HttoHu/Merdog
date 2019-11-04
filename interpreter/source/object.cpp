@@ -302,3 +302,8 @@ Object Mer::Mem::Char::Convert(size_t type)
 		throw Error("type-convert error");
 	}
 }
+
+Mer::Mem::Object Mer::Mem::AnyObj::clone() const
+{
+	return std::make_shared<AnyObj>(obj);
+}

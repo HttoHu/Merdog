@@ -2,8 +2,22 @@
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
+// file_stream
+/*
+ mem:struct 
+ - 0: filename
+ - 1: std::vector<std::string> file_content;
+ --------------------
+ method
+ => open(string), open a file by its name
+ => string read(int), read line_no text;
+ => void write(), write the content to the file.
+*/
 #include "../include/clib/merdog_io.hpp"
-
+#include "../include/compound_box.hpp"
+#include "../include/word_record.hpp"
+#include <fstream>
+#include <filesystem>
 namespace Mer
 {
 	namespace
@@ -66,6 +80,31 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}
+		Mem::Object _open(std::vector<Mem::Object>& args)
+		{
+			auto arg1 = args[0];
+			auto ss = std::static_pointer_cast<USObject>(arg1);
+			std::ifstream ifs;
+			ifs.open(args[1]->to_string());
+			if(!std::filesystem::exists(args[1]->to_string()))
+				throw std::runtime_error("file " + args[1]->to_string()+" don't exist");
+			(*ss)[std::make_shared<Mem::Int>(0)] = arg1->clone();
+			std::vector<std::string> str_vec;
+			std::string tmp = "";
+			while (std::getline(ifs,tmp))
+				str_vec.push_back(tmp);
+			ifs.close();
+			*std::static_pointer_cast<Mem::AnyObj>((*ss)[std::make_shared<Mem::Int>(1)])= std::move(str_vec);
+			return nullptr;
+		}
+		Mem::Object _read_line(std::vector<Mem::Object>& args)
+		{
+			auto arg1 = args[0];
+			auto ss = std::static_pointer_cast<USObject>(arg1);
+			return std::make_shared<Mem::String>((*std::static_pointer_cast<Mem::AnyObj>((*ss)[std::make_shared<Mem::Int>(1)])).
+				cast<std::vector<std::string>>()[Mem::get_raw<int>(args[1])]);
+		}
+
 	}
 	Namespace *mstd=new Namespace(nullptr);
 	Mer::SystemFunction *substr = new SystemFunction(Mem::BasicType::STRING, _substr);
@@ -75,8 +114,34 @@ namespace Mer
 	Mer::SystemFunction *input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
 	Mer::SystemFunction *input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
 	Mer::SystemFunction *input_char = new SystemFunction(Mem::BasicType::CHAR, _input_char);
+	void set_file_operator_class()
+	{
+
+		UStructure* filestream=new UStructure();
+		std::string class_name = "file_stream";
+		Mem::type_counter += 2;
+		Mer::this_namespace->sl_table->push(class_name, new WordRecorder(ESymbol::SSTRUCTURE, Mem::type_counter));
+		// set the structure of the class
+		filestream->init_vec.push_back(std::make_shared<Mem::String>(""));
+		filestream->init_vec.push_back(std::make_shared<Mem::AnyObj>(0));
+		// register the information of file_stream
+		ustructure_map.insert({ class_name,filestream });
+		Mem::type_index.insert({ class_name,Mem::type_counter });
+		type_name_mapping.insert({ Mem::type_counter,class_name });
+		Mem::type_map.insert({ Mem::type_counter,new Mem::Type(class_name,Mem::type_counter,{size_t(Mem::type_counter)}) });
+		// set opem method
+		auto open_file = new SystemFunction(Mem::BasicType::BVOID, _open);
+		open_file->set_param_types({ (size_t)Mem::type_counter+1,Mem::STRING });
+		filestream->member_function_table.insert({ "open",open_file });
+
+		auto read_line = new SystemFunction(Mem::BasicType::STRING, _read_line);
+		read_line->set_param_types({ (size_t)Mem::type_counter + 1,Mer::INTEGER });
+		filestream->member_function_table.insert({ "read",read_line });
+	}
 	void set_io()
 	{
+		//file_stream
+		set_file_operator_class();
 		cout->dnt_check_param();
 		substr->set_param_types({Mer::Mem::BasicType::STRING, Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ Mer::Mem::BasicType::STRING });
