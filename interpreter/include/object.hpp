@@ -251,6 +251,9 @@ namespace Mer
 			{
 				return value;
 			}
+			static int get_val(Mem::Object obj){
+				return std::static_pointer_cast<Mem::Int>(obj)->get_value();
+			}
 			Object Convert(size_t type) override;
 			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
 		private:
