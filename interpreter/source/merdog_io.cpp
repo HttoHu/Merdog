@@ -142,6 +142,16 @@ namespace Mer
 			}
 			return nullptr;
 		}
+		Mem::Object _line_count(std::vector<Mem::Object>& args)
+		{
+			auto obj = std::static_pointer_cast<USObject>(args[0]);
+			auto ret = std::static_pointer_cast<Mem::AnyObj>((obj->operator[](_make_int_obj(1))))->cast<std::vector<std::string>>().size();
+			return _make_int_obj(ret);
+		}
+		Mem::Object _exists_file(std::vector<Mem::Object>& args)
+		{
+			return std::make_shared<Mem::Bool>(std::filesystem::exists(args[0]->to_string()));
+		}
 	}
 	Namespace* mstd = new Namespace(nullptr);
 	Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
@@ -186,9 +196,15 @@ namespace Mer
 		auto write_into_file = new SystemFunction(Mem::BVOID, _write_into_file);
 		write_into_file->set_param_types({ (size_t)Mem::type_counter + 1 });
 		filestream->member_function_table.insert({ "write_info_file",write_into_file });
+
+		auto line_count = new SystemFunction(Mem::BVOID, _line_count);
+		line_count->set_param_types({ (size_t)Mem::type_counter + 1 });
+		filestream->member_function_table.insert({ "line_count",line_count });
 	}
 	void set_io()
 	{
+		auto exists_file = new SystemFunction(Mem::BOOL, _exists_file);
+		exists_file->set_param_types({ Mem::STRING });
 		//file_stream
 		set_file_operator_class();
 		cout->dnt_check_param();
@@ -202,5 +218,6 @@ namespace Mer
 		mstd->set_new_func("input_real", input_real);
 		mstd->set_new_func("input_char", input_char);
 		mstd->set_new_func("input_string", input_string);
+		mstd->set_new_func("exist_file", exists_file);
 	}
 }
