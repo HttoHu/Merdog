@@ -120,7 +120,7 @@ namespace Mer
 		{
 			auto fobj = std::static_pointer_cast<USObject>(args[0]);
 			int line_no = Mem::Int::get_val(args[1]);
-			auto content = std::static_pointer_cast<Mem::AnyObj>(fobj->operator[](args[1]));
+			auto content = std::static_pointer_cast<Mem::AnyObj>(fobj->operator[](_make_int_obj(1)));
 			auto& file_content = content->cast<std::vector<std::string>>();
 			std::string insert_content = args[2]->to_string();
 			file_content.insert(file_content.begin() + line_no, insert_content);
@@ -140,6 +140,7 @@ namespace Mer
 			{
 				of << a << std::endl;
 			}
+			of.close();
 			return nullptr;
 		}
 		Mem::Object _line_count(std::vector<Mem::Object>& args)
@@ -195,7 +196,7 @@ namespace Mer
 
 		auto write_into_file = new SystemFunction(Mem::BVOID, _write_into_file);
 		write_into_file->set_param_types({ (size_t)Mem::type_counter + 1 });
-		filestream->member_function_table.insert({ "write_info_file",write_into_file });
+		filestream->member_function_table.insert({ "write_into_file",write_into_file });
 
 		auto line_count = new SystemFunction(Mem::BVOID, _line_count);
 		line_count->set_param_types({ (size_t)Mem::type_counter + 1 });

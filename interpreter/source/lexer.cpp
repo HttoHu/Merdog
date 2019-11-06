@@ -40,7 +40,7 @@ TokenMap	Mer::KeyWord{
 bool				is_function_args = false;
 
 std::map<char, char> escape_character_table = {
-	{'r','\r'},{'n','\n'},{'b','\b'},{'t','\t'},{'a','\a'},{'0','\0'}
+	{'r','\r'},{'n','\n'},{'b','\b'},{'t','\t'},{'a','\a'},{'0','\0'},{'\'','\''},{'\"','\"'}
 };
 char _convert_escape(char c)
 {
