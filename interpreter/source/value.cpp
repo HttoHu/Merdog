@@ -268,7 +268,7 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 	token_stream.match(LSB);
 	size_t type = static_cast<VarIdRecorder*>(var_info)->get_type();
 	// if the value bewteen [] is a constant.
-	if (token_stream.this_tag() == INTEGER)
+	if (token_stream.this_tag() == INTEGER&&token_stream.next_token()->get_tag()==RSB)
 	{
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
@@ -282,10 +282,6 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);
-	if (var_info->get_type() >= USER_TYPE_INDEX)
-	{
-		throw Error("haven't finished yet");
-	}
 	// if the var is not an array but supports [] operator. and the expr of the []is not a constant.
 	if (var_info->es != SARRAY)
 	{

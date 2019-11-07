@@ -123,6 +123,10 @@ namespace Mer
 		{
 			return obj;
 		}
+		size_t get_type()override
+		{
+			return Mem::INT;
+		}
 	private:
 		Mem::Object obj;
 	};

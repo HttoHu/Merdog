@@ -35,7 +35,7 @@
 	when the type code is even, it means that the type is a pointer
 	for instance 1 -> int, 2 -> int *.
 */
-#define USER_TYPE_INDEX 8
+#define USER_TYPE_INDEX 10
 namespace Mer
 {
 	class Id;
