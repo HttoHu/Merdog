@@ -12,7 +12,7 @@
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
-#define MERDOG_VERSION "3.1.5"
+#define MERDOG_VERSION "3.1.6"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
