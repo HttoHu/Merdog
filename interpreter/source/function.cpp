@@ -224,8 +224,6 @@ bool Mer::Param::type_check(const std::vector<size_t>& types)
 		}
 		if (!type_seeker->second->convertible(arg_pos[i].second))
 		{
-			std::cout << type_seeker->second->to_string() << std::endl;
-			std::cout << arg_pos[i].second;
 			return false;
 		}
 	}
@@ -307,7 +305,6 @@ Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{
-		//std::cout<<
 		mem[mem.get_current()+param_table[i].second] = objs[i];
 	}
 	size_t tmp = *pc;

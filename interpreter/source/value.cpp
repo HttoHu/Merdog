@@ -263,10 +263,11 @@ Mer::GVar::GVar(WordRecorder* result, size_t offset)
 
 Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 {
+
 	auto id_name = token_stream.this_token();
 	token_stream.match(ID);
 	token_stream.match(LSB);
-	size_t type = static_cast<VarIdRecorder*>(var_info)->get_type();
+	size_t type = var_info->get_type();
 	// if the value bewteen [] is a constant.
 	if (token_stream.this_tag() == INTEGER&&token_stream.next_token()->get_tag()==RSB)
 	{
@@ -274,25 +275,27 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
 		// if the var is not an array but supports [] operator.
-		if (var_info->es != SARRAY)
+		if (Mem::exist_operator(type,"[]"))
 		{
-			return new Index(new Variable(Mem::find_op_type(type,"[]"), var_info->get_pos()), off);
+			return new Index(new Variable(Mem::find_op_type(type, "[]"), var_info->get_pos()), off);
 		}
 		return new Variable(type, var_info->get_pos() + off);
 	}
 	auto expr = new Expr();
 	token_stream.match(RSB);
 	// if the var is not an array but supports [] operator. and the expr of the []is not a constant.
-	if (var_info->es != SARRAY)
+	if (Mem::exist_operator(type, "[]"))
 	{
-		return new BinOp(new Variable(type, var_info->get_pos()), new Token(LSB), expr);
+		return new BinOp(new Variable(Mem::find_op_type(type, "[]"), var_info->get_pos()), new Token(LSB), expr);
 	}
+	// common situation 
 	return new ContainerIndex(type, var_info->get_pos(), expr);
 }
 
 // the same function of parse_member but used to parse glo var
 Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 {
+	// Similar to parse_array;
 	auto id_name = token_stream.this_token();
 	token_stream.match(ID);
 	if (token_stream.this_tag() != LSB)
@@ -300,14 +303,22 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 		return new GVar(var_info);
 	}
 	token_stream.match(LSB);
-	if (token_stream.this_tag() == INTEGER)
+	if (token_stream.this_tag() == INTEGER&&token_stream.next_token()->get_tag()==RSB)
 	{
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
+		if (Mem::exist_operator(var_info->get_type(), "[]"))
+		{
+			return new GVar(Mem::find_op_type(var_info->get_type(), "[]"), var_info->get_pos()+ off);
+		}
 		return new GVar(var_info, off);
 	}
-	auto expr = new Expr();
+	auto expr = Expr().root();
 	token_stream.match(RSB);
-	return new ContainerIndex(static_cast<VarIdRecorder*>(var_info)->pos, static_cast<VarIdRecorder*>(var_info)->get_type(), expr);
+	if (Mem::exist_operator(var_info->get_type(), "[]"))
+	{
+		return new BinOp(new GVar(Mem::find_op_type(var_info->get_type(), "[]"), var_info->get_pos()), new Token(LSB), expr);
+	}
+	return new ContainerGloIndex(static_cast<VarIdRecorder*>(var_info)->pos, static_cast<VarIdRecorder*>(var_info)->get_type(), expr);
 }

@@ -36,6 +36,17 @@ namespace Mer
 			return result2->second;
 		}
 
+		bool exist_operator(size_t ty, std::string op)
+		{
+			auto result1 = type_op_type_map.find(ty);
+			if (result1 == type_op_type_map.end())
+				return false;
+			auto result2 = result1->second.find(op);
+			if (result2 == result1->second.end())
+				return false;
+			return true;
+		}
+
 	}
 	std::map<std::string, size_t> Mem::type_index;
 }

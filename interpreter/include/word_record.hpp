@@ -87,6 +87,7 @@ namespace Mer
 	public:
 		GVarIdRecorder(size_t t,size_t _pos,ESymbol e=SGVAR) :WordRecorder(e,t), pos(_pos) {
 		}
+		bool& is_arr() { return arr; }
 		size_t get_pos()override
 		{
 			return pos;
@@ -96,6 +97,7 @@ namespace Mer
 			return mem[pos];
 		}
 		size_t pos;
+		bool arr;
 	};
 	struct FuncIdRecorder :public WordRecorder
 	{

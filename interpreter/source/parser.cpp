@@ -280,7 +280,7 @@ inline void _record_glo_id(Mer::VarDeclUnit* var_unit, size_t type, size_t pos)
 {
 	if (var_unit->arr())
 	{ 
-		auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SARRAY);
+		auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SGVAR);
 		glo_arr_id_recorder->count = var_unit->get_size();
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()),glo_arr_id_recorder);
 	}
@@ -344,7 +344,12 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 	{
 		if (a->arr())
 		{
-			auto arr = static_cast<InitList*>(a->get_expr())->exprs();
+			std::vector<Expr*> arr;
+			auto exprs_info = a->get_expr();
+			if (typeid(*exprs_info) == typeid(InitList))
+				arr = static_cast<InitList*>(a->get_expr())->exprs();
+			else
+				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
 			exprs.insert(exprs.end(), arr.begin(), arr.end());
 		}
 		else {

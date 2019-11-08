@@ -71,5 +71,6 @@ namespace Mer
 		extern int type_counter;
 		// get the operator function type
 		size_t find_op_type(size_t ty, std::string op);
+		bool exist_operator(size_t ty, std::string op);
 	}
 }

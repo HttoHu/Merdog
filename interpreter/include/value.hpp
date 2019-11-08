@@ -68,6 +68,7 @@ namespace Mer
 	class GVar :public ParserNode
 	{
 	public:
+		GVar(size_t _type, size_t off_pos) :type(_type), pos(off_pos) {}
 		GVar(WordRecorder *result);
 		GVar(WordRecorder* result, size_t offset);
 		size_t get_type()override
