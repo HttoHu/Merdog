@@ -356,15 +356,9 @@ Mer::InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
 Mem::Object Mer::InitList::execute()
 {
 	std::vector<Mem::Object> v(init_v.size());
-	if (v.size() == 1 && size > 1)
-	{
-		auto tmp = init_v[0]->execute();
-		v = std::vector<Mem::Object>(size, tmp);
-		return std::make_shared<Mem::InitListObj>(std::move(v), type);
-	}
 	for (size_t i = 0; i < v.size(); i++)
 	{
-		v[i] = init_v[i]->execute();
+		v[i] = init_v[i]->execute()->clone();
 	}
 	return std::make_shared<Mem::InitListObj>(std::move(v), type);
 }

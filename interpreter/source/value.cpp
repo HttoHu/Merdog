@@ -28,7 +28,7 @@ Mer::Mem::Object Mer::Variable::execute()
 	return mem[mem.get_current() + pos];
 }
 
-Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, size_t _index, FunctionBase* _func, std::vector<ParserNode*>& exprs) :index(_index), func(_func), argument(exprs)
+Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, FunctionBase* _func, std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
 	func->check_param(types);
 	std::vector<ParserNode*> tmp;
@@ -47,14 +47,13 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	{
 		tmp.push_back(a->execute()->clone());
 	}
-	func->set_index(index);
 	return func->run(tmp);
 }
 
 std::string Mer::FunctionCall::to_string()
 {
 	std::string str="function_pos:";
-	str += std::to_string(func->index);
+	str += std::to_string(func->function_offset);
 	str += "(";
 	for (auto &a : argument)
 		str += a->to_string();
@@ -157,7 +156,7 @@ Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(param_types, mem.get_index(), result, exprs);
+		return new FunctionCall(param_types, result, exprs);
 	}
 	auto param_unit = new Expr();
 	param_types.push_back(param_unit->get_type());
@@ -170,7 +169,7 @@ Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(param_types, mem.get_index(), result, exprs);
+	return new FunctionCall(param_types, result, exprs);
 }
 
 Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase*f, ParserNode* parent)
@@ -185,7 +184,7 @@ Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase*f, ParserNod
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(param_types, mem.get_index(), f, exprs);
+		return new FunctionCall(param_types, f, exprs);
 	}
 	auto param_unit = new Expr();
 	param_types.push_back(param_unit->get_type());
@@ -198,7 +197,7 @@ Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase*f, ParserNod
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(param_types, mem.get_index(), f, exprs);
+	return new FunctionCall(param_types, f, exprs);
 }
 
 Mer::Namespace* Mer::Parser::kill_namespaces()

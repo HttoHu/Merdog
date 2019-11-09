@@ -129,7 +129,7 @@ namespace Mer
 //pdel
 		void build_block();
 		// you need new block by hand. In an effort to push argument into the block before the BEGIN.
-		void build_function_block();
+		size_t build_function_block();
 		void do_while();
 		void build_while();
 		void build_if();

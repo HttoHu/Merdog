@@ -25,7 +25,7 @@ namespace Mer
 		}
 		Mem::Object _alloc_heap(std::vector<Mem::Object>& args)
 		{
-			mem.check_heap();
+			//mem.check_heap();
 			return nullptr;
 		}
 		Mem::Object _sleep(std::vector<Mem::Object>& args)

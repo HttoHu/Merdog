@@ -361,7 +361,7 @@ Mer::GloVarDecl::GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t) :type(t)
 Mem::Object Mer::GloVarDecl::execute()
 {
 	for (size_t i = 0; i < sum; i++) {
-		mem[pos + i] = exprs[i]->execute();
+		mem[pos + i] = exprs[i]->execute()->clone();
 	}
 	return Mem::Object(nullptr);
 }

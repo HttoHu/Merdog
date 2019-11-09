@@ -62,7 +62,7 @@ namespace Mer
 		void set_index(size_t pos);
 
 		bool is_completed;
-		int index;
+		int function_offset;
 	protected:
 		std::vector<size_t> param_types;
 	};
@@ -78,7 +78,9 @@ namespace Mer
 		void set_function_block();
 		std::vector<ParserNode*> stmts;
 		size_t* pc=new size_t(0);
+		int function_size;
 	private:
+		int mem_reserve;
 		size_t param_size;
 		size_t type;
 	};

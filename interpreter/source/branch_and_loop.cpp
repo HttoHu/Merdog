@@ -75,15 +75,18 @@ namespace Mer
 			this_namespace->sl_table->end_block();
 
 		}
-		void build_function_block()
+		size_t build_function_block()
 		{
+			mem.resert_function_size();
 			this_block_size = std::make_shared<size_t>(0);
 			token_stream.match(BEGIN);
 			public_part();
 			*this_block_size = current_ins_table->size();
 			token_stream.match(END);
+			int off = mem.function_size;
 			mem.end_block();
 			this_namespace->sl_table->end_block();
+			return off;
 		}
 		void do_while()
 		{

@@ -112,12 +112,11 @@ namespace Mer
 	class FunctionCall :public ParserNode
 	{
 	public:
-		FunctionCall(const std::vector<size_t> &types, size_t _index, FunctionBase * fun, std::vector<ParserNode*>& exprs);
+		FunctionCall(const std::vector<size_t> &types, FunctionBase * fun, std::vector<ParserNode*>& exprs);
 		size_t get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;
 	private:
-		size_t index;
 		FunctionBase * func;
 		std::vector<ParserNode*> argument;
 	};

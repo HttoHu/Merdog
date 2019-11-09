@@ -139,11 +139,12 @@ std::pair<std::string, Function*> Parser::_build_function()
 	_pcs.push_back(ret->pc);
 	// bind function block to it, and when you call build_function_block, the function block will be built.
 	current_ins_table = &(ret->stmts);
-	Parser::build_function_block();
+	int off = Parser::build_function_block() + ret->param->get_param_table().size();
 	// continue to tag other statement to global stmt.
 	Mer::global_stmt() = true;
 
 	ret->is_completed = true;
+	ret->set_index(off);
 	return { name,ret };
 }
 
@@ -177,11 +178,14 @@ void Mer::Parser::build_function()
 		// we use pure_block because we should push the param to the block, 
 		// so we need to create a preserved memory for param.
 		Mer::global_stmt() = false;
+
 		_pcs.push_back(temp->pc);
 		current_ins_table = &(temp->stmts);
-		Parser::build_function_block();
+		// off get the var_size of the function
+		int off=Parser::build_function_block()+ temp->param->get_param_table().size();
 		Mer::global_stmt() = true;
 		temp->is_completed = true;
+		temp->set_index(off);
 		return;
 	}
 	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
@@ -203,10 +207,11 @@ void Mer::Parser::build_function()
 	Mer::global_stmt() = false;
 	_pcs.push_back(ret->pc);
 	current_ins_table = &(ret->stmts);
-	Parser::build_function_block();
+	// off get the var_size of the function
+	int off=Parser::build_function_block() + ret->param->get_param_table().size();
 	Mer::global_stmt() = true;
 	ret->is_completed = true;
-
+	ret->set_index(off);
 }
 
 bool Mer::Param::type_check(const std::vector<size_t>& types)
@@ -276,7 +281,7 @@ void Mer::FunctionBase::convert_arg(std::vector<ParserNode*>& args)
 //================================================================
 void Mer::FunctionBase::set_index(size_t pos)
 {
-	index = (int)pos;
+	function_offset = (int)pos;
 }
 
 Mer::Function::Function(size_t t, Param * p) :
@@ -301,7 +306,7 @@ void Mer::Function::reser_param(Param * p)
 
 Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
 {
-	mem.new_func(index);
+	mem.new_func(function_offset);
 	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{

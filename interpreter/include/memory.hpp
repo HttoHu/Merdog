@@ -23,17 +23,8 @@ namespace Mer
 			block_flag.push_back(index);
 			return index;
 		}
-		void new_func(int siz)
-		{
-			current += siz;
-			call_stack.push(siz);
-		}
-		void end_func()
-		{
-			current -= call_stack.top();
-
-			call_stack.pop();
-		}
+		void new_func(int siz);
+		void end_func();
 		size_t push(int size);
 		size_t push();
 		size_t end_block();
@@ -51,14 +42,8 @@ namespace Mer
 		size_t& get_index() {
 			return index;
 		}
-		void check_heap()
-		{
-			if (heap_index > 0.4 * capacity)
-			{ 
-				alloc();
-				capacity *= 2;
-			}
-		}
+		void resert_function_size();
+		size_t function_size=0;
 	private:
 		void check()
 		{
@@ -66,20 +51,18 @@ namespace Mer
 			{ 
 				alloc();
 				capacity *= 2;
-				heap_pos *= 2;
 			}
 		}
 		//alloc for memory
 		void alloc();
+		// how many var's the funciton contains;
+
 		size_t index = 0;
 		size_t current = 0;
 		size_t capacity = 2048;
 		std::stack<size_t> call_stack;
 		std::vector<size_t> block_flag;
 		Mem::Object *stack_mem;
-		std::stack<size_t>free_pos_stack;
-		size_t heap_index = 1024;
-		size_t heap_pos=0;
 	};
 	extern Memory mem;
 }
