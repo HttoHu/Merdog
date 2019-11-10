@@ -563,6 +563,18 @@ namespace Mer
 		private:
 			std::any obj;
 		};
+		class Array :public Value
+		{
+		public:
+			Array(size_t _type, int _pos,int _length):type(_type), pos(_pos),length(_length){}
+			Mem::Object operator[](Object index);
+			size_t get_type()const override { return type; }
+		private:
+			// element type
+			size_t type;
+			int pos;
+			int length;
+		};
 		template<typename T>
 		T get_raw(Object obj)
 		{

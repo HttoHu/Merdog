@@ -307,3 +307,13 @@ Mer::Mem::Object Mer::Mem::AnyObj::clone() const
 {
 	return std::make_shared<AnyObj>(obj);
 }
+
+Mer::Mem::Object Mer::Mem::Array::operator[](Object index)
+{
+	int i = Mem::get_raw<int>(index);
+	if (i >= length)
+	{
+		throw std::runtime_error("array overflow!");
+	}
+	return mem[size_t(pos) + size_t(i)];
+}

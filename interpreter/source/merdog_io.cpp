@@ -49,7 +49,11 @@ namespace Mer
 		Mem::Object _cout(std::vector<Mem::Object>& args)
 		{
 			for (const auto& a : args)
+#ifndef COUTTOSTRING
 				std::cout << a->to_string();
+#else
+				output_buff += a->to_string();
+#endif
 			return nullptr;
 		}
 		Mem::Object _input_int(std::vector<Mem::Object>& args)

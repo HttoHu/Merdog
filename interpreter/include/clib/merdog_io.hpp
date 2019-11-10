@@ -26,6 +26,7 @@
 #include "../type.hpp"
 #include "../function.hpp"
 #include "../namespace.hpp"
+//#define COUTTOSTRING
 // offer the most basic io method and string operation
 namespace Mer
 {

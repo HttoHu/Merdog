@@ -280,7 +280,7 @@ inline void _record_glo_id(Mer::VarDeclUnit* var_unit, size_t type, size_t pos)
 {
 	if (var_unit->arr())
 	{ 
-		auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SGVAR);
+		auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SGARR);
 		glo_arr_id_recorder->count = var_unit->get_size();
 		this_namespace->sl_table->push(Id::get_value(var_unit->get_id()),glo_arr_id_recorder);
 	}

@@ -13,6 +13,15 @@
 std::vector<size_t *> Mer::_pcs;
 std::string Mer::output_buff = "";
 std::vector<std::pair<Mer::PosPtr,Mer::PosPtr>> Mer::_nearest_loop_pos;
+void clear()
+{
+	Mer::token_stream.clear();
+	Mer::function_table.clear();
+	delete Mer::root_namespace;
+	Mer::root_namespace = new Mer::Namespace(nullptr);
+	Mer::this_namespace = Mer::root_namespace;
+	Mer::function_table.clear();
+}
 std::string Mer::run_interpreter(const std::string&file_content)
 {
 	output_buff = "";
@@ -23,6 +32,7 @@ std::string Mer::run_interpreter(const std::string&file_content)
 		Mer::build_token_stream(file_content);
 		Mer::Parser::program()->execute();
 		token_stream.clear();
+		clear();
 //		for (auto &a : del_parser_node_table)
 	//		delete a;
 	}

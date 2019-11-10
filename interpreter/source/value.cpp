@@ -76,6 +76,7 @@ Mer::ParserNode* Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
+	case ESymbol::SGARR:
 	case ESymbol::SGVAR:
 		return parse_glo(result);
 	case ESymbol::SSTRUCTURE:
@@ -274,7 +275,7 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
 		// if the var is not an array but supports [] operator.
-		if (Mem::exist_operator(type,"[]"))
+		if (var_info->es!=ESymbol::SARRAY&&Mem::exist_operator(type,"[]"))
 		{
 			return new Index(new Variable(Mem::find_op_type(type, "[]"), var_info->get_pos()), off);
 		}
@@ -283,7 +284,7 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 	auto expr = new Expr();
 	token_stream.match(RSB);
 	// if the var is not an array but supports [] operator. and the expr of the []is not a constant.
-	if (Mem::exist_operator(type, "[]"))
+	if (var_info->es != ESymbol::SARRAY && Mem::exist_operator(type, "[]"))
 	{
 		return new BinOp(new Variable(Mem::find_op_type(type, "[]"), var_info->get_pos()), new Token(LSB), expr);
 	}
@@ -307,7 +308,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 		int off = Integer::get_value(token_stream.this_token());
 		token_stream.match(INTEGER);
 		token_stream.match(RSB);
-		if (Mem::exist_operator(var_info->get_type(), "[]"))
+		if (var_info->es!=ESymbol::SGARR &&Mem::exist_operator(var_info->get_type(), "[]"))
 		{
 			return new GVar(Mem::find_op_type(var_info->get_type(), "[]"), var_info->get_pos()+ off);
 		}
@@ -315,7 +316,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	}
 	auto expr = Expr().root();
 	token_stream.match(RSB);
-	if (Mem::exist_operator(var_info->get_type(), "[]"))
+	if (var_info->es != ESymbol::SGARR && Mem::exist_operator(var_info->get_type(), "[]"))
 	{
 		return new BinOp(new GVar(Mem::find_op_type(var_info->get_type(), "[]"), var_info->get_pos()), new Token(LSB), expr);
 	}
