@@ -52,10 +52,10 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 
 std::string Mer::FunctionCall::to_string()
 {
-	std::string str="function_pos:";
+	std::string str = "function_pos:";
 	str += std::to_string(func->function_offset);
 	str += "(";
-	for (auto &a : argument)
+	for (auto& a : argument)
 		str += a->to_string();
 	str += ")";
 	return str;
@@ -104,20 +104,14 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 	Token* var_id = token_stream.this_token();
 	token_stream.match(ID);
 	// if var is struct member
-	if(var_info->es==ESymbol::MVAR)
+	if (var_info->es == ESymbol::MVAR)
 	{
-		return new Index(new Variable((size_t)(Mem::type_counter)+1,0), var_info->get_pos(), var_info->get_type());
+		return new Index(new Variable((size_t)(Mem::type_counter) + 1, 0), var_info->get_pos(), var_info->get_type());
 	}
-	switch (token_stream.this_tag())
-	{
-	case LSB:
-	{
-		token_stream.back();
-		return parse_array(var_info);
-	}
-	default:
-		return new Variable(var_info);
-	}
+	auto ret = new Variable(var_info);
+	if (var_info->es == SARRAY)
+		ret->arr() = true;
+	return ret;
 }
 
 
@@ -173,7 +167,7 @@ Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 	return new FunctionCall(param_types, result, exprs);
 }
 
-Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase*f, ParserNode* parent)
+Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f, ParserNode* parent)
 {
 	std::vector<ParserNode*> exprs;
 	// to check the param's type.
@@ -260,65 +254,11 @@ Mer::GVar::GVar(WordRecorder* result, size_t offset)
 	type = result->get_type();
 }
 
-
-Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
-{
-
-	auto id_name = token_stream.this_token();
-	token_stream.match(ID);
-	token_stream.match(LSB);
-	size_t type = var_info->get_type();
-	// if the value bewteen [] is a constant.
-	if (token_stream.this_tag() == INTEGER&&token_stream.next_token()->get_tag()==RSB)
-	{
-		int off = Integer::get_value(token_stream.this_token());
-		token_stream.match(INTEGER);
-		token_stream.match(RSB);
-		// if the var is not an array but supports [] operator.
-		if (var_info->es!=ESymbol::SARRAY&&Mem::exist_operator(type,"[]"))
-		{
-			return new Index(new Variable(Mem::find_op_type(type, "[]"), var_info->get_pos()), off);
-		}
-		return new Variable(type, var_info->get_pos() + off);
-	}
-	auto expr = new Expr();
-	token_stream.match(RSB);
-	// if the var is not an array but supports [] operator. and the expr of the []is not a constant.
-	if (var_info->es != ESymbol::SARRAY && Mem::exist_operator(type, "[]"))
-	{
-		return new BinOp(new Variable(Mem::find_op_type(type, "[]"), var_info->get_pos()), new Token(LSB), expr);
-	}
-	// common situation 
-	return new ContainerIndex(type, var_info->get_pos(), expr);
-}
-
 // the same function of parse_member but used to parse glo var
 Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 {
 	// Similar to parse_array;
 	auto id_name = token_stream.this_token();
 	token_stream.match(ID);
-	if (token_stream.this_tag() != LSB)
-	{
-		return new GVar(var_info);
-	}
-	token_stream.match(LSB);
-	if (token_stream.this_tag() == INTEGER&&token_stream.next_token()->get_tag()==RSB)
-	{
-		int off = Integer::get_value(token_stream.this_token());
-		token_stream.match(INTEGER);
-		token_stream.match(RSB);
-		if (var_info->es!=ESymbol::SGARR &&Mem::exist_operator(var_info->get_type(), "[]"))
-		{
-			return new GVar(Mem::find_op_type(var_info->get_type(), "[]"), var_info->get_pos()+ off);
-		}
-		return new GVar(var_info, off);
-	}
-	auto expr = Expr().root();
-	token_stream.match(RSB);
-	if (var_info->es != ESymbol::SGARR && Mem::exist_operator(var_info->get_type(), "[]"))
-	{
-		return new BinOp(new GVar(Mem::find_op_type(var_info->get_type(), "[]"), var_info->get_pos()), new Token(LSB), expr);
-	}
-	return new ContainerGloIndex(static_cast<VarIdRecorder*>(var_info)->pos, static_cast<VarIdRecorder*>(var_info)->get_type(), expr);
+	return new GVar(var_info);
 }

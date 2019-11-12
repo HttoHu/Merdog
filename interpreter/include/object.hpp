@@ -568,6 +568,7 @@ namespace Mer
 		public:
 			Array(size_t _type, int _pos,int _length):type(_type), pos(_pos),length(_length){}
 			Mem::Object operator[](Object index);
+			Mem::Object clone()const override;
 			size_t get_type()const override { return type; }
 		private:
 			// element type

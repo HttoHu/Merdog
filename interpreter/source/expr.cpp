@@ -9,6 +9,7 @@
 #include "../include/namespace.hpp"
 #include "../include/function.hpp"
 #include "../include/word_record.hpp"
+#include "../include/optimizer.hpp"
 using namespace Mer;
 Mer::Expr::Expr(size_t t) :is_bool(false), expr_type(t) {
 	tree = assign();
@@ -106,7 +107,7 @@ Mer::ParserNode* Mer::Expr::term()
 
 ParserNode* Mer::Expr::member_visit()
 {
-	auto result = factor();
+	auto result = subscript();
 	while (token_stream.this_token()->get_tag() == DOT || token_stream.this_token()->get_tag() == PTRVISIT)
 	{
 		auto tok = token_stream.this_token();
@@ -130,6 +131,19 @@ ParserNode* Mer::Expr::member_visit()
 		// find member index and type;
 		auto seeker = ustruct->get_member_info(Id::get_value(member_id));
 		result = new Index(result, seeker.second, seeker.first);
+	}
+	return result;
+}
+ParserNode* Mer::Expr::subscript()
+{
+	auto result = factor();
+	while (token_stream.this_token()->get_tag() == LSB)
+	{
+		auto tok = token_stream.this_token();
+		token_stream.match(LSB);
+		auto exp = expr();
+		token_stream.match(RSB);
+		result = optimizer::optimize_array_subscript(result, exp);
 	}
 	return result;
 }
@@ -192,9 +206,7 @@ Mer::ParserNode* Mer::Expr::factor()
 	case SIZEOF:
 		return new SizeOf();
 	case ID:
-	{
 		return Parser::parse_id();
-	}
 	case NULLPTR:
 		token_stream.match(NULLPTR);
 		return new LConV(std::make_shared<Mem::Pointer>(nullptr), expr_type);
@@ -273,7 +285,7 @@ Mem::Object BinOp::execute()
 		break;
 	case LSB:
 		ret = left_v->operator[](right_v);
-		return ret;
+		break;
 	default:
 		throw Error("Undefined operator");
 	}
@@ -328,20 +340,20 @@ Mer::InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
 	token_stream.match(BEGIN);
 	while (token_stream.this_tag() != Tag::END)
 	{
-		init_v.push_back(new Expr(t));
+		init_v.push_back(Expr(t).root());
 		if (token_stream.this_tag() == Tag::COMMA)
 			token_stream.match(COMMA);
 	}
 	token_stream.match(END);
 	if (init_v.size() == 1 && sz > 1)
 	{
-		init_v = std::vector<Expr*>(sz, init_v[0]);
+		init_v = std::vector<ParserNode*>(sz, init_v[0]);
 		return;
 	}
 	if (sz == -1)
 		size = init_v.size();
 	else if (init_v.size() != sz)
-		throw Error("Error, array overflow");
+		throw Error("Error, array overflow expect "+std::to_string(sz)+" but received "+std::to_string(init_v.size()));
 
 	for (size_t i = 1; i < init_v.size(); i++)
 	{
@@ -409,7 +421,7 @@ Mer::EmptyList::EmptyList(size_t t, size_t sz) :type_code(t), size(sz)
 {
 	for (size_t i = 0; i < sz; i++)
 	{
-		init_v.push_back(new Expr(new LConV(Mem::create_var_t(t), t)));
+		init_v.push_back(new LConV(Mem::create_var_t(t), t));
 	}
 }
 
@@ -521,4 +533,18 @@ Mem::Object Mer::Index::execute()
 size_t Mer::Index::get_type()
 {
 	return type;
+}
+namespace Mer
+{
+	SubScript::SubScript(ParserNode* l, ParserNode* s) :left(l), subscr(s)
+	{
+		if (Mem::exist_operator(l->get_type(), "[]"))
+			type = Mem::find_op_type(l->get_type(), "[]");
+		else
+			type = l->get_type();
+	}
+	Mem::Object SubScript::execute()
+	{
+		return left->execute()->operator[](subscr->execute());
+	}
 }

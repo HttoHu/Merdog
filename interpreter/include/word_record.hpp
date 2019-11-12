@@ -78,7 +78,8 @@ namespace Mer
 	public:
 		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
 		{
-			type_code = Mem::type_counter+=2;
+			 Mem::type_counter+=2;
+			 type_code = (size_t)Mem::type_counter;
 		}
 
 	};

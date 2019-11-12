@@ -85,6 +85,17 @@ namespace Mer
 		size_t pos;
 		ParserNode* expr;
 	};
+	class SubScript :public ParserNode
+	{
+	public:
+		SubScript(ParserNode* l, ParserNode* s);
+		size_t get_type()override { return type; }
+		Mem::Object execute()override;
+	private:
+		size_t type=0;
+		ParserNode* left;
+		ParserNode* subscr;
+	};
 	class BinOp :public ParserNode
 	{
 	public:
@@ -155,6 +166,7 @@ namespace Mer
 		ParserNode* nexpr();
 		ParserNode* term();
 		ParserNode* member_visit();
+		ParserNode* subscript();
 		ParserNode* factor();
 	private:
 
@@ -165,9 +177,9 @@ namespace Mer
 	public:
 		EmptyList(size_t t, size_t sz);
 		Mem::Object execute()override;
-		std::vector<Expr*>& exprs() { return init_v; }
+		std::vector<ParserNode*>& exprs() { return init_v; }
 	private:
-		std::vector<Expr*> init_v;
+		std::vector<ParserNode*> init_v;
 		size_t type_code;
 		size_t size;
 	};
@@ -178,7 +190,7 @@ namespace Mer
 		InitList(size_t t,size_t sz);
 		Mem::Object execute()override;
 		std::vector<Mem::Object> get_array();
-		std::vector<Expr*>& exprs() { return init_v; }
+		std::vector<ParserNode*>& exprs() { return init_v; }
 		size_t get_type()override
 		{
 			return type;
@@ -186,7 +198,7 @@ namespace Mer
 		size_t get_ele_count() { return size; }
 		virtual ~InitList();
 	private:
-		std::vector<Expr*> init_v;
+		std::vector<ParserNode*> init_v;
 		size_t type;
 		size_t size;
 	};

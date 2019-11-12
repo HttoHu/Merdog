@@ -86,9 +86,10 @@ namespace Mer
 			return type_to_string(type);
 		}
 	private:
+		void process_unit(VarDeclUnit* a, size_t c_pos);
 		size_t pos;
-		size_t sum;
-		std::vector<Expr*> exprs;
+		size_t sum=0;
+		std::vector<ParserNode*> exprs;
 		size_t type;
 	};
 	class GloVarDecl :public ParserNode
@@ -97,9 +98,10 @@ namespace Mer
 		GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t);
 		Mem::Object execute()override;
 	private:
+		void process_unit(VarDeclUnit* a, size_t c_pos);
 		size_t pos=0;
-		size_t sum;
-		std::vector<Expr*> exprs;
+		size_t sum=0;
+		std::vector<ParserNode*> exprs;
 		size_t type;
 	};
 	// to convert type;

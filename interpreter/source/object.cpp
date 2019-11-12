@@ -317,3 +317,8 @@ Mer::Mem::Object Mer::Mem::Array::operator[](Object index)
 	}
 	return mem[size_t(pos) + size_t(i)];
 }
+
+Mer::Mem::Object Mer::Mem::Array::clone() const
+{
+	return std::make_shared<Array>(type, pos, length);
+}

@@ -28,7 +28,7 @@ std::string get_file_content(const std::string& filename)
 	return file_content;
 }
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 int main(int argc, char* argv[])
 {
 	try
@@ -74,9 +74,7 @@ int main()
 		Mer::set_utility();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
-		//time_t s = clock();
 		Mer::Parser::program()->execute();
-		//time_t e = clock();
 	}
 	catch (std::exception & e)
 	{

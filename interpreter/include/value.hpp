@@ -104,7 +104,9 @@ namespace Mer
 			return "(" + type_to_string(type) + ")" + std::to_string(pos);
 		}
 		Mem::Object execute()override;
+		bool& arr() { return is_arr; }
 	private:
+		bool is_arr=false;
 		size_t type;
 		size_t pos;
 	};
@@ -127,7 +129,6 @@ namespace Mer
 	{
 
 		ParserNode* parse_glo(WordRecorder* var_info);
-		ParserNode *parse_array(WordRecorder* var_info);
 		ParserNode *parse_id();
 		ParserNode *parse_var(WordRecorder* var_info);
 		// parse id with namespace.
