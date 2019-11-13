@@ -3,7 +3,6 @@
 * Copyright (c) 2019 Htto Hu
 */
 #include "../include/function.hpp"
-#include "../include/object.hpp"
 #include "../include/memory.hpp"
 #include "../include/parser.hpp"
 #include "../include/word_record.hpp"
@@ -13,10 +12,9 @@
 #define MER3_1_2
 using namespace Mer;
 
-bool Mer::is_struct_member_function=false
-;
+bool Mer::is_struct_member_function=false;
 std::map<std::string, Function*> Mer::function_table;
-
+std::map<size_t, FunctionBase*> Mer::type_init_function_map;
 Block *Mer::current_function_block = nullptr;
 
 //=============================================================

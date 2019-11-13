@@ -2,7 +2,7 @@
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
-#include "../include/object.hpp"
+#include "../include/basic_objects.hpp"
 #include "../include/memory.hpp"
 #include "../include/lexer.hpp"
 #include "../include/namespace.hpp"
@@ -51,97 +51,6 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	return ret;
 }
 
-size_t Mer::Mem::get_type_code()
-{
-	auto tok = token_stream.this_token();
-	token_stream.next();
-	switch (tok->get_tag())
-	{
-	case CHAR_DECL:
-		return CHAR ;
-	case VOID_DECL:
-		return BVOID;
-	case INTEGER_DECL:
-		return INT;
-	case REAL_DECL:
-		return DOUBLE;
-	case BOOL_DECL:
-		return BOOL;
-	case STRING_DECL:
-		return STRING;
-	case ID:
-	{
-		auto info = Mer::this_namespace->sl_table->find(Id::get_value(tok));
-		if (info == nullptr)
-			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
-		return info->get_type();
-	}
-	default:
-		throw Error(token_stream.this_token()->to_string() + " unknown type ");
-	}
-}
-
-size_t Mer::Mem::get_type_code(Token* tok)
-{
-	switch (tok->get_tag())
-	{
-	case CHAR_DECL:
-		return CHAR;
-	case VOID_DECL:
-		return BVOID;
-	case INTEGER_DECL:
-		return INT;
-	case REAL_DECL:
-		return DOUBLE;
-	case BOOL_DECL:
-		return BOOL;
-	case STRING_DECL:
-		return STRING;
-	case ID:
-	{
-		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
-		if (info == nullptr)
-			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
-		return info->get_type();
-
-	}
-	default:
-		throw Error(tok->to_string() + " unknown type ");
-	}
-}
-
-size_t& Mer::Mem::type_no()
-{
-	static size_t this_type_index = 10;
-	return this_type_index;
-}
-// to DO 
-size_t Mer::Mem::get_ctype_code()
-{
-	size_t container_type;
-	size_t element_type;
-	container_type = Parser::get_type();
-	if (token_stream.this_tag() != LT)
-	{
-		return container_type;
-	}
-	token_stream.match(LT);
-	element_type = get_ctype_code();
-	token_stream.match(GT);
-	return merge_two_type(container_type, element_type);
-}
-
-size_t Mer::Mem::merge_two_type(size_t c, size_t e)
-{
-	static std::map<std::pair<size_t, size_t>, size_t> type_m;
-	std::pair<size_t, size_t> key = { c,e };
-	auto result = type_m.find(key);
-	if (result != type_m.end())
-		return result->second;
-	type_map.insert({ type_counter + 1,new ComplexType(c, e) });
-	type_m.insert({ { c,e }, (size_t)type_counter });
-	return (size_t)type_counter;
-}
 
 Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 {
@@ -315,7 +224,7 @@ Mer::Mem::Object Mer::Mem::Array::operator[](Object index)
 	{
 		throw std::runtime_error("array overflow!");
 	}
-	return mem[size_t(pos) + size_t(i)];
+	return mem[size_t(pos) + size_t(i)+1];
 }
 
 Mer::Mem::Object Mer::Mem::Array::clone() const

@@ -23,6 +23,7 @@
 
 */
 #pragma once
+#include "lexer.hpp"
 #include "parser_node.hpp"
 namespace Mer
 {

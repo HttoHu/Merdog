@@ -33,6 +33,7 @@ namespace Mer
 		SGVAR,SGARR,
 		SSTRUCTURE,SARRAY,
 		STYPE,USVAR,MVAR,
+		SCONTAINER,
 	};
 	struct WordRecorder
 	{
@@ -99,7 +100,7 @@ namespace Mer
 			return mem[pos];
 		}
 		size_t pos;
-		bool arr;
+		bool arr=false;
 	};
 	struct FuncIdRecorder :public WordRecorder
 	{
@@ -109,18 +110,16 @@ namespace Mer
 		}
 	private:
 	};
-	struct BuildInClass :public WordRecorder
+	struct ContainerTypeRecorder :public WordRecorder
 	{
 	public:
-		BuildInClass(const std::string &str):WordRecorder(STYPE)
+		ContainerTypeRecorder(const std::string &str):WordRecorder(SCONTAINER)
 		{
 			type_code = Mem::type_counter += 2;
 		}
 		std::string to_string() override { 
 			return "type:"+type_name; 
 		}
-		std::function<ParserNode*()> create_var;
-		std::function<ParserNode*()> create_glo_var;
 	private:
 		std::string type_name;
 	};
@@ -145,7 +144,7 @@ namespace Mer
 			if (result == nullptr)
 				throw Error("id " + id->to_string() + " no found.");
 			if (result->es != e)
-				throw Error("id typ not matched");
+				throw Error("id type not matched");
 		}
 		WordRecorder* find_front(std::string id)
 		{

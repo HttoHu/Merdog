@@ -27,7 +27,7 @@
 #include <vector>
 #include <functional>
 #include <map>
-#include "object.hpp"
+#include "basic_objects.hpp"
 
 #include "parser.hpp"
 /* 

@@ -28,9 +28,14 @@ Mer::Mem::Object Mer::Variable::execute()
 	return mem[mem.get_current() + pos];
 }
 
-Mer::FunctionCall::FunctionCall(const std::vector<size_t>& types, FunctionBase* _func, std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
+Mer::FunctionCall::FunctionCall( FunctionBase* _func, std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
-	func->check_param(types);
+	std::vector<size_t> type_vec;
+	for (auto& a : exprs)
+	{
+		type_vec.push_back(a->get_type());
+	}
+	func->check_param(type_vec);
 	std::vector<ParserNode*> tmp;
 	func->convert_arg(argument);
 }
@@ -81,8 +86,6 @@ Mer::ParserNode* Mer::Parser::parse_id()
 		return parse_glo(result);
 	case ESymbol::SSTRUCTURE:
 		return var_decl();
-	case ESymbol::STYPE:// Build-in Type but not basic type 
-		return static_cast<BuildInClass*>(result)->create_var();
 	case ESymbol::SFUN:
 		return parse_function_call(this_namespace);
 	case ESymbol::SARRAY:
@@ -136,63 +139,72 @@ Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 	}
 }
 
-Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
+Mer::FunctionCall* Mer::Parser::parse_initializer(size_t type)
 {
-	auto id = token_stream.this_token();
+	auto result = type_init_function_map.find(type);
+	if (result == type_init_function_map.end())
+		throw Error("type " + type_to_string(type) + " don't support initializer");
+	auto func = result->second;
+	std::vector<ParserNode*> exprs = parse_arguments();
+	return new FunctionCall(func, exprs);
+}
+
+std::vector<Mer::ParserNode*> Mer::Parser::parse_arguments()
+{
 	std::vector<ParserNode*> exprs;
-	// to check the param's type.
-	std::vector<size_t> param_types;
-	names->sl_table->type_check(id, Mer::ESymbol::SFUN);
-	auto result = names->find_func(Id::get_value(id));
-	token_stream.match(ID);
-	if (result == nullptr)
-		throw Error("function " + id->to_string() + " no found its defination");
 	token_stream.match(LPAREN);
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(param_types, result, exprs);
+		return exprs;
 	}
-	auto param_unit = new Expr();
-	param_types.push_back(param_unit->get_type());
+	auto param_unit = Expr().root();
 	exprs.push_back(param_unit);
 	while (token_stream.this_tag() == COMMA)
 	{
 		token_stream.match(COMMA);
 		auto param_unit2 = Expr().root();
-		param_types.push_back(param_unit2->get_type());
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(param_types, result, exprs);
+	return exprs;
+}
+
+Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
+{
+	auto id = token_stream.this_token();
+	// to check the param's type.
+	names->sl_table->type_check(id, Mer::ESymbol::SFUN);
+	auto result = names->find_func(Id::get_value(id));
+	token_stream.match(ID);
+	if (result == nullptr)
+		throw Error("function " + id->to_string() + " no found its defination");
+	std::vector<ParserNode*> exprs = parse_arguments();
+	return new FunctionCall(result, exprs);
 }
 
 Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f, ParserNode* parent)
 {
 	std::vector<ParserNode*> exprs;
 	// to check the param's type.
-	std::vector<size_t> param_types;
 	//get ref of parent
-	param_types.push_back(parent->get_type());
 	exprs.push_back(parent);
 	token_stream.match(LPAREN);
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
-		return new FunctionCall(param_types, f, exprs);
+		return new FunctionCall( f, exprs);
 	}
 	auto param_unit = new Expr();
-	param_types.push_back(param_unit->get_type());
 	exprs.push_back(param_unit);
 	while (token_stream.this_tag() == COMMA)
 	{
 		token_stream.match(COMMA);
 		auto param_unit2 = new Expr();
-		param_types.push_back(param_unit2->get_type());
 		exprs.push_back(param_unit2);
 	}
 	token_stream.match(RPAREN);
-	return new FunctionCall(param_types, f, exprs);
+	return new FunctionCall( f, exprs);
 }
 
 Mer::Namespace* Mer::Parser::kill_namespaces()

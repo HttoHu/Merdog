@@ -491,11 +491,7 @@ Mem::Object Mer::GetAdd::execute()
 Mer::RmRef::RmRef()
 {
 	token_stream.match(MUL);
-	auto name = Id::get_value(token_stream.this_token());
-	auto result = this_namespace->sl_table->find(name);
-	if (result == nullptr)
-		throw Error("Var " + name + " no found");
-	id = Parser::parse_var(result);
+	id = Parser::parse_id();
 	type = id->get_type();
 }
 

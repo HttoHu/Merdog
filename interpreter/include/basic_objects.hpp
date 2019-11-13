@@ -32,12 +32,13 @@
 #pragma once
 #include <any>
 #include <string>
-#include <memory>
 #include <set>
 #include <map>
+#include <memory>
 #include <vector>
-#include "type.hpp"
 #include "error.hpp"
+#include "type.hpp"
+#include "clib/any.hpp"
 #define BASICTYPE_MAX_CODE 9
 namespace Mer
 {
@@ -50,23 +51,9 @@ namespace Mer
 
 		class Type;
 		class Value;
-		using Object = std::shared_ptr<Value>;
 
 		extern Namespace* this_namespace;
-
-		std::string type_to_string(BasicType bt);
-		//get type
-		size_t get_type_code();
-		size_t get_type_code(Token* tok);
-		size_t& type_no();
-		// to get a compound type's code like vector<map<int,real>>
-		size_t get_ctype_code();
-		size_t merge_two_type(size_t c, size_t e);
-		Mem::Object create_var_t(size_t type);
-		// every obj extends Value, and override some common operator
-		// size_t get_type() to get the obj's type
-		// clone , copy the obj and return it;
-		// Convert(BasicType), to convert the Obj to another compatible type obj.
+		using Object = std::shared_ptr<Value>;
 		class Value
 		{
 		public:
@@ -117,6 +104,14 @@ namespace Mer
 			virtual ~Value() { }
 		private:
 		};
+		std::string type_to_string(BasicType bt);
+		//get type
+
+		Mem::Object create_var_t(size_t type);
+		// every obj extends Value, and override some common operator
+		// size_t get_type() to get the obj's type
+		// clone , copy the obj and return it;
+		// Convert(BasicType), to convert the Obj to another compatible type obj.
 		class Int;
 		class Bool :public Value
 		{
@@ -557,11 +552,11 @@ namespace Mer
 			}
 			template<typename T>
 			T& cast() {
-				return std::any_cast<T&>(obj);
+				return mer::any_cast<T&>(obj);
 			}
 			Mem::Object clone()const override;
 		private:
-			std::any obj;
+			mer::any obj;
 		};
 		class Array :public Value
 		{

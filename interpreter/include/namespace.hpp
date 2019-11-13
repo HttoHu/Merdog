@@ -67,8 +67,6 @@ namespace Mer
 	{
 		Mer::Namespace * _find_namespace_driver(Mer::Namespace *current, const std::string &name);
 		Namespace *find_namespace(const std::string &name);
-		Namespace *build_namespace();
-		void create_namespace_var();
 	}
 
 }

@@ -114,7 +114,7 @@ namespace Mer
 	class FunctionCall :public ParserNode
 	{
 	public:
-		FunctionCall(const std::vector<size_t> &types, FunctionBase * fun, std::vector<ParserNode*>& exprs);
+		FunctionCall(FunctionBase * fun, std::vector<ParserNode*>& exprs);
 		size_t get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;
@@ -122,9 +122,10 @@ namespace Mer
 		FunctionBase * func;
 		std::vector<ParserNode*> argument;
 	};
-
+	/*
+		the initializer of a class
+	*/
 	struct WordRecorder;
-
 	namespace Parser
 	{
 
@@ -133,7 +134,8 @@ namespace Mer
 		ParserNode *parse_var(WordRecorder* var_info);
 		// parse id with namespace.
 		ParserNode *_parse_id_wn(Namespace *names);
-		//FunctionCall *parse_function_call(Mer::Expr *co_caller,StructureBase *sb);
+		FunctionCall* parse_initializer(size_t type);
+		std::vector<ParserNode*> parse_arguments();
 		FunctionCall *parse_function_call(Namespace *names);
 		FunctionCall* parse_call_by_function(FunctionBase*,ParserNode *parent);
 		Namespace *kill_namespaces();

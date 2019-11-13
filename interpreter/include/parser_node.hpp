@@ -24,7 +24,7 @@
 */
 #pragma once
 #include <string>
-#include "object.hpp"
+#include "basic_objects.hpp"
 namespace Mer
 {
 	class ParserNode

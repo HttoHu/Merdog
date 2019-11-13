@@ -106,7 +106,7 @@ ParserNode* Mer::Parser::statement()
 		node = var_decl();
 		break;
 	default:
-		node = new Expr();
+		node = Expr().root();
 		break;
 	}
 	token_stream.match(SEMI);
@@ -158,6 +158,10 @@ size_t Mer::Parser::get_type()
 		auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
 		if (info == nullptr)
 			throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
+		if (info->es == ESymbol::SCONTAINER)
+		{
+
+		}
 		token_stream.next();
 		return info->get_type();
 	}
@@ -210,6 +214,12 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	{
 		is_p = true;
 		type_code++;
+	}
+	// init a var by it's initializer
+	if (token_stream.this_tag() == LPAREN)
+	{
+		expr = Parser::parse_initializer(t);
+		return;
 	}
 	// manage to process array , the front of an array is an info obj which records the array's elemens's type and length and pos;
 	if (name_part.is_array())

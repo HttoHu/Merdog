@@ -40,12 +40,14 @@ std::string Mer::run_interpreter(const std::string&file_content)
 	{
 		auto ret = e.what();
 		token_stream.clear();
+		clear();
 		return ret;
 	}
 	catch (Mer::Error &e)
 	{
 		auto ret = e.what();
 		token_stream.clear();
+		clear();
 		return ret;
 	}
 	return output_buff;

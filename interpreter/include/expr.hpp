@@ -202,7 +202,6 @@ namespace Mer
 		size_t type;
 		size_t size;
 	};
-
 	class GetAdd :public ParserNode
 	{
 	public:
