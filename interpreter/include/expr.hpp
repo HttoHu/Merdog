@@ -236,17 +236,6 @@ namespace Mer
 		
 	};
 	// !!! delete has been discarded
-	class Delete :public ParserNode
-	{
-	public:
-		Delete();
-		size_t get_type()override {
-			return expr->get_type() + 1;
-		}
-		Mem::Object execute()override;
-	private:
-		ParserNode* expr;
-	};
 	class ImplicitConvertion:public Expr
 	{
 	public:

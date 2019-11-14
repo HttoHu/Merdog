@@ -156,6 +156,8 @@ namespace Mer
 		auto result = token_stream.this_token();
 		switch (result->get_tag())
 		{
+		case MAKE:
+			return Parser::make_var();
 		case NEW:
 			return new NewExpr();
 		case MUL:
@@ -508,18 +510,6 @@ namespace Mer
 
 		return std::static_pointer_cast<Mem::Pointer>(id->execute())->rm_ref();
 	}
-
-	Mer::Delete::Delete()
-	{
-		token_stream.match(DELETE);
-		expr = Expr().root();
-	}
-
-	Mem::Object Mer::Delete::execute()
-	{
-		return nullptr;
-	}
-
 	Mer::Index::Index(ParserNode* l, size_t _index, size_t _type) :left(l), index(_index), type(_type)
 	{
 		if (_type == -1)

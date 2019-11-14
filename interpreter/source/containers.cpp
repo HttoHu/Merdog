@@ -7,6 +7,22 @@ namespace Mer
 	//vector
 	namespace
 	{
+		Mem::Object _vec_resize(const std::vector < Mem::Object >& args)
+		{
+			auto vec = std::static_pointer_cast<Container::Vector>(args[0]);
+			int count = Mem::get_raw<int>(args[1]);
+			vec->content.resize(count);
+			return nullptr;
+		}
+
+		Mem::Object _vec_insert(const std::vector<Mem::Object>& args)
+		{
+			auto& vec = std::static_pointer_cast<Container::Vector>(args[0])->content;
+			int startIndex = Mem::get_raw<int>(args[1]);
+			vec.insert(vec.begin() + startIndex, args[2]);
+			return nullptr;
+		}
+
 		Mem::Object _init_vec(const std::vector < Mem::Object > & args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
@@ -80,9 +96,17 @@ namespace Mer
 			push_back->set_param_types({ cur_type,element_type });
 			member_function_table[cur_type].insert({ "push_back", push_back });
 			// size()
-			SystemFunction* size = new SystemFunction(Mem::BVOID, _vec_size);
+			SystemFunction* size = new SystemFunction(Mem::INT, _vec_size);
 			size->set_param_types({ cur_type });
 			member_function_table[cur_type].insert({ "size", size });
+			// resize()
+			SystemFunction* resize = new SystemFunction(Mem::BVOID, _vec_resize);
+			resize->set_param_types({ cur_type,Mem::INT});
+			member_function_table[cur_type].insert({ "resize", resize });
+			// insert()
+			SystemFunction* insert = new SystemFunction(Mem::BVOID, _vec_insert);
+			insert->set_param_types({ cur_type,Mem::INT,element_type });
+			member_function_table[cur_type].insert({ "insert", insert });
 		}
 
 	}

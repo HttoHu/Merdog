@@ -131,7 +131,7 @@ namespace Mer
 				return container_type;
 			}
 			token_stream.match(LT);
-			element_type = get_ctype_code();
+			element_type = get_type_code();
 			token_stream.match(GT);
 			return merge(container_type, element_type);
 		}

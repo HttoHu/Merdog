@@ -117,6 +117,16 @@ namespace Mer
 		ParserNode* expr;
 		size_t to_type;
 	};
+	class MakeDefualt :public ParserNode
+	{
+	public:
+		MakeDefualt(size_t ty);
+		Mem::Object execute()override;
+		size_t get_type()override { return type; }
+	private:
+		Mem::Object ret;
+		size_t type;
+	};
 	// get the element count of array
 	class SizeOf :public ParserNode
 	{
@@ -139,6 +149,7 @@ namespace Mer
 		ParserNode *statement();
 		ParserNode *var_decl();
 		size_t get_type();
+		ParserNode* make_var();
 		WordRecorder *get_current_info();
 	}
 }

@@ -51,6 +51,14 @@ namespace Mer
 		token_stream.match(RPAREN);
 
 	}
+	MakeDefualt::MakeDefualt(size_t ty):type(ty)
+	{
+		ret = Mem::create_var_t(ty);
+	}
+	Mem::Object MakeDefualt::execute()
+	{
+		return ret->clone();
+	}
 }
 Program* Mer::Parser::program()
 {
@@ -170,6 +178,19 @@ size_t Mer::Parser::get_type()
 	}
 }
 
+Mer::ParserNode* Mer::Parser::make_var()
+{
+	token_stream.match(MAKE);
+	token_stream.match(LT);
+	size_t type_c = Mem::get_type_code();
+	token_stream.match(GT);
+	if (token_stream.this_tag() == LPAREN)
+	{
+		return Parser::parse_initializer(type_c);
+	}
+	return new MakeDefualt(type_c);
+}
+
 WordRecorder* Mer::Parser::get_current_info()
 {
 	return this_namespace->sl_table->find(Mer::Id::get_value(token_stream.this_token()));
@@ -247,14 +268,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		}
 		return;
 	}
-	auto type_info = Mem::type_map.find(t);
-	if (type_info == Mem::type_map.end())
-		throw Error("unknown type " + std::to_string(t));
-	if (type_info->second->type_kind == Mem::Type::container)
-	{
-		expr = new LConV(Mem::create_var_t(t), t);
-		return;
-	}
+
 	if (type_name_mapping.find(type_code) != type_name_mapping.end())
 	{
 		UStructure* result = find_ustructure_t(type_code);
@@ -278,7 +292,15 @@ tt:		token_stream.match(ASSIGN);
 			throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
 	}
-
+	// container var decl
+	auto type_info = Mem::type_map.find(t);
+	if (type_info == Mem::type_map.end())
+		throw Error("unknown type " + std::to_string(t));
+	if (type_info->second->type_kind == Mem::Type::container)
+	{
+		expr = new LConV(Mem::create_var_t(t), t);
+		return;
+	}
 	throw Error("::VarDeclUnit::VarDeclUnit(size_t t) : try to init a non-init variable");
 }
 inline void _record_id(Mer::VarDeclUnit *var_unit, size_t type,size_t pos)
