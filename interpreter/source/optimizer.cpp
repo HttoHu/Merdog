@@ -7,7 +7,8 @@ namespace Mer
 	{
 		ParserNode* optimize_array_subscript(ParserNode* arr, ParserNode* subscript)
 		{
-			if (typeid(*arr) == typeid(Variable))
+			return new SubScript(arr, subscript);
+			if (typeid(*arr) == typeid(Variable)&& static_cast<Variable*>(arr)->arr())
 			{
 				int index = 0;
 				if (typeid(*subscript) == typeid(LConV))
@@ -15,11 +16,10 @@ namespace Mer
 					auto v = static_cast<LConV*>(subscript);
 					// skip arr info
 					index = Mem::get_raw<int>(v->execute())+1;
-
 					return new Variable(arr->get_type(), arr->get_pos() + index);
 				}
 			}
-			return new SubScript(arr, subscript);
+
 		}
 
 	}

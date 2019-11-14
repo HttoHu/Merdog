@@ -12,6 +12,7 @@
 #include "../include/clib/maths.hpp"
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
+#include "../include/clib/containers.hpp"
 #define MERDOG_VERSION "3.1.7"
 #ifdef _WIN32
 #include <Windows.h>
@@ -28,7 +29,7 @@ std::string get_file_content(const std::string& filename)
 	return file_content;
 }
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 int main(int argc, char* argv[])
 {
 	try
@@ -72,6 +73,7 @@ int main()
 		Mer::set_io();
 		Mer::set_maths();
 		Mer::set_utility();
+		Mer::Container::using_vector();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
 		Mer::Parser::program()->execute();

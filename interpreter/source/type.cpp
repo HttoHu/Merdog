@@ -72,6 +72,11 @@ namespace Mer
 			case ID:
 			{
 				auto info = Mer::this_namespace->sl_table->find(Id::get_value(tok));
+				if (info->es == ESymbol::SCONTAINER)
+				{
+					token_stream.back();
+					return get_ctype_code();
+				}
 				if (info == nullptr)
 					throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
 				return info->get_type();
@@ -133,7 +138,8 @@ namespace Mer
 
 		int regitser_container(size_t container_type, size_t element_type)
 		{
-			int type_c = Mem::type_counter += 2;
+			Mem::type_counter += 2;
+			int type_c = Mem::type_counter;
 			demerge_table.insert({ type_c,ComplexType{container_type,element_type} });
 			merge_table.insert({ ComplexType{ container_type,element_type }, type_c });
 			auto result = container_register.find(container_type);
@@ -142,6 +148,7 @@ namespace Mer
 				throw Error("intern error!");
 			}
 			(*result->second)(element_type);
+			return type_c;
 		}
 
 		size_t merge(size_t l, size_t r)
@@ -150,7 +157,6 @@ namespace Mer
 			if (result == merge_table.end())
 			{
 				return regitser_container(l, r);
-
 			}
 			return result->second;
 		}

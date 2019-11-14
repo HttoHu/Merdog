@@ -56,7 +56,7 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 {
 
 	// pointer
-	if (type % 2==0)
+	if (type % 2 == 0)
 	{
 		return std::make_shared<Pointer>(nullptr);
 	}
@@ -73,7 +73,14 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 	case STRING:
 		return std::make_shared<String>("");
 	default:
-		return std::make_shared<USObject>(find_ustructure_t(type)->init());
+	{
+		auto result = type_init_map.find(type);
+		if (result == type_init_map.end())
+		{
+			return std::make_shared<USObject>(find_ustructure_t(type)->init());
+		}
+		return result->second->clone();
+	}
 	}
 }
 
@@ -224,7 +231,7 @@ Mer::Mem::Object Mer::Mem::Array::operator[](Object index)
 	{
 		throw std::runtime_error("array overflow!");
 	}
-	return mem[size_t(pos) + size_t(i)+1];
+	return mem[size_t(pos) + size_t(i) + 1];
 }
 
 Mer::Mem::Object Mer::Mem::Array::clone() const

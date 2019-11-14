@@ -5,6 +5,19 @@
 #include "../include/word_record.hpp"
 using namespace Mer;
 std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
+WordRecorder* Mer::SymbolTable::find(std::string id)
+
+{
+	for (size_t i = 0; i < data.size(); i++)
+	{
+		auto result = data[i].find(id);
+		if (result != data[i].end())
+		{
+			return result->second;
+		}
+	}
+	return nullptr;
+}
 void Mer::SymbolTable::print()
 {
 	for (const auto& a : data)

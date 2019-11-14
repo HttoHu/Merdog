@@ -122,6 +122,17 @@ namespace Mer
 		FunctionBase * func;
 		std::vector<ParserNode*> argument;
 	};
+	class MemberFunctionCall :public ParserNode
+	{
+	public:
+		MemberFunctionCall(FunctionBase* fun, std::vector<ParserNode*>& exprs);
+		size_t get_type()override;
+		Mem::Object execute()override;
+		std::string to_string()override;
+	private:
+		FunctionBase* func;
+		std::vector<ParserNode*> argument;
+	};
 	/*
 		the initializer of a class
 	*/
@@ -137,7 +148,7 @@ namespace Mer
 		FunctionCall* parse_initializer(size_t type);
 		std::vector<ParserNode*> parse_arguments();
 		FunctionCall *parse_function_call(Namespace *names);
-		FunctionCall* parse_call_by_function(FunctionBase*,ParserNode *parent);
+		MemberFunctionCall* parse_call_by_function(FunctionBase*,ParserNode *parent);
 		Namespace *kill_namespaces();
 	}
 }

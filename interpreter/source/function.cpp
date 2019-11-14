@@ -16,7 +16,7 @@ bool Mer::is_struct_member_function=false;
 std::map<std::string, Function*> Mer::function_table;
 std::map<size_t, FunctionBase*> Mer::type_init_function_map;
 Block *Mer::current_function_block = nullptr;
-
+std::map<size_t, Mem::Object> Mer::type_init_map;
 //=============================================================
 bool	is_function_statement()
 {
@@ -82,7 +82,7 @@ Param * Mer::Parser::build_param()
 	// 	the first arg of member function is the obj of the structure, 
 	if (is_struct_member_function)
 	{
-		ret->push_new_param((size_t)(Mem::type_counter)+1, mem.push());
+		ret->push_new_param((size_t)(Mem::type_counter), mem.push());
 		is_struct_member_function = false;
 	}
 	if (token_stream.this_tag() == RPAREN)
@@ -248,7 +248,7 @@ void Mer::FunctionBase::check_param(const std::vector<size_t>& types)
 	{
 		if (types[i] == param_types[i])
 		{
-			return ;
+			continue ;
 		}
 		auto type_seeker = Mem::type_map.find(types[i]);
 		if (type_seeker == Mem::type_map.end())

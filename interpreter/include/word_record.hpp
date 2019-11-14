@@ -153,18 +153,7 @@ namespace Mer
 				return nullptr;
 			return result->second;
 		}
-		WordRecorder* find(std::string id)
-		{
-			for (size_t i=0;i<data.size();i++)
-			{
-				auto result = data[i].find(id);
-				if (result != data[i].end())
-				{
-					return result->second;
-				}
-			}
-			return nullptr;
-		}
+		WordRecorder* find(std::string id);
 		void push_glo(std::string id, WordRecorder *wr)
 		{
 			data.back().insert({ id,wr });

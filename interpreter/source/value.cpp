@@ -85,6 +85,7 @@ Mer::ParserNode* Mer::Parser::parse_id()
 	case ESymbol::SGVAR:
 		return parse_glo(result);
 	case ESymbol::SSTRUCTURE:
+	case ESymbol::SCONTAINER:
 		return var_decl();
 	case ESymbol::SFUN:
 		return parse_function_call(this_namespace);
@@ -135,7 +136,7 @@ Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 		return parse_glo(result);
 	}
 	default:
-		throw Error("Unsupported id type");
+		throw Error("Unsupported type "+id->to_string());
 	}
 }
 
@@ -183,28 +184,15 @@ Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
 	return new FunctionCall(result, exprs);
 }
 
-Mer::FunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f, ParserNode* parent)
+Mer::MemberFunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f, ParserNode* parent)
 {
 	std::vector<ParserNode*> exprs;
 	// to check the param's type.
 	//get ref of parent
 	exprs.push_back(parent);
-	token_stream.match(LPAREN);
-	if (token_stream.this_tag() == RPAREN)
-	{
-		token_stream.match(RPAREN);
-		return new FunctionCall( f, exprs);
-	}
-	auto param_unit = new Expr();
-	exprs.push_back(param_unit);
-	while (token_stream.this_tag() == COMMA)
-	{
-		token_stream.match(COMMA);
-		auto param_unit2 = new Expr();
-		exprs.push_back(param_unit2);
-	}
-	token_stream.match(RPAREN);
-	return new FunctionCall( f, exprs);
+	auto tmp = parse_arguments();
+	exprs.insert(exprs.end(), tmp.begin(), tmp.end());
+	return new MemberFunctionCall( f, exprs);
 }
 
 Mer::Namespace* Mer::Parser::kill_namespaces()
@@ -273,4 +261,44 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	auto id_name = token_stream.this_token();
 	token_stream.match(ID);
 	return new GVar(var_info);
+}
+
+Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
+{
+	std::vector<size_t> type_vec;
+	for (auto& a : exprs)
+	{
+		type_vec.push_back(a->get_type());
+	}
+	func->check_param(type_vec);
+	std::vector<ParserNode*> tmp;
+	func->convert_arg(argument);
+}
+
+size_t Mer::MemberFunctionCall::get_type()
+{
+	return func->get_type();
+}
+
+Mer::Mem::Object Mer::MemberFunctionCall::execute()
+{
+	std::vector<Mem::Object> tmp;
+	tmp.push_back(argument[0]->execute());
+	int sz = argument.size();
+	for (int i=1;i<sz;i++)
+	{
+		tmp.push_back(argument[i]->execute()->clone());
+	}
+	return func->run(tmp);
+}
+
+std::string Mer::MemberFunctionCall::to_string()
+{
+	std::string str = "function_pos:";
+	str += std::to_string(func->function_offset);
+	str += "(";
+	for (auto& a : argument)
+		str += a->to_string();
+	str += ")";
+	return str;
 }

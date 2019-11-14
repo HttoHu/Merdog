@@ -183,28 +183,28 @@ namespace Mer
 		Mem::type_map.insert({ Mem::type_counter,new Mem::Type(class_name,Mem::type_counter,{size_t(Mem::type_counter)}) });
 		// set opem method
 		auto open_file = new SystemFunction(Mem::BasicType::BVOID, _open);
-		open_file->set_param_types({ (size_t)Mem::type_counter + 1,Mem::STRING });
-		filestream->member_function_table.insert({ "open",open_file });
+		open_file->set_param_types({ (size_t)Mem::type_counter,Mem::STRING });
+		member_function_table[Mem::type_counter].insert({ "open",open_file });
 
 		auto read_line = new SystemFunction(Mem::BasicType::STRING, _read_line);
-		read_line->set_param_types({ (size_t)Mem::type_counter + 1,Mem::INT });
-		filestream->member_function_table.insert({ "read",read_line });
+		read_line->set_param_types({ (size_t)Mem::type_counter,Mem::INT });
+		member_function_table[Mem::type_counter].insert({ "read",read_line });
 
 		auto set_line = new SystemFunction(Mem::BasicType::BVOID, _set_line);
-		set_line->set_param_types({ (size_t)Mem::type_counter + 1,Mem::INT,Mem::STRING });
-		filestream->member_function_table.insert({ "set_line",set_line });
+		set_line->set_param_types({ (size_t)Mem::type_counter,Mem::INT,Mem::STRING });
+		member_function_table[Mem::type_counter].insert({ "set_line",set_line });
 
 		auto insert = new SystemFunction(Mem::BVOID, _insert_line);
-		insert->set_param_types({ (size_t)Mem::type_counter + 1,Mem::INT,Mem::STRING });
-		filestream->member_function_table.insert({ "insert",insert });
+		insert->set_param_types({ (size_t)Mem::type_counter,Mem::INT,Mem::STRING });
+		member_function_table[Mem::type_counter].insert({ "insert",insert });
 
 		auto write_into_file = new SystemFunction(Mem::BVOID, _write_into_file);
-		write_into_file->set_param_types({ (size_t)Mem::type_counter + 1 });
-		filestream->member_function_table.insert({ "write_into_file",write_into_file });
+		write_into_file->set_param_types({ (size_t)Mem::type_counter });
+		member_function_table[Mem::type_counter].insert({ "write_into_file",write_into_file });
 
 		auto line_count = new SystemFunction(Mem::BVOID, _line_count);
-		line_count->set_param_types({ (size_t)Mem::type_counter + 1 });
-		filestream->member_function_table.insert({ "line_count",line_count });
+		line_count->set_param_types({ (size_t)Mem::type_counter });
+		member_function_table[Mem::type_counter].insert({ "line_count",line_count });
 	}
 	void set_io()
 	{

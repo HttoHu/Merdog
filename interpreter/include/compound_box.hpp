@@ -59,7 +59,6 @@ namespace Mer
 		void push_init(Mem::Object obj) { init_vec.push_back(obj); }
 		void print();
 		WordRecorder* find_id_info(const std::string &id);
-		std::map<std::string, FunctionBase*> member_function_table;
 		std::vector<Mem::Object> init_vec;
 		std::map<std::string, WordRecorder*> structure_member_table;
 	private:
@@ -125,6 +124,7 @@ namespace Mer
 	extern std::map<std::string, UStructure*> ustructure_map;
 	// get the struct name by its type code.
 	extern std::map<size_t, std::string> type_name_mapping;
+	extern std::map<size_t, std::map<std::string, FunctionBase*>> member_function_table;
 	// to build the struct , records different information and push the struct to the ustructure_map
 	void build_ustructure();
 	

@@ -121,4 +121,5 @@ namespace Mer
 	extern bool is_struct_member_function;
 	extern std::map<std::string, Function*> function_table;
 	extern std::map<size_t, FunctionBase*> type_init_function_map;
+	extern std::map<size_t, Mem::Object> type_init_map;
 }

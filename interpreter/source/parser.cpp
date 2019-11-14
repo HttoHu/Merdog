@@ -247,6 +247,14 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		}
 		return;
 	}
+	auto type_info = Mem::type_map.find(t);
+	if (type_info == Mem::type_map.end())
+		throw Error("unknown type " + std::to_string(t));
+	if (type_info->second->type_kind == Mem::Type::container)
+	{
+		expr = new LConV(Mem::create_var_t(t), t);
+		return;
+	}
 	if (type_name_mapping.find(type_code) != type_name_mapping.end())
 	{
 		UStructure* result = find_ustructure_t(type_code);
@@ -265,7 +273,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	if (token_stream.this_tag() == ASSIGN)
 	{
 tt:		token_stream.match(ASSIGN);
-		expr = (new Expr(type_code))->root();
+		expr = Expr(type_code).root();
 		if (type_code != expr->get_type())
 			throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
