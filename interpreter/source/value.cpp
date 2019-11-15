@@ -142,11 +142,30 @@ Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 
 Mer::FunctionCall* Mer::Parser::parse_initializer(size_t type)
 {
-	auto result = type_init_function_map.find(type);
-	if (result == type_init_function_map.end())
-		throw Error("type " + type_to_string(type) + " don't support initializer");
-	auto func = result->second;
 	std::vector<ParserNode*> exprs = parse_arguments();
+	// get the args' type to find init function
+	// cos the init function can be overloaded by the different param
+	std::vector<size_t> args_type;
+	for (auto& a : exprs)
+	{
+		args_type.push_back(a->get_type());
+	}
+	auto result = type_init_function_map.find(InitKey(type,args_type ));
+
+	std::string err_msg="(";
+	// get the information of args
+	for (int i = 0; i < args_type.size(); i++)
+	{
+		err_msg += type_to_string(args_type[i]);
+		if (i != args_type.size() - 1)
+			err_msg += ",";
+	}
+	err_msg += ")";
+
+	if (result == type_init_function_map.end())
+		throw Error("type:" + type_to_string(type) + " don't support initializer "+err_msg);
+	auto func = result->second;
+
 	return new FunctionCall(func, exprs);
 }
 

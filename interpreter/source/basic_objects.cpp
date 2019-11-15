@@ -36,6 +36,9 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 	case Mer::Mem::STRING:
 		ret += "string";
 		break;
+	case Mer::Mem::CHAR:
+		ret += "char";
+		break;
 	default:
 		auto seeker = type_name_mapping.find(bt);
 		if (seeker == type_name_mapping.end())
@@ -187,7 +190,7 @@ Mer::Mem::Pointer::~Pointer()
 
 Object Mer::Mem::String::operator[](Object v)
 {
-	return std::make_shared<Char>(str[std::static_pointer_cast<Int>(v)->get_value()]);
+	return std::make_shared<Char>(&str[std::static_pointer_cast<Int>(v)->get_value()]);
 }
 
 std::string Mer::type_to_string(size_t type_code)
@@ -198,7 +201,7 @@ std::string Mer::type_to_string(size_t type_code)
 Object Mer::Mem::Char::operator=(Object v)
 {
 	auto tmp = v;
-	value = std::static_pointer_cast<Char>(v)->value;
+	*value = *std::static_pointer_cast<Char>(v)->value;
 	return tmp;
 }
 
@@ -207,13 +210,13 @@ Object Mer::Mem::Char::Convert(size_t type)
 	switch (type)
 	{
 	case STRING:
-		return std::make_shared<String>(value);
+		return std::make_shared<String>(*value);
 	case BOOL:
-		return std::make_shared<Bool>(value);
+		return std::make_shared<Bool>(*value);
 	case INT:
-		return std::make_shared<Int>(value);
+		return std::make_shared<Int>(*value);
 	case CHAR:
-		return std::make_shared<Char>(value);
+		return std::make_shared<Char>(*value);
 	default:
 		throw Error("type-convert error");
 	}

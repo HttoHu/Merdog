@@ -107,7 +107,14 @@ namespace Mer
 		bool check_param_type = true;
 		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
-
+	class InitKey
+	{
+	public:
+		InitKey(size_t type_c, const std::vector<size_t>& param) :type_code(type_c), params(param) {}
+		size_t type_code;
+		std::vector<size_t> params;
+		bool operator<(const InitKey& init_key)const;
+	};
 	namespace Parser
 	{
 		// build param type_code vec;
@@ -120,6 +127,6 @@ namespace Mer
 	extern Block *current_function_block;
 	extern bool is_struct_member_function;
 	extern std::map<std::string, Function*> function_table;
-	extern std::map<size_t, FunctionBase*> type_init_function_map;
+	extern std::map<InitKey, FunctionBase*> type_init_function_map;
 	extern std::map<size_t, Mem::Object> type_init_map;
 }

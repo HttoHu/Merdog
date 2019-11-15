@@ -26,25 +26,23 @@ namespace Mer
 		{
 			return std::make_shared<Mem::Int>(n);
 		}
+		Mem::Object _init_str_n(std::vector<Mem::Object>& args)
+		{
+			int count = Mem::get_raw<int>(args[0]);
+			char c = std::static_pointer_cast<Mem::Char>(args[1])->get_value();
+			return std::make_shared<Mem::String>(std::string(count,c));
+		}
 		Mem::Object _substr(std::vector<Mem::Object>& args)
 		{
-			if (args.size() == 3)
-			{
-				auto tmp = std::dynamic_pointer_cast<Mem::String>(args[0]);
-				auto off = std::dynamic_pointer_cast<Mem::Int>(args[1]);
-				auto size = std::dynamic_pointer_cast<Mem::Int>(args[2]);
-				return std::make_shared<Mem::String>(tmp->to_string().substr(off->get_value(), size->get_value()));
-			}
-			throw Error("argument size error");
+			auto tmp = std::dynamic_pointer_cast<Mem::String>(args[0]);
+			auto off = std::dynamic_pointer_cast<Mem::Int>(args[1]);
+			auto size = std::dynamic_pointer_cast<Mem::Int>(args[2]);
+			return std::make_shared<Mem::String>(tmp->to_string().substr(off->get_value(), size->get_value()));
 		}
 		Mem::Object _str_size(std::vector<Mem::Object>& args)
 		{
-			if (args.size() == 1)
-			{
-				auto tmp = std::dynamic_pointer_cast<Mem::String>(args[0]);
-				return std::make_shared<Mem::Int>(tmp->to_string().size());
-			}
-			throw Error("argument size error");
+			auto tmp = std::static_pointer_cast<Mem::String>(args[0]);
+			return std::make_shared<Mem::Int>(tmp->to_string().size());
 		}
 		Mem::Object _cout(std::vector<Mem::Object>& args)
 		{
@@ -216,8 +214,13 @@ namespace Mer
 		substr->set_param_types({ Mer::Mem::BasicType::STRING, Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ Mer::Mem::BasicType::STRING });
 		Mer::root_namespace->children.insert({ "std", mstd });
-		mstd->set_new_func("substr", substr);
-		mstd->set_new_func("strsize", str_size);
+		// set string
+		member_function_table[Mem::STRING]["substr"] = substr;
+		member_function_table[Mem::STRING]["size"] = str_size;
+		// string init
+		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
+		str_init->set_param_types({ Mem::INT,Mem::CHAR });
+		type_init_function_map[InitKey(Mem::STRING, std::vector<size_t>{ Mem::INT,Mem::CHAR })] = str_init;
 		mstd->set_new_func("cout", cout);
 		mstd->set_new_func("input_int", input_int);
 		mstd->set_new_func("input_real", input_real);

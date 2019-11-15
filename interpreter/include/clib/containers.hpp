@@ -35,6 +35,7 @@ namespace Mer
 		public:
 			static int vector_type_code;
 			Vector() {}
+			Vector(int count) :content(count) {}
 			Vector(int count, Mem::Object obj);
 			Vector(const std::vector<Mem::Object>& objs) :content(objs) {}
 			Vector(std::vector<Mem::Object>&& objs) :content(objs) {}

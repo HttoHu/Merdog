@@ -14,7 +14,7 @@ using namespace Mer;
 
 bool Mer::is_struct_member_function=false;
 std::map<std::string, Function*> Mer::function_table;
-std::map<size_t, FunctionBase*> Mer::type_init_function_map;
+std::map<InitKey, FunctionBase*> Mer::type_init_function_map;
 Block *Mer::current_function_block = nullptr;
 std::map<size_t, Mem::Object> Mer::type_init_map;
 //=============================================================
@@ -327,4 +327,19 @@ void Mer::SystemFunction::check_param(const std::vector<size_t>& types)
 {
 	if (check_param_type)
 		FunctionBase::check_param(types);
+}
+
+bool Mer::InitKey::operator<(const InitKey& init_key) const
+{
+	if (type_code != init_key.type_code)
+		return type_code < init_key.type_code;
+	if (params.size() != init_key.params.size()) {
+		return params.size() < init_key.params.size();
+	}
+	for (std::vector<size_t>::size_type i = 0; i < params.size(); i++)
+	{
+		if (params[i] != init_key.params[i])
+			return params[i] < init_key.params[i];
+	}
+	return false;
 }

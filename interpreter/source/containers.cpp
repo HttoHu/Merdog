@@ -22,7 +22,11 @@ namespace Mer
 			vec.insert(vec.begin() + startIndex, args[2]);
 			return nullptr;
 		}
-
+		Mem::Object _init_vec_n(const std::vector < Mem::Object >& args)
+		{
+			int count = Mem::get_raw<int>(args[0]);
+			return std::make_shared<Container::Vector>(count);
+		}
 		Mem::Object _init_vec(const std::vector < Mem::Object > & args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
@@ -81,14 +85,16 @@ namespace Mer
 			// set init
 			size_t cur_type = Mem::merge(Vector::vector_type_code, element_type);
 			SystemFunction* init = new SystemFunction(cur_type, _init_vec);
+			SystemFunction* init_n = new SystemFunction(cur_type, _init_vec_n);
 			init->set_param_types({ Mem::INT, element_type });
-			type_init_function_map[cur_type] = init;
+			init_n->set_param_types({ Mem::INT });
+			type_init_function_map[InitKey(cur_type, std::vector<size_t>{ Mem::INT,element_type })] = init;
+			type_init_function_map[InitKey(cur_type, std::vector<size_t>{ Mem::INT })] = init_n;
 			type_init_map[cur_type] = std::make_shared<Vector>();
 			// set type
 			auto vec_type = new Mem::Type("vector", cur_type, { cur_type });
 			vec_type->type_kind = Mem::Type::container;
-			Mem::type_map.insert({ cur_type,
-				 vec_type });
+			Mem::type_map.insert({ cur_type, vec_type });
 			// set []
 			Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });
 			// set push_back

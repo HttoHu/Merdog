@@ -450,10 +450,11 @@ namespace Mer
 		class Char :public Value
 		{
 		public:
-			Char(char v) :value(v) {}
+			Char(char v) :value(new char(v)) {}
+			Char(char* v) :value(v), del(false) {}
 			std::string to_string()const override
 			{
-				return std::string(1, value);
+				return std::string(1, *value);
 			}
 			size_t get_type()const override
 			{
@@ -462,79 +463,81 @@ namespace Mer
 			Object operator=(Object v)override;
 			Object operator+=(Object v)override
 			{
-				return std::make_shared<Int>(value += std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value += *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator-=(Object v)override
 			{
-				return std::make_shared<Int>(value -= std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value -= *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator*=(Object v)override
 			{
-				return std::make_shared<Int>(value *= std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value *= *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator/=(Object v)override
 			{
-				return std::make_shared<Int>(value /= std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value /= *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator+ (Object v)override
 			{
-				return std::make_shared<Int>(value + std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value + *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator- (Object v)override
 			{
-				return std::make_shared<Char>(value -
-					std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value -
+					*std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator* (Object v)override
 			{
-				return std::make_shared<Char>(value *
-					std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value *
+					*std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator/ (Object v)override
 			{
-				return std::make_shared<Char>(value /
-					std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Char>(*value /
+					*std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator> (Object v)override
 			{
-				return std::make_shared < Bool >(value > std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared < Bool >(*value > *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator>= (Object v)override
 			{
-				return std::make_shared<Bool>(value >= std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Bool>(*value >= *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator< (Object v)override
 			{
-				return std::make_shared<Bool>(value < std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Bool>(*value < *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator<= (Object v)override
 			{
-				return std::make_shared<Bool>(value <= std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Bool>(*value <= *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator== (Object v)override
 			{
-				return std::make_shared<Bool>(value == std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Bool>(*value == *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator!= (Object v)override
 			{
-				return std::make_shared<Bool>(value != std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared<Bool>(*value != *std::static_pointer_cast<Char>(v)->value);
 			}
 			Object clone()const override
 			{
-				return std::make_shared<Char>(value);
+				return std::make_shared<Char>(*value);
 			}
 			Object get_negation()override
 			{
-				return std::make_shared<Char>(-value);
+				return std::make_shared<Char>(-*value);
 			}
-			int get_value()
+			char get_value()
 			{
-				return value;
+				return *value;
 			}
 			Object Convert(size_t type) override;
-			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
+			Object operator[](Object v)override { throw Error("char doesn't have a member <operator[](int)>"); }
+			virtual ~Char() { if (del)delete value; }
 		private:
-			int value;
+			bool del = true;
+			char* value;
 		};
 		class AnyObj :public Mem::Value {
 		public:

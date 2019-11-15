@@ -1,15 +1,1 @@
-/*
-	tell U a joke, when I set the n as 100, I get the result 0, 
-	So I debug for a long time until I run a cpp file.... it outputed 0 as well. 100! is too large to count.
-*/
-function int Fact(int n){
-	if(n==0)
-	{
-		return 1;
-	}
-	return n*Fact(n-1);
-}
-program main
-{
-	std.cout(Fact(10));
-}
+/*	tell U a joke, when I set the n as 100, I get the result 0, 	So I debug for a long time until I run a cpp file.... it outputed 0 as well. 100! is too large to count.*/function int Fact(int n){	if(n==0)	{		return 1;	}	return n*Fact(n-1);}program main{	std.cout(Fact(10));}

@@ -479,7 +479,7 @@ namespace Mer
 	}
 	Mem::Object CharCaseSet::execute()
 	{
-		auto result = jmp_table.find(Mem::get_raw<char>(expr->execute()));
+		auto result = jmp_table.find(std::static_pointer_cast<Mem::Char>(expr->execute())->get_value());
 		if (result == jmp_table.end())
 			* pc = *default_pos - 1;
 		else
