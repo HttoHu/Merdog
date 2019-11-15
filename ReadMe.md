@@ -1,19 +1,24 @@
 
 #   Merdog
-## 简介
-Merdog 是一个简单的开源解释器C-Like 语言语法
+Merdog is a mini C-Like interpreter
 
 ![](https://img.shields.io/badge/C--Like-interpreter-brightgreen)
 ![](https://img.shields.io/github/license/HttoHu/Merdog)
 ![](https://img.shields.io/github/repo-size/HttoHu/Merdog)
 ![](https://img.shields.io/badge/interpreter-%3C1MB-lightgrey)
-## Merdog 支持的语法
-1. 基本类型 **int, real, string, bool，char**
-2. 基本语句 **if / else / elif / while / for / switch**
-3. 支持函数的声明和定义
-4. 支持 struct，且支持在struct里定义成员函数
-5. 支持数组
-6. 内置基本的IO库和数学函数库（std函数的封装）和一些实用函数
+
+## Other languages
+* [简体中文](www.github.com/HttoHu/Merdog/docs/ReadMe_CN.md)
+## Grammar
+1. basic types **int, real, string, bool，char**
+2. allocate heap objects by key word new **based on the std::shared_ptr**
+3. basic control statement **if / else / elif / while / do while / for / switch**
+4. support the declaration and defination of a function
+5. support defining struct, and member function
+6. support array and *(The feature will be added after v3.1.9)some STL containers (vector, deque, map,set,multiset,multimap)*
+7. some basic and useful functions
+  
+## exmplaes:
 ```c++
 function int sum (int x, int y)
 {
@@ -22,20 +27,19 @@ function int sum (int x, int y)
 program main
 {
   std.cout(sum(1,2));
-}.
+}
 ```
 
-## 有关编译器
-使用Mircosoft Visual Studio 2017/2019 和 Clang 编译通过并成功运行.
-
-## 其他
-* 网站: www.merdog.cn
-* 以 编译原理 为参考书
-* **部分参考Ruslan 的博客 [How to Build an interpreter](https://ruslanspivak.com/lsbasi-part1/)**
-* 联系 **huyuantao@outlook.com**
+## About
+* Compilers: passing by Clang 9.0.0 | Visual Studio 2019
+* Website: www.merdog.cn
+* Email **huyuantao@outlook.com**
+* inspired by:
+  
+  * *Compilers: Principle Techniques and Tools Second Edition*
+  * *[How to Build an interpreter](https://ruslanspivak.com/lsbasi-part1/)*
 
 ## License
-
-Copyright (c) HttoHu(胡远韬). All rights reserved.
+Copyright (c) **HttoHu**. All rights reserved.
 
 Licensed under the [MIT](LICENSE) license.

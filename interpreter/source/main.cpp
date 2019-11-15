@@ -13,7 +13,7 @@
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
-#define MERDOG_VERSION "3.1.7"
+#define MERDOG_VERSION "3.1.8"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
