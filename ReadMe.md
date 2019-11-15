@@ -8,7 +8,7 @@ Merdog is a mini C-Like interpreter
 ![](https://img.shields.io/badge/interpreter-%3C1MB-lightgrey)
 
 ## Other languages
-* [简体中文](www.github.com/HttoHu/Merdog/docs/ReadMe_CN.md)
+* [简体中文](https://github.com/HttoHu/Merdog/blob/master/docs/ReadMe_CN.md)
 ## Grammar
 1. basic types **int, real, string, bool，char**
 2. allocate heap objects by key word new **based on the std::shared_ptr**
