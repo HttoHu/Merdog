@@ -91,7 +91,6 @@ namespace Mer
 		size_t type;
 		size_t pos;
 	};
-
 	class Variable :public ParserNode
 	{
 	public:
@@ -114,7 +113,7 @@ namespace Mer
 	class FunctionCall :public ParserNode
 	{
 	public:
-		FunctionCall(FunctionBase * fun, std::vector<ParserNode*>& exprs);
+		FunctionCall(FunctionBase * fun, const std::vector<ParserNode*>& exprs);
 		size_t get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;

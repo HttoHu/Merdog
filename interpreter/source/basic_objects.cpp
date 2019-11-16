@@ -248,3 +248,13 @@ Object Mer::Mem::Value::Convert(size_t type)
 	std::string rs = type_to_string(BasicType(type));
 	throw Error("convert: syntax error from " + ls + " to " +rs );
 }
+
+Mer::Mem::Object Mer::Mem::InitListObj::clone() const
+{
+	std::vector<Object> vec;
+	for (auto& a : elems)
+	{
+		vec.push_back(a->clone());
+	}
+	return std::make_shared<InitListObj>(std::move(vec), type_code);
+}

@@ -29,19 +29,21 @@
 namespace Mer
 {
 	class Token;
+	class FunctionBase;
 	extern std::map<size_t, std::string> type_name_mapping;
 	namespace Mem
 	{
 
 		enum BasicType
 		{
-			ARRAY = -2, NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7, CHAR = 9
+			ARRAY = -2, NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7, CHAR = 9,
+			INIT_LIST=11,
 		};
 		class Type
 		{
 		public:
 			enum kind {
-				single = 0, container = 1, dictionary = 2
+				single = 0, container = 1, dictionary = 2,structure=3,
 			}type_kind = single;
 			Type(const std::string& _name, size_t bt, const std::set<size_t>& _convertible_types)
 				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
@@ -77,8 +79,11 @@ namespace Mer
 		size_t& type_no();
 		// to get a compound type's code like vector<map<int,real>>
 		size_t get_ctype_code();
+
 		int regitser_container(size_t container_type, size_t element_type);
 		size_t merge(size_t l, size_t r);
+		std::pair<size_t, size_t> 
+			demerge(size_t t);
 		extern std::map<size_t, ComplexType> demerge_table;
 		extern std::map<ComplexType, size_t> merge_table;
 		extern std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
@@ -86,7 +91,6 @@ namespace Mer
 		extern std::map<size_t, Type*> type_map;
 		extern int type_counter;
 		extern std::map<size_t, void(*)(size_t)> container_register;
-
 		// get the operator function type
 		size_t find_op_type(size_t ty, std::string op);
 		bool exist_operator(size_t ty, std::string op);

@@ -68,6 +68,18 @@ Program* Mer::Parser::program()
 	{
 		switch (token_stream.this_tag())
 		{
+		case IMPORT:
+		{
+			token_stream.match(IMPORT);
+			std::string name = Id::get_value(token_stream.this_token());
+			auto result=repository.find(name);
+			if (result == repository.end())
+				throw Error("can not find lib " + name + " you may need to update merdog or check your spelling");
+			result->second();
+			token_stream.match(ID);
+			token_stream.match(SEMI);
+			break;
+		}
 		case STRUCT:
 			build_ustructure();
 			break;
@@ -276,7 +288,10 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 			expr = new StructureInitList(result->mapping);
 		else if (token_stream.this_tag() == ASSIGN)
 		{
-			goto tt;
+			token_stream.match(ASSIGN);
+			expr = Expr(type_code).root();
+			if(expr->get_type()!=type_code)
+				throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		}
 		else
 		{
@@ -284,18 +299,34 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 		}
 		return;
 	}
+	auto type_info = Mem::type_map.find(t);
+	if (type_info == Mem::type_map.end())
+		throw Error("unknown type " + std::to_string(t));
 	if (token_stream.this_tag() == ASSIGN)
 	{
-tt:		token_stream.match(ASSIGN);
+		token_stream.match(ASSIGN);
+		// container init list
+		if (token_stream.this_tag() == BEGIN && type_info->second->type_kind==Mem::Type::container)
+		{
+			size_t element_type = Mem::demerge(type_code).second;
+			auto ilist = new InitList(element_type);
+		
+			auto result = type_init_function_map.find(InitKey(t,{Mem::INIT_LIST }));
+			if (result == type_init_function_map.end())
+			{
+				delete ilist;
+				throw Error("type " + type_to_string(t) + " can not initialized by list");
+			}
+			expr = new FunctionCall(result->second, { ilist });
+			return;
+		}
+		// common condition 
 		expr = Expr(type_code).root();
-		if (type_code != expr->get_type())
+		if (expr->get_type() != type_code)
 			throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
 		return;
 	}
 	// container var decl
-	auto type_info = Mem::type_map.find(t);
-	if (type_info == Mem::type_map.end())
-		throw Error("unknown type " + std::to_string(t));
 	if (type_info->second->type_kind == Mem::Type::container)
 	{
 		expr = new LConV(Mem::create_var_t(t), t);

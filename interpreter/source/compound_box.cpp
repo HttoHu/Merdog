@@ -157,7 +157,7 @@ namespace Mer
 				throw Error("struct_obj init Error: Not exits member " + member_suffix->to_string());
 			token_stream.match(ID);
 			token_stream.match(COLON);
-			vec[result->second] = new Expr();
+			vec[result->second] = Expr().root();
 			if (token_stream.this_tag() == END)
 			{
 				token_stream.match(END);

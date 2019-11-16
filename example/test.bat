@@ -1,3 +1,7 @@
+merdog acm-icpc/premutation.mer
+merdog acm-icpc/eight_queen.mer
+merdog acm-icpc/krypton_factor.mer
+merdog acm-icpc/prime_ring.mer
 merdog array.mer
 merdog draw_heart_shape.mer
 merdog draw_sin.mer
@@ -11,7 +15,7 @@ merdog pointer_test.mer
 merdog insertion_sort.mer
 merdog member_function_test.mer
 merdog pointer/test1.mer
-merdog ACM/premutation.mer
+merdog container/deque_test.mer
 merdog demo.mer
 merdog member_manager.mer
 

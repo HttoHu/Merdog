@@ -116,7 +116,7 @@ namespace Mer
 		Mem::Object execute()override;
 		virtual ~StructureInitList() {}
 	private:
-		std::vector<Expr*> vec;
+		std::vector<ParserNode*> vec;
 		size_t type_code;
 	};
 

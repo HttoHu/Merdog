@@ -13,7 +13,7 @@
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
-#define MERDOG_VERSION "3.1.8"
+#define MERDOG_VERSION "3.1.9"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -73,7 +73,6 @@ int main()
 		Mer::set_io();
 		Mer::set_maths();
 		Mer::set_utility();
-		Mer::Container::using_vector();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
 		Mer::Parser::program()->execute();

@@ -13,7 +13,7 @@ namespace Mer
 
 	namespace Mem
 	{
-		int type_counter = 9;
+		int type_counter = BASICTYPE_MAX_CODE;
 		std::map<size_t, void(*)(size_t)> container_register;
 		std::map<ComplexType, size_t> complex_type_seeker;
 		std::map<size_t, ComplexType> demerge_table;
@@ -28,7 +28,8 @@ namespace Mer
 			{ BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
 			{ BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
 			{ BasicType::STRING,new Type("string",BasicType::STRING,{ 11,BasicType::STRING }) },
-			{BasicType::CHAR,new Type("char",BasicType::CHAR,{9,BasicType::CHAR,BasicType::INT,BasicType::STRING})}
+			{BasicType::CHAR,new Type("char",BasicType::CHAR,{9,BasicType::CHAR,BasicType::INT,BasicType::STRING})},
+			{BasicType::INIT_LIST,new Type("init_list",BasicType::INIT_LIST,{})}
 		};
 		size_t find_op_type(size_t ty, std::string op)
 		{
@@ -134,6 +135,14 @@ namespace Mer
 			element_type = get_type_code();
 			token_stream.match(GT);
 			return merge(container_type, element_type);
+		}
+
+		std::pair<size_t,size_t> demerge(size_t t)
+		{
+			auto result = demerge_table.find(t);
+			if (result == demerge_table.end())
+				throw Error("type " + std::to_string(t) + " can not split");
+			return { result->second.container_type,result->second.element_type };
 		}
 
 		int regitser_container(size_t container_type, size_t element_type)

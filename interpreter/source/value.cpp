@@ -28,10 +28,10 @@ Mer::Mem::Object Mer::Variable::execute()
 	return mem[mem.get_current() + pos];
 }
 
-Mer::FunctionCall::FunctionCall( FunctionBase* _func, std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
+Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
 	std::vector<size_t> type_vec;
-	for (auto& a : exprs)
+	for (const auto& a : exprs)
 	{
 		type_vec.push_back(a->get_type());
 	}

@@ -51,7 +51,7 @@ namespace Mer
 			is_bool = true;
 			auto tok = token_stream.this_token();
 			token_stream.next();
-			result = new BinOp(result, tok, nexpr());
+			result = new LogicalBinOp(result, tok, nexpr());
 		}
 		return result;
 
@@ -172,7 +172,7 @@ namespace Mer
 		case BEGIN:
 		{
 			auto result = find_ustructure_t(expr_type);
-			return new StructureInitList(result->mapping);
+			return new StructureInitList(result->mapping,expr_type);
 		}
 		case CAST:
 			return new Cast();
@@ -189,7 +189,7 @@ namespace Mer
 		case LPAREN:
 		{
 			token_stream.match(LPAREN);
-			ParserNode* v = and_or();
+			ParserNode* v = assign();
 			token_stream.match(RPAREN);
 			return v;
 		}
@@ -238,67 +238,41 @@ namespace Mer
 	{
 		auto left_v = left->execute();
 		auto right_v = right->execute();
-		Mem::Object ret = nullptr;
 		switch (op->get_tag())
 		{
 		case SADD:
-			ret = left_v->operator+=(right_v);
-			break;
+			return left_v->operator+=(right_v);
 		case SSUB:
-			ret = left_v->operator-=(right_v);
-			break;
+			return left_v->operator-=(right_v);
 		case SDIV:
-			ret = left_v->operator/=(right_v);
-			break;
+			return left_v->operator/=(right_v);
 		case SMUL:
-			ret = left_v->operator*=(right_v);
-			break;
+			return left_v->operator*=(right_v);
 		case ASSIGN:
-			ret = left_v->operator=(right_v);
-			break;
-		case AND:
-			ret = left_v->operator&&(right_v);
-			break;
-		case OR:
-			ret = left_v->operator||(right_v);
-			break;
+			return left_v->operator=(right_v);
 		case PLUS:
-			ret = left_v->operator+(right_v);
-			break;
+			return left_v->operator+(right_v);
 		case MINUS:
-			ret = left_v->operator-(right_v);
-			break;
+			return left_v->operator-(right_v);
 		case MUL:
-			ret = left_v->operator*(right_v);
-			break;
+			return left_v->operator*(right_v);
 		case DIV:
-			ret = left_v->operator/(right_v);
-			break;
+			return left_v->operator/(right_v);
 		case EQ:
-			ret = left_v->operator==(right_v);
-			break;
+			return left_v->operator==(right_v);
 		case NE:
-			ret = left_v->operator!=(right_v);
-			break;
+			return left_v->operator!=(right_v);
 		case GT:
-			ret = left_v->operator>(right_v);
-			break;
+			return left_v->operator>(right_v);
 		case GE:
-			ret = left_v->operator>=(right_v);
-			break;
+			return left_v->operator>=(right_v);
 		case LT:
-			ret = left_v->operator<(right_v);
-			break;
+			return left_v->operator<(right_v);
 		case LE:
-			ret = left_v->operator<=(right_v);
-			break;
-		case LSB:
-			ret = left_v->operator[](right_v);
-			break;
+			return left_v->operator<=(right_v);
 		default:
 			throw Error("Undefined operator");
 		}
-		return Mem::Object(ret);
 	}
 
 	size_t Mer::BinOp::get_type()
@@ -344,7 +318,25 @@ namespace Mer
 	}
 
 
-	Mer::InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
+	InitList::InitList(size_t t):type(Mem::INIT_LIST)
+	{
+		token_stream.match(BEGIN);
+		while (token_stream.this_tag() != Tag::END)
+		{
+			auto insertion = Expr().root();
+			if (insertion->get_type() != t)
+			{ 
+				delete insertion;
+				throw Error("init_list type not matched from " + type_to_string(t) + " to " + type_to_string(insertion->get_type()));
+			}
+			init_v.push_back(insertion);
+			if (token_stream.this_tag() == Tag::COMMA)
+				token_stream.match(COMMA);
+		}
+		token_stream.match(END);
+	}
+
+	InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
 	{
 		token_stream.match(BEGIN);
 		while (token_stream.this_tag() != Tag::END)
@@ -368,7 +360,7 @@ namespace Mer
 		{
 			if (type != init_v[i - 1]->get_type())
 			{
-				throw Error("there is a type-distinction in an init list.");
+				throw Error("there is a type-distinction in an init list. from "+ type_to_string(type)+" to "+type_to_string(init_v[i-1]->get_type()));
 			}
 		}
 
@@ -379,9 +371,10 @@ namespace Mer
 		std::vector<Mem::Object> v(init_v.size());
 		for (size_t i = 0; i < v.size(); i++)
 		{
-			v[i] = init_v[i]->execute()->clone();
+			 v[i]=init_v[i]->execute()->clone();
 		}
-		return std::make_shared<Mem::InitListObj>(std::move(v), type);
+		auto ret= std::make_shared<Mem::InitListObj>(std::move(v), type);
+		return ret;
 	}
 
 	std::vector<Mem::Object> Mer::InitList::get_array()
@@ -539,6 +532,23 @@ namespace Mer
 	Mem::Object SubScript::execute()
 	{
 		return left->execute()->operator[](subscr->execute());
+	}
+
+	LogicalBinOp::LogicalBinOp(ParserNode* l, Token* tok, ParserNode* r) :left(l),right(r)
+	{
+		if (tok->get_tag() == AND)
+			ta = true;
+		else if (tok->get_tag() == OR)
+			ta = false;
+		else
+			throw Error("intern error");
+	}
+
+	Mem::Object LogicalBinOp::execute()
+	{
+		if (ta ^ Mem::get_raw<bool>(left->execute()))
+			return std::make_shared<Mem::Bool>(!ta);
+		return std::make_shared<Mem::Bool>(Mem::get_raw<bool>(right->execute()));
 	}
 
 }

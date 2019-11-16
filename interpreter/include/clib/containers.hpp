@@ -25,6 +25,7 @@
 #pragma once
 #include<iostream>
 #include<vector>
+#include <deque>
 #include "../basic_objects.hpp"
 namespace Mer
 {
@@ -43,7 +44,22 @@ namespace Mer
 			Mem::Object clone()const override;
 			std::vector<Mem::Object> content;
 		};
+		class Deque :public Mem::Value {
+		public:
+			static int deque_type_code;
+			Deque() {}
+			Deque(int count) :content(count) {}
+			Deque(int count, Mem::Object obj);
+			Deque(const std::deque<Mem::Object>& objs) :content(objs) {}
+			Deque(std::deque<Mem::Object>&& objs) :content(objs) {}
+			Mem::Object operator[](Mem::Object index)override;
+			Mem::Object clone()const override;
+			std::deque<Mem::Object> content;
+
+		};
 		void using_vector();
+		void using_deque();
 		void register_new_vector_type(size_t element_type);
+		void register_new_deque_type(size_t element_type);
 	}
 }

@@ -39,7 +39,7 @@
 #include "error.hpp"
 #include "type.hpp"
 #include "clib/any.hpp"
-#define BASICTYPE_MAX_CODE 9
+const int BASICTYPE_MAX_CODE = 11;
 namespace Mer
 {
 	class StructureBase;
@@ -246,7 +246,7 @@ namespace Mer
 			{
 				return value;
 			}
-			static int get_val(Mem::Object obj){
+			static int get_val(Mem::Object obj) {
 				return std::static_pointer_cast<Mem::Int>(obj)->get_value();
 			}
 			Object Convert(size_t type) override;
@@ -423,7 +423,7 @@ namespace Mer
 			{
 				return type_code;
 			}
-
+			Mem::Object clone()const override;
 			size_t type_code;
 			std::vector<Object> elems;
 		};
@@ -440,7 +440,7 @@ namespace Mer
 			Object operator[](Object v)override;
 			std::string to_string()const override
 			{
-				return "pointer "+obj->to_string();
+				return "pointer " + obj->to_string();
 			}
 			~Pointer();
 
@@ -498,7 +498,7 @@ namespace Mer
 			}
 			Object operator> (Object v)override
 			{
-				return std::make_shared < Bool >(*value > *std::static_pointer_cast<Char>(v)->value);
+				return std::make_shared < Bool >(*value > * std::static_pointer_cast<Char>(v)->value);
 			}
 			Object operator>= (Object v)override
 			{
@@ -564,7 +564,7 @@ namespace Mer
 		class Array :public Value
 		{
 		public:
-			Array(size_t _type, int _pos,int _length):type(_type), pos(_pos),length(_length){}
+			Array(size_t _type, int _pos, int _length) :type(_type), pos(_pos), length(_length) {}
 			Mem::Object operator[](Object index);
 			Mem::Object clone()const override;
 			size_t get_type()const override { return type; }
@@ -585,5 +585,5 @@ namespace Mer
 #endif
 		}
 
-		}
 	}
+}

@@ -96,6 +96,18 @@ namespace Mer
 		ParserNode* left;
 		ParserNode* subscr;
 	};
+	class LogicalBinOp :public ParserNode
+	{
+	public:
+		LogicalBinOp(ParserNode* l, Token *tok, ParserNode* r);
+		size_t get_type() override { return Mem::BOOL; }
+		Mem::Object execute()override;
+	private:
+		// true ->and ,false ->or
+		bool ta = true;
+		ParserNode* left;
+		ParserNode* right;
+	};
 	class BinOp :public ParserNode
 	{
 	public:
@@ -186,6 +198,7 @@ namespace Mer
 	class InitList:public ParserNode
 	{
 	public:
+		InitList(size_t);
 		// if sz is -1, the size will get from init_v.size();
 		InitList(size_t t,size_t sz);
 		Mem::Object execute()override;

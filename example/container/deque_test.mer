@@ -1,0 +1,21 @@
+using deque;
+struct coor
+{
+	int x;
+	int y;
+}
+program main
+{
+	deque<int> init;
+	init.push_front(213);
+	init.pop_front();
+	for(int i=0;i<10;i+=1)
+	{
+		init.push_back(i);
+		init.push_front(-i);
+	}
+	for(int i=0;i<init.size();i+=1)
+	{
+		std.cout(init[i],'\n');
+	}
+}

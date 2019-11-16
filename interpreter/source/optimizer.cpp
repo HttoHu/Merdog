@@ -20,7 +20,7 @@ namespace Mer
 				}
 				else
 				{
-					return new ContainerIndex(arr->get_type(), arr->get_pos(), subscript);
+					return new ContainerIndex(arr->get_type(), arr->get_pos()+1, subscript);
 				}
 			}
 			return new SubScript(arr, subscript);

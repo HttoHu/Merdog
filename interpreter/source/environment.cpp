@@ -9,7 +9,10 @@
 #include "../include/environment.hpp"
 #include "../include/parser.hpp"
 #include "../include/clib/maths.hpp"
-
+#include "../include/clib/containers.hpp"
+std::map<std::string, void(*)()> Mer::repository{
+	{"vector",Mer::Container::using_vector},{"deque",Mer::Container::using_deque},
+};
 std::vector<size_t *> Mer::_pcs;
 std::string Mer::output_buff = "";
 std::vector<std::pair<Mer::PosPtr,Mer::PosPtr>> Mer::_nearest_loop_pos;
