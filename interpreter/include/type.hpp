@@ -29,8 +29,10 @@
 namespace Mer
 {
 	class Token;
+	extern std::map<size_t, std::string> type_name_mapping;
 	namespace Mem
 	{
+
 		enum BasicType
 		{
 			ARRAY = -2, NDEF = -1, BVOID = 0, INT = 1, DOUBLE = 3, STRING = 5, BOOL = 7, CHAR = 9
@@ -84,6 +86,7 @@ namespace Mer
 		extern std::map<size_t, Type*> type_map;
 		extern int type_counter;
 		extern std::map<size_t, void(*)(size_t)> container_register;
+
 		// get the operator function type
 		size_t find_op_type(size_t ty, std::string op);
 		bool exist_operator(size_t ty, std::string op);

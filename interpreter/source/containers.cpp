@@ -91,6 +91,7 @@ namespace Mer
 			type_init_function_map[InitKey(cur_type, std::vector<size_t>{ Mem::INT,element_type })] = init;
 			type_init_function_map[InitKey(cur_type, std::vector<size_t>{ Mem::INT })] = init_n;
 			type_init_map[cur_type] = std::make_shared<Vector>();
+
 			// set type
 			auto vec_type = new Mem::Type("vector", cur_type, { cur_type });
 			vec_type->type_kind = Mem::Type::container;

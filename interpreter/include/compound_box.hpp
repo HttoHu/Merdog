@@ -123,11 +123,11 @@ namespace Mer
 	// you can get the struct_info by its name
 	extern std::map<std::string, UStructure*> ustructure_map;
 	// get the struct name by its type code.
-	extern std::map<size_t, std::string> type_name_mapping;
+
 	extern std::map<size_t, std::map<std::string, FunctionBase*>> member_function_table;
 	// to build the struct , records different information and push the struct to the ustructure_map
 	void build_ustructure();
-	
+	extern std::map<size_t, std::string> type_name_mapping;
 	//StructureDecl* structobj_decl();
 	Mer::UStructure* find_ustructure_t(size_t type);
 	

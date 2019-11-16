@@ -87,7 +87,7 @@ namespace Mer
 			virtual Object operator- (Object v) { throw Error("-: syntax error"); }
 			virtual Object operator* (Object v) { throw Error("* syntax error"); }
 			virtual Object operator/ (Object v) { throw Error("/: syntax error"); }
-			virtual Object Convert(size_t type) { throw Error("convert: syntax error"); }
+			virtual Object Convert(size_t type);
 			virtual Object get_negation()
 			{
 				throw Error("get_negation: syntax error");

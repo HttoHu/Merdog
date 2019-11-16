@@ -13,6 +13,8 @@
  => string read(int), read line_no text;
  => void write(), write the content to the file.
 */
+#include "../include/basic_objects.hpp"
+#include "../include/environment.hpp"
 #include "../include/clib/merdog_io.hpp"
 #include "../include/compound_box.hpp"
 #include "../include/word_record.hpp"
@@ -30,7 +32,7 @@ namespace Mer
 		{
 			int count = Mem::get_raw<int>(args[0]);
 			char c = std::static_pointer_cast<Mem::Char>(args[1])->get_value();
-			return std::make_shared<Mem::String>(std::string(count,c));
+			return std::make_shared<Mem::String>(std::string(count, c));
 		}
 		Mem::Object _substr(std::vector<Mem::Object>& args)
 		{
@@ -47,13 +49,14 @@ namespace Mer
 		Mem::Object _cout(std::vector<Mem::Object>& args)
 		{
 			for (const auto& a : args)
-#ifndef COUTTOSTRING
+#ifndef DISABLEIO
 				std::cout << a->to_string();
 #else
 				output_buff += a->to_string();
 #endif
 			return nullptr;
 		}
+
 		Mem::Object _input_int(std::vector<Mem::Object>& args)
 		{
 			if (args.size() != 0)
@@ -86,6 +89,7 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}
+#ifndef DISABLEIO
 		Mem::Object _open(std::vector<Mem::Object>& args)
 		{
 			auto arg1 = args[0];
@@ -155,6 +159,7 @@ namespace Mer
 		{
 			return std::make_shared<Mem::Bool>(std::filesystem::exists(args[0]->to_string()));
 		}
+#endif 
 	}
 	Namespace* mstd = new Namespace(nullptr);
 	Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
@@ -164,6 +169,7 @@ namespace Mer
 	Mer::SystemFunction* input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
 	Mer::SystemFunction* input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
 	Mer::SystemFunction* input_char = new SystemFunction(Mem::BasicType::CHAR, _input_char);
+#ifndef DISABLEIO
 	void set_file_operator_class()
 	{
 
@@ -204,12 +210,9 @@ namespace Mer
 		line_count->set_param_types({ (size_t)Mem::type_counter });
 		member_function_table[Mem::type_counter].insert({ "line_count",line_count });
 	}
+#endif
 	void set_io()
 	{
-		auto exists_file = new SystemFunction(Mem::BOOL, _exists_file);
-		exists_file->set_param_types({ Mem::STRING });
-		//file_stream
-		set_file_operator_class();
 		cout->dnt_check_param();
 		substr->set_param_types({ Mer::Mem::BasicType::STRING, Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ Mer::Mem::BasicType::STRING });
@@ -220,12 +223,20 @@ namespace Mer
 		// string init
 		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
 		str_init->set_param_types({ Mem::INT,Mem::CHAR });
-		type_init_function_map[InitKey(Mem::STRING, std::vector<size_t>{ Mem::INT,Mem::CHAR })] = str_init;
+		type_init_function_map[InitKey(Mem::STRING, std::vector<size_t>{ Mem::INT, Mem::CHAR })] = str_init;
 		mstd->set_new_func("cout", cout);
 		mstd->set_new_func("input_int", input_int);
 		mstd->set_new_func("input_real", input_real);
 		mstd->set_new_func("input_char", input_char);
 		mstd->set_new_func("input_string", input_string);
+#ifndef DISABLEIO
+		auto exists_file = new SystemFunction(Mem::BOOL, _exists_file);
+		exists_file->set_param_types({ Mem::STRING });
+		//file_stream
+		set_file_operator_class();
 		mstd->set_new_func("exist_file", exists_file);
+#endif
+
+
 	}
 }

@@ -51,11 +51,11 @@ namespace Mer
 		token_stream.match(RPAREN);
 
 	}
-	MakeDefualt::MakeDefualt(size_t ty):type(ty)
+	MakeDefault::MakeDefault(size_t ty):type(ty)
 	{
 		ret = Mem::create_var_t(ty);
 	}
-	Mem::Object MakeDefualt::execute()
+	Mem::Object MakeDefault::execute()
 	{
 		return ret->clone();
 	}
@@ -188,7 +188,7 @@ Mer::ParserNode* Mer::Parser::make_var()
 	{
 		return Parser::parse_initializer(type_c);
 	}
-	return new MakeDefualt(type_c);
+	return new MakeDefault(type_c);
 }
 
 WordRecorder* Mer::Parser::get_current_info()

@@ -126,7 +126,10 @@ namespace Mer
 				// get type code
 				auto func = member_function_table[raw_type].find(Id::get_value(member_id));
 				if (func == member_function_table[raw_type].end())
+				{ 
+					std::cout << raw_type;
 					throw Error(" member functioon " + Id::get_value(member_id) + " no found");
+				}
 				result = Parser::parse_call_by_function(func->second, result);
 				continue;
 			}

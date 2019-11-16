@@ -57,7 +57,6 @@ std::string Mer::Mem::type_to_string(BasicType bt)
 
 Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 {
-
 	// pointer
 	if (type % 2 == 0)
 	{
@@ -80,6 +79,7 @@ Mer::Mem::Object Mer::Mem::create_var_t(size_t type)
 		auto result = type_init_map.find(type);
 		if (result == type_init_map.end())
 		{
+
 			return std::make_shared<USObject>(find_ustructure_t(type)->init());
 		}
 		return result->second->clone();
@@ -240,4 +240,11 @@ Mer::Mem::Object Mer::Mem::Array::operator[](Object index)
 Mer::Mem::Object Mer::Mem::Array::clone() const
 {
 	return std::make_shared<Array>(type, pos, length);
+}
+
+Object Mer::Mem::Value::Convert(size_t type)
+{
+	std::string ls = type_to_string((BasicType)get_type());
+	std::string rs = type_to_string(BasicType(type));
+	throw Error("convert: syntax error from " + ls + " to " +rs );
 }

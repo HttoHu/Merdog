@@ -117,10 +117,10 @@ namespace Mer
 		ParserNode* expr;
 		size_t to_type;
 	};
-	class MakeDefualt :public ParserNode
+	class MakeDefault :public ParserNode
 	{
 	public:
-		MakeDefualt(size_t ty);
+		MakeDefault(size_t ty);
 		Mem::Object execute()override;
 		size_t get_type()override { return type; }
 	private:
