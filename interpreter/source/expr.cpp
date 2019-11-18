@@ -369,7 +369,8 @@ namespace Mer
 	Mem::Object Mer::InitList::execute()
 	{
 		std::vector<Mem::Object> v(init_v.size());
-		for (size_t i = 0; i < v.size(); i++)
+		int sz = init_v.size();
+		for (size_t i = 0; i < sz; i++)
 		{
 			 v[i]=init_v[i]->execute()->clone();
 		}

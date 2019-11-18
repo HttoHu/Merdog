@@ -48,7 +48,7 @@ namespace Mer
 	{
 	public:
 		NamePart();
-		size_t& get_count() { return count; }
+		size_t get_count() { return count; }
 		bool is_array() { return arr; }
 		bool is_auto_array() { return auto_array; }
 		bool is_pointer() { return pointer; }
@@ -56,7 +56,7 @@ namespace Mer
 	private:
 		Token* id;
 		// int a[]={1,2,3};
-		bool auto_array;
+		bool auto_array=false;
 		bool arr = false;
 		bool pointer = false;
 		size_t count=1;
