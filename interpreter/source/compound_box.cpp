@@ -10,9 +10,9 @@
 using namespace Mer;
 namespace Mer
 {
-	std::map<std::string, Mer::UStructure*> Mer::ustructure_map;
-	std::map<size_t, std::string> Mer::type_name_mapping;
-	std::map<size_t, std::map<std::string, FunctionBase*>> Mer::member_function_table;
+	std::map<std::string, UStructure*> ustructure_map;
+	std::map<size_t, std::string> type_name_mapping;
+	std::map<size_t, std::map<std::string, FunctionBase*>> member_function_table;
 	//OK
 	void build_ustructure()
 	{

@@ -1,5 +1,5 @@
 #include "../include/clib/containers.hpp"
-#include "../include/Namespace.hpp"
+#include "../include/namespace.hpp"
 #include "../include/word_record.hpp"
 #include "../include/compound_box.hpp"
 namespace Mer

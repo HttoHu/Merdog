@@ -23,6 +23,7 @@ SOFTWARE.
 
 */
 #pragma once
+#include <cmath>
 #include "merdog_io.hpp"
 // offer some common maths method.
 namespace Mer

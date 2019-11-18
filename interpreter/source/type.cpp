@@ -52,7 +52,7 @@ namespace Mer
 				return false;
 			return true;
 		}
-		size_t Mer::Mem::get_type_code()
+		size_t get_type_code()
 		{
 			auto tok = token_stream.this_token();
 			token_stream.next();
@@ -87,7 +87,7 @@ namespace Mer
 			}
 		}
 
-		size_t Mer::Mem::get_type_code(Token* tok)
+		size_t get_type_code(Token* tok)
 		{
 			switch (tok->get_tag())
 			{
@@ -116,13 +116,13 @@ namespace Mer
 			}
 		}
 
-		size_t& Mer::Mem::type_no()
+		size_t& type_no()
 		{
 			static size_t this_type_index = 10;
 			return this_type_index;
 		}
 		// to DO 
-		size_t Mer::Mem::get_ctype_code()
+		size_t get_ctype_code()
 		{
 			size_t container_type;
 			size_t element_type;

@@ -25,8 +25,8 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include <any>
-#define COMPILE_MERDOG_NEED_CXX17
+
+//#define COMPILE_MERDOG_NEED_CXX17
 #ifndef COMPILE_MERDOG_NEED_CXX17
 namespace mer
 {
@@ -96,10 +96,10 @@ namespace mer
 		friend _Ty any_cast(const any& a);
 	};
 	// when any_cast fail, it will throw the bad_cast
-	class  bad_any_cast :public std::bad_cast
+	class  bad_any_cast
 	{
 	public:
-		virtual const char* what() const override
+		const char* what() const
 		{
 			return "bad mer::any_cast";
 		}
@@ -115,6 +115,7 @@ namespace mer
 	}
 }
 #else
+#include <any>
 namespace mer
 {
 	using any = std::any;

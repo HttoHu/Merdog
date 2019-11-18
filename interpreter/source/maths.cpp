@@ -12,14 +12,14 @@ namespace Mer
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			double d2 = std::static_pointer_cast<Mem::Double>(args[1]->Convert(Mem::BasicType::DOUBLE))->get_value();
-			double ret =::fmin(d, d2);
+			double ret =std::fmin(d, d2);
 			return std::make_shared<Mem::Double>(ret);
 		}
 		Mem::Object _sqrt(std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::sqrt(d);
+			d = std::sqrt(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _mod(std::vector<Mem::Object>& args)
@@ -34,42 +34,42 @@ namespace Mer
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::sin(d);
+			d = std::sin(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _cos(std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::cos(d);
+			d = std::cos(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _tan(std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::tan(d);
+			d = std::tan(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _arsin(std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::asin(d);
+			d = std::asin(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _arcos(std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::acos(d);
+			d = std::acos(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _artan(std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			d = ::atan(d);
+			d = std::atan(d);
 			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _abs(std::vector<Mem::Object>& args)
@@ -91,7 +91,7 @@ namespace Mer
 	Mer::SystemFunction *mod = new SystemFunction(Mem::INT, _mod);
 	Mer::SystemFunction *sqrt = new SystemFunction(Mem::DOUBLE, _sqrt);
 	Mer::SystemFunction *abs = new SystemFunction(Mem::DOUBLE, _abs);
-	void Mer::set_maths()
+	void set_maths()
 	{
 		maths = root_namespace;
 		min->set_param_types({ Mem::DOUBLE,Mem::DOUBLE });

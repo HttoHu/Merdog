@@ -10,12 +10,12 @@
 #include "../include/environment.hpp"
 namespace Mer
 {
-	size_t Mer::current_function_rety = 0;
-	std::vector<Mer::ParserNode*>* Mer::current_ins_table = nullptr;
-	PosPtr Mer::this_block_size = nullptr;
+	size_t current_function_rety = 0;
+	std::vector<Mer::ParserNode*>* current_ins_table = nullptr;
+	PosPtr this_block_size = nullptr;
 	extern std::vector<ParserNode*>* current_ins_table;
 	extern std::vector<size_t*> _pcs;
-	Mem::Object Mer::function_ret = nullptr;
+	Mem::Object function_ret = nullptr;
 	namespace Parser
 	{
 		void switch_driver();

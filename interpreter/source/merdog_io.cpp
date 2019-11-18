@@ -19,7 +19,9 @@
 #include "../include/compound_box.hpp"
 #include "../include/word_record.hpp"
 #include <fstream>
+#ifdef COMPILE_MERDOG_NEED_CXX17
 #include <filesystem>
+#endif
 namespace Mer
 {
 	namespace
@@ -89,7 +91,7 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}
-#ifndef DISABLEIO
+#ifdef COMPILE_MERDOG_NEED_CXX17
 		Mem::Object _open(std::vector<Mem::Object>& args)
 		{
 			auto arg1 = args[0];
@@ -169,7 +171,7 @@ namespace Mer
 	Mer::SystemFunction* input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
 	Mer::SystemFunction* input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
 	Mer::SystemFunction* input_char = new SystemFunction(Mem::BasicType::CHAR, _input_char);
-#ifndef DISABLEIO
+#ifdef COMPILE_MERDOG_NEED_CXX17s
 	void set_file_operator_class()
 	{
 
@@ -229,7 +231,7 @@ namespace Mer
 		mstd->set_new_func("input_real", input_real);
 		mstd->set_new_func("input_char", input_char);
 		mstd->set_new_func("input_string", input_string);
-#ifndef DISABLEIO
+#ifdef COMPILE_MERDOG_NEED_CXX17
 		auto exists_file = new SystemFunction(Mem::BOOL, _exists_file);
 		exists_file->set_param_types({ Mem::STRING });
 		//file_stream
