@@ -3,6 +3,7 @@
 * Copyright (c) 2019 Htto Hu
 */
 #include "../include/word_record.hpp"
+#include "../include/function.hpp"
 using namespace Mer;
 std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
 WordRecorder* Mer::SymbolTable::find(std::string id)
@@ -30,3 +31,5 @@ void Mer::SymbolTable::print()
 	}
 	std::cout << "#########################################\n\n\n";
 }
+
+Mer::FuncIdRecorder::FuncIdRecorder(FunctionBase* fb) :WordRecorder(ESymbol::SFUN, fb->get_type()), function(fb) {}

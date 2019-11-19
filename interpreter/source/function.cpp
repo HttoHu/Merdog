@@ -12,7 +12,7 @@
 #define MER3_1_2
 using namespace Mer;
 
-bool Mer::is_struct_member_function=false;
+
 std::map<std::string, Function*> Mer::function_table;
 std::map<InitKey, FunctionBase*> Mer::type_init_function_map;
 Block *Mer::current_function_block = nullptr;
@@ -44,11 +44,7 @@ ParamFeature Mer::Parser::build_param_feature()
 {
 	ParamFeature ret;
 	token_stream.match(LPAREN);
-	if (is_struct_member_function)
-	{
-		ret.push_back((size_t)(Mem::type_counter) + 1);
-		is_struct_member_function = false;
-	}
+
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
@@ -80,11 +76,7 @@ Param * Mer::Parser::build_param()
 	Param *ret = new Param();
 	token_stream.match(LPAREN);
 	// 	the first arg of member function is the obj of the structure, 
-	if (is_struct_member_function)
-	{
-		ret->push_new_param((size_t)(Mem::type_counter), mem.push());
-		is_struct_member_function = false;
-	}
+
 	if (token_stream.this_tag() == RPAREN)
 	{
 		token_stream.match(RPAREN);
@@ -129,15 +121,17 @@ std::pair<std::string, Function*> Parser::_build_function()
 	this_namespace->sl_table->new_block();
 	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.next();
-
+	
 	mem.new_block();
 	Param* param = build_param();
 	Function* ret = new Function(rtype, param);
 	Mer::global_stmt() = false;
+	// new block new pc;
 	_pcs.push_back(ret->pc);
 	// bind function block to it, and when you call build_function_block, the function block will be built.
 	current_ins_table = &(ret->stmts);
 	int off = Parser::build_function_block() + ret->param->get_param_table().size();
+	_pcs.pop_back();
 	// continue to tag other statement to global stmt.
 	Mer::global_stmt() = true;
 
@@ -160,40 +154,44 @@ void Mer::Parser::build_function()
 	this_namespace->sl_table->new_block();
 	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.next();
+
+	auto finder = this_namespace->sl_table->find(name);
 	// if the function has decleared.
-	auto finder = this_namespace->functions.find(name);
-	if (finder != this_namespace->functions.end())
+	if (finder!=nullptr)
 	{
+		// id redefined
+		if (finder->es != SFUN)
+			throw Error("id " + name + " redefined");
+		auto func_recorder = static_cast<FuncIdRecorder*>(finder);
 		// the type of finder->second is FunctionBase.
-		if (finder->second->is_completed == true)
+		if (func_recorder->function->is_completed == true)
 		{
 			throw Error("function redefined.");
 		}
 		// create a function and return it.
-		Function *temp = static_cast<Function*>(finder->second);
+		Function *temp = static_cast<Function*>(func_recorder->function);
 		mem.new_block();
 		temp->param = build_param();
-		// we use pure_block because we should push the param to the block, 
-		// so we need to create a preserved memory for param.
+
 		Mer::global_stmt() = false;
 
 		_pcs.push_back(temp->pc);
 		current_ins_table = &(temp->stmts);
 		// off get the var_size of the function
 		int off=Parser::build_function_block()+ temp->param->get_param_table().size();
+		_pcs.pop_back();
 		Mer::global_stmt() = true;
 		temp->is_completed = true;
 		temp->set_index(off);
 		return;
 	}
-	this_namespace->sl_table->push_glo(name, new FuncIdRecorder(rtype));
 	if (is_function_statement())
 	{
 		Function*ret = new Function(rtype);
 		auto param_types = build_param_feature();
 		token_stream.match(SEMI);
 		ret->set_param_types(param_types);
-		this_namespace->functions.insert({ name,ret });
+		this_namespace->set_new_func( name,ret );
 		ret->is_completed = false;
 		return;
 	}
@@ -201,12 +199,14 @@ void Mer::Parser::build_function()
 	mem.new_block();
 	Param *param = build_param();
 	Function *ret = new Function(rtype, param);
-	this_namespace->functions.insert({ name,ret });
 	Mer::global_stmt() = false;
 	_pcs.push_back(ret->pc);
 	current_ins_table = &(ret->stmts);
 	// off get the var_size of the function
 	int off=Parser::build_function_block() + ret->param->get_param_table().size();
+	_pcs.pop_back();
+
+	this_namespace->set_new_func(name, ret);
 	Mer::global_stmt() = true;
 	ret->is_completed = true;
 	ret->set_index(off);

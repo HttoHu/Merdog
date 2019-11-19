@@ -110,7 +110,8 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 	// if var is struct member
 	if (var_info->es == ESymbol::MVAR)
 	{
-		return new Index(new Variable((size_t)(Mem::type_counter) + 1, 0), var_info->get_pos(), var_info->get_type());
+		auto mv_r = static_cast<MVarRecorder*>(var_info);
+		return new MemberVar(mv_r->pos, mv_r->get_type());
 	}
 	auto ret = new Variable(var_info);
 	if (var_info->es == SARRAY)
@@ -190,28 +191,33 @@ std::vector<Mer::ParserNode*> Mer::Parser::parse_arguments()
 	return exprs;
 }
 
-Mer::FunctionCall* Mer::Parser::parse_function_call(Namespace* names)
+Mer::ParserNode* Mer::Parser::parse_function_call(Namespace* names)
 {
-	auto id = token_stream.this_token();
+	std::string func_name = Id::get_value(token_stream.this_token());
 	// to check the param's type.
-	names->sl_table->type_check(id, Mer::ESymbol::SFUN);
-	auto result = names->find_func(Id::get_value(id));
+	auto result = names->sl_table->find(func_name);
+	auto recorder = static_cast<FuncIdRecorder*>(result);
+
+	auto func = recorder->function;
+
 	token_stream.match(ID);
-	if (result == nullptr)
-		throw Error("function " + id->to_string() + " no found its defination");
+	if (func == nullptr)
+		throw Error("function " + func_name + " no found its defination");
+
+
 	std::vector<ParserNode*> exprs = parse_arguments();
-	return new FunctionCall(result, exprs);
+	return new FunctionCall(func, exprs);
 }
 
-Mer::MemberFunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f, ParserNode* parent)
+Mer::MemberFunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f)
 {
+	auto parent = structure_parent_stack.back();
 	std::vector<ParserNode*> exprs;
 	// to check the param's type.
 	//get ref of parent
-	exprs.push_back(parent);
 	auto tmp = parse_arguments();
 	exprs.insert(exprs.end(), tmp.begin(), tmp.end());
-	return new MemberFunctionCall( f, exprs);
+	return new MemberFunctionCall( f, exprs,parent);
 }
 
 Mer::Namespace* Mer::Parser::kill_namespaces()
@@ -282,7 +288,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	return new GVar(var_info);
 }
 
-Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
+Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs,ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size())
 {
 	std::vector<size_t> type_vec;
 	for (auto& a : exprs)
@@ -301,14 +307,15 @@ size_t Mer::MemberFunctionCall::get_type()
 
 Mer::Mem::Object Mer::MemberFunctionCall::execute()
 {
-	std::vector<Mem::Object> tmp;
-	tmp.push_back(argument[0]->execute());
+	parents_vec.push_back(parent->execute());
 	int sz = argument.size();
-	for (int i=1;i<sz;i++)
+	for (int i=0;i<sz;i++)
 	{
-		tmp.push_back(argument[i]->execute()->clone());
+		obj_vec[i]=argument[i]->execute()->clone();
 	}
-	return func->run(tmp);
+	auto ret= func->run(obj_vec);
+	parents_vec.pop_back();
+	return ret;
 }
 
 std::string Mer::MemberFunctionCall::to_string()

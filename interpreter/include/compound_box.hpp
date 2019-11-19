@@ -119,7 +119,16 @@ namespace Mer
 		std::vector<ParserNode*> vec;
 		size_t type_code;
 	};
-
+	class MemberVar :public ParserNode
+	{
+	public:
+		MemberVar(size_t pos, size_t _type) :member_pos(pos), type(_type) {}
+		size_t get_type()override { return type; }
+		Mem::Object execute()override;
+	private:
+		size_t member_pos;
+		size_t type;
+	};
 	// you can get the struct_info by its name
 	extern std::map<std::string, UStructure*> ustructure_map;
 	// get the struct name by its type code.
@@ -128,7 +137,13 @@ namespace Mer
 	// to build the struct , records different information and push the struct to the ustructure_map
 	void build_ustructure();
 	extern std::map<size_t, std::string> type_name_mapping;
-	//StructureDecl* structobj_decl();
+	/*
+		MemberVar need a Object to execute operator[] , which obtain from parents_vec.push_back()
+		the parents_vec managed by member function call, when they call, they push a new Object which represent the parent 
+		ready to call its member function.
+	*/
+	extern std::vector<Mem::Object> parents_vec;
 	Mer::UStructure* find_ustructure_t(size_t type);
-	
+	// the map which store the compare operator to 
+	extern std::map<size_t, FunctionBase*> comparison_map;
 }

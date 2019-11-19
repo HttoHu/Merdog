@@ -16,6 +16,7 @@ std::map<std::string, void(*)()> Mer::repository{
 std::vector<size_t *> Mer::_pcs;
 std::string Mer::output_buff = "";
 std::vector<std::pair<Mer::PosPtr,Mer::PosPtr>> Mer::_nearest_loop_pos;
+std::vector<Mer::ParserNode*> Mer::structure_parent_stack;
 void clear()
 {
 	Mer::token_stream.clear();

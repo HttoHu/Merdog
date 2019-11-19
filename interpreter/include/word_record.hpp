@@ -108,7 +108,10 @@ namespace Mer
 		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN){
 			type_code = type;
 		}
+		FuncIdRecorder(FunctionBase* fb);
+		FunctionBase* function;
 	private:
+
 	};
 	struct ContainerTypeRecorder :public WordRecorder
 	{

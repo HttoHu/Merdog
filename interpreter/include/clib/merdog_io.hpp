@@ -30,6 +30,7 @@
 // offer the most basic io method and string operation
 namespace Mer
 {
+	
 	class Namespace;
 	extern Namespace *mstd;
 	void set_io();

@@ -27,6 +27,8 @@
 #include "lexer.hpp"
 namespace Mer
 {
+	extern std::vector<ParserNode*> structure_parent_stack;
+
 	class Cast;
 	// the santence do nothing.
 	class NonOp :public ParserNode

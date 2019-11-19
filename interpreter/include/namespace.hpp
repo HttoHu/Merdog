@@ -35,12 +35,10 @@ namespace Mer
 	public:
 		Namespace(Namespace* pare);
 		Namespace(Namespace* pare, 
-			const std::map<std::string,Namespace*>&cs,
-			const std::map<std::string, FunctionBase*> &funcs):parent(pare), children(cs), functions(funcs) {}
+			const std::map<std::string,Namespace*>&cs):parent(pare), children(cs) {}
 		Namespace *parent;
 		std::map<std::string, std::pair<Structure*, size_t>> structures;
 		std::map<std::string, Namespace*> children;
-		std::map<std::string, FunctionBase*> functions;
 		std::vector<Namespace*> using_namespaces;
 		SymbolTable *sl_table;
 		void set_new_func(const std::string & name, FunctionBase * func);

@@ -123,6 +123,7 @@ namespace Mer
 			// member function call
 			if (token_stream.this_tag() == LPAREN)
 			{
+				structure_parent_stack.push_back(result);
 				// get type code
 				auto func = member_function_table[raw_type].find(Id::get_value(member_id));
 				if (func == member_function_table[raw_type].end())
@@ -130,7 +131,8 @@ namespace Mer
 					std::cout << raw_type;
 					throw Error(" member functioon " + Id::get_value(member_id) + " no found");
 				}
-				result = Parser::parse_call_by_function(func->second, result);
+				result = Parser::parse_call_by_function(func->second);
+				structure_parent_stack.pop_back();
 				continue;
 			}
 			// find struct info

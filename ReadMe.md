@@ -18,20 +18,32 @@ Merdog is a mini C-Like interpreter
 6. support array and *(The feature will be added after v3.1.9)some STL containers (vector, deque, map,set,multiset,multimap)*
 7. some basic and useful functions
   
-## exmplaes:
+## Example
+
 ```c++
+using vector;
 function int sum (int x, int y)
 {
-   return x+y;
+    return x+y;
 }
 program main
 {
-  std.cout(sum(1,2));
+    // create 2 ints and init with 0
+    vector<int> vec(2,0);
+    vec[0]=std.input_int();
+    vec[1]=std.input_int();
+    // it can be replaced by operator +
+    std.cout(sum(vec[0],vec[1]));
 }
 ```
 
 ## About
-* Compilers: passing by Clang 9.0.0 | Visual Studio 2019
+
+* (passed by) Compilers:
+
+  * **Windows**: *Clang 9.0.0* and *Visual Studio 2019*
+  * **Linux**: *GCC 6.3.1*
+
 * Website: www.merdog.cn
 * Email **huyuantao@outlook.com**
 * inspired by:

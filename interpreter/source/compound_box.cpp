@@ -13,6 +13,7 @@ namespace Mer
 	std::map<std::string, UStructure*> ustructure_map;
 	std::map<size_t, std::string> type_name_mapping;
 	std::map<size_t, std::map<std::string, FunctionBase*>> member_function_table;
+	std::vector<Mem::Object> parents_vec;
 	//OK
 	void build_ustructure()
 	{
@@ -24,18 +25,23 @@ namespace Mer
 		token_stream.match(ID);
 		token_stream.match(BEGIN);
 		UStructure* us = new UStructure();
+		ustructure_map.insert({ name,us });
+		Mem::type_index.insert({ name,Mem::type_counter });
+		type_name_mapping.insert({ Mem::type_counter,name });
+		Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
 		tsymbol_table->new_block();
 		while (token_stream.this_tag() != END)
 		{
 			// parse member function;
 			if (token_stream.this_tag() == FUNCTION)
 			{
-				is_struct_member_function = true;
 				std::pair<std::string, Function*> tmp = Parser::_build_function();
 				// push function 
 				member_function_table[Mem::type_counter].insert(tmp); 
 				// record function id
-				us->structure_member_table.insert({ tmp.first,new FuncIdRecorder(tmp.second->get_type()) });
+				auto recorder = new FuncIdRecorder(tmp.second);
+				us->structure_member_table.insert({ tmp.first,recorder});
+				this_namespace->sl_table->push(tmp.first, recorder);
 				continue;
 			}
 			size_t type = Mem::get_type_code();
@@ -71,10 +77,7 @@ namespace Mer
 		}
 		tsymbol_table->end_block();
 		token_stream.match(END);
-		ustructure_map.insert({ name,us });
-		Mem::type_index.insert({ name,Mem::type_counter });
-		type_name_mapping.insert({ Mem::type_counter,name });
-		Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
+
 	}
 
 
@@ -207,5 +210,9 @@ namespace Mer
 			ret += a->to_string() + "     ";
 		}
 		return ret;
+	}
+	Mem::Object MemberVar::execute()
+	{
+		return parents_vec.back()->operator[](std::make_shared<Mem::Int>(member_pos));
 	}
 }

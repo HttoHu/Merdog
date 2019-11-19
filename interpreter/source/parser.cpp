@@ -97,6 +97,7 @@ Program* Mer::Parser::program()
 			_pcs.push_back(ret->pc);
 			current_ins_table = &(ret->stmts);
 			Parser::build_block();
+			_pcs.pop_back();
 			programe_num++;
 			break;
 		}

@@ -125,7 +125,6 @@ namespace Mer
 		std::pair<std::string,Function*> _build_function();
 	}
 	extern Block *current_function_block;
-	extern bool is_struct_member_function;
 	extern std::map<std::string, Function*> function_table;
 	extern std::map<InitKey, FunctionBase*> type_init_function_map;
 	extern std::map<size_t, Mem::Object> type_init_map;

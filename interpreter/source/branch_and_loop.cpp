@@ -14,6 +14,7 @@ namespace Mer
 	std::vector<Mer::ParserNode*>* current_ins_table = nullptr;
 	PosPtr this_block_size = nullptr;
 	extern std::vector<ParserNode*>* current_ins_table;
+	// the postion of the instruction
 	extern std::vector<size_t*> _pcs;
 	Mem::Object function_ret = nullptr;
 	namespace Parser
@@ -366,9 +367,7 @@ namespace Mer
 	Mem::Object IfTrueToAOrB::execute()
 	{
 		if (std::static_pointer_cast<Mem::Bool>(expr->execute())->_value())
-		{
 			*pc = *true_tag - 1;
-		}
 		else
 			*pc = *false_tag - 1;
 		return nullptr;
