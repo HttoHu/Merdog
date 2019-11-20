@@ -130,13 +130,12 @@ std::pair<std::string, Function*> Parser::_build_function()
 	_pcs.push_back(ret->pc);
 	// bind function block to it, and when you call build_function_block, the function block will be built.
 	current_ins_table = &(ret->stmts);
-	int off = Parser::build_function_block() + ret->param->get_param_table().size();
+	Parser::build_function_block();
 	_pcs.pop_back();
 	// continue to tag other statement to global stmt.
 	Mer::global_stmt() = true;
 
 	ret->is_completed = true;
-	ret->set_index(off);
 	return { name,ret };
 }
 
@@ -178,11 +177,10 @@ void Mer::Parser::build_function()
 		_pcs.push_back(temp->pc);
 		current_ins_table = &(temp->stmts);
 		// off get the var_size of the function
-		int off=Parser::build_function_block()+ temp->param->get_param_table().size();
+		build_function_block();
 		_pcs.pop_back();
 		Mer::global_stmt() = true;
 		temp->is_completed = true;
-		temp->set_index(off);
 		return;
 	}
 	if (is_function_statement())
@@ -199,17 +197,17 @@ void Mer::Parser::build_function()
 	mem.new_block();
 	Param *param = build_param();
 	Function *ret = new Function(rtype, param);
+	// set function 
+	this_namespace->set_new_func(name,ret);
 	Mer::global_stmt() = false;
 	_pcs.push_back(ret->pc);
 	current_ins_table = &(ret->stmts);
 	// off get the var_size of the function
-	int off=Parser::build_function_block() + ret->param->get_param_table().size();
+	Parser::build_function_block();
 	_pcs.pop_back();
 
-	this_namespace->set_new_func(name, ret);
 	Mer::global_stmt() = true;
 	ret->is_completed = true;
-	ret->set_index(off);
 }
 
 bool Mer::Param::type_check(const std::vector<size_t>& types)
@@ -277,10 +275,6 @@ void Mer::FunctionBase::convert_arg(std::vector<ParserNode*>& args)
 	}
 }
 //================================================================
-void Mer::FunctionBase::set_index(size_t pos)
-{
-	function_offset = (int)pos;
-}
 
 Mer::Function::Function(size_t t, Param * p) :
 	type(t), param(p)
@@ -302,9 +296,9 @@ void Mer::Function::reser_param(Param * p)
 	}
 }
 
-Mem::Object Mer::Function::run(std::vector<Mem::Object>& objs)
+Mem::Object Mer::Function::run(size_t off,std::vector<Mem::Object>& objs)
 {
-	mem.new_func(function_offset);
+	mem.new_func(off);
 	auto param_table = param->get_param_table();
 	for (size_t i = 0; i < param->get_param_table().size(); i++)
 	{

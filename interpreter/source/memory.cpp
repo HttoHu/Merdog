@@ -7,28 +7,34 @@ using namespace Mer;
 Memory Mer::mem;
 namespace Mer
 {
-	void Memory::new_func(int siz)
+	size_t Memory::new_block()
 	{
-		current += siz;
-		call_stack.push(siz);
+		block_flag.push_back(index);
+		return block_flag.back();
+	}
+	void Memory::new_func(size_t off)
+	{
+		// current is the last position of variable before called.
+
+		current += off;
+		index = 0;
+		call_stack.push(off);
 	}
 	void Memory::end_func()
 	{
-		current -= call_stack.top();
-
+		current -=call_stack.top();
 		call_stack.pop();
+
 	}
 	size_t Memory::push(int size)
 	{
 		index += size;
-		function_size += size;
 		check();
 		return index;
 	}
 	size_t Memory::push()
 	{
 		check();
-		function_size++;
 		return index++;
 	}
 	size_t Memory::end_block() {
@@ -39,10 +45,6 @@ namespace Mer
 	Mem::Object& Memory::operator[](size_t in)
 	{
 		return stack_mem[in];
-	}
-	void Memory::resert_function_size()
-	{
-		function_size = 0;
 	}
 	void Memory::alloc()
 	{

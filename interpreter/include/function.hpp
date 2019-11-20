@@ -58,11 +58,9 @@ namespace Mer
 		}
 		virtual size_t get_type() { return 0; }
 		// covert args' type in order to comply with params' type.
-		virtual Mem::Object run(std::vector<Mem::Object>& objs) { return nullptr; }
-		void set_index(size_t pos);
+		virtual Mem::Object run(size_t off,std::vector<Mem::Object>& objs) { return nullptr; }
 
-		bool is_completed;
-		int function_offset;
+		bool is_completed=false;
 	protected:
 		std::vector<size_t> param_types;
 	};
@@ -73,12 +71,11 @@ namespace Mer
 		Function(size_t t);
 		void reser_param(Param *p);
 		Param *param=nullptr;
-		Mem::Object run(std::vector<Mem::Object> &objs)override;
+		Mem::Object run(size_t off,std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
 		void set_function_block();
 		std::vector<ParserNode*> stmts;
 		size_t* pc=new size_t(0);
-		int function_size;
 	private:
 		int mem_reserve;
 		size_t param_size;
@@ -88,7 +85,7 @@ namespace Mer
 	{
 	public:
 		SystemFunction(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t), func(fun) {}
-		Mem::Object run(std::vector<Mem::Object> &objs)override
+		Mem::Object run(size_t off,std::vector<Mem::Object> &objs)override
 		{
 			return func(objs);
 		}

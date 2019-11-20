@@ -18,18 +18,12 @@ namespace Mer
 			stack_mem = new Mem::Object[capacity];
 			block_flag.push_back(0);
 		}
-		size_t new_block()
-		{
-			block_flag.push_back(index);
-			return index;
-		}
-		void new_func(int siz);
+		size_t new_block();
+		void new_func(size_t off);
 		void end_func();
 		size_t push(int size);
 		size_t push();
 		size_t end_block();
-		size_t new_obj();
-		void del_obj(size_t sz);
 		size_t get_current()
 		{
 			return current;
@@ -42,8 +36,6 @@ namespace Mer
 		size_t& get_index() {
 			return index;
 		}
-		void resert_function_size();
-		size_t function_size=0;
 	private:
 		void check()
 		{

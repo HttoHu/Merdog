@@ -119,6 +119,7 @@ namespace Mer
 		std::string to_string()override;
 	private:
 		FunctionBase * func;
+		size_t off_set=0;
 		std::vector<ParserNode*> argument;
 	};
 	class MemberFunctionCall :public ParserNode
@@ -129,6 +130,7 @@ namespace Mer
 		Mem::Object execute()override;
 		std::string to_string()override;
 	private:
+		size_t off=0;
 		FunctionBase* func;
 		std::vector<ParserNode*> argument;
 		ParserNode* parent;

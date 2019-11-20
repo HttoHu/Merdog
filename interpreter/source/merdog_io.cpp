@@ -38,14 +38,14 @@ namespace Mer
 		}
 		Mem::Object _substr(std::vector<Mem::Object>& args)
 		{
-			auto tmp = std::dynamic_pointer_cast<Mem::String>(args[0]);
-			auto off = std::dynamic_pointer_cast<Mem::Int>(args[1]);
-			auto size = std::dynamic_pointer_cast<Mem::Int>(args[2]);
+			auto tmp = std::dynamic_pointer_cast<Mem::String>(parents_vec.back());
+			auto off = std::dynamic_pointer_cast<Mem::Int>(args[0]);
+			auto size = std::dynamic_pointer_cast<Mem::Int>(args[1]);
 			return std::make_shared<Mem::String>(tmp->to_string().substr(off->get_value(), size->get_value()));
 		}
 		Mem::Object _str_size(std::vector<Mem::Object>& args)
 		{
-			auto tmp = std::static_pointer_cast<Mem::String>(args[0]);
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
 			return std::make_shared<Mem::Int>(tmp->to_string().size());
 		}
 		Mem::Object _cout(std::vector<Mem::Object>& args)
@@ -216,8 +216,8 @@ namespace Mer
 	void set_io()
 	{
 		cout->dnt_check_param();
-		substr->set_param_types({ Mer::Mem::BasicType::STRING, Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
-		str_size->set_param_types({ Mer::Mem::BasicType::STRING });
+		substr->set_param_types({  Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
+		str_size->set_param_types({ });
 		Mer::root_namespace->children.insert({ "std", mstd });
 		// set string
 		member_function_table[Mem::STRING]["substr"] = substr;

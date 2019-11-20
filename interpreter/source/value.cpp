@@ -20,7 +20,7 @@ size_t Mer::Variable::get_type()
 }
 
 size_t Mer::Variable::get_pos() {
-	return pos;
+	return pos+mem.get_current();
 }
 
 Mer::Mem::Object Mer::Variable::execute()
@@ -30,6 +30,7 @@ Mer::Mem::Object Mer::Variable::execute()
 
 Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
+	off_set = mem.get_index();
 	std::vector<size_t> type_vec;
 	for (const auto& a : exprs)
 	{
@@ -52,13 +53,13 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	{
 		tmp.push_back(a->execute()->clone());
 	}
-	return func->run(tmp);
+	return func->run(off_set,tmp);
 }
 
 std::string Mer::FunctionCall::to_string()
 {
-	std::string str = "function_pos:";
-	str += std::to_string(func->function_offset);
+	std::string str = "function:";
+	//str += std::to_string(func->funtion_pos);
 	str += "(";
 	for (auto& a : argument)
 		str += a->to_string();
@@ -193,18 +194,15 @@ std::vector<Mer::ParserNode*> Mer::Parser::parse_arguments()
 
 Mer::ParserNode* Mer::Parser::parse_function_call(Namespace* names)
 {
+
 	std::string func_name = Id::get_value(token_stream.this_token());
 	// to check the param's type.
 	auto result = names->sl_table->find(func_name);
 	auto recorder = static_cast<FuncIdRecorder*>(result);
-
 	auto func = recorder->function;
-
 	token_stream.match(ID);
 	if (func == nullptr)
 		throw Error("function " + func_name + " no found its defination");
-
-
 	std::vector<ParserNode*> exprs = parse_arguments();
 	return new FunctionCall(func, exprs);
 }
@@ -288,8 +286,9 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	return new GVar(var_info);
 }
 
-Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs,ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size())
+Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs,ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size()+1)
 {
+	off = mem.get_index();
 	std::vector<size_t> type_vec;
 	for (auto& a : exprs)
 	{
@@ -313,15 +312,15 @@ Mer::Mem::Object Mer::MemberFunctionCall::execute()
 	{
 		obj_vec[i]=argument[i]->execute()->clone();
 	}
-	auto ret= func->run(obj_vec);
+	auto ret= func->run(off,obj_vec);
 	parents_vec.pop_back();
 	return ret;
 }
 
 std::string Mer::MemberFunctionCall::to_string()
 {
-	std::string str = "function_pos:";
-	str += std::to_string(func->function_offset);
+	std::string str = "function:";
+	
 	str += "(";
 	for (auto& a : argument)
 		str += a->to_string();

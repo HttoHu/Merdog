@@ -4,6 +4,7 @@
 #include "../include/compound_box.hpp"
 namespace Mer
 {
+	extern std::vector<Mem::Object> parents_vec;
 	using __member_function=std::function<Mem::Object(std::vector<Mem::Object>&)>;
 	void _register_member_function
 	(std::string name, size_t type, size_t ret_type,const std::vector<size_t>& param_list, __member_function mf) {
@@ -22,50 +23,50 @@ namespace Mer
 	{
 		Mem::Object _vec_resize(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(args[0]);
-			int count = Mem::get_raw<int>(args[1]);
+			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
+			int count = Mem::get_raw<int>(args[0]);
 			vec->content.resize(count);
 			return nullptr;
 		}
 
 		Mem::Object _vec_insert(const std::vector<Mem::Object>& args)
 		{
-			auto& vec = std::static_pointer_cast<Container::Vector>(args[0])->content;
-			int startIndex = Mem::get_raw<int>(args[1]);
+			auto& vec = std::static_pointer_cast<Container::Vector>(parents_vec.back())->content;
+			int startIndex = Mem::get_raw<int>(args[0]);
 			vec.insert(vec.begin() + startIndex, args[2]);
 			return nullptr;
 		}
 		// vector<int> vec={1,2,3,4,5,6};
 		Mem::Object _init_vec_list (const std::vector<Mem::Object>& args)
 		{
-			auto list = std::static_pointer_cast<Mem::InitListObj> (args[0]);
+			auto list = std::static_pointer_cast<Mem::InitListObj> (parents_vec.back());
 			return std::make_shared<Container::Vector>(list->elems);
 		}
 		Mem::Object _init_vec_n(const std::vector < Mem::Object >& args)
 		{
-			int count = Mem::get_raw<int>(args[0]);
+			int count = Mem::get_raw<int>(parents_vec.back());
 			return std::make_shared<Container::Vector>(count);
 		}
 		Mem::Object _init_vec(const std::vector < Mem::Object > & args)
 		{
-			int count = Mem::get_raw<int>(args[0]);
-			return std::make_shared<Container::Vector>(count, args[1]);
+			int count = Mem::get_raw<int>(parents_vec.back());
+			return std::make_shared<Container::Vector>(count, args[0]);
 		}
 		Mem::Object _vec_push_back(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(args[0]);
-			vec->content.push_back(args[1]);
+			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
+			vec->content.push_back(args[0]);
 			return nullptr;
 		}
 		Mem::Object _vec_pop_back(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(args[0]);
+			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
 			vec->content.pop_back();
 			return nullptr;
 		}
 		Mem::Object _vec_size(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(args[0]);
+			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
 			return std::make_shared<Mem::Int>(vec->content.size());
 		}
 	}
@@ -74,62 +75,62 @@ namespace Mer
 	{
 		Mem::Object _deque_resize(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(args[0]);
-			int count = Mem::get_raw<int>(args[1]);
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			int count = Mem::get_raw<int>(args[0]);
 			deq->content.resize(count);
 			return nullptr;
 		}
 
 		Mem::Object _deque_insert(const std::vector<Mem::Object>& args)
 		{
-			auto& deq = std::static_pointer_cast<Container::Deque>(args[0])->content;
-			int startIndex = Mem::get_raw<int>(args[1]);
+			auto& deq = std::static_pointer_cast<Container::Deque>(parents_vec.back())->content;
+			int startIndex = Mem::get_raw<int>(args[0]);
 			deq.insert(deq.begin() + startIndex, args[2]);
 			return nullptr;
 		}
 		// vector<int> vec={1,2,3,4,5,6};
 		Mem::Object _init_deq_list(const std::vector<Mem::Object>& args)
 		{
-			auto list = std::static_pointer_cast<Mem::InitListObj> (args[0]);
+			auto list = std::static_pointer_cast<Mem::InitListObj> (parents_vec.back());
 			return std::make_shared<Container::Deque>(std::deque<Mem::Object>(list->elems.begin(),list->elems.end()));
 		}
 		Mem::Object _init_deq_n(const std::vector < Mem::Object >& args)
 		{
-			int count = Mem::get_raw<int>(args[0]);
+			int count = Mem::get_raw<int>(parents_vec.back());
 			return std::make_shared<Container::Deque>(count);
 		}
 		Mem::Object _init_deq(const std::vector < Mem::Object >& args)
 		{
-			int count = Mem::get_raw<int>(args[0]);
-			return std::make_shared<Container::Deque>(count, args[1]);
+			int count = Mem::get_raw<int>(parents_vec.back());
+			return std::make_shared<Container::Deque>(count, args[0]);
 		}
 		Mem::Object _deq_push_back(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(args[0]);
-			deq->content.push_back(args[1]);
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			deq->content.push_back(args[0]);
 			return nullptr;
 		}
 		Mem::Object _deq_pop_back(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(args[0]);
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
 			deq->content.pop_back();
 			return nullptr;
 		}
 		Mem::Object _deq_push_front(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(args[0]);
-			deq->content.push_front(args[1]);
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			deq->content.push_front(args[0]);
 			return nullptr;
 		}
 		Mem::Object _deq_pop_front(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(args[0]);
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
 			deq->content.pop_front();
 			return nullptr;
 		}
 		Mem::Object _deq_size(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(args[0]);
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
 			return std::make_shared<Mem::Int>(deq->content.size());
 		}
 	}
@@ -198,13 +199,13 @@ namespace Mer
 			// set []
 			Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });
 			// set member functions
-			_register_member_function("push_back", cur_type, Mem::BVOID, { cur_type,element_type }, _deq_push_back);
-			_register_member_function("push_front", cur_type, Mem::BVOID, { cur_type,element_type }, _deq_push_front);
-			_register_member_function("pop_back", cur_type, Mem::BVOID, { cur_type}, _deq_pop_back);
-			_register_member_function("pop_front", cur_type, Mem::BVOID, { cur_type }, _deq_pop_front);
-			_register_member_function("size", cur_type, Mem::INT, { cur_type }, _deq_size);
-			_register_member_function("resize", cur_type, Mem::BVOID, { cur_type,Mem::INT }, _deque_resize);
-			_register_member_function("insert", cur_type, Mem::BVOID, { cur_type,Mem::INT,element_type }, _deque_insert);
+			_register_member_function("push_back", cur_type, Mem::BVOID, { element_type }, _deq_push_back);
+			_register_member_function("push_front", cur_type, Mem::BVOID, { element_type }, _deq_push_front);
+			_register_member_function("pop_back", cur_type, Mem::BVOID, { }, _deq_pop_back);
+			_register_member_function("pop_front", cur_type, Mem::BVOID, {  }, _deq_pop_front);
+			_register_member_function("size", cur_type, Mem::INT, { }, _deq_size);
+			_register_member_function("resize", cur_type, Mem::BVOID, { Mem::INT }, _deque_resize);
+			_register_member_function("insert", cur_type, Mem::BVOID, { Mem::INT,element_type }, _deque_insert);
 		}
 		void register_new_vector_type(size_t element_type)
 		{
@@ -221,12 +222,12 @@ namespace Mer
 			// set []
 			Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });
 			// set member functions
-			_register_member_function("push_back", cur_type, Mem::BVOID, { cur_type,element_type }, _vec_push_back);
-			_register_member_function("pop_back", cur_type, Mem::BVOID, { cur_type }, _vec_pop_back);
+			_register_member_function("push_back", cur_type, Mem::BVOID, {element_type }, _vec_push_back);
+			_register_member_function("pop_back", cur_type, Mem::BVOID, { }, _vec_pop_back);
 
-			_register_member_function("size",cur_type, Mem::INT,{ cur_type }, _vec_size);
-			_register_member_function("resize", cur_type, Mem::BVOID, { cur_type,Mem::INT }, _vec_resize);
-			_register_member_function("insert", cur_type, Mem::BVOID, { cur_type,Mem::INT,element_type }, _vec_insert);
+			_register_member_function("size",cur_type, Mem::INT,{  }, _vec_size);
+			_register_member_function("resize", cur_type, Mem::BVOID, { Mem::INT }, _vec_resize);
+			_register_member_function("insert", cur_type, Mem::BVOID, { Mem::INT,element_type }, _vec_insert);
 		}
 
 		Deque::Deque(int count, Mem::Object obj) :content(count)

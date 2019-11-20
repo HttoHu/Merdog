@@ -21,7 +21,7 @@ void Mer::Namespace::set_new_structure(const std::string & name, Structure * str
 }*/
 void Mer::Namespace::set_new_func(const std::string & name, FunctionBase * func)
 {
-	sl_table->push(name, new FuncIdRecorder(func));
+	sl_table->push_glo(name, new FuncIdRecorder(func));
 }
 void Mer::Namespace::set_new_var(const std::string & name, size_t type, Mem::Object obj)
 {
