@@ -27,6 +27,8 @@
 #include <functional>
 namespace Mer
 {
+	bool compare_param_feature(const std::vector<size_t>& p1, const std::vector<size_t>& p2);
+
 	enum ESymbol
 	{
 		SFUN,SVAR,SNAME,
@@ -105,11 +107,13 @@ namespace Mer
 	struct FuncIdRecorder :public WordRecorder
 	{
 	public:
-		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN){
+		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN),functions(compare_param_feature){
 			type_code = type;
 		}
+		FunctionBase* find(const std::vector<size_t>& pf);
+		bool dnt_check = false;
 		FuncIdRecorder(FunctionBase* fb);
-		FunctionBase* function;
+		std::map<std::vector<size_t>,FunctionBase*,decltype(compare_param_feature)*> functions;
 	private:
 
 	};

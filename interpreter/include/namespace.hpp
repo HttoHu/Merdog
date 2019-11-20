@@ -46,7 +46,6 @@ namespace Mer
 
 
 		Mem::Object find_var(const std::string &name);
-		FunctionBase *find_func(const std::string &name);
 	};
 	// 5-3 
 	/*

@@ -21,7 +21,19 @@ void Mer::Namespace::set_new_structure(const std::string & name, Structure * str
 }*/
 void Mer::Namespace::set_new_func(const std::string & name, FunctionBase * func)
 {
-	sl_table->push_glo(name, new FuncIdRecorder(func));
+	auto recorder = new FuncIdRecorder(func);
+
+	sl_table->push_glo(name, recorder);
+	if (func->is_check_type() == false)
+	{ 
+		recorder->dnt_check = true;
+		recorder->functions.insert({ std::vector<size_t>(),func });
+		return;
+	}
+	if (func->is_completed)
+	{
+		recorder->functions.insert({ func->param_types,func });
+	}
 }
 void Mer::Namespace::set_new_var(const std::string & name, size_t type, Mem::Object obj)
 {
@@ -44,16 +56,6 @@ Mer::Mem::Object Mer::Namespace::find_var(const std::string & name)
 		throw Error("var " + name + " no found");
 }
 
-Mer::FunctionBase * Mer::Namespace::find_func(const std::string & name)
-{
-	auto result = sl_table->find(name);
-	if (result != nullptr)
-		return static_cast<FuncIdRecorder*>(result)->function;
-	if (parent != nullptr)
-		return parent->find_func(name);
-	else
-		throw Error("function " + name + " no found");
-}
 
 Mer::Namespace * Mer::Parser::_find_namespace_driver(Mer::Namespace *current, const std::string &name)
 {

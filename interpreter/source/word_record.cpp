@@ -32,4 +32,13 @@ void Mer::SymbolTable::print()
 	std::cout << "#########################################\n\n\n";
 }
 
-Mer::FuncIdRecorder::FuncIdRecorder(FunctionBase* fb) :WordRecorder(ESymbol::SFUN, fb->get_type()), function(fb) {}
+FunctionBase* Mer::FuncIdRecorder::find(const std::vector<size_t>& pf)
+{
+	if (dnt_check)
+		return functions[std::vector<size_t>()];
+	if (functions.find(pf) == functions.end())
+		return nullptr;
+	return functions[pf];
+}
+
+Mer::FuncIdRecorder::FuncIdRecorder(FunctionBase* fb) :WordRecorder(ESymbol::SFUN, fb->get_type()), functions(compare_param_feature) {}

@@ -197,13 +197,17 @@ Mer::ParserNode* Mer::Parser::parse_function_call(Namespace* names)
 
 	std::string func_name = Id::get_value(token_stream.this_token());
 	// to check the param's type.
+
+	token_stream.match(ID);
+	std::vector<ParserNode*> exprs = parse_arguments();
+	ParamFeature pf;
+	for (auto a : exprs)
+		pf.push_back(a->get_type());
 	auto result = names->sl_table->find(func_name);
 	auto recorder = static_cast<FuncIdRecorder*>(result);
-	auto func = recorder->function;
-	token_stream.match(ID);
+	auto func = recorder->find(pf);
 	if (func == nullptr)
 		throw Error("function " + func_name + " no found its defination");
-	std::vector<ParserNode*> exprs = parse_arguments();
 	return new FunctionCall(func, exprs);
 }
 

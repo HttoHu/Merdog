@@ -87,6 +87,7 @@ namespace Mer
 		std::vector<Mem::Object> vec;
 	};
 
+
 	/*
 		for instance 
 		= merdog code =
@@ -97,6 +98,8 @@ namespace Mer
 		Coor c;
 		it needs DefaultInitList to init the c. 
 	*/
+
+
 	class DefaultInitList :public ParserNode
 	{
 	public:

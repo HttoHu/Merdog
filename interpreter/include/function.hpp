@@ -29,7 +29,9 @@
 #include "expr.hpp"
 namespace Mer
 {
+	// arguments types list
 	using ParamFeature = std::vector<size_t>;
+	bool compare_param_feature(const std::vector<size_t>& p1, const std::vector<size_t>& p2);
 	class Block;
 	class Param
 	{
@@ -40,6 +42,7 @@ namespace Mer
 			arg_pos.push_back({ type,pos });
 		}
 		std::vector<std::pair<size_t, size_t>> &get_param_table() { return arg_pos; }
+		ParamFeature get_param_feature();
 	private:
 		size_t param_size;
 		// type + pos;
@@ -59,10 +62,12 @@ namespace Mer
 		virtual size_t get_type() { return 0; }
 		// covert args' type in order to comply with params' type.
 		virtual Mem::Object run(size_t off,std::vector<Mem::Object>& objs) { return nullptr; }
-
-		bool is_completed=false;
-	protected:
 		std::vector<size_t> param_types;
+		bool is_completed=false;
+		bool is_check_type() { return check_param_type; }
+	protected:
+		bool check_param_type = true;
+
 	};
 	class Function : public FunctionBase
 	{
@@ -101,7 +106,7 @@ namespace Mer
 		}
 	private:
 		size_t type;
-		bool check_param_type = true;
+
 		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
 	};
 	class InitKey
