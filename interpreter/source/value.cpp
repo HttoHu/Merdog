@@ -30,7 +30,6 @@ Mer::Mem::Object Mer::Variable::execute()
 
 Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
-	off_set = mem.get_index();
 	std::vector<size_t> type_vec;
 	for (const auto& a : exprs)
 	{
@@ -53,7 +52,7 @@ Mer::Mem::Object Mer::FunctionCall::execute()
 	{
 		tmp.push_back(a->execute()->clone());
 	}
-	return func->run(off_set,tmp);
+	return func->run(tmp);
 }
 
 std::string Mer::FunctionCall::to_string()
@@ -207,7 +206,9 @@ Mer::ParserNode* Mer::Parser::parse_function_call(Namespace* names)
 	auto recorder = static_cast<FuncIdRecorder*>(result);
 	auto func = recorder->find(pf);
 	if (func == nullptr)
-		throw Error("function " + func_name + " no found its defination");
+	{
+		throw Error("function " + func_name + param_feature_to_string(pf)+ " no found its defination");
+	}
 	return new FunctionCall(func, exprs);
 }
 
@@ -292,7 +293,6 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 
 Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs,ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size()+1)
 {
-	off = mem.get_index();
 	std::vector<size_t> type_vec;
 	for (auto& a : exprs)
 	{
@@ -316,7 +316,7 @@ Mer::Mem::Object Mer::MemberFunctionCall::execute()
 	{
 		obj_vec[i]=argument[i]->execute()->clone();
 	}
-	auto ret= func->run(off,obj_vec);
+	auto ret= func->run(obj_vec);
 	parents_vec.pop_back();
 	return ret;
 }

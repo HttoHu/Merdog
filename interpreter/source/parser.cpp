@@ -23,12 +23,14 @@ namespace Mer
 	}
 	Mem::Object Program::execute()
 	{
+		mem.new_func(off);
 		for (auto a : pre_stmt)
 		{
 			a->execute();
 		}
 		for (*pc = 0; *pc < stmts.size(); ++ * pc)
 			stmts[*pc]->execute();
+		mem.end_func();
 		return nullptr;
 	}
 	std::string Program::to_string()
@@ -97,6 +99,9 @@ Program* Mer::Parser::program()
 			_pcs.push_back(ret->pc);
 			current_ins_table = &(ret->stmts);
 			Parser::build_block();
+
+			ret->off = mem.function_block_size;
+			mem.reset_func_block_size();
 			_pcs.pop_back();
 			programe_num++;
 			break;
@@ -111,7 +116,6 @@ Program* Mer::Parser::program()
 			break;
 		}
 	}
-
 }
 
 ParserNode* Mer::Parser::statement()

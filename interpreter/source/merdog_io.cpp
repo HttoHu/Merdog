@@ -30,25 +30,25 @@ namespace Mer
 		{
 			return std::make_shared<Mem::Int>(n);
 		}
-		Mem::Object _init_str_n(std::vector<Mem::Object>& args)
+		Mem::Object _init_str_n(const std::vector<Mem::Object>& args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
 			char c = std::static_pointer_cast<Mem::Char>(args[1])->get_value();
 			return std::make_shared<Mem::String>(std::string(count, c));
 		}
-		Mem::Object _substr(std::vector<Mem::Object>& args)
+		Mem::Object _substr(const std::vector<Mem::Object>& args)
 		{
-			auto tmp = std::dynamic_pointer_cast<Mem::String>(parents_vec.back());
-			auto off = std::dynamic_pointer_cast<Mem::Int>(args[0]);
-			auto size = std::dynamic_pointer_cast<Mem::Int>(args[1]);
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
+			auto off = std::static_pointer_cast<Mem::Int>(args[0]);
+			auto size = std::static_pointer_cast<Mem::Int>(args[1]);
 			return std::make_shared<Mem::String>(tmp->to_string().substr(off->get_value(), size->get_value()));
 		}
-		Mem::Object _str_size(std::vector<Mem::Object>& args)
+		Mem::Object _str_size(const std::vector<Mem::Object>& args)
 		{
 			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
 			return std::make_shared<Mem::Int>(tmp->to_string().size());
 		}
-		Mem::Object _cout(std::vector<Mem::Object>& args)
+		Mem::Object _cout(const std::vector<Mem::Object>& args)
 		{
 			for (const auto& a : args)
 #ifndef DISABLEIO
@@ -59,7 +59,7 @@ namespace Mer
 			return nullptr;
 		}
 
-		Mem::Object _input_int(std::vector<Mem::Object>& args)
+		Mem::Object _input_int(const std::vector<Mem::Object>& args)
 		{
 			if (args.size() != 0)
 				throw Error("argument size error");
@@ -67,7 +67,7 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::Int>(obj);
 		}
-		Mem::Object _input_char(std::vector<Mem::Object>& args)
+		Mem::Object _input_char(const std::vector<Mem::Object>& args)
 		{
 			if (args.size() != 0)
 				throw Error("argument size error");
@@ -75,7 +75,7 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::Char>(obj);
 		}
-		Mem::Object _input_real(std::vector<Mem::Object>& args)
+		Mem::Object _input_real(const std::vector<Mem::Object>& args)
 		{
 			if (args.size() != 0)
 				throw Error("argument size error");
@@ -83,7 +83,7 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::Double>(obj);
 		}
-		Mem::Object _input_string(std::vector<Mem::Object>& args)
+		Mem::Object _input_string(const std::vector<Mem::Object>& args)
 		{
 			if (args.size() != 0)
 				throw Error("argument size error");

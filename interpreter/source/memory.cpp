@@ -15,25 +15,25 @@ namespace Mer
 	void Memory::new_func(size_t off)
 	{
 		// current is the last position of variable before called.
-
-		current += off;
-		index = 0;
+		current -= off;
 		call_stack.push(off);
 	}
 	void Memory::end_func()
 	{
-		current -=call_stack.top();
+		current +=call_stack.top();
 		call_stack.pop();
 
 	}
 	size_t Memory::push(int size)
 	{
+		function_block_size += size;
 		index += size;
 		check();
 		return index;
 	}
 	size_t Memory::push()
 	{
+		function_block_size++;
 		check();
 		return index++;
 	}

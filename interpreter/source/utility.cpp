@@ -11,11 +11,11 @@ namespace Mer
 {
 	namespace
 	{
-		Mem::Object _time_record(std::vector<Mem::Object>& args)
+		Mem::Object _time_record(const std::vector<Mem::Object>& args)
 		{
 			return std::make_shared<Mem::Int>(clock());
 		}
-		Mem::Object _random_int(std::vector<Mem::Object>& args)
+		Mem::Object _random_int(const std::vector<Mem::Object>& args)
 		{
 			int range_begin= std::static_pointer_cast<Mem::Int>(args[0])->get_value();
 			int range_end = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
@@ -23,12 +23,12 @@ namespace Mer
 			static std::default_random_engine e(clock());
 			return std::make_shared<Mem::Int>(distributor(e));
 		}
-		Mem::Object _alloc_heap(std::vector<Mem::Object>& args)
+		Mem::Object _alloc_heap(const std::vector<Mem::Object>& args)
 		{
 			//mem.check_heap();
 			return nullptr;
 		}
-		Mem::Object _sleep(std::vector<Mem::Object>& args)
+		Mem::Object _sleep(const std::vector<Mem::Object>& args)
 		{
 			int time = std::static_pointer_cast<Mem::Int>(args[0])->get_value();
 #ifdef _WIN32
@@ -38,11 +38,11 @@ namespace Mer
 #endif
 			return nullptr;
 		}
-		Mem::Object _get_type(std::vector<Mem::Object>& args)
+		Mem::Object _get_type(const std::vector<Mem::Object>& args)
 		{
-			return std::make_shared<Mem::Int>(args[1]->get_type());
+			return std::make_shared<Mem::Int>(args[0]->get_type());
 		}
-		Mem::Object _system(std::vector<Mem::Object>& args)
+		Mem::Object _system(const std::vector<Mem::Object>& args)
 		{
 			std::string str = args[0]->to_string();
 			::system(str.c_str());

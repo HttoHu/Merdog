@@ -12,7 +12,7 @@
 #define MER3_1_2
 using namespace Mer;
 
-
+std::map<size_t, _compare_operator> Mer::compare_map;
 std::map<std::string, Function*> Mer::function_table;
 std::map<InitKey, FunctionBase*> Mer::type_init_function_map;
 Block* Mer::current_function_block = nullptr;
@@ -131,6 +131,11 @@ std::pair<std::string, Function*> Parser::_build_function()
 	// bind function block to it, and when you call build_function_block, the function block will be built.
 	current_ins_table = &(ret->stmts);
 	Parser::build_function_block();
+
+	// count function size;
+	ret->off = mem.function_block_size;
+	mem.reset_func_block_size();
+
 	_pcs.pop_back();
 	// continue to tag other statement to global stmt.
 	Mer::global_stmt() = true;
@@ -153,52 +158,55 @@ void Mer::Parser::build_function()
 	this_namespace->sl_table->new_block();
 	std::string name = Id::get_value(token_stream.this_token());
 	token_stream.next();
+	mem.new_block();
+	auto param = build_param();
+	auto param_feature = param->get_param_feature();
 
-	auto finder = this_namespace->sl_table->find(name);
-	// if the function has decleared.
-	if (finder != nullptr)
+
+	if (token_stream.this_tag() == SEMI)
 	{
-		// id redefined
-		if (finder->es != SFUN)
-			throw Error("id " + name + " redefined");
-		auto func_recorder = static_cast<FuncIdRecorder*>(finder);
-		auto &function_map = func_recorder->functions;
-
-		// create a function and return it.
-		Function* temp = new Function(rtype);
-
-		mem.new_block();
-		temp->param = build_param();
-		temp->param_types = temp->param->get_param_feature();
-		if (function_map.find(temp->param_types) != function_map.end())
-			throw Error("function redefined.");
-		else
-			function_map[temp->param_types] = temp;
-		Mer::global_stmt() = false;
-		_pcs.push_back(temp->pc);
-		current_ins_table = &(temp->stmts);
-		// off get the var_size of the function
-		build_function_block();
-		_pcs.pop_back();
-		Mer::global_stmt() = true;
-		temp->is_completed = true;
-		return;
-	}
-	if (is_function_statement())
-	{
-		Function* ret = new Function(rtype);
-		auto param_types = build_param_feature();
+		mem.end_block();
+		Function* ret = new Function(rtype,param);
 		token_stream.match(SEMI);
-		ret->set_param_types(param_types);
 		this_namespace->set_new_func(name, ret);
 		ret->is_completed = false;
 		return;
 	}
+
+
+	auto finder = this_namespace->sl_table->find(name);
+	FuncIdRecorder* func_recorder = nullptr;
+	// if the function has decleared. finish it
+	if (finder != nullptr)
+	{
+		if (finder->es != SFUN)
+			throw Error("id " + name + " redefined");
+		else
+			func_recorder = static_cast<FuncIdRecorder*>(finder);
+
+		auto func = func_recorder->find(param_feature);
+		if (func != nullptr&&func->is_completed==false)
+		{
+			// create a function and return it.
+			Function* temp = static_cast<Function*>(func);
+
+			Mer::global_stmt() = false;
+			_pcs.push_back(temp->pc);
+			current_ins_table = &(temp->stmts);
+			// off get the var_size of the function
+			build_function_block();
+			// count the block size;
+			temp->off = mem.function_block_size;
+			mem.reset_func_block_size();
+
+			_pcs.pop_back();
+			Mer::global_stmt() = true;
+			temp->is_completed = true;
+			return;
+		}
+	}
 	// create a function and return it.
-	mem.new_block();
-	Param* param = build_param();
 	Function* ret = new Function(rtype, param);
-	ret->is_completed = true;
 	// set function 
 	this_namespace->set_new_func(name, ret);
 	Mer::global_stmt() = false;
@@ -206,7 +214,12 @@ void Mer::Parser::build_function()
 	current_ins_table = &(ret->stmts);
 	// off get the var_size of the function
 	Parser::build_function_block();
+	// count function size;
+	ret->off = mem.function_block_size;
+	mem.reset_func_block_size();
+
 	_pcs.pop_back();
+	ret->is_completed = true;
 	Mer::global_stmt() = true;
 
 }
@@ -285,6 +298,11 @@ void Mer::FunctionBase::convert_arg(std::vector<ParserNode*>& args)
 		}
 	}
 }
+std::string Mer::FunctionBase::to_string(std::string name) const
+{
+	return	"function " + name + param_feature_to_string(param_types);
+
+}
 //================================================================
 
 Mer::Function::Function(size_t t, Param* p) :
@@ -307,7 +325,7 @@ void Mer::Function::reser_param(Param* p)
 	}
 }
 
-Mem::Object Mer::Function::run(size_t off, std::vector<Mem::Object>& objs)
+Mem::Object Mer::Function::run(const std::vector<Mem::Object>& objs)
 {
 	mem.new_func(off);
 	auto param_table = param->get_param_table();
@@ -355,10 +373,24 @@ bool Mer::compare_param_feature(const std::vector<size_t>& p1, const std::vector
 		return p1.size() < p2.size();
 	}
 	auto sz = p1.size();
-	for (std::vector<size_t>::size_type i = 0; i<sz; i++)
+	for (std::vector<size_t>::size_type i = 0; i < sz; i++)
 	{
 		if (p1[i] != p2[i])
-			return p1[i]<p2[i];
+			return p1[i] < p2[i];
 	}
 	return false;
+}
+
+std::string Mer::param_feature_to_string(const ParamFeature& pf)
+{
+	if (pf.empty())
+		return "()";
+	std::string ret = "(";
+	for (int i = 0; i < (int)pf.size() - 1; i++)
+	{
+		
+		ret += type_to_string(pf[i]) + ',';
+	}
+	ret += type_to_string(pf.back()) + ')';
+	return ret;
 }

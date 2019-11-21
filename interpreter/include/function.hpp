@@ -22,6 +22,9 @@
 		SOFTWARE.
 
 */
+/*
+
+*/
 #pragma once
 #include <iostream>
 #include <vector>
@@ -30,8 +33,11 @@
 namespace Mer
 {
 	// arguments types list
+	using _compare_operator =std::function<bool(Mem::Object,Mem::Object)>;
 	using ParamFeature = std::vector<size_t>;
+	using _intern_func = std::function<Mem::Object (const std::vector<Mem::Object>&)>;
 	bool compare_param_feature(const std::vector<size_t>& p1, const std::vector<size_t>& p2);
+	std::string param_feature_to_string(const ParamFeature& pf);
 	class Block;
 	class Param
 	{
@@ -61,10 +67,11 @@ namespace Mer
 		}
 		virtual size_t get_type() { return 0; }
 		// covert args' type in order to comply with params' type.
-		virtual Mem::Object run(size_t off,std::vector<Mem::Object>& objs) { return nullptr; }
+		virtual Mem::Object run(const std::vector<Mem::Object>& objs) { return nullptr; }
 		std::vector<size_t> param_types;
 		bool is_completed=false;
 		bool is_check_type() { return check_param_type; }
+		std::string to_string(std::string name="no_name_func")const ;
 	protected:
 		bool check_param_type = true;
 
@@ -76,21 +83,22 @@ namespace Mer
 		Function(size_t t);
 		void reser_param(Param *p);
 		Param *param=nullptr;
-		Mem::Object run(size_t off,std::vector<Mem::Object> &objs)override;
+		Mem::Object run(const std::vector<Mem::Object> &objs)override;
 		size_t get_type()override { return type; }
 		void set_function_block();
 		std::vector<ParserNode*> stmts;
 		size_t* pc=new size_t(0);
+		size_t off;
 	private:
-		int mem_reserve;
+
 		size_t param_size;
 		size_t type;
 	};
 	class SystemFunction :public FunctionBase 
 	{
 	public:
-		SystemFunction(size_t t, const std::function<Mem::Object(std::vector<Mem::Object>&)> &fun) :type(t), func(fun) {}
-		Mem::Object run(size_t off,std::vector<Mem::Object> &objs)override
+		SystemFunction(size_t t, _intern_func fun) :type(t), func(fun) {}
+		Mem::Object run(const std::vector<Mem::Object> &objs)override
 		{
 			return func(objs);
 		}
@@ -107,7 +115,7 @@ namespace Mer
 	private:
 		size_t type;
 
-		std::function<Mem::Object(std::vector<Mem::Object>&)>func;
+		_intern_func func;
 	};
 	class InitKey
 	{
@@ -130,4 +138,5 @@ namespace Mer
 	extern std::map<std::string, Function*> function_table;
 	extern std::map<InitKey, FunctionBase*> type_init_function_map;
 	extern std::map<size_t, Mem::Object> type_init_map;
+	extern std::map<size_t, _compare_operator> compare_map;
 }

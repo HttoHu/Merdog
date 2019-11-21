@@ -14,6 +14,7 @@ merdog switch_test.mer
 merdog pointer_test.mer
 merdog insertion_sort.mer
 merdog member_function_test.mer
+merdog function_reload.mer
 merdog pointer/test1.mer
 merdog container/deque_test.mer
 merdog demo.mer

@@ -5,7 +5,7 @@
 namespace Mer
 {
 	extern std::vector<Mem::Object> parents_vec;
-	using __member_function=std::function<Mem::Object(std::vector<Mem::Object>&)>;
+	using __member_function=std::function<Mem::Object(const std::vector<Mem::Object>&)>;
 	void _register_member_function
 	(std::string name, size_t type, size_t ret_type,const std::vector<size_t>& param_list, __member_function mf) {
 		SystemFunction* tmp = new SystemFunction(ret_type, mf);

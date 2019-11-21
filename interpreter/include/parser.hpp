@@ -41,8 +41,10 @@ namespace Mer
 		std::string to_string()override;
 		std::vector<ParserNode*> stmts;
 		size_t* pc = new size_t(0);
+		size_t off = 0;
 	private:
 		Token *identify;
+
 	};
 	class NamePart
 	{
