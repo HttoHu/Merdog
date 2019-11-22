@@ -173,7 +173,7 @@ namespace Mer
 		void using_deque()
 		{
 			// when you create an ContainerTypeRecorder the type_counter will be added two. So you need to sub 2 to
-// get the deque's type;
+			// get the deque's type;
 			auto ctr = new ContainerTypeRecorder("deque");
 			Deque::deque_type_code = ctr->get_type();
 			this_namespace->sl_table->push("deque", ctr);

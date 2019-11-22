@@ -204,13 +204,13 @@ namespace Mer
 		case MINUS:
 		{
 			token_stream.next();
-			ParserNode* n = new UnaryOp(result, factor());
+			ParserNode* n = new UnaryOp(result, member_visit());
 			return n;
 		}
 		case PLUS:
 		{
 			token_stream.match(PLUS);
-			ParserNode* n = new UnaryOp(result, factor());
+			ParserNode* n = new UnaryOp(result, member_visit());
 			return n;
 		}
 		case SIZEOF:

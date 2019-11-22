@@ -28,15 +28,13 @@ std::string get_file_content(const std::string& filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-
+void _merdog_init_();
 #ifndef _DEBUG
 int main(int argc, char* argv[])
 {
 	try
 	{
-		Mer::set_io();
-		Mer::set_maths();
-		Mer::set_utility();
+		_merdog_init_();
 		if (argc != 2)
 			throw std::runtime_error("argument error");
 		if (sizeof(argv[1]) >= 2)
@@ -70,9 +68,7 @@ int main()
 	try
 	{
 
-		Mer::set_io();
-		Mer::set_maths();
-		Mer::set_utility();
+		_merdog_init_();
 		std::string input_content = get_file_content("test.mer");
 		Mer::build_token_stream(input_content);
 		Mer::Parser::program()->execute();

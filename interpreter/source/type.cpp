@@ -73,6 +73,8 @@ namespace Mer
 			case ID:
 			{
 				auto info = Mer::this_namespace->sl_table->find(Id::get_value(tok));
+				if (info == nullptr)
+					throw Error("type: " + Id::get_value(tok) + " no found");
 				if (info->es == ESymbol::SCONTAINER)
 				{
 					token_stream.back();
