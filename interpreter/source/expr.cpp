@@ -173,7 +173,7 @@ namespace Mer
 		case BEGIN:
 		{
 			auto result = find_ustructure_t(expr_type);
-			return new StructureInitList(result->mapping,expr_type);
+			return new StructureInitList(result,expr_type);
 		}
 		case CAST:
 			return new Cast();
@@ -457,7 +457,7 @@ namespace Mer
 		else if (token_stream.this_tag() == BEGIN)
 		{
 			auto _result = find_ustructure_t(type_code);
-			expr = new StructureInitList(_result->mapping, type_code);
+			expr = new StructureInitList(_result, type_code);
 		}
 		else if (token_stream.this_tag() == SEMI)
 		{

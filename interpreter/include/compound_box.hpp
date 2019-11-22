@@ -112,7 +112,7 @@ namespace Mer
 	class StructureInitList:public ParserNode
 	{
 	public:
-		StructureInitList(const std::map<std::string, int>& m,size_t _type_code=0);
+		StructureInitList(UStructure *us,size_t _type_code=0);
 		size_t get_type()override{
 			return type_code;
 		}

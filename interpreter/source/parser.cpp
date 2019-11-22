@@ -290,7 +290,7 @@ Mer::VarDeclUnit::VarDeclUnit(size_t t) :type_code(t)
 	{
 		UStructure* result = find_ustructure_t(type_code);
 		if (token_stream.this_tag() == BEGIN)
-			expr = new StructureInitList(result->mapping);
+			expr = new StructureInitList(result,type_code);
 		else if (token_stream.this_tag() == ASSIGN)
 		{
 			token_stream.match(ASSIGN);

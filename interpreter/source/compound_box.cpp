@@ -149,26 +149,35 @@ namespace Mer
 		return std::make_shared<USObject>(obj_vec);
 	}
 
-	Mer::StructureInitList::StructureInitList(const std::map<std::string, int>& m, size_t _type_code) :vec(m.size()), type_code(_type_code)
+	Mer::StructureInitList::StructureInitList(UStructure *us, size_t _type_code) : type_code(_type_code)
 	{
+		const auto& type_info_map = us->STMapping;
+		const auto& str_pos_map = us->mapping;
+		std::set<std::string> member_name_set;
+		for (const auto& a : type_info_map)
+			member_name_set.insert(a.first);
+		vec.resize(type_info_map.size());
 		token_stream.match(BEGIN);
 		size_t last_index = -1;
 		while (token_stream.this_tag() != END) {
 			auto member_suffix = token_stream.this_token();
-			auto result = m.find(Id::get_value(member_suffix));
-			if (result == m.end())
-				throw Error("struct_obj init Error: Not exits member " + member_suffix->to_string());
+			auto result = us->get_member_info(Id::get_value(member_suffix));
+			member_name_set.erase(Id::get_value(member_suffix));
 			token_stream.match(ID);
 			token_stream.match(COLON);
-			vec[result->second] = Expr().root();
+			vec[result.second] = Expr(result.first).root();
 			if (token_stream.this_tag() == END)
 			{
 				token_stream.match(END);
-				return;
+				break;
 			}
 			token_stream.match(COMMA);
 		}
-
+		for (auto& name : member_name_set)
+		{
+			auto result = us->get_member_info(name);
+			vec[result.second] = new LConV(Mem::create_var_t(result.first),result.first);
+		}
 	}
 
 	Mer::DefaultInitList::DefaultInitList(size_t type)
