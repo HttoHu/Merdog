@@ -81,7 +81,7 @@ namespace Mer
 		// to get a compound type's code like vector<map<int,real>>
 		type_code_index get_ctype_code();
 
-		int regitser_container(type_code_index container_type, type_code_index element_type);
+		int register_container(type_code_index container_type, type_code_index element_type);
 		type_code_index merge(type_code_index l, type_code_index r);
 		std::pair<type_code_index, type_code_index>
 			demerge(type_code_index t);

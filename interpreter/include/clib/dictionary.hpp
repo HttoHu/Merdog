@@ -13,6 +13,7 @@ namespace Mer
 	namespace Container
 	{
 		using SetContent = std::set<Mem::Object, _compare_operator>;
+		using MapContent = std::map<Mem::Object, Mem::Object, _compare_operator>;
 		class Set :public Mem::Value
 		{
 		public:
@@ -23,7 +24,18 @@ namespace Mer
 			Mem::Object clone()const override;
 			SetContent data;
 		};
+		class Map :public Mem::Value
+		{
+		public:
+			Map(const MapContent& sc) :data(sc) {}
+			Map(type_code_index key);
+			static type_code_index type_code;
+			Mem::Object operator[](Mem::Object)override;
+			Mem::Object clone()const override;
+			MapContent data;
+		};
 	}
 	void using_set();
+	void using_map();
 	void register_set(type_code_index element_type);
 }

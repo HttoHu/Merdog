@@ -13,7 +13,7 @@
 #include "../include/clib/dictionary.hpp"
 std::map<std::string, void(*)()> Mer::repository{
 	{"vector",Mer::Container::using_vector},{"deque",Mer::Container::using_deque},
-	{"set",Mer::using_set}
+	{"set",Mer::using_set},{"map",Mer::using_map}
 };
 std::vector<size_t*> Mer::_pcs;
 std::string Mer::output_buff = "";

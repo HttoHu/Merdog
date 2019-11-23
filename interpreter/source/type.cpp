@@ -131,10 +131,23 @@ namespace Mer
 			container_type = Parser::get_type();
 			if (token_stream.this_tag() != LT)
 			{
-				return container_type;
+				throw Error("uncomplete type cann't be used");
 			}
 			token_stream.match(LT);
 			element_type = get_type_code();
+			// get pair map<string,int> m;
+			if (token_stream.this_tag() == COMMA)
+			{
+				token_stream.match(COMMA);
+				type_code_index secondary_type = get_type_code();
+				Mem::type_counter += 2;
+				int type_c = Mem::type_counter;
+
+				demerge_table.insert({ type_c,ComplexType{element_type,secondary_type} });
+				merge_table.insert({ ComplexType{ element_type, secondary_type}, type_c });
+				token_stream.match(GT);
+				return register_container(container_type, type_c);
+			}
 			token_stream.match(GT);
 			return merge(container_type, element_type);
 		}
@@ -147,7 +160,7 @@ namespace Mer
 			return { result->second.container_type,result->second.element_type };
 		}
 
-		int regitser_container(type_code_index container_type, type_code_index element_type)
+		int register_container(type_code_index container_type, type_code_index element_type)
 		{
 			Mem::type_counter += 2;
 			int type_c = Mem::type_counter;
@@ -167,7 +180,9 @@ namespace Mer
 			auto result = merge_table.find(ComplexType{ l,r });
 			if (result == merge_table.end())
 			{
-				return regitser_container(l, r);
+
+				return register_container(l, r);
+
 			}
 			return result->second;
 		}

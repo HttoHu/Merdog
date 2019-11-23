@@ -4,7 +4,7 @@ struct Coor
 	int y;
 }
 program main
-{
+{ 
 	Coor htto;
 	int x=2;
 	htto.x=3;
