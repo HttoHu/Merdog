@@ -11,8 +11,8 @@ using namespace Mer;
 namespace Mer
 {
 	std::map<std::string, UStructure*> ustructure_map;
-	std::map<size_t, std::string> type_name_mapping;
-	std::map<size_t, std::map<std::string, FunctionBase*>> member_function_table;
+	std::map<type_code_index, std::string> type_name_mapping;
+	std::map<type_code_index, std::map<std::string, FunctionBase*>> member_function_table;
 	std::vector<Mem::Object> parents_vec;
 	//OK
 	void build_ustructure()
@@ -28,7 +28,7 @@ namespace Mer
 		ustructure_map.insert({ name,us });
 		Mem::type_index.insert({ name,Mem::type_counter });
 		type_name_mapping.insert({ Mem::type_counter,name });
-		Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{size_t(Mem::type_counter)}) });
+		Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{Mem::type_counter}) });
 		tsymbol_table->new_block();
 		while (token_stream.this_tag() != END)
 		{
@@ -91,12 +91,12 @@ namespace Mer
 			throw Error("Id " + result2->first + " undefined");
 		return result2->second;
 	}
-	void Mer::UStructure::push_new_children(size_t t, std::string id_name)
+	void UStructure::push_new_children(size_t t, std::string id_name)
 	{
 		mapping.insert({ id_name,be++ });
 		STMapping.insert({ id_name,t });
 	}
-	std::pair<size_t, size_t> UStructure::get_member_info(std::string member_name)
+	std::pair<type_code_index, size_t> UStructure::get_member_info(std::string member_name)
 	{
 		auto result = mapping.find(member_name);
 		if (result == mapping.end())
@@ -149,7 +149,7 @@ namespace Mer
 		return std::make_shared<USObject>(obj_vec);
 	}
 
-	Mer::StructureInitList::StructureInitList(UStructure *us, size_t _type_code) : type_code(_type_code)
+	Mer::StructureInitList::StructureInitList(UStructure *us, type_code_index _type_code) : type_code(_type_code)
 	{
 		const auto& type_info_map = us->STMapping;
 		const auto& str_pos_map = us->mapping;
@@ -180,7 +180,7 @@ namespace Mer
 		}
 	}
 
-	Mer::DefaultInitList::DefaultInitList(size_t type)
+	Mer::DefaultInitList::DefaultInitList(type_code_index type)
 	{
 		auto ustruct = find_ustructure_t(type);
 		vec = ustruct->init();

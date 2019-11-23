@@ -50,12 +50,12 @@ namespace Mer
 		// add new member
 		void push_new_children(size_t t, std::string id_name);
 		// first: member type second: member pos
-		std::pair<size_t, size_t > get_member_info(std::string member_name);
+		std::pair<type_code_index, size_t > get_member_info(std::string member_name);
 		std::vector<Mem::Object> init();
 		// get the member position by the name of it.
 		SIM mapping;
 		// get the member type by the name of it. Take care, you should be aware that mapping and STMapping is totally different.
-		std::map<std::string, size_t> STMapping;
+		std::map<std::string, type_code_index> STMapping;
 		void push_init(Mem::Object obj) { init_vec.push_back(obj); }
 		void print();
 		WordRecorder* find_id_info(const std::string &id);
@@ -103,7 +103,7 @@ namespace Mer
 	class DefaultInitList :public ParserNode
 	{
 	public:
-		DefaultInitList(size_t type);
+		DefaultInitList(type_code_index type);
 		Mem::Object execute()override;
 	private:
 		std::vector<Mem::Object> vec;
@@ -112,34 +112,34 @@ namespace Mer
 	class StructureInitList:public ParserNode
 	{
 	public:
-		StructureInitList(UStructure *us,size_t _type_code=0);
-		size_t get_type()override{
+		StructureInitList(UStructure *us, type_code_index _type_code=0);
+		type_code_index get_type()override{
 			return type_code;
 		}
 		Mem::Object execute()override;
 		virtual ~StructureInitList() {}
 	private:
 		std::vector<ParserNode*> vec;
-		size_t type_code;
+		type_code_index type_code;
 	};
 	class MemberVar :public ParserNode
 	{
 	public:
-		MemberVar(size_t pos, size_t _type) :member_pos(pos), type(_type) {}
-		size_t get_type()override { return type; }
+		MemberVar(size_t pos, type_code_index _type) :member_pos(pos), type(_type) {}
+		type_code_index get_type()override { return type; }
 		Mem::Object execute()override;
 	private:
 		size_t member_pos;
-		size_t type;
+		type_code_index type;
 	};
 	// you can get the struct_info by its name
 	extern std::map<std::string, UStructure*> ustructure_map;
 	// get the struct name by its type code.
 
-	extern std::map<size_t, std::map<std::string, FunctionBase*>> member_function_table;
+	extern std::map<type_code_index, std::map<std::string, FunctionBase*>> member_function_table;
 	// to build the struct , records different information and push the struct to the ustructure_map
 	void build_ustructure();
-	extern std::map<size_t, std::string> type_name_mapping;
+	extern std::map<type_code_index, std::string> type_name_mapping;
 	/*
 		MemberVar need a Object to execute operator[] , which obtain from parents_vec.push_back()
 		the parents_vec managed by member function call, when they call, they push a new Object which represent the parent 
@@ -148,5 +148,5 @@ namespace Mer
 	extern std::vector<Mem::Object> parents_vec;
 	Mer::UStructure* find_ustructure_t(size_t type);
 	// the map which store the compare operator to 
-	extern std::map<size_t, FunctionBase*> comparison_map;
+	extern std::map<type_code_index, FunctionBase*> comparison_map;
 }

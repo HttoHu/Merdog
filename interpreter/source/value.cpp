@@ -14,7 +14,7 @@ Mer::Variable::Variable(WordRecorder* wr)
 	type = wr->get_type();
 }
 
-size_t Mer::Variable::get_type()
+type_code_index Mer::Variable::get_type()
 {
 	return type;
 }
@@ -30,7 +30,7 @@ Mer::Mem::Object Mer::Variable::execute()
 
 Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
-	std::vector<size_t> type_vec;
+	std::vector<type_code_index> type_vec;
 	for (const auto& a : exprs)
 	{
 		type_vec.push_back(a->get_type());
@@ -40,7 +40,7 @@ Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNo
 	func->convert_arg(argument);
 }
 
-size_t Mer::FunctionCall::get_type()
+type_code_index Mer::FunctionCall::get_type()
 {
 	return func->get_type();
 }
@@ -141,12 +141,12 @@ Mer::ParserNode* Mer::Parser::_parse_id_wn(Namespace* names)
 	}
 }
 
-Mer::FunctionCall* Mer::Parser::parse_initializer(size_t type)
+Mer::FunctionCall* Mer::Parser::parse_initializer(type_code_index type)
 {
 	std::vector<ParserNode*> exprs = parse_arguments();
 	// get the args' type to find init function
 	// cos the init function can be overloaded by the different param
-	std::vector<size_t> args_type;
+	std::vector<type_code_index> args_type;
 	for (auto& a : exprs)
 	{
 		args_type.push_back(a->get_type());
@@ -293,7 +293,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 
 Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs,ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size()+1)
 {
-	std::vector<size_t> type_vec;
+	std::vector<type_code_index> type_vec;
 	for (auto& a : exprs)
 	{
 		type_vec.push_back(a->get_type());
@@ -303,7 +303,7 @@ Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<Par
 	func->convert_arg(argument);
 }
 
-size_t Mer::MemberFunctionCall::get_type()
+type_code_index Mer::MemberFunctionCall::get_type()
 {
 	return func->get_type();
 }

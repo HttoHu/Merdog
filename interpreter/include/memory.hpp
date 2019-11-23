@@ -73,11 +73,12 @@ namespace Mer
 	private:
 		void check()
 		{
-			while (index+current> 0.5L*capacity)
+			while (index + current > capacity/2)
 			{ 
+				std::cout << "ALLOC";
 				alloc();
 				capacity *= 2;
-				mem_max_size - 1;
+				current = capacity -1;
 			}
 		}
 		//alloc for memory
@@ -85,7 +86,7 @@ namespace Mer
 		// how many var's the funciton contains;
 
 		size_t index = 0;
-		size_t current = mem_max_size-1;
+		size_t current = 0;
 		size_t capacity = mem_max_size;
 		std::stack<size_t> call_stack;
 		std::vector<size_t> block_flag;

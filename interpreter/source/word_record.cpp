@@ -5,7 +5,7 @@
 #include "../include/word_record.hpp"
 #include "../include/function.hpp"
 using namespace Mer;
-std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
+std::map<type_code_index, std::map<std::string, type_code_index>> type_op_type_map;
 WordRecorder* Mer::SymbolTable::find(std::string id)
 
 {
@@ -32,10 +32,10 @@ void Mer::SymbolTable::print()
 	std::cout << "#########################################\n\n\n";
 }
 
-FunctionBase* Mer::FuncIdRecorder::find(const std::vector<size_t>& pf)
+FunctionBase* Mer::FuncIdRecorder::find(const std::vector<type_code_index>& pf)
 {
 	if (dnt_check)
-		return functions[std::vector<size_t>()];
+		return functions[std::vector<type_code_index>()];
 	if (functions.find(pf) == functions.end())
 		return nullptr;
 	return functions[pf];

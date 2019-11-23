@@ -66,7 +66,7 @@ namespace Mer
 	class VarDeclUnit
 	{
 	public:
-		VarDeclUnit(size_t t);
+		VarDeclUnit(type_code_index t);
 		ParserNode* get_expr() { return expr; }
 		Token* get_id() { return id; }
 		size_t& get_size() { return size; }
@@ -76,58 +76,58 @@ namespace Mer
 		bool is_arr = false;
 		bool is_p = false;
 		size_t size=1;
-		size_t type_code;
+		type_code_index type_code;
 		Token* id;
 		ParserNode* expr;
 	};
 	class LocalVarDecl :public ParserNode
 	{
 	public:
-		LocalVarDecl(std::vector<VarDeclUnit*>& vec,size_t t);
+		LocalVarDecl(std::vector<VarDeclUnit*>& vec, type_code_index t);
 		Mem::Object execute()override;
 		std::string to_string()override {
 			return type_to_string(type);
 		}
 	private:
-		void process_unit(VarDeclUnit* a, size_t c_pos);
-		size_t pos;
-		size_t sum=0;
+		void process_unit(VarDeclUnit* a, type_code_index c_pos);
+		type_code_index pos;
+		type_code_index sum=0;
 		std::vector<ParserNode*> exprs;
-		size_t type;
+		type_code_index type;
 	};
 	class GloVarDecl :public ParserNode
 	{
 	public:
-		GloVarDecl(std::vector<VarDeclUnit*>& vec, size_t t);
+		GloVarDecl(std::vector<VarDeclUnit*>& vec, type_code_index t);
 		Mem::Object execute()override;
 	private:
-		void process_unit(VarDeclUnit* a, size_t c_pos);
-		size_t pos=0;
-		size_t sum=0;
+		void process_unit(VarDeclUnit* a, type_code_index c_pos);
+		type_code_index pos=0;
+		int sum=0;
 		std::vector<ParserNode*> exprs;
-		size_t type;
+		type_code_index type;
 	};
 	// to convert type;
 	class Cast :public ParserNode
 	{
 	public:
 		Cast();
-		Cast(ParserNode* _expr, size_t type) :expr(_expr), to_type(type) {}
+		Cast(ParserNode* _expr, type_code_index type) :expr(_expr), to_type(type) {}
 		Mem::Object execute()override;
-		size_t get_type()override { return to_type; }
+		type_code_index get_type()override { return to_type; }
 	private:
 		ParserNode* expr;
-		size_t to_type;
+		type_code_index to_type;
 	};
 	class MakeDefault :public ParserNode
 	{
 	public:
-		MakeDefault(size_t ty);
+		MakeDefault(type_code_index ty);
 		Mem::Object execute()override;
-		size_t get_type()override { return type; }
+		type_code_index get_type()override { return type; }
 	private:
 		Mem::Object ret;
-		size_t type;
+		type_code_index type;
 	};
 	// get the element count of array
 	class SizeOf :public ParserNode
@@ -138,7 +138,7 @@ namespace Mer
 		{
 			return obj;
 		}
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return Mem::INT;
 		}
@@ -150,7 +150,7 @@ namespace Mer
 		Program* program();
 		ParserNode *statement();
 		ParserNode *var_decl();
-		size_t get_type();
+		type_code_index get_type();
 		ParserNode* make_var();
 		WordRecorder *get_current_info();
 	}

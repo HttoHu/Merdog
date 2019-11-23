@@ -225,7 +225,7 @@ namespace Mer
 		// string init
 		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
 		str_init->set_param_types({ Mem::INT,Mem::CHAR });
-		type_init_function_map[InitKey(Mem::STRING, std::vector<size_t>{ Mem::INT, Mem::CHAR })] = str_init;
+		type_init_function_map[InitKey(Mem::STRING, std::vector<type_code_index>{ Mem::INT, Mem::CHAR })] = str_init;
 		mstd->set_new_func("cout", cout);
 		mstd->set_new_func("input_int", input_int);
 		mstd->set_new_func("input_real", input_real);

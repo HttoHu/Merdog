@@ -23,6 +23,7 @@
 
 */
 #pragma once
+using type_code_index = int;
 #include <set>
 #include <map>
 #include <string>
@@ -30,7 +31,7 @@ namespace Mer
 {
 	class Token;
 	class FunctionBase;
-	extern std::map<size_t, std::string> type_name_mapping;
+	extern std::map<type_code_index, std::string> type_name_mapping;
 	namespace Mem
 	{
 
@@ -45,22 +46,22 @@ namespace Mer
 			enum kind {
 				single = 0, container = 1, dictionary = 2,structure=3,
 			}type_kind = single;
-			Type(const std::string& _name, size_t bt, const std::set<size_t>& _convertible_types)
+			Type(const std::string& _name, type_code_index bt, const std::set<type_code_index>& _convertible_types)
 				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
-			bool convertible(const size_t& t);
-			void add_compatible_type(size_t type_code);
+			bool convertible(const type_code_index& t);
+			void add_compatible_type(type_code_index type_code);
 			virtual std::string to_string() { return  name; }
 			virtual ~Type() {}
 
 		protected:
-			std::set<size_t> convertible_types;
-			size_t type_code;
+			std::set<type_code_index> convertible_types;
+			type_code_index type_code;
 			std::string name;
 		};
 		struct ComplexType
 		{
-			size_t container_type;
-			size_t element_type;
+			type_code_index container_type;
+			type_code_index element_type;
 			bool operator<(const ComplexType& op)const
 			{
 				if (container_type == op.container_type)
@@ -74,25 +75,25 @@ namespace Mer
 			* for instance string tmp;
 			* the type of tmp[3] is char
 		*/
-		size_t get_type_code();
-		size_t get_type_code(Token* tok);
-		size_t& type_no();
+		type_code_index get_type_code();
+		type_code_index get_type_code(Token* tok);
+		type_code_index& type_no();
 		// to get a compound type's code like vector<map<int,real>>
-		size_t get_ctype_code();
+		type_code_index get_ctype_code();
 
-		int regitser_container(size_t container_type, size_t element_type);
-		size_t merge(size_t l, size_t r);
-		std::pair<size_t, size_t> 
-			demerge(size_t t);
-		extern std::map<size_t, ComplexType> demerge_table;
-		extern std::map<ComplexType, size_t> merge_table;
-		extern std::map<size_t, std::map<std::string, size_t>> type_op_type_map;
-		extern std::map<std::string, size_t> type_index;
-		extern std::map<size_t, Type*> type_map;
-		extern int type_counter;
-		extern std::map<size_t, void(*)(size_t)> container_register;
+		int regitser_container(type_code_index container_type, type_code_index element_type);
+		type_code_index merge(type_code_index l, type_code_index r);
+		std::pair<type_code_index, type_code_index>
+			demerge(type_code_index t);
+		extern std::map<type_code_index, ComplexType> demerge_table;
+		extern std::map<ComplexType, type_code_index> merge_table;
+		extern std::map<type_code_index, std::map<std::string, type_code_index>> type_op_type_map;
+		extern std::map<std::string, type_code_index> type_index;
+		extern std::map<type_code_index, Type*> type_map;
+		extern type_code_index type_counter;
+		extern std::map<type_code_index, void(*)(type_code_index)> container_register;
 		// get the operator function type
-		size_t find_op_type(size_t ty, std::string op);
-		bool exist_operator(size_t ty, std::string op);
+		type_code_index find_op_type(type_code_index ty, std::string op);
+		bool exist_operator(type_code_index ty, std::string op);
 	}
 }

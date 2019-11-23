@@ -7,13 +7,13 @@ namespace Mer
 	extern std::vector<Mem::Object> parents_vec;
 	using __member_function=std::function<Mem::Object(const std::vector<Mem::Object>&)>;
 	void _register_member_function
-	(std::string name, size_t type, size_t ret_type,const std::vector<size_t>& param_list, __member_function mf) {
+	(std::string name, type_code_index type, type_code_index ret_type,const std::vector<type_code_index>& param_list, __member_function mf) {
 		SystemFunction* tmp = new SystemFunction(ret_type, mf);
 		tmp->set_param_types(param_list);
 		member_function_table[type].insert({ name,tmp });
 	}
 	void _register_type_init
-		(size_t type,  const std::vector<size_t>& param_list, __member_function mf) {
+		(type_code_index type,  const std::vector<type_code_index>& param_list, __member_function mf) {
 		SystemFunction* tmp = new SystemFunction(type, mf);
 		tmp->set_param_types(param_list);
 		type_init_function_map[InitKey(type, param_list)] = tmp;
@@ -163,8 +163,8 @@ namespace Mer
 			Vector::vector_type_code = ctr->get_type();
 			this_namespace->sl_table->push("vector", ctr);
 			Mem::container_register.insert({ Vector::vector_type_code,register_new_vector_type });
-			Mem::type_index.insert({ "vector" ,(size_t)Vector::vector_type_code });
-			auto vec_type = new Mem::Type("vector", Vector::vector_type_code, { (size_t)Vector::vector_type_code });
+			Mem::type_index.insert({ "vector" ,Vector::vector_type_code });
+			auto vec_type = new Mem::Type("vector", Vector::vector_type_code, { (type_code_index)Vector::vector_type_code });
 			vec_type->type_kind = Mem::Type::container;
 			Mem::type_map.insert({ Vector::vector_type_code,
 				 vec_type });
@@ -179,14 +179,14 @@ namespace Mer
 			this_namespace->sl_table->push("deque", ctr);
 			Mem::container_register.insert({ Deque::deque_type_code,register_new_deque_type });
 			Mem::type_index.insert({ "deque" ,(size_t)Deque::deque_type_code });
-			auto deque_type = new Mem::Type("deque", Deque::deque_type_code, { (size_t)Deque::deque_type_code });
+			auto deque_type = new Mem::Type("deque", Deque::deque_type_code, { (type_code_index)Deque::deque_type_code });
 			deque_type->type_kind = Mem::Type::container;
 			Mem::type_map.insert({ Deque::deque_type_code,
 				 deque_type });
 		}
-		void register_new_deque_type(size_t element_type)
+		void register_new_deque_type(type_code_index element_type)
 		{
-			size_t cur_type = Mem::merge(Deque::deque_type_code, element_type);
+			type_code_index cur_type = Mem::merge(Deque::deque_type_code, element_type);
 			// set init
 			_register_type_init(cur_type, { Mem::INT }, _init_deq_n);
 			_register_type_init(cur_type, { Mem::INIT_LIST }, _init_deq_list);
@@ -207,9 +207,9 @@ namespace Mer
 			_register_member_function("resize", cur_type, Mem::BVOID, { Mem::INT }, _deque_resize);
 			_register_member_function("insert", cur_type, Mem::BVOID, { Mem::INT,element_type }, _deque_insert);
 		}
-		void register_new_vector_type(size_t element_type)
+		void register_new_vector_type(type_code_index element_type)
 		{
-			size_t cur_type = Mem::merge(Vector::vector_type_code, element_type);
+			type_code_index cur_type = Mem::merge(Vector::vector_type_code, element_type);
 			// set init
 			_register_type_init(cur_type, { Mem::INT }, _init_vec_n);
 			_register_type_init(cur_type, { Mem::INIT_LIST }, _init_vec_list);

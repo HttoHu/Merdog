@@ -38,6 +38,7 @@
 #include "error.hpp"
 #include "type.hpp"
 #include "clib/any.hpp"
+using type_code_index = int;
 const int BASICTYPE_MAX_CODE = 11;
 namespace Mer
 {
@@ -58,7 +59,7 @@ namespace Mer
 		public:
 			virtual Object clone()const { return nullptr; }
 			virtual std::string to_string()const { return ""; }
-			virtual size_t get_type()const
+			virtual type_code_index get_type()const
 			{
 				return BasicType::NDEF;
 			}
@@ -86,7 +87,7 @@ namespace Mer
 			virtual Object operator- (Object v) { throw Error("-: syntax error"); }
 			virtual Object operator* (Object v) { throw Error("* syntax error"); }
 			virtual Object operator/ (Object v) { throw Error("/: syntax error"); }
-			virtual Object Convert(size_t type);
+			virtual Object Convert(type_code_index type);
 			virtual Object get_negation()
 			{
 				throw Error("get_negation: syntax error");
@@ -106,7 +107,7 @@ namespace Mer
 		std::string type_to_string(BasicType bt);
 		//get type
 
-		Mem::Object create_var_t(size_t type);
+		Mem::Object create_var_t(type_code_index type);
 		// every obj extends Value, and override some common operator
 		// size_t get_type() to get the obj's type
 		// clone , copy the obj and return it;
@@ -128,34 +129,34 @@ namespace Mer
 					return "true";
 				return "false";
 			}
-			size_t get_type()const override
+			type_code_index get_type()const override
 			{
 				return BasicType::BOOL;
 			}
-			Object Convert(size_t type)override;
+			Object Convert(type_code_index type)override;
 			Object get_negation()override
 			{
-				return std::make_shared<Bool>(!value);
+				return std::make_shared<Mem::Bool>(!value);
 			}
 			Object operator==(Object v)override
 			{
-				return std::make_shared<Bool>(value == std::static_pointer_cast<Bool>(v)->value);
+				return std::make_shared<Mem::Bool>(value == std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object operator!=(Object v)override
 			{
-				return std::make_shared<Bool>(value != std::static_pointer_cast<Bool>(v)->value);
+				return std::make_shared<Mem::Bool>(value != std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object operator&& (Object v)override
 			{
-				return std::make_shared<Bool>(value && std::static_pointer_cast<Bool>(v)->value);
+				return std::make_shared<Mem::Bool>(value && std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object operator||(Object v)override
 			{
-				return std::make_shared<Bool>(value || std::static_pointer_cast<Bool>(v)->value);
+				return std::make_shared<Mem::Bool>(value || std::static_pointer_cast<Bool>(v)->value);
 			}
 			Object clone()const override
 			{
-				return std::make_shared<Bool>(value);
+				return std::make_shared<Mem::Bool>(value);
 			}
 			bool _value() { return value; }
 		private:
@@ -169,7 +170,7 @@ namespace Mer
 			{
 				return std::to_string(value);
 			}
-			size_t get_type()const override
+			type_code_index get_type()const override
 			{
 				return BasicType::INT;
 			}
@@ -248,7 +249,7 @@ namespace Mer
 			static int get_val(Mem::Object obj) {
 				return std::static_pointer_cast<Mem::Int>(obj)->get_value();
 			}
-			Object Convert(size_t type) override;
+			Object Convert(type_code_index type) override;
 			Object operator[](Object v)override { throw Error("int doesn't have a member <operator[](int)>"); }
 		private:
 			int value;
@@ -261,7 +262,7 @@ namespace Mer
 			{
 				return std::to_string(value);
 			}
-			size_t get_type()const override
+			type_code_index get_type()const override
 			{
 				return BasicType::DOUBLE;
 			}
@@ -343,7 +344,7 @@ namespace Mer
 			{
 				return value;
 			}
-			Object Convert(size_t type)override;
+			Object Convert(type_code_index type)override;
 		private:
 			double value;
 		};
@@ -362,11 +363,11 @@ namespace Mer
 				str = std::static_pointer_cast<String>(v)->str;
 				return std::make_shared<String>(str);
 			}
-			size_t get_type()const override
+			type_code_index get_type()const override
 			{
 				return BasicType::STRING;
 			}
-			Object Convert(size_t type)override
+			Object Convert(type_code_index type)override
 			{
 				return std::make_shared<String>(str);
 			}
@@ -408,22 +409,22 @@ namespace Mer
 		class InitListObj :public Value
 		{
 		public:
-			InitListObj(std::vector<Object>&& lst, size_t type_c) :elems(lst), type_code(type_c) {}
+			InitListObj(std::vector<Object>&& lst, type_code_index type_c) :elems(lst), type_code(type_c) {}
 			InitListObj(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
-			virtual Object operator[](Object v)
+			virtual Object operator[](Object v)override
 			{
 				return elems[std::static_pointer_cast<Int>(v)->get_value()];
 			}
-			virtual size_t get_type()const
+			virtual type_code_index get_type()const override
 			{
 				return BasicType::ARRAY;
 			}
-			size_t get_ele_type()const
+			type_code_index get_ele_type()const
 			{
 				return type_code;
 			}
 			Mem::Object clone()const override;
-			size_t type_code;
+			type_code_index type_code;
 			std::vector<Object> elems;
 		};
 		class Pointer :public Value
@@ -455,7 +456,7 @@ namespace Mer
 			{
 				return std::string(1, *value);
 			}
-			size_t get_type()const override
+			type_code_index get_type()const override
 			{
 				return BasicType::CHAR;
 			}
@@ -531,7 +532,7 @@ namespace Mer
 			{
 				return *value;
 			}
-			Object Convert(size_t type) override;
+			Object Convert(type_code_index type) override;
 			Object operator[](Object v)override { throw Error("char doesn't have a member <operator[](int)>"); }
 			virtual ~Char() { if (del)delete value; }
 		private:
@@ -564,12 +565,12 @@ namespace Mer
 		{
 		public:
 			Array(size_t _type, int _pos, int _length) :type(_type), pos(_pos), length(_length) {}
-			Mem::Object operator[](Object index);
+			Mem::Object operator[](Object index)override;
 			Mem::Object clone()const override;
-			size_t get_type()const override { return type; }
+			type_code_index get_type()const override { return type; }
 		private:
 			// element type
-			size_t type;
+			type_code_index type;
 			int pos;
 			int length;
 		};

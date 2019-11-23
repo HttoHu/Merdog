@@ -42,7 +42,7 @@ void Mer::Namespace::set_new_func(const std::string& name, FunctionBase* func)
 	if (func->is_check_type() == false)
 	{
 		recorder->dnt_check = true;
-		recorder->functions.insert({ std::vector<size_t>(),func });
+		recorder->functions.insert({ std::vector<type_code_index>(),func });
 		return;
 	}
 	recorder->functions.insert({ func->param_types,func });

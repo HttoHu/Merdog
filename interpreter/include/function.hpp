@@ -34,41 +34,41 @@ namespace Mer
 {
 	// arguments types list
 	using _compare_operator =std::function<bool(Mem::Object,Mem::Object)>;
-	using ParamFeature = std::vector<size_t>;
+	using ParamFeature = std::vector<type_code_index>;
 	using _intern_func = std::function<Mem::Object (const std::vector<Mem::Object>&)>;
-	bool compare_param_feature(const std::vector<size_t>& p1, const std::vector<size_t>& p2);
+	bool compare_param_feature(const std::vector<type_code_index>& p1, const std::vector<type_code_index>& p2);
 	std::string param_feature_to_string(const ParamFeature& pf);
 	class Block;
 	class Param
 	{
 	public:
-		bool type_check(const std::vector<size_t> &types);
-		void push_new_param(size_t type, size_t pos)
+		bool type_check(const std::vector<type_code_index> &types);
+		void push_new_param(type_code_index type, size_t pos)
 		{
 			arg_pos.push_back({ type,pos });
 		}
-		std::vector<std::pair<size_t, size_t>> &get_param_table() { return arg_pos; }
+		std::vector<std::pair<type_code_index, size_t>> &get_param_table() { return arg_pos; }
 		ParamFeature get_param_feature();
 	private:
 		size_t param_size;
 		// type + pos;
-		std::vector<std::pair<size_t,size_t>> arg_pos;
+		std::vector<std::pair<type_code_index,size_t>> arg_pos;
 	};
 	class FunctionBase
 	{
 	public:
 		FunctionBase();
 
-		virtual void check_param(const std::vector<size_t>& types);
+		virtual void check_param(const std::vector<type_code_index>& types);
 		virtual void convert_arg(std::vector<ParserNode*> &args);
-		void set_param_types(const std::vector<size_t>& types)
+		void set_param_types(const std::vector<type_code_index>& types)
 		{
 			param_types = types;
 		}
-		virtual size_t get_type() { return 0; }
+		virtual type_code_index get_type() { return 0; }
 		// covert args' type in order to comply with params' type.
 		virtual Mem::Object run(const std::vector<Mem::Object>& objs) { return nullptr; }
-		std::vector<size_t> param_types;
+		std::vector<type_code_index> param_types;
 		bool is_completed=false;
 		bool is_check_type() { return check_param_type; }
 		std::string to_string(std::string name="no_name_func")const ;
@@ -79,12 +79,12 @@ namespace Mer
 	class Function : public FunctionBase
 	{
 	public:
-		Function(size_t t, Param *p);
-		Function(size_t t);
+		Function(type_code_index t, Param *p);
+		Function(type_code_index t);
 		void reser_param(Param *p);
 		Param *param=nullptr;
 		Mem::Object run(const std::vector<Mem::Object> &objs)override;
-		size_t get_type()override { return type; }
+		type_code_index get_type()override { return type; }
 		void set_function_block();
 		std::vector<ParserNode*> stmts;
 		size_t* pc=new size_t(0);
@@ -92,37 +92,37 @@ namespace Mer
 	private:
 
 		size_t param_size;
-		size_t type;
+		type_code_index type;
 	};
 	class SystemFunction :public FunctionBase 
 	{
 	public:
-		SystemFunction(size_t t, _intern_func fun) :type(t), func(fun) {}
+		SystemFunction(type_code_index t, _intern_func fun) :type(t), func(fun) {}
 		Mem::Object run(const std::vector<Mem::Object> &objs)override
 		{
 			return func(objs);
 		}
 		void convert_arg(std::vector<ParserNode*> &args)override{}
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return type;
 		}
-		void check_param(const std::vector<size_t>& types)override;
+		void check_param(const std::vector<type_code_index>& types)override;
 		void dnt_check_param()
 		{
 			check_param_type = false;
 		}
 	private:
-		size_t type;
+		type_code_index type;
 
 		_intern_func func;
 	};
 	class InitKey
 	{
 	public:
-		InitKey(size_t type_c, const std::vector<size_t>& param) :type_code(type_c), params(param) {}
-		size_t type_code;
-		std::vector<size_t> params;
+		InitKey(type_code_index type_c, const std::vector<type_code_index>& param) :type_code(type_c), params(param) {}
+		type_code_index type_code;
+		std::vector<type_code_index> params;
 		bool operator<(const InitKey& init_key)const;
 	};
 	namespace Parser
@@ -137,6 +137,6 @@ namespace Mer
 	extern Block *current_function_block;
 	extern std::map<std::string, Function*> function_table;
 	extern std::map<InitKey, FunctionBase*> type_init_function_map;
-	extern std::map<size_t, Mem::Object> type_init_map;
-	extern std::map<size_t, _compare_operator> compare_map;
+	extern std::map<type_code_index, Mem::Object> type_init_map;
+	extern std::map<type_code_index, _compare_operator> compare_map;
 }

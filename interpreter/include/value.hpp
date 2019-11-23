@@ -41,8 +41,8 @@ namespace Mer
 	{
 	public:
 		LConV(Token *t);
-		LConV(Mem::Object _obj, size_t t) :obj(_obj), type(t) {}
-		size_t get_type()override
+		LConV(Mem::Object _obj, type_code_index t) :obj(_obj), type(t) {}
+		type_code_index get_type()override
 		{
 			return type;
 		}
@@ -59,7 +59,7 @@ namespace Mer
 			return true;
 		}
 	private:
-		size_t type;
+		type_code_index type;
 		Mem::Object obj;
 	};
 
@@ -68,10 +68,10 @@ namespace Mer
 	class GVar :public ParserNode
 	{
 	public:
-		GVar(size_t _type, size_t off_pos) :type(_type), pos(off_pos) {}
+		GVar(type_code_index _type, size_t off_pos) :type(_type), pos(off_pos) {}
 		GVar(WordRecorder *result);
 		GVar(WordRecorder* result, size_t offset);
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return type;
 		}
@@ -88,15 +88,15 @@ namespace Mer
 			return false;
 		}
 	private:
-		size_t type;
+		type_code_index type;
 		size_t pos;
 	};
 	class Variable :public ParserNode
 	{
 	public:
 		Variable(WordRecorder* wr);
-		Variable(size_t _type, size_t _pos) :type(_type), pos(_pos) {}
-		size_t get_type()override;
+		Variable(type_code_index _type, size_t _pos) :type(_type), pos(_pos) {}
+		type_code_index get_type()override;
 		size_t get_pos()override;
 		std::string to_string()override
 		{
@@ -106,7 +106,7 @@ namespace Mer
 		bool& arr() { return is_arr; }
 	private:
 		bool is_arr=false;
-		size_t type;
+		type_code_index type;
 		size_t pos;
 	};
 
@@ -114,7 +114,7 @@ namespace Mer
 	{
 	public:
 		FunctionCall(FunctionBase * fun, const std::vector<ParserNode*>& exprs);
-		size_t get_type()override;
+		type_code_index get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;
 	private:
@@ -125,7 +125,7 @@ namespace Mer
 	{
 	public:
 		MemberFunctionCall(FunctionBase* fun, std::vector<ParserNode*>& exprs,ParserNode* _p);
-		size_t get_type()override;
+		type_code_index get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;
 	private:
@@ -146,7 +146,7 @@ namespace Mer
 		ParserNode *parse_var(WordRecorder* var_info);
 		// parse id with namespace.
 		ParserNode *_parse_id_wn(Namespace *names);
-		FunctionCall* parse_initializer(size_t type);
+		FunctionCall* parse_initializer(type_code_index type);
 		std::vector<ParserNode*> parse_arguments();
 		ParserNode *parse_function_call(Namespace *names);
 		MemberFunctionCall* parse_call_by_function(FunctionBase*);

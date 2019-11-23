@@ -13,16 +13,16 @@ namespace Mer
 
 	namespace Mem
 	{
-		int type_counter = BASICTYPE_MAX_CODE;
-		std::map<size_t, void(*)(size_t)> container_register;
-		std::map<ComplexType, size_t> complex_type_seeker;
-		std::map<size_t, ComplexType> demerge_table;
-		std::map<ComplexType, size_t> merge_table;
-		std::map<size_t, std::map<std::string, size_t>> type_op_type_map
+		type_code_index type_counter = BASICTYPE_MAX_CODE;
+		std::map<type_code_index, void(*)(type_code_index)> container_register;
+		std::map<ComplexType, type_code_index> complex_type_seeker;
+		std::map<type_code_index, ComplexType> demerge_table;
+		std::map<ComplexType, type_code_index> merge_table;
+		std::map<type_code_index, std::map<std::string, type_code_index>> type_op_type_map
 		{
 			{Mem::STRING,{{"[]",Mem::CHAR}}}
 		};
-		std::map<size_t, Mem::Type*> type_map
+		std::map<type_code_index, Mem::Type*> type_map
 		{
 			{ BasicType::INT,new Type("int",BasicType::INT,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE })},
 			{ BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
@@ -31,7 +31,7 @@ namespace Mer
 			{BasicType::CHAR,new Type("char",BasicType::CHAR,{9,BasicType::CHAR,BasicType::INT,BasicType::STRING})},
 			{BasicType::INIT_LIST,new Type("init_list",BasicType::INIT_LIST,{})}
 		};
-		size_t find_op_type(size_t ty, std::string op)
+		type_code_index find_op_type(type_code_index ty, std::string op)
 		{
 			auto result1 = type_op_type_map.find(ty);
 			if (result1 == type_op_type_map.end())
@@ -42,7 +42,7 @@ namespace Mer
 			return result2->second;
 		}
 
-		bool exist_operator(size_t ty, std::string op)
+		bool exist_operator(type_code_index ty, std::string op)
 		{
 			auto result1 = type_op_type_map.find(ty);
 			if (result1 == type_op_type_map.end())
@@ -52,7 +52,7 @@ namespace Mer
 				return false;
 			return true;
 		}
-		size_t get_type_code()
+		type_code_index get_type_code()
 		{
 			auto tok = token_stream.this_token();
 			token_stream.next();
@@ -89,7 +89,7 @@ namespace Mer
 			}
 		}
 
-		size_t get_type_code(Token* tok)
+		type_code_index get_type_code(Token* tok)
 		{
 			switch (tok->get_tag())
 			{
@@ -118,16 +118,16 @@ namespace Mer
 			}
 		}
 
-		size_t& type_no()
+		type_code_index& type_no()
 		{
-			static size_t this_type_index = 10;
+			static type_code_index this_type_index = 10;
 			return this_type_index;
 		}
 		// to DO 
-		size_t get_ctype_code()
+		type_code_index get_ctype_code()
 		{
-			size_t container_type;
-			size_t element_type;
+			type_code_index container_type;
+			type_code_index element_type;
 			container_type = Parser::get_type();
 			if (token_stream.this_tag() != LT)
 			{
@@ -139,7 +139,7 @@ namespace Mer
 			return merge(container_type, element_type);
 		}
 
-		std::pair<size_t,size_t> demerge(size_t t)
+		std::pair<type_code_index, type_code_index> demerge(type_code_index t)
 		{
 			auto result = demerge_table.find(t);
 			if (result == demerge_table.end())
@@ -147,7 +147,7 @@ namespace Mer
 			return { result->second.container_type,result->second.element_type };
 		}
 
-		int regitser_container(size_t container_type, size_t element_type)
+		int regitser_container(type_code_index container_type, type_code_index element_type)
 		{
 			Mem::type_counter += 2;
 			int type_c = Mem::type_counter;
@@ -162,7 +162,7 @@ namespace Mer
 			return type_c;
 		}
 
-		size_t merge(size_t l, size_t r)
+		type_code_index merge(type_code_index l, type_code_index r)
 		{
 			auto result = merge_table.find(ComplexType{ l,r });
 			if (result == merge_table.end())
@@ -172,6 +172,6 @@ namespace Mer
 			return result->second;
 		}
 	}
-	std::map<std::string, size_t> Mem::type_index;
+	std::map<std::string, type_code_index> Mem::type_index;
 }
 

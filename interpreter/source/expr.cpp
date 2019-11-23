@@ -10,17 +10,17 @@
 #include "../include/function.hpp"
 #include "../include/word_record.hpp"
 #include "../include/optimizer.hpp"
-using namespace Mer;
+
 namespace Mer
 {
-	Mer::Expr::Expr(size_t t) :is_bool(false), expr_type(t) {
+	Expr::Expr(type_code_index t) :is_bool(false), expr_type(t) {
 		tree = assign();
 		if (expr_type == 0 && tree->get_type() != 0)
 		{
 			expr_type = tree->get_type();
 		}
 	}
-	size_t Mer::Expr::get_type()
+	type_code_index Expr::get_type()
 	{
 		if (is_bool)
 		{
@@ -32,7 +32,7 @@ namespace Mer
 			return expr_type;
 		return tree->get_type();
 	}
-	ParserNode* Mer::Expr::assign()
+	ParserNode* Expr::assign()
 	{
 		auto result = and_or();
 		while (token_stream.this_tag() == ASSIGN || token_stream.this_tag() == SADD || token_stream.this_tag() == SSUB || token_stream.this_tag() == SMUL || token_stream.this_tag() == SDIV)
@@ -43,7 +43,7 @@ namespace Mer
 		}
 		return result;
 	}
-	Mer::ParserNode* Mer::Expr::and_or()
+	Mer::ParserNode* Expr::and_or()
 	{
 		auto result = nexpr();
 		while (token_stream.this_tag() == AND || token_stream.this_tag() == OR)
@@ -57,7 +57,7 @@ namespace Mer
 
 	}
 
-	Mer::ParserNode* Mer::Expr::expr()
+	ParserNode* Expr::expr()
 	{
 		auto result = term();
 
@@ -70,7 +70,7 @@ namespace Mer
 		return result;
 	}
 
-	Mer::ParserNode* Mer::Expr::nexpr()
+	ParserNode* Expr::nexpr()
 	{
 		auto result = expr();
 		while (1)
@@ -95,7 +95,7 @@ namespace Mer
 		return result;
 	}
 
-	Mer::ParserNode* Mer::Expr::term()
+	ParserNode* Expr::term()
 	{
 		auto result = member_visit();
 		while (token_stream.this_token()->get_tag() == MUL || token_stream.this_token()->get_tag() == DIV)
@@ -107,7 +107,7 @@ namespace Mer
 		return result;
 	}
 
-	ParserNode* Mer::Expr::member_visit()
+	ParserNode* Expr::member_visit()
 	{
 		auto result = subscript();
 		while (token_stream.this_token()->get_tag() == DOT || token_stream.this_token()->get_tag() == PTRVISIT)
@@ -116,9 +116,9 @@ namespace Mer
 			token_stream.next();
 			auto member_id = token_stream.this_token();
 			token_stream.match(ID);
-			size_t type_code = result->get_type();
+			type_code_index type_code = result->get_type();
 			// get rid of the pointness.
-			size_t raw_type = type_code + (type_code % 2 - 1);
+			type_code_index raw_type = type_code + (type_code % 2 - 1);
 
 			// member function call
 			if (token_stream.this_tag() == LPAREN)
@@ -142,7 +142,7 @@ namespace Mer
 		}
 		return result;
 	}
-	ParserNode* Mer::Expr::subscript()
+	ParserNode* Expr::subscript()
 	{
 		auto result = factor();
 		while (token_stream.this_token()->get_tag() == LSB)
@@ -155,7 +155,7 @@ namespace Mer
 		}
 		return result;
 	}
-	Mer::ParserNode* Mer::Expr::factor()
+	ParserNode* Expr::factor()
 	{
 		auto result = token_stream.this_token();
 		switch (result->get_tag())
@@ -225,7 +225,7 @@ namespace Mer
 		}
 	}
 
-	Mer::BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r) :left(l), op(o), right(r)
+	BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r) :left(l), op(o), right(r)
 	{
 		if (o->get_tag() != LSB && l->get_type() != r->get_type())
 		{
@@ -276,7 +276,7 @@ namespace Mer
 		}
 	}
 
-	size_t Mer::BinOp::get_type()
+	type_code_index BinOp::get_type()
 	{
 		switch (op->get_tag())
 		{
@@ -295,12 +295,12 @@ namespace Mer
 		return left->get_type();
 	}
 
-	std::string Mer::BinOp::to_string()
+	std::string BinOp::to_string()
 	{
 		return left->to_string() + op->to_string() + right->to_string();
 	}
 
-	Mer::Mem::Object Mer::UnaryOp::execute()
+	Mer::Mem::Object UnaryOp::execute()
 	{
 		switch (op->get_tag())
 		{
@@ -327,8 +327,9 @@ namespace Mer
 			auto insertion = Expr().root();
 			if (insertion->get_type() != t)
 			{ 
+				size_t insertion_type = insertion->get_type();
 				delete insertion;
-				throw Error("init_list type not matched from " + type_to_string(t) + " to " + type_to_string(insertion->get_type()));
+				throw Error("init_list type not matched from " + type_to_string(t) + " to " + type_to_string(insertion_type));
 			}
 			init_v.push_back(insertion);
 			if (token_stream.this_tag() == Tag::COMMA)
@@ -337,7 +338,7 @@ namespace Mer
 		token_stream.match(END);
 	}
 
-	InitList::InitList(size_t t, size_t sz) :type(t), size(sz)
+	InitList::InitList(type_code_index t, size_t sz) :type(t), size(sz)
 	{
 		token_stream.match(BEGIN);
 		while (token_stream.this_tag() != Tag::END)
@@ -367,10 +368,10 @@ namespace Mer
 
 	}
 
-	Mem::Object Mer::InitList::execute()
+	Mem::Object InitList::execute()
 	{
 		std::vector<Mem::Object> v(init_v.size());
-		int sz = init_v.size();
+		auto sz = init_v.size();
 		for (size_t i = 0; i < sz; i++)
 		{
 			 v[i]=init_v[i]->execute()->clone();
@@ -379,7 +380,7 @@ namespace Mer
 		return ret;
 	}
 
-	std::vector<Mem::Object> Mer::InitList::get_array()
+	std::vector<Mem::Object> InitList::get_array()
 	{
 		std::vector<Mem::Object> v(init_v.size());
 		if (v.size() == 1 && size > 1)
@@ -397,31 +398,31 @@ namespace Mer
 		return v;
 	}
 
-	Mer::InitList::~InitList()
+	InitList::~InitList()
 	{
 		for (auto& a : init_v)
 			delete a;
 	}
 
-	Mer::ImplicitConvertion::ImplicitConvertion(size_t _type) :type(_type) {}
+	ImplicitConvertion::ImplicitConvertion(type_code_index _type) :type(_type) {}
 
-	Mem::Object Mer::ImplicitConvertion::execute()
+	Mem::Object ImplicitConvertion::execute()
 	{
 		return tree->execute()->Convert(type);
 	}
 
-	Mem::Object Mer::ContainerIndex::execute()
+	Mem::Object ContainerIndex::execute()
 	{
 		auto tmp = expr->execute();
 		return mem[mem.get_current() + pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 	}
 
-	size_t Mer::ContainerIndex::get_type()
+	type_code_index ContainerIndex::get_type()
 	{
 		return type;
 	}
 
-	Mer::EmptyList::EmptyList(size_t t, size_t sz) :type_code(t), size(sz)
+	EmptyList::EmptyList(type_code_index t, size_t sz) :type_code(t), size(sz)
 	{
 		for (size_t i = 0; i < sz; i++)
 		{
@@ -429,27 +430,27 @@ namespace Mer
 		}
 	}
 
-	Mem::Object Mer::EmptyList::execute()
+	Mem::Object EmptyList::execute()
 	{
 		return nullptr;
 	}
 
-	size_t Mer::ContainerGloIndex::get_pos()
+	size_t ContainerGloIndex::get_pos()
 	{
 		size_t off_set = Mem::get_raw<int>(expr->execute());
 		return off_set + pos;
 	}
 
-	Mem::Object Mer::ContainerGloIndex::execute()
+	Mem::Object ContainerGloIndex::execute()
 	{
 		auto tmp = expr->execute();
 		return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 	}
 
-	Mer::NewExpr::NewExpr()
+	NewExpr::NewExpr()
 	{
 		token_stream.match(NEW);
-		size_t type_code = Mem::get_type_code();
+		type_code_index type_code = Mem::get_type_code();
 		if (token_stream.this_tag() == LPAREN)
 		{
 			expr = (new Expr(type_code))->tree;
@@ -470,19 +471,19 @@ namespace Mer
 		}
 	}
 
-	Mem::Object Mer::NewExpr::execute()
+	Mem::Object NewExpr::execute()
 	{
 		return std::make_shared<Mem::Pointer>(expr->execute()->clone());
 	}
 
-	Mer::GetAdd::GetAdd()
+	GetAdd::GetAdd()
 	{
 		token_stream.match(GET_ADD);
 		id = Expr().root();
 		type = id->get_type();
 	}
 
-	size_t Mer::GetAdd::get_type()
+	type_code_index Mer::GetAdd::get_type()
 	{
 		return type + 1;
 	}
@@ -492,14 +493,14 @@ namespace Mer
 		return std::make_shared<Mem::Pointer>(id->execute());
 	}
 
-	Mer::RmRef::RmRef()
+	RmRef::RmRef()
 	{
 		token_stream.match(MUL);
 		id = Parser::parse_id();
 		type = id->get_type();
 	}
 
-	size_t Mer::RmRef::get_type()
+	type_code_index Mer::RmRef::get_type()
 	{
 		return type - 1;
 	}
@@ -508,7 +509,7 @@ namespace Mer
 
 		return std::static_pointer_cast<Mem::Pointer>(id->execute())->rm_ref();
 	}
-	Mer::Index::Index(ParserNode* l, size_t _index, size_t _type) :left(l), index(_index), type(_type)
+	Mer::Index::Index(ParserNode* l, size_t _index, type_code_index _type) :left(l), index(_index), type(_type)
 	{
 		if (_type == -1)
 			type = left->get_type();
@@ -518,7 +519,7 @@ namespace Mer
 		return left->execute()->operator[](std::make_shared<Mem::Int>(index));
 	}
 
-	size_t Mer::Index::get_type()
+	type_code_index Mer::Index::get_type()
 	{
 		return type;
 	}

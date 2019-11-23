@@ -23,6 +23,7 @@
 
 */
 #pragma once
+using type_code_index = int;
 #include<iostream>
 #include<vector>
 #include <deque>
@@ -59,7 +60,7 @@ namespace Mer
 		};
 		void using_vector();
 		void using_deque();
-		void register_new_vector_type(size_t element_type);
-		void register_new_deque_type(size_t element_type);
+		void register_new_vector_type(type_code_index element_type);
+		void register_new_deque_type(type_code_index element_type);
 	}
 }

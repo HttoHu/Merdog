@@ -48,7 +48,7 @@ namespace Mer
 	{
 	public:
 		Continue(size_t *_index, PosPtr _target) :index(_index),target(_target) {}
-		Mem::Object execute();
+		Mem::Object execute()override;
 		std::string to_string()override;
 	private:
 		size_t *index;
@@ -58,7 +58,7 @@ namespace Mer
 	{
 	public:
 		Goto(size_t *_index, PosPtr _target) :index(_index),target(_target) {}
-		Mem::Object execute();
+		Mem::Object execute()override;
 		std::string to_string()override;
 	private:
 		size_t *index;

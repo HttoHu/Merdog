@@ -5,7 +5,7 @@ namespace Mer
 {
 	using __member_function = std::function<Mem::Object(const std::vector<Mem::Object>&)>;
 	void _register_member_function
-	(std::string name, size_t type, size_t ret_type, const std::vector<size_t>& param_list, __member_function mf);
+	(std::string name, type_code_index type, type_code_index ret_type, const std::vector<type_code_index>& param_list, __member_function mf);
 	extern std::vector<Mem::Object> parents_vec;
 
 	//set method
@@ -42,8 +42,8 @@ namespace Mer
 	}
 	namespace Container
 	{
-		size_t Set::type_code = 0;
-		Set::Set(size_t element_type) :data(find_compare_operator(element_type))
+		type_code_index Set::type_code = 0;
+		Set::Set(type_code_index element_type) :data(find_compare_operator(element_type))
 		{
 		}
 		Mem::Object Set::operator[](Mem::Object index)
@@ -56,7 +56,7 @@ namespace Mer
 			return std::make_shared<Set>(data);
 		}
 	}
-	_compare_operator find_compare_operator(size_t s)
+	_compare_operator find_compare_operator(type_code_index s)
 	{
 		auto result = compare_map.find(s);
 		// it should checked at parser phase.
@@ -75,7 +75,7 @@ namespace Mer
 
 		auto ctr = new ContainerTypeRecorder("set");
 		Container::Set::type_code = ctr->get_type();
-		size_t tc = Container::Set::type_code;
+		type_code_index tc = Container::Set::type_code;
 		this_namespace->sl_table->push("set", ctr);
 		Mem::container_register.insert({ tc,register_set });
 		Mem::type_index.insert({ "set" ,tc });
@@ -84,9 +84,9 @@ namespace Mer
 		Mem::type_map.insert({ tc,
 			 vec_type });
 	}
-	void register_set(size_t element_type)
+	void register_set(type_code_index element_type)
 	{
-		size_t cur_type = Mem::merge(Container::Set::type_code, element_type);
+		type_code_index cur_type = Mem::merge(Container::Set::type_code, element_type);
 		type_init_map[cur_type] = std::make_shared<Container::Set>(element_type);
 		auto set_type = new Mem::Type("set<" + type_to_string(element_type) + ">", cur_type, { cur_type });
 		set_type->type_kind = Mem::Type::container;

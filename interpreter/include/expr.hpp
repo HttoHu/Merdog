@@ -27,6 +27,7 @@
 #include "lexer.hpp"
 namespace Mer
 {
+
 	extern std::vector<ParserNode*> structure_parent_stack;
 
 	class Cast;
@@ -38,7 +39,7 @@ namespace Mer
 		{
 			return nullptr;
 		}
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return Mem::BasicType::BVOID;
 		}
@@ -48,13 +49,13 @@ namespace Mer
 	class Index :public ParserNode
 	{
 	public:
-		Index(ParserNode* l, size_t _index, size_t _type = -1);
+		Index(ParserNode* l, size_t _index, type_code_index _type = -1);
 		Mem::Object execute()override;
-		size_t get_type()override;
+		type_code_index get_type()override;
 	private:
-		size_t type;
+		type_code_index type;
 		ParserNode* left;
-		size_t index;
+		type_code_index index;
 	};
 	/*
 	to get the elems of an array but
@@ -64,26 +65,26 @@ namespace Mer
 	class ContainerIndex :public ParserNode
 	{
 	public:
-		ContainerIndex(size_t t,size_t _pos, ParserNode* _expr) :type(t),pos(_pos), expr(_expr) {}
+		ContainerIndex(type_code_index t,size_t _pos, ParserNode* _expr) :type(t),pos(_pos), expr(_expr) {}
 		Mem::Object execute()override;
-		size_t get_type()override;
+		type_code_index get_type()override;
 	private:
 		size_t pos;
-		size_t type;
+		type_code_index type;
 		ParserNode* expr;
 	};
 	class ContainerGloIndex :public ParserNode
 	{
 	public:
-		ContainerGloIndex(size_t _pos, size_t _type,ParserNode* _expr) :pos(_pos),type(_type), expr(_expr) {}
+		ContainerGloIndex(size_t _pos, type_code_index _type,ParserNode* _expr) :pos(_pos),type(_type), expr(_expr) {}
 		size_t get_pos()override;
 		Mem::Object execute()override;
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return type;
 		}
 	private:
-		size_t type;
+		type_code_index type;
 		size_t pos;
 		ParserNode* expr;
 	};
@@ -91,10 +92,10 @@ namespace Mer
 	{
 	public:
 		SubScript(ParserNode* l, ParserNode* s);
-		size_t get_type()override { return type; }
+		type_code_index get_type()override { return type; }
 		Mem::Object execute()override;
 	private:
-		size_t type=0;
+		type_code_index type=0;
 		ParserNode* left;
 		ParserNode* subscr;
 	};
@@ -102,7 +103,7 @@ namespace Mer
 	{
 	public:
 		LogicalBinOp(ParserNode* l, Token *tok, ParserNode* r);
-		size_t get_type() override { return Mem::BOOL; }
+		type_code_index get_type() override { return Mem::BOOL; }
 		Mem::Object execute()override;
 	private:
 		// true ->and ,false ->or
@@ -115,7 +116,7 @@ namespace Mer
 	public:
 		BinOp(ParserNode* l, Token* o, ParserNode* r);
 		Mem::Object execute()override;
-		size_t get_type()override;
+		type_code_index get_type()override;
 		std::string to_string()override;
 		virtual ~BinOp()
 		{
@@ -132,7 +133,7 @@ namespace Mer
 	public:
 		UnaryOp(Token *t, ParserNode* e) :op(t), expr(e) {}
 		Mem::Object execute()override;
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return expr->get_type();
 		}
@@ -152,9 +153,9 @@ namespace Mer
 	class Expr :public ParserNode
 	{
 	public:
-		Expr(size_t t = 0);
+		Expr(type_code_index t = 0);
 		Expr(ParserNode* node) :tree(node) {}
-		size_t get_type()override;
+		type_code_index get_type()override;
 		size_t get_pos() override {
 			return tree->get_pos();
 		}
@@ -173,7 +174,7 @@ namespace Mer
 		// to undertake a particular operation, make use of tree then set tree as a nullptr, delete Expr.
 		bool is_bool = true;
 		ParserNode* tree;
-		size_t expr_type;
+		type_code_index  expr_type=0;
 		ParserNode* assign();
 		ParserNode* and_or();
 		ParserNode* expr();
@@ -189,12 +190,12 @@ namespace Mer
 	class EmptyList :public ParserNode
 	{
 	public:
-		EmptyList(size_t t, size_t sz);
+		EmptyList(type_code_index t, size_t sz);
 		Mem::Object execute()override;
 		std::vector<ParserNode*>& exprs() { return init_v; }
 	private:
 		std::vector<ParserNode*> init_v;
-		size_t type_code;
+		type_code_index type_code;
 		size_t size;
 	};
 	class InitList:public ParserNode
@@ -202,11 +203,11 @@ namespace Mer
 	public:
 		InitList(size_t);
 		// if sz is -1, the size will get from init_v.size();
-		InitList(size_t t,size_t sz);
+		InitList(type_code_index t,size_t sz);
 		Mem::Object execute()override;
 		std::vector<Mem::Object> get_array();
 		std::vector<ParserNode*>& exprs() { return init_v; }
-		size_t get_type()override
+		type_code_index get_type()override
 		{
 			return type;
 		}
@@ -214,7 +215,7 @@ namespace Mer
 		virtual ~InitList();
 	private:
 		std::vector<ParserNode*> init_v;
-		size_t type;
+		type_code_index type;
 		size_t size;
 	};
 	class GetAdd :public ParserNode
@@ -222,27 +223,27 @@ namespace Mer
 	public:
 		GetAdd();
 		GetAdd(ParserNode* tmp) :id(tmp), type(tmp->get_type()) {}
-		size_t get_type()override;
+		type_code_index get_type()override;
 		Mem::Object execute()override;
 	private:
 		ParserNode* id;
-		size_t type;
+		type_code_index type;
 	};
 	class RmRef :public ParserNode
 	{
 	public:
 		RmRef();
-		size_t get_type()override;
+		type_code_index get_type()override;
 		Mem::Object execute()override;
 	private:
 		ParserNode* id;
-		size_t type;
+		type_code_index type;
 	};
 	class NewExpr:public ParserNode
 	{
 	public:
 		NewExpr();
-		size_t get_type()override {
+		type_code_index get_type()override {
 			return expr->get_type() + 1;
 		}
 		Mem::Object execute()override;
@@ -254,9 +255,9 @@ namespace Mer
 	class ImplicitConvertion:public Expr
 	{
 	public:
-		ImplicitConvertion(size_t _type);
+		ImplicitConvertion(type_code_index _type);
 		Mem::Object execute()override;
 	private:
-		size_t type;
+		type_code_index type;
 	};
 }

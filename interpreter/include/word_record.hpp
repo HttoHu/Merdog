@@ -27,7 +27,7 @@
 #include <functional>
 namespace Mer
 {
-	bool compare_param_feature(const std::vector<size_t>& p1, const std::vector<size_t>& p2);
+	bool compare_param_feature(const std::vector<type_code_index>& p1, const std::vector<type_code_index>& p2);
 
 	enum ESymbol
 	{
@@ -40,20 +40,20 @@ namespace Mer
 	struct WordRecorder
 	{
 	public:
-		WordRecorder(ESymbol e, size_t tc = 0) :es(e),type_code(tc) {}
+		WordRecorder(ESymbol e, type_code_index tc = 0) :es(e),type_code(tc) {}
 		ESymbol es;
 		int count = 1;
 		virtual size_t get_pos() { return 0; }
 		virtual std::string to_string() { return""; }
-		size_t get_type() { return type_code; }
+		type_code_index get_type() { return type_code; }
 		virtual ~WordRecorder() {}
 	protected:
-		size_t type_code;
+		type_code_index type_code;
 	};
-	struct VarIdRecorder :public WordRecorder
+	struct VarIdRecorder :public Mer::WordRecorder
 	{
 	public:
-		VarIdRecorder(size_t type,size_t p,WordRecorder wr=SVAR) 
+		VarIdRecorder(type_code_index type,size_t p,WordRecorder wr=SVAR)
 			:WordRecorder(wr),pos(p)
 		{
 			type_code = type;
@@ -71,7 +71,7 @@ namespace Mer
 	};
 	struct MVarRecorder :public WordRecorder
 	{
-		MVarRecorder(size_t type,size_t _pos) :pos(_pos), WordRecorder(MVAR,type) {}
+		MVarRecorder(type_code_index type,size_t _pos) :pos(_pos), WordRecorder(MVAR,type) {}
 		size_t get_pos()override { return pos; }
 		std::string to_string()override { return "MVar :" + std::to_string(pos); }
 		size_t pos;
@@ -82,7 +82,7 @@ namespace Mer
 		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
 		{
 			 Mem::type_counter+=2;
-			 type_code = (size_t)Mem::type_counter;
+			 type_code = Mem::type_counter;
 		}
 
 	};
@@ -90,7 +90,7 @@ namespace Mer
 	struct GVarIdRecorder:public WordRecorder
 	{
 	public:
-		GVarIdRecorder(size_t t,size_t _pos,ESymbol e=SGVAR) :WordRecorder(e,t), pos(_pos) {
+		GVarIdRecorder(type_code_index t,size_t _pos,ESymbol e=SGVAR) :WordRecorder(e,t), pos(_pos) {
 		}
 		bool& is_arr() { return arr; }
 		size_t get_pos()override
@@ -107,13 +107,13 @@ namespace Mer
 	struct FuncIdRecorder :public WordRecorder
 	{
 	public:
-		FuncIdRecorder(size_t type) :WordRecorder(ESymbol::SFUN),functions(compare_param_feature){
+		FuncIdRecorder(type_code_index type) :WordRecorder(ESymbol::SFUN),functions(compare_param_feature){
 			type_code = type;
 		}
-		FunctionBase* find(const std::vector<size_t>& pf);
+		FunctionBase* find(const std::vector<type_code_index>& pf);
 		bool dnt_check = false;
 		FuncIdRecorder(FunctionBase* fb);
-		std::map<std::vector<size_t>,FunctionBase*,decltype(compare_param_feature)*> functions;
+		std::map<std::vector<type_code_index>,FunctionBase*,decltype(compare_param_feature)*> functions;
 	private:
 
 	};

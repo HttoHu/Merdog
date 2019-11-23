@@ -9,18 +9,17 @@
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
-#define MER3_1_2
 using namespace Mer;
 
-std::map<size_t, _compare_operator> Mer::compare_map;
+std::map<type_code_index, _compare_operator> Mer::compare_map;
 std::map<std::string, Function*> Mer::function_table;
 std::map<InitKey, FunctionBase*> Mer::type_init_function_map;
 Block* Mer::current_function_block = nullptr;
-std::map<size_t, Mem::Object> Mer::type_init_map;
+std::map<type_code_index, Mem::Object> Mer::type_init_map;
 //=============================================================
 bool	is_function_statement()
 {
-	int index = 1;
+	size_t index = 1;
 	if (token_stream.this_tag() == LPAREN)
 	{
 		while (token_stream.this_token(index)->get_tag() != RPAREN)
@@ -29,7 +28,7 @@ bool	is_function_statement()
 				throw Error("Reached end of the file");
 			index++;
 		}
-		if (token_stream.this_token(size_t(index) + 1)->get_tag() == SEMI)
+		if (token_stream.this_token(index + 1)->get_tag() == SEMI)
 		{
 			return true;
 		}
@@ -53,7 +52,7 @@ ParamFeature Mer::Parser::build_param_feature()
 	//the first arg of member function is the obj of the structure, 
 	while (true)
 	{
-		size_t type = Mem::get_type_code();
+		type_code_index type = Mem::get_type_code();
 		ESymbol es = SVAR;
 		if (token_stream.this_tag() == MUL)
 		{
@@ -84,7 +83,7 @@ Param* Mer::Parser::build_param()
 	}
 	while (true)
 	{
-		size_t type = Mem::get_type_code();
+		type_code_index type = Mem::get_type_code();
 		ESymbol es = SVAR;
 		if (token_stream.this_tag() == MUL)
 		{
@@ -109,7 +108,7 @@ std::pair<std::string, Function*> Parser::_build_function()
 	using namespace Mer;
 	using namespace Parser;
 	token_stream.match(FUNCTION);
-	size_t rtype = Mem::get_type_code();
+	type_code_index rtype = Mem::get_type_code();
 	// if the ret type is a pointer
 
 	if (token_stream.this_tag() == MUL)
@@ -147,7 +146,7 @@ std::pair<std::string, Function*> Parser::_build_function()
 void Mer::Parser::build_function()
 {
 	token_stream.match(FUNCTION);
-	size_t rtype = Mem::get_type_code();
+	type_code_index rtype = Mem::get_type_code();
 	// if the ret type is a pointer
 	if (token_stream.this_tag() == MUL)
 	{
@@ -224,7 +223,7 @@ void Mer::Parser::build_function()
 
 }
 
-bool Mer::Param::type_check(const std::vector<size_t>& types)
+bool Mer::Param::type_check(const std::vector<type_code_index>& types)
 {
 	if (types.size() != arg_pos.size())
 	{
@@ -259,7 +258,7 @@ Mer::FunctionBase::FunctionBase()
 {
 }
 
-void Mer::FunctionBase::check_param(const std::vector<size_t>& types)
+void Mer::FunctionBase::check_param(const std::vector<type_code_index>& types)
 {
 	if (types.size() != param_types.size())
 	{
@@ -305,7 +304,7 @@ std::string Mer::FunctionBase::to_string(std::string name) const
 }
 //================================================================
 
-Mer::Function::Function(size_t t, Param* p) :
+Mer::Function::Function(type_code_index t, Param* p) :
 	type(t), param(p)
 {
 	for (const auto& a : param->get_param_table())
@@ -314,7 +313,7 @@ Mer::Function::Function(size_t t, Param* p) :
 	}
 }
 
-Mer::Function::Function(size_t t) :type(t) {}
+Mer::Function::Function(type_code_index t) :type(t) {}
 
 
 void Mer::Function::reser_param(Param* p)
@@ -346,7 +345,7 @@ void Mer::Function::set_function_block()
 
 }
 
-void Mer::SystemFunction::check_param(const std::vector<size_t>& types)
+void Mer::SystemFunction::check_param(const std::vector<type_code_index>& types)
 {
 	if (check_param_type)
 		FunctionBase::check_param(types);
@@ -359,7 +358,7 @@ bool Mer::InitKey::operator<(const InitKey& init_key) const
 	if (params.size() != init_key.params.size()) {
 		return params.size() < init_key.params.size();
 	}
-	for (std::vector<size_t>::size_type i = 0; i < params.size(); i++)
+	for (size_t i = 0; i < params.size(); i++)
 	{
 		if (params[i] != init_key.params[i])
 			return params[i] < init_key.params[i];
@@ -367,13 +366,13 @@ bool Mer::InitKey::operator<(const InitKey& init_key) const
 	return false;
 }
 
-bool Mer::compare_param_feature(const std::vector<size_t>& p1, const std::vector<size_t>& p2)
+bool Mer::compare_param_feature(const std::vector<type_code_index>& p1, const std::vector<type_code_index>& p2)
 {
 	if (p1.size() != p2.size()) {
 		return p1.size() < p2.size();
 	}
 	auto sz = p1.size();
-	for (std::vector<size_t>::size_type i = 0; i < sz; i++)
+	for (std::vector<type_code_index>::size_type i = 0; i < sz; i++)
 	{
 		if (p1[i] != p2[i])
 			return p1[i] < p2[i];
