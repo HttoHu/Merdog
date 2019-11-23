@@ -59,14 +59,15 @@ namespace Mer
 
 void Mer::set_utility()
 {
+	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
+	sleep->set_param_types({ Mer::Mem::BasicType::INT });
+	type->dnt_check_param();
+	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
 	mstd->set_new_func("clock",  Mer::time_record);
 	mstd->set_new_func("rand_int",  Mer::random_int);
 	mstd->set_new_func("sleep",  Mer::sleep);
 	root_namespace->set_new_func("type", Mer::type);
 	root_namespace->set_new_func("system",  Mer::csystem);
 	root_namespace->set_new_func("_heap_mem_check", Mer::alloc_heap);
-	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
-	sleep->set_param_types({ Mer::Mem::BasicType::INT });
-	type->dnt_check_param();
-	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
+
 }

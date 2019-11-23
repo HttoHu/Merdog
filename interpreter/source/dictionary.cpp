@@ -29,6 +29,12 @@ namespace Mer
 				return std::make_shared<Mem::Bool>(false);
 			return std::make_shared<Mem::Bool>(true);
 		}
+		Mem::Object _set_clear(const std::vector<Mem::Object>& args)
+		{
+			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			set_content.clear();
+			return nullptr;
+		}
 		Mem::Object _set_erase(const std::vector < Mem::Object >& args)
 		{
 			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
@@ -70,6 +76,13 @@ namespace Mer
 		{
 			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
 			return std::make_shared<Mem::Int>(map_content.size());
+		}
+		Mem::Object _map_clear(const std::vector < Mem::Object >& args)
+		{
+			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			map_content.clear();
+			return nullptr;
+
 		}
 	}
 	namespace Container
@@ -141,6 +154,7 @@ namespace Mer
 		Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });
 		_register_member_function("insert", cur_type, Mem::BVOID, { element_type }, _set_insert);
 		_register_member_function("size", cur_type, Mem::INT, {  }, _set_size);
+		_register_member_function("clear", cur_type, Mem::INT,{}, _set_clear);
 		_register_member_function("exists", cur_type, Mem::BOOL, { element_type }, _set_exists);
 		_register_member_function("erase", cur_type, Mem::BOOL, { element_type }, _set_erase);
 	}
@@ -160,6 +174,7 @@ namespace Mer
 		Mem::type_op_type_map.insert({ cur_type, {{"[]",key_type}} });
 		_register_member_function("insert", cur_type, Mem::BVOID, { key_type,value_type }, _map_insert);
 		_register_member_function("size", cur_type, Mem::INT, {  }, _map_size);
+		_register_member_function("clear", cur_type, Mem::INT,{}, _map_clear);
 		_register_member_function("exists", cur_type, Mem::BOOL, { key_type }, _map_exists);
 		_register_member_function("erase", cur_type, Mem::BOOL, { key_type }, _map_erase);
 	}

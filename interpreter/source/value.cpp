@@ -311,8 +311,8 @@ type_code_index Mer::MemberFunctionCall::get_type()
 Mer::Mem::Object Mer::MemberFunctionCall::execute()
 {
 	parents_vec.push_back(parent->execute());
-	int sz = argument.size();
-	for (int i=0;i<sz;i++)
+	auto sz = argument.size();
+	for (size_t i=0;i<sz;i++)
 	{
 		obj_vec[i]=argument[i]->execute()->clone();
 	}

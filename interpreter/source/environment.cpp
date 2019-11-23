@@ -11,6 +11,7 @@
 #include "../include/clib/maths.hpp"
 #include "../include/clib/containers.hpp"
 #include "../include/clib/dictionary.hpp"
+#include "../include/clib/utility.hpp"
 std::map<std::string, void(*)()> Mer::repository{
 	{"vector",Mer::Container::using_vector},{"deque",Mer::Container::using_deque},
 	{"set",Mer::using_set},{"map",Mer::using_map}
@@ -41,6 +42,7 @@ void _merdog_init_()
 	compare_map.insert({ Mem::CHAR,compare_op });
 	Mer::set_io();
 	Mer::set_maths();
+	Mer::set_utility();
 }
 std::string Mer::run_interpreter(const std::string& file_content)
 {

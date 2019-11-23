@@ -410,7 +410,7 @@ namespace Mer
 		{
 		public:
 			InitListObj(std::vector<Object>&& lst, type_code_index type_c) :elems(lst), type_code(type_c) {}
-			InitListObj(size_t sz, size_t type_c) : type_code(type_c), elems(sz) {}
+			InitListObj(size_t sz, type_code_index type_c) : type_code(type_c), elems(sz) {}
 			virtual Object operator[](Object v)override
 			{
 				return elems[std::static_pointer_cast<Int>(v)->get_value()];
@@ -564,7 +564,7 @@ namespace Mer
 		class Array :public Value
 		{
 		public:
-			Array(size_t _type, int _pos, int _length) :type(_type), pos(_pos), length(_length) {}
+			Array(type_code_index _type, int _pos, int _length) :type(_type), pos(_pos), length(_length) {}
 			Mem::Object operator[](Object index)override;
 			Mem::Object clone()const override;
 			type_code_index get_type()const override { return type; }

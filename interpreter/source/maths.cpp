@@ -96,7 +96,7 @@ namespace Mer
 		maths = root_namespace;
 		min->set_param_types({ Mem::DOUBLE,Mem::DOUBLE });
 		sqrt->set_param_types({ Mem::DOUBLE });
-		mod->set_param_types({ Mem::DOUBLE ,Mem::DOUBLE });
+		mod->set_param_types({ Mem::INT ,Mem::INT });
 		tan->set_param_types({ Mem::DOUBLE });
 		sin->set_param_types({ Mem::DOUBLE });
 		cos->set_param_types({ Mem::DOUBLE });
