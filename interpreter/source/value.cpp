@@ -155,7 +155,7 @@ Mer::FunctionCall* Mer::Parser::parse_initializer(type_code_index type)
 
 	std::string err_msg="(";
 	// get the information of args
-	for (int i = 0; i < args_type.size(); i++)
+	for (size_t i = 0; i < args_type.size(); i++)
 	{
 		err_msg += type_to_string(args_type[i]);
 		if (i != args_type.size() - 1)
