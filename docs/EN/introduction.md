@@ -6,7 +6,7 @@
   
     * portable (less than 500 KiB on Windows)
     * easy to learn
-    * easy to extend. You can packing the core code of your program to merdog which enables you to hot upgrade and distinct between core code and transection code.
+    * easy to extend. You can pack the core code of your program to merdog which enables you to hot upgrade and distinct between core code and transection code.
     * MIT LISECE enables you to use merdog freely, it is commercial friendly.
 * disadvantage
 

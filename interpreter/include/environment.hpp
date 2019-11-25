@@ -29,6 +29,7 @@
 namespace Mer
 {
 	class ParserNode;
+	using UptrPNode = std::unique_ptr<ParserNode>;
 	using PosPtr = std::shared_ptr<size_t>;
 	extern std::string output_buff;
 	std::string run_interpreter(const std::string&file_content);

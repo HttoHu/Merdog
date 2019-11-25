@@ -14,7 +14,6 @@ using namespace Mer;
 std::map<type_code_index, _compare_operator> Mer::compare_map;
 std::map<std::string, Function*> Mer::function_table;
 std::map<InitKey, FunctionBase*> Mer::type_init_function_map;
-Block* Mer::current_function_block = nullptr;
 std::map<type_code_index, Mem::Object> Mer::type_init_map;
 //=============================================================
 bool	is_function_statement()

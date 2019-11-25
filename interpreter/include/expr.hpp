@@ -54,7 +54,7 @@ namespace Mer
 		type_code_index get_type()override;
 	private:
 		type_code_index type;
-		ParserNode* left;
+		UptrPNode left;
 		type_code_index index;
 	};
 	/*

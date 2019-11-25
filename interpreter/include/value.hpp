@@ -131,7 +131,7 @@ namespace Mer
 	private:
 		FunctionBase* func;
 		std::vector<ParserNode*> argument;
-		ParserNode* parent;
+		UptrPNode parent;
 		std::vector<Mem::Object> obj_vec;
 	};
 	/*

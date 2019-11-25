@@ -55,4 +55,6 @@ namespace Mer
 		}
 		size_t line_no;
 	};
+	using UptrPNode = std::unique_ptr<ParserNode>;
+
 }

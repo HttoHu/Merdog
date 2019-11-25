@@ -11,9 +11,8 @@
 namespace Mer
 {
 	size_t current_function_rety = 0;
-	std::vector<Mer::ParserNode*>* current_ins_table = nullptr;
+	std::vector<UptrPNode>* current_ins_table = nullptr;
 	PosPtr this_block_size = nullptr;
-	extern std::vector<ParserNode*>* current_ins_table;
 	// the postion of the instruction
 	extern std::vector<size_t*> _pcs;
 	Mem::Object function_ret = nullptr;
@@ -33,16 +32,16 @@ namespace Mer
 				case BREAK:
 					token_stream.match(BREAK);
 					token_stream.match(SEMI);
-					current_ins_table->push_back(new Goto(_pcs.back(), loop_end()));
+					current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), loop_end()));
 					break;
 				case CONTINUE:
 					token_stream.match(CONTINUE);
 					token_stream.match(SEMI);
-					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
+					current_ins_table->push_back(std::make_unique<Continue>(_pcs.back(), loop_end()));
 					break;
 				case RETURN:
 					token_stream.match(RETURN);
-					current_ins_table->push_back(new Return(_pcs.back(), new Expr()));
+					current_ins_table->push_back(std::make_unique<Return>(_pcs.back(), new Expr()));
 					token_stream.match(SEMI);
 					break;
 				case FOR:
@@ -58,7 +57,7 @@ namespace Mer
 					do_while();
 					break;
 				default:
-					current_ins_table->push_back(statement());
+					current_ins_table->push_back(std::unique_ptr<ParserNode>(statement()));
 					break;
 				}
 			}
@@ -102,7 +101,7 @@ namespace Mer
 			token_stream.match(LPAREN);
 			Expr* node = new Expr();
 			token_stream.match(RPAREN);
-			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos), std::make_shared<size_t>(current_ins_table->size() + 1), node));
+			current_ins_table->push_back(std::make_unique<IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(*start_pos), std::make_shared<size_t>(current_ins_table->size() + 1), node));
 			*end_pos = current_ins_table->size();
 			// delete the record of start_pos and end_pos, cause the two var is thoroughly used.
 			end_loop();
@@ -125,9 +124,9 @@ namespace Mer
 			mem.new_block();
 			this_namespace->sl_table->new_block();
 			token_stream.match(BEGIN);
-			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(*start_pos + 1), end_pos, node));
+			current_ins_table->push_back(std::make_unique<IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(*start_pos + 1), end_pos, node));
 			public_part();
-			current_ins_table->push_back(new Goto(_pcs.back(), start_pos));
+			current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), start_pos));
 			token_stream.match(END);
 			*end_pos = current_ins_table->size();
 			// end_block, block;
@@ -141,7 +140,7 @@ namespace Mer
 			token_stream.match(IF);
 			token_stream.match(LPAREN);
 			PosPtr end_pos = std::make_shared<size_t>(0);
-			Expr* node = new Expr();
+			auto node = std::unique_ptr<ParserNode>(Expr().root());
 			token_stream.match(RPAREN);
 			// new block
 			mem.new_block();
@@ -149,10 +148,10 @@ namespace Mer
 			token_stream.match(BEGIN);
 			auto iwjt = new IfWithJmpTable(_pcs.back());
 			iwjt->end_pos = end_pos;
-			current_ins_table->push_back(iwjt);
-			iwjt->jmp_table.push_back({ node,std::make_shared<size_t>(current_ins_table->size()) });
+			current_ins_table->push_back(std::unique_ptr<IfWithJmpTable>(iwjt));
+			iwjt->jmp_table.push_back({ std::move(node),std::make_shared<size_t>(current_ins_table->size()) });
 			public_part();
-			current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
+			current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), end_pos));
 			// end_block;
 			token_stream.match(END);
 			mem.end_block();
@@ -161,22 +160,22 @@ namespace Mer
 			{
 				token_stream.match(ELSE_IF);
 				token_stream.match(LPAREN);
-				auto expr = new Expr();
+				auto expr = Expr().root();
 				token_stream.match(RPAREN);
 				mem.new_block();
 				this_namespace->sl_table->new_block();
 				token_stream.match(BEGIN);
-				iwjt->jmp_table.push_back({ expr,std::make_shared<size_t>(current_ins_table->size()) });
+				iwjt->jmp_table.push_back({ std::unique_ptr<ParserNode>(expr),std::make_shared<size_t>(current_ins_table->size()) });
 				public_part();
 				token_stream.match(END);
-				current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
+				current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), end_pos));
 				mem.end_block();
 				this_namespace->sl_table->end_block();
 			}
 			if (token_stream.this_tag() == ELSE)
 			{
 				have_else = true;
-				iwjt->jmp_table.push_back({ new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), std::make_shared<size_t>(current_ins_table->size()) });
+				iwjt->jmp_table.push_back({ std::make_unique <LConV>(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), std::make_shared<size_t>(current_ins_table->size()) });
 				token_stream.match(ELSE);
 				mem.new_block();
 				this_namespace->sl_table->new_block();
@@ -187,7 +186,7 @@ namespace Mer
 				this_namespace->sl_table->end_block();
 			}
 			if(!have_else)
-				iwjt->jmp_table.push_back({ new LConV(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), end_pos});
+				iwjt->jmp_table.push_back({ std::make_unique <LConV>(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), end_pos});
 			*end_pos = current_ins_table->size();
 		}
 		template<typename KeyType>
@@ -195,7 +194,7 @@ namespace Mer
 		void switch_driver() {
 			token_stream.match(SWITCH);
 			token_stream.match(LPAREN);
-			auto expr = new Expr();
+			auto expr =Expr().root();
 			token_stream.match(RPAREN);
 			size_t type = expr->get_type();
 			ParserNode* node;
@@ -207,7 +206,7 @@ namespace Mer
 				node = new CharCaseSet(_pcs.back(), expr);
 			else
 				throw Error("Unsupported case type!");
-			current_ins_table->push_back(node);
+			current_ins_table->push_back(std::unique_ptr<ParserNode>(node));
 			switch (type)
 			{
 			case Mem::BasicType::CHAR:
@@ -279,20 +278,20 @@ namespace Mer
 				case BREAK:
 					token_stream.match(BREAK);
 					token_stream.match(SEMI);
-					current_ins_table->push_back(new Goto(_pcs.back(), end_pos));
+					current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), end_pos));
 					break;
 				case CONTINUE:
 					token_stream.match(CONTINUE);
 					token_stream.match(SEMI);
-					current_ins_table->push_back(new Continue(_pcs.back(), loop_end()));
+					current_ins_table->push_back(std::make_unique <Continue>(_pcs.back(), loop_end()));
 					break;
 				case RETURN:
 					token_stream.match(RETURN);
 					token_stream.match(SEMI);
-					current_ins_table->push_back(new Return(_pcs.back(), new Expr()));
+					current_ins_table->push_back(std::make_unique <Return>(_pcs.back(), new Expr()));
 					break;
 				default:
-					current_ins_table->push_back(statement());
+					current_ins_table->push_back(std::unique_ptr <ParserNode>(statement()));
 					break;
 				}
 			}
@@ -326,7 +325,7 @@ namespace Mer
 			token_stream.match(LPAREN);
 			if (token_stream.this_tag() != SEMI)
 			{
-				current_ins_table->push_back(var_decl());
+				current_ins_table->push_back(std::unique_ptr<ParserNode>(var_decl()));
 				++* start_pos;
 			}
 			token_stream.match(SEMI);
@@ -342,17 +341,17 @@ namespace Mer
 			if (token_stream.this_tag() != RPAREN)
 			{
 				++* start_pos;
-				current_ins_table->push_back(new Goto(_pcs.back(), std::make_shared<size_t>(*start_pos + 1)));
+				current_ins_table->push_back(std::make_unique <Goto>(_pcs.back(), std::make_shared<size_t>(*start_pos + 1)));
 				// start pos is step
-				current_ins_table->push_back(Expr().root());
+				current_ins_table->push_back(std::unique_ptr<ParserNode>(Expr().root()));
 			}
 			token_stream.match(RPAREN);
 
 			token_stream.match(BEGIN);
 
-			current_ins_table->push_back(new IfTrueToAOrB(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1), end_pos, compare_part));
+			current_ins_table->push_back(std::make_unique <IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1), end_pos, compare_part));
 			public_part();
-			current_ins_table->push_back(new Goto(_pcs.back(), start_pos));
+			current_ins_table->push_back(std::make_unique <Goto>(_pcs.back(), start_pos));
 			token_stream.match(END);
 			*end_pos = current_ins_table->size();
 			// end_block, block;

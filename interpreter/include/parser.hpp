@@ -39,10 +39,10 @@ namespace Mer
 		Program(Token *id):identify(id) {}
 		Mem::Object execute()override;
 		std::string to_string()override;
-		std::vector<ParserNode*> stmts;
+		std::vector<UptrPNode> stmts;
 		size_t* pc = new size_t(0);
 		size_t off = 0;
-	private:
+
 		Token *identify;
 
 	};
@@ -89,7 +89,7 @@ namespace Mer
 			return type_to_string(type);
 		}
 	private:
-		void process_unit(VarDeclUnit* a, type_code_index c_pos);
+		void process_unit(VarDeclUnit* a, size_t c_pos);
 		type_code_index pos;
 		type_code_index sum=0;
 		std::vector<ParserNode*> exprs;
@@ -101,7 +101,7 @@ namespace Mer
 		GloVarDecl(std::vector<VarDeclUnit*>& vec, type_code_index t);
 		Mem::Object execute()override;
 	private:
-		void process_unit(VarDeclUnit* a, type_code_index c_pos);
+		void process_unit(VarDeclUnit* a, size_t c_pos);
 		type_code_index pos=0;
 		int sum=0;
 		std::vector<ParserNode*> exprs;
@@ -147,7 +147,7 @@ namespace Mer
 	};
 	namespace Parser
 	{
-		Program* program();
+		std::unique_ptr<Program> program();
 		ParserNode *statement();
 		ParserNode *var_decl();
 		type_code_index get_type();

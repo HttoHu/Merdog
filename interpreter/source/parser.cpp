@@ -16,7 +16,6 @@ namespace Mer
 	std::vector<ParserNode*> pre_stmt;
 	class For;
 	class If;
-	class Block;
 	namespace Parser
 	{
 		ParserNode* statement();
@@ -61,10 +60,10 @@ namespace Mer
 	{
 		return ret->clone();
 	}
-	Program* Parser::program()
+	std::unique_ptr<Program> Parser::program()
 	{
-		Program* ret = nullptr;
 		int programe_num = 0;
+		auto ret = std::make_unique<Program>(nullptr);
 		while (1)
 		{
 			switch (token_stream.this_tag())
@@ -94,7 +93,7 @@ namespace Mer
 				auto tmp = token_stream.this_token();
 				token_stream.match(ID);
 				std::string name = Id::get_value(tmp);
-				ret = new Program(tmp);
+				ret->identify = tmp;
 				_pcs.push_back(ret->pc);
 				current_ins_table = &(ret->stmts);
 				Parser::build_block();
@@ -334,7 +333,7 @@ namespace Mer
 		throw Error("::VarDeclUnit::VarDeclUnit(size_t t) : try to init a non-init variable");
 	}
 
-	inline void _record_id(VarDeclUnit* var_unit, type_code_index type, type_code_index pos)
+	inline void _record_id(VarDeclUnit* var_unit, type_code_index type, size_t pos)
 	{
 		if (var_unit->arr())
 		{
@@ -348,7 +347,7 @@ namespace Mer
 			this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new VarIdRecorder(type, pos));
 	}
 
-	inline void _record_glo_id(VarDeclUnit* var_unit, type_code_index type, type_code_index pos)
+	inline void _record_glo_id(VarDeclUnit* var_unit, type_code_index type, size_t pos)
 	{
 		if (var_unit->arr())
 		{
@@ -389,7 +388,7 @@ namespace Mer
 		return Mem::Object(nullptr);
 	}
 
-	void LocalVarDecl::process_unit(VarDeclUnit* a, type_code_index c_pos)
+	void LocalVarDecl::process_unit(VarDeclUnit* a, size_t c_pos)
 	{
 		if (a->arr())
 		{
@@ -437,7 +436,7 @@ namespace Mer
 		return Mem::Object(nullptr);
 	}
 
-	void GloVarDecl::process_unit(VarDeclUnit* a, type_code_index c_pos)
+	void GloVarDecl::process_unit(VarDeclUnit* a, size_t c_pos)
 	{
 		if (a->arr())
 		{

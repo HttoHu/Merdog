@@ -29,7 +29,7 @@
 namespace Mer
 {
 	using PosPtr = std::shared_ptr<size_t>;
-	extern std::vector<ParserNode*>* current_ins_table;
+	extern std::vector<UptrPNode>* current_ins_table;
 	extern size_t current_function_rety;
 	extern PosPtr this_block_size;
 	extern Mem::Object function_ret;
@@ -118,7 +118,7 @@ namespace Mer
 		IfWithJmpTable(size_t* _pc) :pc(_pc) {}
 		Mem::Object execute()override;
 		std::string to_string()override;
-		std::vector<std::pair<ParserNode*, PosPtr>> jmp_table;
+		std::vector<std::pair<UptrPNode, PosPtr>> jmp_table;
 		PosPtr end_pos;
 	private:
 		size_t* pc;

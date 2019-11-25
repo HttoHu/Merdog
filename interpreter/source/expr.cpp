@@ -124,13 +124,14 @@ namespace Mer
 			if (token_stream.this_tag() == LPAREN)
 			{
 				structure_parent_stack.push_back(result);
+				result = nullptr;
 				// get type code
 				auto func = member_function_table[raw_type].find(Id::get_value(member_id));
 				if (func == member_function_table[raw_type].end())
 				{ 
 					throw Error(" member functioon " + Id::get_value(member_id) + " no found");
 				}
-				result = Parser::parse_call_by_function(func->second);
+				result= Parser::parse_call_by_function(func->second);
 				structure_parent_stack.pop_back();
 				continue;
 			}
@@ -138,7 +139,7 @@ namespace Mer
 			auto ustruct = find_ustructure_t(type_code + (type_code % 2 - 1));
 			// find member index and type;
 			auto seeker = ustruct->get_member_info(Id::get_value(member_id));
-			result = new Index(result, seeker.second, seeker.first);
+			result=new Index(result, seeker.second, seeker.first);
 		}
 		return result;
 	}
@@ -509,7 +510,7 @@ namespace Mer
 
 		return std::static_pointer_cast<Mem::Pointer>(id->execute())->rm_ref();
 	}
-	Mer::Index::Index(ParserNode* l, size_t _index, type_code_index _type) :left(l), index(_index), type(_type)
+	Mer::Index::Index(ParserNode* l, size_t _index, type_code_index _type) :left(std::move(l)), index(_index), type(_type)
 	{
 		if (_type == -1)
 			type = left->get_type();

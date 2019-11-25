@@ -38,7 +38,6 @@ namespace Mer
 	using _intern_func = std::function<Mem::Object (const std::vector<Mem::Object>&)>;
 	bool compare_param_feature(const std::vector<type_code_index>& p1, const std::vector<type_code_index>& p2);
 	std::string param_feature_to_string(const ParamFeature& pf);
-	class Block;
 	class Param
 	{
 	public:
@@ -86,7 +85,7 @@ namespace Mer
 		Mem::Object run(const std::vector<Mem::Object> &objs)override;
 		type_code_index get_type()override { return type; }
 		void set_function_block();
-		std::vector<ParserNode*> stmts;
+		std::vector<UptrPNode> stmts;
 		size_t* pc=new size_t(0);
 		size_t off;
 	private:
@@ -134,7 +133,6 @@ namespace Mer
 		void build_function();
 		std::pair<std::string,Function*> _build_function();
 	}
-	extern Block *current_function_block;
 	extern std::map<std::string, Function*> function_table;
 	extern std::map<InitKey, FunctionBase*> type_init_function_map;
 	extern std::map<type_code_index, Mem::Object> type_init_map;

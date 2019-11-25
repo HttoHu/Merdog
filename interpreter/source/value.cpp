@@ -214,13 +214,12 @@ Mer::ParserNode* Mer::Parser::parse_function_call(Namespace* names)
 
 Mer::MemberFunctionCall* Mer::Parser::parse_call_by_function(FunctionBase* f)
 {
-	auto parent = structure_parent_stack.back();
 	std::vector<ParserNode*> exprs;
 	// to check the param's type.
 	//get ref of parent
 	auto tmp = parse_arguments();
 	exprs.insert(exprs.end(), tmp.begin(), tmp.end());
-	return new MemberFunctionCall( f, exprs,parent);
+	return new MemberFunctionCall(f, exprs, structure_parent_stack.back());
 }
 
 Mer::Namespace* Mer::Parser::kill_namespaces()
@@ -291,7 +290,7 @@ Mer::ParserNode* Mer::Parser::parse_glo(WordRecorder* var_info)
 	return new GVar(var_info);
 }
 
-Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs,ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size()+1)
+Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<ParserNode*>& exprs, ParserNode* _p) : parent(_p),func(_func), argument(exprs),obj_vec(exprs.size()+1)
 {
 	std::vector<type_code_index> type_vec;
 	for (auto& a : exprs)
