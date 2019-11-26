@@ -42,9 +42,7 @@ namespace Mer
 		std::vector<UptrPNode> stmts;
 		size_t* pc = new size_t(0);
 		size_t off = 0;
-
 		Token *identify;
-
 	};
 	class NamePart
 	{

@@ -13,6 +13,15 @@ namespace Mer
 
 	namespace Mem
 	{
+		//var_def
+		const std::map<type_code_index, Mem::Type*> _init_type_map{
+			{ BasicType::INT,new Type("int",BasicType::INT,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE })},
+			{ BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
+			{ BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
+			{ BasicType::STRING,new Type("string",BasicType::STRING,{ 11,BasicType::STRING }) },
+			{BasicType::CHAR,new Type("char",BasicType::CHAR,{9,BasicType::CHAR,BasicType::INT,BasicType::STRING})},
+			{BasicType::INIT_LIST,new Type("init_list",BasicType::INIT_LIST,{})}
+		};
 		type_code_index type_counter = BASICTYPE_MAX_CODE;
 		std::map<type_code_index, void(*)(type_code_index)> container_register;
 		std::map<ComplexType, type_code_index> complex_type_seeker;
@@ -22,15 +31,8 @@ namespace Mer
 		{
 			{Mem::STRING,{{"[]",Mem::CHAR}}}
 		};
-		std::map<type_code_index, Mem::Type*> type_map
-		{
-			{ BasicType::INT,new Type("int",BasicType::INT,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE })},
-			{ BasicType::DOUBLE,new Type("double",BasicType::DOUBLE,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-			{ BasicType::BOOL,new Type("bool",BasicType::BOOL,{ BasicType::INT,BasicType::BOOL,BasicType::DOUBLE }) },
-			{ BasicType::STRING,new Type("string",BasicType::STRING,{ 11,BasicType::STRING }) },
-			{BasicType::CHAR,new Type("char",BasicType::CHAR,{9,BasicType::CHAR,BasicType::INT,BasicType::STRING})},
-			{BasicType::INIT_LIST,new Type("init_list",BasicType::INIT_LIST,{})}
-		};
+		std::map<type_code_index, Mem::Type*> type_map = _init_type_map;
+		//===============================================================================================
 		type_code_index find_op_type(type_code_index ty, std::string op)
 		{
 			auto result1 = type_op_type_map.find(ty);
@@ -52,6 +54,7 @@ namespace Mer
 				return false;
 			return true;
 		}
+
 		type_code_index get_type_code()
 		{
 			auto tok = token_stream.this_token();
@@ -185,6 +188,19 @@ namespace Mer
 
 			}
 			return result->second;
+		}
+
+		void _clear_type_info()
+		{
+			container_register.clear();
+			complex_type_seeker.clear();
+			demerge_table.clear();
+			merge_table.clear();
+			type_op_type_map = {
+				{Mem::STRING,{{"[]",Mem::CHAR}}}
+			};
+			type_map = _init_type_map;
+			type_counter = BASICTYPE_MAX_CODE;
 		}
 	}
 	std::map<std::string, type_code_index> Mem::type_index;

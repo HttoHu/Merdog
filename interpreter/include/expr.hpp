@@ -118,15 +118,15 @@ namespace Mer
 		Mem::Object execute()override;
 		type_code_index get_type()override;
 		std::string to_string()override;
-		virtual ~BinOp()
+		~BinOp()
 		{
 			delete left;
 			delete right;
 		}
 	private:
-		ParserNode *left;
+		ParserNode* left;
 		Token *op;
-		ParserNode *right;
+		ParserNode* right;
 	};
 	class UnaryOp :public ParserNode
 	{

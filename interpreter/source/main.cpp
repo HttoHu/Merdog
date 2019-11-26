@@ -13,6 +13,7 @@
 #include "../include/environment.hpp"
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
+#include "../include/environment.hpp"
 #define MERDOG_VERSION "3.2.0"
 #ifdef _WIN32
 #include <Windows.h>
@@ -67,11 +68,12 @@ int main()
 {
 	try
 	{
-
-		_merdog_init_();
+		time_t s = clock();
 		std::string input_content = get_file_content("test.mer");
-		Mer::build_token_stream(input_content);
-		Mer::Parser::program()->execute();
+		for (int i = 0; true; i++)
+			Mer::run_interpreter(input_content);
+		time_t e = clock();
+		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;
 	}
 	catch (std::exception & e)
 	{

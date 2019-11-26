@@ -43,8 +43,6 @@ namespace Mer
 		SymbolTable* sl_table = nullptr;
 		void set_new_func(const std::string & name, FunctionBase * func);
 		void set_new_var(const std::string &name,size_t type, Mem::Object obj);
-
-
 		Mem::Object find_var(const std::string &name);
 	};
 	// 5-3 

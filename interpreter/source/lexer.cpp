@@ -24,6 +24,7 @@ TagStrMap	Mer::TagStr{
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"},{SIZEOF,"SIZEOF"},
 };
 TokenMap	Mer::KeyWord{
+	{"+",new Token(PLUS)},{"-",new Token(MINUS)},{"*",new Token(MUL)},{"/",new Token(DIV)},{";",new Token(SEMI)},
 	{ "using",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
 	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },{"sizeof",new Token(SIZEOF)},
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) }, {"do",new Token(DO)},{"switch",new Token(SWITCH)}, {"case",new Token(CASE)},
@@ -246,7 +247,7 @@ void Mer::build_token_stream(const std::string& content) {
 				token_stream.push_back(new Token(COLON));
 			break;
 		case ';':
-			token_stream.push_back(new Token(SEMI));
+			token_stream.push_back(KeyWord[";"]);
 			break;
 		case '.':
 			token_stream.push_back(new Token(DOT));
@@ -276,7 +277,7 @@ void Mer::build_token_stream(const std::string& content) {
 				i++;
 				break;
 			}
-			token_stream.push_back(new Token(MUL));
+			token_stream.push_back(KeyWord["*"]);
 			break;
 		case '/':
 			if (i + 1 < content.size() && content[i + 1] == '/')
@@ -312,7 +313,7 @@ void Mer::build_token_stream(const std::string& content) {
 				i++;
 				break;
 			}
-			token_stream.push_back(new Token(DIV));
+			token_stream.push_back(KeyWord["/"]);
 			break;
 		case '+':
 			if (i + 1 < content.size() && content[i + 1] == '=')
@@ -321,7 +322,7 @@ void Mer::build_token_stream(const std::string& content) {
 				i++;
 				break;
 			}
-			token_stream.push_back(new Token(PLUS));
+			token_stream.push_back(KeyWord["+"]);
 			break;
 		case '-':
 			if (i + 1 < content.size() && content[i + 1] == '=')
@@ -336,7 +337,7 @@ void Mer::build_token_stream(const std::string& content) {
 				i++;
 				break;
 			}
-			token_stream.push_back(new Token(MINUS));
+			token_stream.push_back(KeyWord["-"]);
 			break;
 		case '0':case '1':case '2':case '3':case '4':case '5':case '6':
 		case '7':case '8':case '9':
@@ -400,13 +401,13 @@ void TokenStream::remove_tokens()
 		index++;
 		switch (a->get_tag())
 		{
+		case END:
 		case ENDL:
 		case INTEGER:
 		case REAL:
 		case STRING:
 		{
 			auto tmp = a;
-			content.erase(content.begin() + index);
 			delete tmp;
 			break;
 		}
@@ -414,6 +415,7 @@ void TokenStream::remove_tokens()
 			break;
 		}
 	}
+	content.clear();
 	Endl::current_line = 0;
 	// delete Ids
 	for (auto& a : Id::id_table())
