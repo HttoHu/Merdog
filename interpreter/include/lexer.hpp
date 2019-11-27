@@ -1,10 +1,26 @@
 /*
-*		Inspired by
-*		https://ruslanspivak.com/lsbasi-part10/
-*		Ruslan's Blog
-*		C++ Version.
-*		Yuantao Hu 2018
-*		Email :Huyuantao@outlook.com
+		MIT License
+
+		Copyright (c) 2019 HttoHu
+
+		Permission is hereby granted, free of charge, to any person obtaining a copy
+		of this software and associated documentation files (the "Software"), to deal
+		in the Software without restriction, including without limitation the rights
+		to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+		copies of the Software, and to permit persons to whom the Software is
+		furnished to do so, subject to the following conditions:
+
+		The above copyright notice and this permission notice shall be included in all
+		copies or substantial portions of the Software.
+
+		THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+		IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+		FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+		AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+		SOFTWARE.
+
 */
 #pragma once
 #include <deque>
@@ -15,6 +31,8 @@
 #include "error.hpp"
 namespace Mer
 {
+	void build_token_stream(const std::string& content);
+	//=========================================================================
 	enum Tag:unsigned char
 	{
 		EPT=0,
@@ -218,6 +236,8 @@ namespace Mer
 		void remove_tokens();
 		void clear();
 	private:
+		friend void Mer::build_token_stream(const std::string& content);
+		std::vector<Token*> _rem_tok_vec;
 		std::vector<Token*> content;
 		size_t pos = 0;
 	};
@@ -267,10 +287,10 @@ namespace Mer
 	private:
 		char ch;
 	};
-	Token* parse_number(const std::string &str, size_t &pos);
-	Token* parse_word(const std::string &str, size_t &pos);
-	Token* parse_string(const std::string &str, size_t &pos);
-	void build_token_stream(const std::string &content);
+	//=======================================================
+	Token* parse_number(const std::string& str, size_t& pos);
+	Token* parse_word(const std::string& str, size_t& pos);
+	Token* parse_string(const std::string& str, size_t& pos);
 	extern TokenStream token_stream;
 	size_t get_line_no();
 	Token* parse_char(const std::string& str, size_t& pos);

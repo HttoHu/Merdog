@@ -44,6 +44,7 @@ namespace Mer
 		void set_new_func(const std::string & name, FunctionBase * func);
 		void set_new_var(const std::string &name,size_t type, Mem::Object obj);
 		Mem::Object find_var(const std::string &name);
+		~Namespace();
 	};
 	// 5-3 
 	/*

@@ -41,6 +41,7 @@ namespace Mer
 		std::string to_string()override;
 		std::vector<UptrPNode> stmts;
 		size_t* pc = new size_t(0);
+		~Program() { delete pc; }
 		size_t off = 0;
 		Token *identify;
 	};
@@ -90,7 +91,7 @@ namespace Mer
 		void process_unit(VarDeclUnit* a, size_t c_pos);
 		type_code_index pos;
 		type_code_index sum=0;
-		std::vector<ParserNode*> exprs;
+		std::vector<UptrPNode> exprs;
 		type_code_index type;
 	};
 	class GloVarDecl :public ParserNode
@@ -102,7 +103,7 @@ namespace Mer
 		void process_unit(VarDeclUnit* a, size_t c_pos);
 		type_code_index pos=0;
 		int sum=0;
-		std::vector<ParserNode*> exprs;
+		std::vector<UptrPNode> exprs;
 		type_code_index type;
 	};
 	// to convert type;

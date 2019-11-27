@@ -97,7 +97,6 @@ namespace Mer
 				_pcs.push_back(ret->pc);
 				current_ins_table = &(ret->stmts);
 				Parser::build_block();
-
 				ret->off = mem.function_block_size;
 				mem.reset_func_block_size();
 				_pcs.pop_back();
@@ -353,12 +352,12 @@ namespace Mer
 		{
 			auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SGARR);
 			glo_arr_id_recorder->count = var_unit->get_size() - 1;
-			this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), glo_arr_id_recorder);
+			this_namespace->sl_table->push_glo(Id::get_value(var_unit->get_id()), glo_arr_id_recorder);
 		}
 		else if (var_unit->pointer())
-			this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type + 1, pos));
+			this_namespace->sl_table->push_glo(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type + 1, pos));
 		else
-			this_namespace->sl_table->push(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos));
+			this_namespace->sl_table->push_glo(Id::get_value(var_unit->get_id()), new GVarIdRecorder(type, pos));
 	}
 
 	LocalVarDecl::LocalVarDecl(std::vector<VarDeclUnit*>& vec, type_code_index t) :type(t)
@@ -376,8 +375,10 @@ namespace Mer
 		{
 			_record_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 			process_unit(vec[i], tmp_pos);
-
 		}
+		// clear unit 
+		for (auto it : vec)
+			delete it;
 	}
 
 	Mem::Object LocalVarDecl::execute()
@@ -400,11 +401,12 @@ namespace Mer
 				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
 			// the info of the array.
 			auto array_info = new LConV(std::make_shared<Mem::Array>(type, c_pos, arr.size()), type);
-			exprs.push_back(array_info);
-			exprs.insert(exprs.end(), arr.begin(), arr.end());
+			exprs.push_back(std::unique_ptr<LConV>(array_info));
+			for (auto it : arr)
+				exprs.push_back(UptrPNode(it));
 		}
 		else {
-			exprs.push_back(static_cast<ParserNode*>(a->get_expr()));
+			exprs.push_back(UptrPNode(a->get_expr()));
 		}
 	}
 
@@ -423,8 +425,10 @@ namespace Mer
 		{
 			_record_glo_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 			process_unit(vec[i], tmp_pos);
-
+			
 		}
+		for (auto a : vec)
+			delete a;
 	}
 
 
@@ -446,12 +450,14 @@ namespace Mer
 				arr = static_cast<InitList*>(a->get_expr())->exprs();
 			else
 				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
+			// the info of the array.
 			auto array_info = new LConV(std::make_shared<Mem::Array>(type, c_pos, arr.size()), type);
-			exprs.push_back(array_info);
-			exprs.insert(exprs.end(), arr.begin(), arr.end());
+			exprs.push_back(std::unique_ptr<LConV>(array_info));
+			for (auto it : arr)
+				exprs.push_back(UptrPNode(it));
 		}
 		else {
-			exprs.push_back(static_cast<Expr*>(a->get_expr()));
+			exprs.push_back(UptrPNode(a->get_expr()));
 		}
 	}
 

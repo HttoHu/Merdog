@@ -183,7 +183,7 @@ void Mer::build_token_stream(const std::string& content) {
 		case '}':
 			for (auto& a : Id::id_table().front())
 			{
-				delete a.second;
+				token_stream._rem_tok_vec.push_back(a.second);
 			}
 			Id::id_table().pop_front();
 
@@ -234,6 +234,7 @@ void Mer::build_token_stream(const std::string& content) {
 			break;
 		case '\t':
 		case ' ':
+			break;
 		case '(':
 			if (is_function_args)
 				Id::id_table().push_back(std::map<std::string, Id*>());
@@ -385,7 +386,11 @@ void TokenStream::remove_tokens()
 }
 void TokenStream::clear()
 {
+	for (auto& a : _rem_tok_vec)
+		delete a;
+	_rem_tok_vec.clear();
 	remove_tokens();
+	
 	pos = 0;
 }
 

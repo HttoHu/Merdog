@@ -141,10 +141,7 @@ namespace Mer
 		{
 			data.push_front(std::map<std::string, WordRecorder*>());
 		}
-		void end_block()
-		{
-			data.pop_front();
-		}
+		void end_block();
 		void type_check(Token *id, ESymbol e)
 		{
 			auto result = find(Id::get_value(id));
@@ -170,6 +167,7 @@ namespace Mer
 			data.front().insert({ id,wr });
 		}
 		void print();
+		~SymbolTable();
 	private:
 		std::deque<std::map<std::string, WordRecorder*>> data;
 	};

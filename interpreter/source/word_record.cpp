@@ -6,6 +6,12 @@
 #include "../include/function.hpp"
 using namespace Mer;
 std::map<type_code_index, std::map<std::string, type_code_index>> type_op_type_map;
+void Mer::SymbolTable::end_block()
+{
+	for (auto& a : data.front())
+		delete a.second;
+	data.pop_front();
+}
 WordRecorder* Mer::SymbolTable::find(std::string id)
 
 {
@@ -30,6 +36,17 @@ void Mer::SymbolTable::print()
 		std::cout << "=================================\n";
 	}
 	std::cout << "#########################################\n\n\n";
+}
+
+Mer::SymbolTable::~SymbolTable()
+{
+	for (auto& a : data)
+	{
+		for (auto& b : a)
+		{
+			delete b.second;
+		}
+	}
 }
 
 FunctionBase* Mer::FuncIdRecorder::find(const std::vector<type_code_index>& pf)

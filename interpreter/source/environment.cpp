@@ -65,9 +65,8 @@ namespace Mer
 		try
 		{
 			Mer::build_token_stream(file_content);
-			//Parser::program()->execute();
-
-			token_stream.clear();
+			Parser::program()->execute();
+			clear();
 		}
 		catch (std::exception & e)
 		{
@@ -79,6 +78,7 @@ namespace Mer
 		catch (Mer::Error & e)
 		{
 			auto ret = e.what();
+			std::cout << ret;
 			token_stream.clear();
 			clear();
 			return ret;

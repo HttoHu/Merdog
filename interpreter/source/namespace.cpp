@@ -68,6 +68,11 @@ Mer::Mem::Object Mer::Namespace::find_var(const std::string& name)
 		throw Error("var " + name + " no found");
 }
 
+Mer::Namespace::~Namespace()
+{
+	delete sl_table;
+}
+
 
 Mer::Namespace* Mer::Parser::_find_namespace_driver(Mer::Namespace* current, const std::string& name)
 {
