@@ -23,8 +23,14 @@ TagStrMap	Mer::TagStr{
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"},{SIZEOF,"SIZEOF"},
 };
-TokenMap	Mer::KeyWord{
-	{"+",new Token(PLUS)},{"-",new Token(MINUS)},{"*",new Token(MUL)},{"/",new Token(DIV)},{";",new Token(SEMI)},
+TokenMap	Mer::BasicToken{
+	{"+",new Token(PLUS)},{"-",new Token(MINUS)},{"*",new Token(MUL)},{"/",new Token(DIV)},{"=",new Token(ASSIGN)},
+	{"+=",new Token(SADD)},{"-=",new Token(SSUB)},{"*=",new Token(SMUL)},{"/=",new Token(SDIV)},
+	{"<",new Token(LT)},{"<=",new Token(LE)},{">",new Token(GT)},{">=",new Token(GE)},{"==",new Token(EQ)},
+	{"!=",new Token(NE)},{"!",new Token(NOT)},{"&&",new Token(AND)},{"||",new Token(OR)},
+	{",",new Token(COMMA)},{";",new Token(SEMI)},{".",new Token(DOT)},{"&",new Token(GET_ADD)},{"->",new Token(PTRVISIT)},
+	{"[",new Token(LSB)},{"]",new Token(RSB)},{"(",new Token(LPAREN)},{")",new Token(RPAREN)},
+	{"{",new Token(BEGIN)},{"}",new Token(END)},
 	{ "using",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
 	{ "if",new Token(IF) },{ "elif",new Token(ELSE_IF) },{ "else",new Token(ELSE) },{"sizeof",new Token(SIZEOF)},
 	{ "while",new Token(WHILE) },{ "break",new Token(BREAK) },{ "for",new Token(FOR) }, {"do",new Token(DO)},{"switch",new Token(SWITCH)}, {"case",new Token(CASE)},
@@ -113,10 +119,10 @@ Token* Mer::parse_word(const std::string& str, size_t& pos)
 			}
 		}
 	}
-	auto result = Mer::KeyWord.find(ret);
+	auto result = Mer::BasicToken.find(ret);
 	if (ret == "function")
 		is_function_args = true;
-	if (result != Mer::KeyWord.end())
+	if (result != Mer::BasicToken.end())
 	{
 		return result->second;
 	}
@@ -124,7 +130,9 @@ Token* Mer::parse_word(const std::string& str, size_t& pos)
 	if (id_result != nullptr)
 		return id_result;
 	else
+	{
 		return new Id(ret);
+	}
 }
 Token* Mer::parse_string(const std::string& str, size_t& pos)
 {
@@ -167,117 +175,69 @@ void Mer::build_token_stream(const std::string& content) {
 			break;
 		case '{':
 			if (!is_function_args)
-			{
 				Id::id_table().push_front(std::map<std::string, Id*>());
-			}
 			else
 				is_function_args = false;
-			token_stream.push_back(new Token(BEGIN));
+			token_stream.push_back(BasicToken[std::string(1, content[i])]);
 			break;
 		case '}':
+			for (auto& a : Id::id_table().front())
+			{
+				delete a.second;
+			}
 			Id::id_table().pop_front();
 
-			token_stream.push_back(new Token(END));
+			token_stream.push_back(BasicToken["}"]);
 			break;
 		case ',':
-			token_stream.push_back(new Token(COMMA));
+			token_stream.push_back(BasicToken[","]);
 			break;
 		case '&':
 			if (i + 1 < content.size() && content[i + 1] == '&')
 			{
-				token_stream.push_back(new Token(AND));
+				token_stream.push_back(BasicToken["&&"]);
 				i++;
 				break;
 			}
 			else
-				token_stream.push_back(new Token(GET_ADD));
+				token_stream.push_back(BasicToken["&"]);
 			break;
 		case '|':
 			if (i + 1 < content.size() && content[i + 1] == '|')
 			{
-				token_stream.push_back(new Token(OR));
+				token_stream.push_back(BasicToken["||"]);
 				i++;
 			}
 			break;
-		case '<':
-			if (i + 1 < content.size() && content[i + 1] == '=')
-			{
-				token_stream.push_back(new Token(LE));
-				i++;
-			}
-			else
-				token_stream.push_back(new Token(LT));
-			break;
+		case '+':
 		case '>':
-			if (i + 1 < content.size() && content[i + 1] == '=')
-			{
-				token_stream.push_back(new Token(GE));
-				i++;
-			}
-			else
-				token_stream.push_back(new Token(GT));
-			break;
+		case '<':
 		case '=':
-			if (i + 1 < content.size() && content[i + 1] == '=')
-			{
-				token_stream.push_back(new Token(EQ));
-				i++;
-			}
-			else
-			{
-				token_stream.push_back(new Token(ASSIGN));
-			}
-			break;
 		case '!':
+		case '*':
+		{
+			std::string str = std::string(1, content[i]);
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
-				token_stream.push_back(new Token(NE));
-				i++;
+				str += content[++i];
 			}
-			else
-				token_stream.push_back(new Token(NOT));
+			token_stream.push_back(BasicToken[str]);
 			break;
-		case ':':
-			if (i + 1 < content.size() && content[i + 1] == '=')
-			{
-				token_stream.push_back(new Token(ASSIGN));
-				i++;
-			}
-			else
-				token_stream.push_back(new Token(COLON));
-			break;
+		}
 		case ';':
-			token_stream.push_back(KeyWord[";"]);
-			break;
+		case ':':
 		case '.':
-			token_stream.push_back(new Token(DOT));
+		case '[':
+		case ']':
+		case ')':
+			token_stream.push_back(BasicToken[std::string(1, content[i])]);
 			break;
 		case '\t':
-			break;
 		case ' ':
-			break;
-		case '[':
-			token_stream.push_back(new Token(LSB));
-			break;
-		case ']':
-			token_stream.push_back(new Token(RSB));
-			break;
 		case '(':
 			if (is_function_args)
 				Id::id_table().push_back(std::map<std::string, Id*>());
-			token_stream.push_back(new Token(LPAREN));
-			break;
-		case ')':
-			token_stream.push_back(new Token(RPAREN));
-			break;
-		case '*':
-			if (i + 1 < content.size() && content[i + 1] == '=')
-			{
-				token_stream.push_back(new Token(SMUL));
-				i++;
-				break;
-			}
-			token_stream.push_back(KeyWord["*"]);
+			token_stream.push_back(BasicToken["("]);
 			break;
 		case '/':
 			if (i + 1 < content.size() && content[i + 1] == '/')
@@ -309,35 +269,27 @@ void Mer::build_token_stream(const std::string& content) {
 			}
 			else if (i + 1 < content.size() && content[i + 1] == '=')
 			{
-				token_stream.push_back(new Token(SDIV));
+				token_stream.push_back(BasicToken["/="]);
 				i++;
 				break;
 			}
-			token_stream.push_back(KeyWord["/"]);
+			token_stream.push_back(BasicToken["/"]);
 			break;
-		case '+':
-			if (i + 1 < content.size() && content[i + 1] == '=')
-			{
-				token_stream.push_back(new Token(SADD));
-				i++;
-				break;
-			}
-			token_stream.push_back(KeyWord["+"]);
-			break;
+
 		case '-':
 			if (i + 1 < content.size() && content[i + 1] == '=')
 			{
-				token_stream.push_back(new Token(SSUB));
+				token_stream.push_back(BasicToken["-="]);
 				i++;
 				break;
 			}
 			else if (content[i + 1] == '>')
 			{
-				token_stream.push_back(new Token(PTRVISIT));
+				token_stream.push_back(BasicToken["->"]);
 				i++;
 				break;
 			}
-			token_stream.push_back(KeyWord["-"]);
+			token_stream.push_back(BasicToken["-"]);
 			break;
 		case '0':case '1':case '2':case '3':case '4':case '5':case '6':
 		case '7':case '8':case '9':
@@ -401,8 +353,8 @@ void TokenStream::remove_tokens()
 		index++;
 		switch (a->get_tag())
 		{
-		case END:
 		case ENDL:
+		case CHAR_LIT:
 		case INTEGER:
 		case REAL:
 		case STRING:
@@ -424,7 +376,6 @@ void TokenStream::remove_tokens()
 		{
 			delete b.second;
 		}
-		a.clear();
 	}
 	Id::id_table().clear();
 	Id::id_table().push_back(std::map<std::string, Id*>());

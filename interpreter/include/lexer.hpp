@@ -56,7 +56,7 @@ namespace Mer
 	private:
 		Tag token_type;
 	};
-	extern std::map<std::string, Token*>KeyWord;
+	extern std::map<std::string, Token*>BasicToken;
 	extern Token* END_TOKEN;
 	// extern std::map<std::string,Token*> key_map;
 	class Id final :public Token
