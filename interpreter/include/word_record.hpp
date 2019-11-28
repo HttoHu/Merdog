@@ -114,6 +114,8 @@ namespace Mer
 		bool dnt_check = false;
 		FuncIdRecorder(FunctionBase* fb);
 		std::map<std::vector<type_code_index>,FunctionBase*,decltype(compare_param_feature)*> functions;
+
+		~FuncIdRecorder();
 	private:
 
 	};
@@ -169,6 +171,7 @@ namespace Mer
 		void print();
 		~SymbolTable();
 	private:
+		std::vector<WordRecorder*> _rem_vec;
 		std::deque<std::map<std::string, WordRecorder*>> data;
 	};
 }

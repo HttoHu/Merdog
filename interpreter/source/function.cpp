@@ -12,7 +12,7 @@
 using namespace Mer;
 
 std::map<type_code_index, _compare_operator> Mer::compare_map;
-std::map<std::string, Function*> Mer::function_table;
+std::set<FunctionBase*> Mer::rem_functions;
 std::map<InitKey, FunctionBase*> Mer::type_init_function_map;
 std::map<type_code_index, Mem::Object> Mer::type_init_map;
 //=============================================================
@@ -91,13 +91,15 @@ Param* Mer::Parser::build_param()
 		}
 		auto name = new NamePart();
 
-		size_t pos = mem.push(name->get_count()) - 1;
+		size_t pos = mem.push(name->get_count()) - 1u;
 		tsymbol_table->push(Id::get_value(name->get_id()), new VarIdRecorder(type, pos, es));
 		ret->push_new_param(type, pos);
+		delete name;
 		if (token_stream.this_tag() == COMMA)
 			token_stream.match(COMMA);
 		else
 			break;
+
 	}
 	token_stream.match(RPAREN);
 	return ret;
@@ -159,8 +161,6 @@ void Mer::Parser::build_function()
 	mem.new_block();
 	auto param = build_param();
 	auto param_feature = param->get_param_feature();
-
-
 	if (token_stream.this_tag() == SEMI)
 	{
 		mem.end_block();
@@ -170,7 +170,6 @@ void Mer::Parser::build_function()
 		ret->is_completed = false;
 		return;
 	}
-
 
 	auto finder = this_namespace->sl_table->find(name);
 	FuncIdRecorder* func_recorder = nullptr;
@@ -314,15 +313,6 @@ Mer::Function::Function(type_code_index t, Param* p) :
 
 Mer::Function::Function(type_code_index t) :type(t) {}
 
-
-void Mer::Function::reser_param(Param* p)
-{
-	for (const auto& a : param->get_param_table())
-	{
-		param_types.push_back(a.first);
-	}
-}
-
 Mem::Object Mer::Function::run(const std::vector<Mem::Object>& objs)
 {
 	mem.new_func(off);
@@ -339,9 +329,10 @@ Mem::Object Mer::Function::run(const std::vector<Mem::Object>& objs)
 	return function_ret;
 }
 
-void Mer::Function::set_function_block()
+Mer::Function::~Function()
 {
-
+	delete pc;
+	delete param;
 }
 
 void Mer::SystemFunction::check_param(const std::vector<type_code_index>& types)

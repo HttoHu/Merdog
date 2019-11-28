@@ -9,7 +9,7 @@ std::map<type_code_index, std::map<std::string, type_code_index>> type_op_type_m
 void Mer::SymbolTable::end_block()
 {
 	for (auto& a : data.front())
-		delete a.second;
+		_rem_vec.push_back(a.second);
 	data.pop_front();
 }
 WordRecorder* Mer::SymbolTable::find(std::string id)
@@ -40,6 +40,10 @@ void Mer::SymbolTable::print()
 
 Mer::SymbolTable::~SymbolTable()
 {
+	for (auto a : _rem_vec)
+	{
+		delete a;
+	}
 	for (auto& a : data)
 	{
 		for (auto& b : a)
@@ -59,3 +63,11 @@ FunctionBase* Mer::FuncIdRecorder::find(const std::vector<type_code_index>& pf)
 }
 
 Mer::FuncIdRecorder::FuncIdRecorder(FunctionBase* fb) :WordRecorder(ESymbol::SFUN, fb->get_type()), functions(compare_param_feature) {}
+
+Mer::FuncIdRecorder::~FuncIdRecorder()
+{
+	for (auto &a : functions)
+	{
+		rem_functions.insert(a.second);
+	}
+}

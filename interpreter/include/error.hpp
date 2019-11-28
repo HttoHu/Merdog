@@ -25,7 +25,7 @@
 #pragma once
 #include <exception>
 #include <string>
-#include <stdio.h>
+#include <vector>
 #include <iostream>
 #define DEBUG_TOOLS(msg) printf("FILE: %s, LINE: %d,FUNCTION: %s,CONTENT: %s",\
 __FILE__, __LINE__ , __FUNCTION__,msg)
@@ -44,4 +44,19 @@ namespace Mer
 	private:
 		std::string ems;
 	};
+	class LogTable
+	{
+	public:
+		void enable_log() { enable = true; }
+		void disable_log() { enable = false; }
+		void write(std::string str) {
+			if (enable) { infos.push_back(str); std::cout << str << std::endl; }
+		}
+		void clear() { infos.clear(); }
+		void print() { for (auto a : infos)std::cout << a<<std::endl; }
+	private:
+		bool enable=false;
+		std::vector<std::string> infos;
+	};
+	extern LogTable mer_log;
 }

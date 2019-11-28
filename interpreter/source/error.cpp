@@ -5,6 +5,7 @@
 #include "../include/error.hpp"
 #include "../include/lexer.hpp"
 using namespace Mer;
+LogTable Mer::mer_log;
 size_t Mer::get_line_no()
 {
 	auto content = token_stream._get_content();

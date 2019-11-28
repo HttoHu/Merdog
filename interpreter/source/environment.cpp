@@ -12,6 +12,7 @@
 #include "../include/clib/containers.hpp"
 #include "../include/clib/dictionary.hpp"
 #include "../include/clib/utility.hpp"
+#include "../include/function.hpp"
 #include "../include/memory.hpp"
 std::map<std::string, void(*)()> Mer::repository{
 	{"vector",Mer::Container::using_vector},{"deque",Mer::Container::using_deque},
@@ -31,13 +32,22 @@ namespace Mer
 	{
 		void clear()
 		{
+
 			Mer::token_stream.clear();
-			Mer::function_table.clear();
+
 			delete Mer::root_namespace;
 			Mer::root_namespace = new Mer::Namespace(nullptr);
 			Mer::this_namespace = Mer::root_namespace;
-			Mer::function_table.clear();
+			std::vector<FunctionBase*> vec;
+			for (auto a : rem_functions)
+			{	
+				delete a;
+			}
+			Mer::rem_functions.clear();
+
+			Mer::pre_stmt.clear();
 			Mer::mem.get_current() = 0;
+			Mer::mem.get_index() = 0;
 			Mem::_clear_type_info();
 		}
 		void _merdog_init_()
@@ -65,7 +75,7 @@ namespace Mer
 		try
 		{
 			Mer::build_token_stream(file_content);
-			Parser::program()->execute();
+			Parser::program();
 			clear();
 		}
 		catch (std::exception & e)

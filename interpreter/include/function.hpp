@@ -68,9 +68,11 @@ namespace Mer
 		// covert args' type in order to comply with params' type.
 		virtual Mem::Object run(const std::vector<Mem::Object>& objs) { return nullptr; }
 		std::vector<type_code_index> param_types;
-		bool is_completed=false;
 		bool is_check_type() { return check_param_type; }
 		std::string to_string(std::string name="no_name_func")const ;
+		virtual ~FunctionBase() {}
+
+		bool is_completed = false;
 	protected:
 		bool check_param_type = true;
 
@@ -80,17 +82,16 @@ namespace Mer
 	public:
 		Function(type_code_index t, Param *p);
 		Function(type_code_index t);
-		void reser_param(Param *p);
 		Param *param=nullptr;
 		Mem::Object run(const std::vector<Mem::Object> &objs)override;
 		type_code_index get_type()override { return type; }
-		void set_function_block();
 		std::vector<UptrPNode> stmts;
 		size_t* pc=new size_t(0);
-		size_t off;
+		size_t off=0;
+		~Function();
 	private:
 
-		size_t param_size;
+		size_t param_size=0;
 		type_code_index type;
 	};
 	class SystemFunction :public FunctionBase 
@@ -133,7 +134,8 @@ namespace Mer
 		void build_function();
 		std::pair<std::string,Function*> _build_function();
 	}
-	extern std::map<std::string, Function*> function_table;
+	// the set of functions which will be deleted when the program exit;
+	extern std::set<FunctionBase*> rem_functions;
 	extern std::map<InitKey, FunctionBase*> type_init_function_map;
 	extern std::map<type_code_index, Mem::Object> type_init_map;
 	extern std::map<type_code_index, _compare_operator> compare_map;

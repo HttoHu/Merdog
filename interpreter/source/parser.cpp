@@ -13,7 +13,7 @@
 #include "../include/namespace.hpp"
 namespace Mer
 {
-	std::vector<ParserNode*> pre_stmt;
+	std::vector<UptrPNode> pre_stmt;
 	class For;
 	class If;
 	namespace Parser
@@ -23,7 +23,7 @@ namespace Mer
 	Mem::Object Program::execute()
 	{
 		mem.new_func(off);
-		for (auto a : pre_stmt)
+		for (auto &a : pre_stmt)
 		{
 			a->execute();
 		}
@@ -63,6 +63,7 @@ namespace Mer
 	std::unique_ptr<Program> Parser::program()
 	{
 		int programe_num = 0;
+		global_stmt() = true;
 		auto ret = std::make_unique<Program>(nullptr);
 		while (1)
 		{
@@ -110,7 +111,7 @@ namespace Mer
 				return ret;
 			case ID:
 			default:
-				pre_stmt.push_back(Parser::statement());
+				pre_stmt.push_back(UptrPNode(Parser::statement()));
 				break;
 			}
 		}
@@ -227,7 +228,7 @@ namespace Mer
 			}
 			auto c = token_stream.this_token();
 			// get element count
-			count = Integer::get_value(c) + 1;
+			count = (size_t)Integer::get_value(c) + (size_t)1;
 			token_stream.match(INTEGER);
 			token_stream.match(RSB);
 		}
@@ -425,19 +426,20 @@ namespace Mer
 		{
 			_record_glo_id(vec[i], type, tmp_pos += vec[i - 1]->get_size());
 			process_unit(vec[i], tmp_pos);
-			
 		}
 		for (auto a : vec)
+		{
 			delete a;
+		}
 	}
 
 
 	Mem::Object GloVarDecl::execute()
 	{
 		for (int i = 0; i < sum; i++) {
-			mem[pos + i] = exprs[i]->execute()->clone();
+			mem[pos + (size_t)i] = exprs[i]->execute()->clone();
 		}
-		return Mem::Object(nullptr);
+		return nullptr;
 	}
 
 	void GloVarDecl::process_unit(VarDeclUnit* a, size_t c_pos)

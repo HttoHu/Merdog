@@ -75,7 +75,7 @@ namespace Mer
 		{
 			while (index + current > capacity/2)
 			{ 
-				std::cout << "ALLOC MEM\n";
+				std::cout << "ALLOC MEM Current: "<<current<<"\n";
 				alloc();
 				capacity *= 2;
 				current = capacity -1;

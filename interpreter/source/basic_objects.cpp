@@ -234,7 +234,7 @@ namespace Mer
 		{
 			throw std::runtime_error("array overflow!");
 		}
-		return mem[size_t(pos) + size_t(i) + 1];
+		return mem[pos + i + 1];
 	}
 
 	Mem::Object Mem::Array::clone() const
