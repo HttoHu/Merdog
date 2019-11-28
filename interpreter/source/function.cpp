@@ -341,6 +341,11 @@ void Mer::SystemFunction::check_param(const std::vector<type_code_index>& types)
 		FunctionBase::check_param(types);
 }
 
+Mer::SystemFunction::~SystemFunction()
+{
+
+}
+
 bool Mer::InitKey::operator<(const InitKey& init_key) const
 {
 	if (type_code != init_key.type_code)

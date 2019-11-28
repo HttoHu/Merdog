@@ -43,9 +43,9 @@ namespace Mer
 		class Type
 		{
 		public:
-			enum kind {
+			enum class kind {
 				single = 0, container = 1, dictionary = 2,structure=3,
-			}type_kind = single;
+			}type_kind = kind::single;
 			Type(const std::string& _name, type_code_index bt, const std::set<type_code_index>& _convertible_types)
 				:name(_name), type_code(bt), convertible_types(_convertible_types) {}
 			bool convertible(const type_code_index& t);

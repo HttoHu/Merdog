@@ -49,25 +49,23 @@ namespace Mer
 			return nullptr;
 		}
 	}
-	SystemFunction* time_record = new SystemFunction(Mem::INT, _time_record);
-	SystemFunction* random_int=new SystemFunction(Mem::INT,_random_int);
-	SystemFunction* sleep = new SystemFunction(Mem::BVOID, _sleep);
-	SystemFunction* csystem = new SystemFunction(Mem::BVOID, _system);
-	SystemFunction* alloc_heap= new SystemFunction(Mem::BVOID, _alloc_heap);
-	SystemFunction* type = new SystemFunction(Mem::BVOID, _get_type);
-}
 
+}
 void Mer::set_utility()
 {
+	SystemFunction* time_record = new SystemFunction(Mem::INT, _time_record);
+	SystemFunction* random_int = new SystemFunction(Mem::INT, _random_int);
+	SystemFunction* sleep = new SystemFunction(Mem::BVOID, _sleep);
+	SystemFunction* csystem = new SystemFunction(Mem::BVOID, _system);
+	SystemFunction* type = new SystemFunction(Mem::BVOID, _get_type);
 	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 	sleep->set_param_types({ Mer::Mem::BasicType::INT });
 	type->dnt_check_param();
 	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
-	mstd->set_new_func("clock",  Mer::time_record);
-	mstd->set_new_func("rand_int",  Mer::random_int);
-	mstd->set_new_func("sleep",  Mer::sleep);
-	root_namespace->set_new_func("type", Mer::type);
-	root_namespace->set_new_func("system",  Mer::csystem);
-	root_namespace->set_new_func("_heap_mem_check", Mer::alloc_heap);
+	mstd->set_new_func("clock",  time_record);
+	mstd->set_new_func("rand_int",  random_int);
+	mstd->set_new_func("sleep",  sleep);
+	root_namespace->set_new_func("type", type);
+	root_namespace->set_new_func("system",  csystem);
 
 }

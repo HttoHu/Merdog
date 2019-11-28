@@ -86,7 +86,7 @@ Token* Mer::parse_number(const std::string& str, size_t& pos)
 			if (isdigit(str[pos]))
 			{
 				tmp2 /= 10;
-				tmp = tmp + tmp2 * (str[pos] - 48);
+				tmp = tmp + tmp2 * (str[pos] - (size_t)48);
 			}
 			else
 			{

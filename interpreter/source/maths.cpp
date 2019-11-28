@@ -80,19 +80,19 @@ namespace Mer
 			return std::make_shared<Mem::Double>(d);
 		}
 	}
-	Namespace *maths = new Namespace(nullptr);
-	Mer::SystemFunction *min = new SystemFunction(Mem::DOUBLE, _min);
-	Mer::SystemFunction *sin = new SystemFunction(Mem::DOUBLE, _sin);
-	Mer::SystemFunction *cos = new SystemFunction(Mem::DOUBLE, _cos);
-	Mer::SystemFunction *tan = new SystemFunction(Mem::DOUBLE, _tan);
-	Mer::SystemFunction *arsin = new SystemFunction(Mem::DOUBLE, _arsin);
-	Mer::SystemFunction *arcos = new SystemFunction(Mem::DOUBLE, _arcos);
-	Mer::SystemFunction *artan = new SystemFunction(Mem::DOUBLE, _artan);
-	Mer::SystemFunction *mod = new SystemFunction(Mem::INT, _mod);
-	Mer::SystemFunction *sqrt = new SystemFunction(Mem::DOUBLE, _sqrt);
-	Mer::SystemFunction *abs = new SystemFunction(Mem::DOUBLE, _abs);
+	Namespace* maths = new Namespace(nullptr);
 	void set_maths()
 	{
+		Mer::SystemFunction* min = new SystemFunction(Mem::DOUBLE, _min);
+		Mer::SystemFunction* sin = new SystemFunction(Mem::DOUBLE, _sin);
+		Mer::SystemFunction* cos = new SystemFunction(Mem::DOUBLE, _cos);
+		Mer::SystemFunction* tan = new SystemFunction(Mem::DOUBLE, _tan);
+		Mer::SystemFunction* arsin = new SystemFunction(Mem::DOUBLE, _arsin);
+		Mer::SystemFunction* arcos = new SystemFunction(Mem::DOUBLE, _arcos);
+		Mer::SystemFunction* artan = new SystemFunction(Mem::DOUBLE, _artan);
+		Mer::SystemFunction* mod = new SystemFunction(Mem::INT, _mod);
+		Mer::SystemFunction* sqrt = new SystemFunction(Mem::DOUBLE, _sqrt);
+		Mer::SystemFunction* abs = new SystemFunction(Mem::DOUBLE, _abs);
 		maths = root_namespace;
 		min->set_param_types({ Mem::DOUBLE,Mem::DOUBLE });
 		sqrt->set_param_types({ Mem::DOUBLE });

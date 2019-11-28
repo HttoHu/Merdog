@@ -54,7 +54,7 @@ namespace Mer
 			// record
 			std::string mem_name = Id::get_value(token_stream.this_token());
 			us->push_new_children(type, mem_name);
-			auto id_recorder = new MVarRecorder(type, (us->be) - 1);
+			auto id_recorder = new MVarRecorder(type, (size_t)(us->be) - 1u);
 			tsymbol_table->push(mem_name, id_recorder);
 			us->structure_member_table.insert({ mem_name,id_recorder });
 
@@ -81,7 +81,7 @@ namespace Mer
 	}
 
 
-	UStructure* find_ustructure_t(size_t type)
+	UStructure* find_ustructure_t(type_code_index type)
 	{
 		auto result = type_name_mapping.find(type);
 		if (result == type_name_mapping.end())

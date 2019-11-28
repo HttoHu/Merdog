@@ -136,7 +136,8 @@ namespace Mer
 				continue;
 			}
 			// find struct info
-			auto ustruct = find_ustructure_t(type_code + (type_code % 2 - 1));
+			auto bias = type_code+ (type_code % 2 - 1);
+			auto ustruct = find_ustructure_t(bias);
 			// find member index and type;
 			auto seeker = ustruct->get_member_info(Id::get_value(member_id));
 			result=new Index(result, seeker.second, seeker.first);
@@ -454,7 +455,7 @@ namespace Mer
 		type_code_index type_code = Mem::get_type_code();
 		if (token_stream.this_tag() == LPAREN)
 		{
-			expr = (new Expr(type_code))->tree;
+			expr = Expr(type_code).root();
 		}
 		else if (token_stream.this_tag() == BEGIN)
 		{

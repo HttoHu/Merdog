@@ -14,8 +14,6 @@
 namespace Mer
 {
 	std::vector<UptrPNode> pre_stmt;
-	class For;
-	class If;
 	namespace Parser
 	{
 		ParserNode* statement();
@@ -304,7 +302,7 @@ namespace Mer
 		{
 			token_stream.match(ASSIGN);
 			// container init list
-			if (token_stream.this_tag() == BEGIN && type_info->second->type_kind == Mem::Type::container)
+			if (token_stream.this_tag() == BEGIN && type_info->second->type_kind == Mem::Type::kind::container)
 			{
 				size_t element_type = Mem::demerge(type_code).second;
 				auto ilist = new InitList(element_type);
@@ -325,7 +323,7 @@ namespace Mer
 			return;
 		}
 		// container var decl
-		if (type_info->second->type_kind == Mem::Type::container)
+		if (type_info->second->type_kind == Mem::Type::kind::container)
 		{
 			expr = new LConV(Mem::create_var_t(t), t);
 			return;
@@ -352,7 +350,7 @@ namespace Mer
 		if (var_unit->arr())
 		{
 			auto glo_arr_id_recorder = new GVarIdRecorder(type, pos, ESymbol::SGARR);
-			glo_arr_id_recorder->count = var_unit->get_size() - 1;
+			glo_arr_id_recorder->count = var_unit->get_size() - 1u;
 			this_namespace->sl_table->push_glo(Id::get_value(var_unit->get_id()), glo_arr_id_recorder);
 		}
 		else if (var_unit->pointer())
@@ -472,7 +470,7 @@ namespace Mer
 		token_stream.next();
 		token_stream.match(GT);
 		token_stream.match(LPAREN);
-		expr = new Expr();
+		expr = Expr().root();
 		token_stream.match(RPAREN);
 	}
 

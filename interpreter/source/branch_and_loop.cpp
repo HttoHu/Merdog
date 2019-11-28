@@ -41,7 +41,7 @@ namespace Mer
 					break;
 				case RETURN:
 					token_stream.match(RETURN);
-					current_ins_table->push_back(std::make_unique<Return>(_pcs.back(), new Expr()));
+					current_ins_table->push_back(std::make_unique<Return>(_pcs.back(), Expr().root()));
 					token_stream.match(SEMI);
 					break;
 				case FOR:
@@ -460,7 +460,7 @@ namespace Mer
 		ret += " default pos: " + std::to_string(*default_pos);
 		return ret;
 	}
-	Return::Return(size_t* _pc, Expr* _expr) :pc(_pc), expr(_expr)
+	Return::Return(size_t* _pc, ParserNode* _expr) :pc(_pc), expr(_expr)
 	{
 		if (current_function_rety != expr->get_type())
 			throw Error("return type not matched with function return type");
@@ -471,6 +471,10 @@ namespace Mer
 		function_ret = expr->execute();
 		*pc = *des;
 		return nullptr;
+	}
+	Return::~Return()
+	{
+		delete expr;
 	}
 	Mem::Object CharCaseSet::execute()
 	{

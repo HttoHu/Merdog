@@ -174,7 +174,7 @@ namespace Mer
 			Mem::container_register.insert({ Vector::vector_type_code,register_new_vector_type });
 			Mem::type_index.insert({ "vector" ,Vector::vector_type_code });
 			auto vec_type = new Mem::Type("vector", Vector::vector_type_code, { (type_code_index)Vector::vector_type_code });
-			vec_type->type_kind = Mem::Type::container;
+			vec_type->type_kind = Mem::Type::kind::container;
 			Mem::type_map.insert({ Vector::vector_type_code,
 				 vec_type });
 		}
@@ -189,7 +189,7 @@ namespace Mer
 			Mem::container_register.insert({ Deque::deque_type_code,register_new_deque_type });
 			Mem::type_index.insert({ "deque" ,(size_t)Deque::deque_type_code });
 			auto deque_type = new Mem::Type("deque", Deque::deque_type_code, { (type_code_index)Deque::deque_type_code });
-			deque_type->type_kind = Mem::Type::container;
+			deque_type->type_kind = Mem::Type::kind::container;
 			Mem::type_map.insert({ Deque::deque_type_code,
 				 deque_type });
 		}
@@ -203,7 +203,7 @@ namespace Mer
 			type_init_map[cur_type] = std::make_shared<Deque>();
 			// set type
 			auto deq_type = new Mem::Type("deque", cur_type, { cur_type });
-			deq_type->type_kind = Mem::Type::container;
+			deq_type->type_kind = Mem::Type::kind::container;
 			Mem::type_map.insert({ cur_type, deq_type });
 			// set []
 			Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });
@@ -227,7 +227,7 @@ namespace Mer
 			type_init_map[cur_type] = std::make_shared<Vector>();
 			// set type
 			auto vec_type = new Mem::Type("vector", cur_type, { cur_type });
-			vec_type->type_kind = Mem::Type::container;
+			vec_type->type_kind = Mem::Type::kind::container;
 			Mem::type_map.insert({ cur_type, vec_type });
 			// set []
 			Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });

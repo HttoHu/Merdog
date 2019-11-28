@@ -216,7 +216,7 @@ namespace Mer
 	private:
 		std::vector<ParserNode*> init_v;
 		type_code_index type;
-		size_t size;
+		size_t size=0;
 	};
 	class GetAdd :public ParserNode
 	{

@@ -112,6 +112,7 @@ namespace Mer
 		{
 			check_param_type = false;
 		}
+		~SystemFunction();
 	private:
 		type_code_index type;
 

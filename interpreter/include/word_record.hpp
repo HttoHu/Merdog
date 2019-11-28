@@ -66,6 +66,7 @@ namespace Mer
 		{
 			return "pos:" + std::to_string(pos);
 		}
+		~VarIdRecorder();
 		// to get array size;
 	private:
 	};

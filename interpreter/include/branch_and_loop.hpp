@@ -37,12 +37,13 @@ namespace Mer
 	class Return : public ParserNode
 	{
 	public:
-		Return(size_t* _pc, Expr* _expr);
+		Return(size_t* _pc, ParserNode* _expr);
 		Mem::Object execute()override;
+		~Return();
 	private:
 		PosPtr des;
 		size_t* pc;
-		Expr* expr;
+		ParserNode* expr;
 	};
 	class Continue :public ParserNode
 	{
@@ -72,6 +73,7 @@ namespace Mer
 		Mem::Object execute()override;
 		size_t *pc;
 		PosPtr default_pos;
+		~CharCaseSet() { delete expr; }
 	private:
 		ParserNode* expr;
 	};
@@ -84,6 +86,7 @@ namespace Mer
 		std::string to_string()override;
 		size_t *pc;
 		PosPtr default_pos;
+		~IntCaseSet() { delete expr; }
 	private:
 		ParserNode* expr;
 	};
@@ -96,6 +99,7 @@ namespace Mer
 		std::string to_string()override;
 		size_t* pc;
 		PosPtr default_pos;
+		~StrCaseSet() { delete expr; }
 	private:
 		ParserNode* expr;
 	};
@@ -105,6 +109,7 @@ namespace Mer
 		IfTrueToAOrB(size_t* _pc, PosPtr _true_tag, PosPtr _false_tag, ParserNode* _expr) : pc(_pc), true_tag(_true_tag), false_tag(_false_tag), expr(_expr) {}
 		Mem::Object execute()override;
 		std::string to_string()override;
+		~IfTrueToAOrB() { delete expr; }
 	private:
 		size_t* pc;
 		PosPtr true_tag;

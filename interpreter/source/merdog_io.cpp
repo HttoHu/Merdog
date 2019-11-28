@@ -164,13 +164,7 @@ namespace Mer
 #endif 
 	}
 	Namespace* mstd = new Namespace(nullptr);
-	Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
-	Mer::SystemFunction* str_size = new SystemFunction(Mem::BasicType::INT, _str_size);
-	Mer::SystemFunction* cout = new SystemFunction(Mem::BasicType::BVOID, _cout);
-	Mer::SystemFunction* input_int = new SystemFunction(Mem::BasicType::INT, _input_int);
-	Mer::SystemFunction* input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
-	Mer::SystemFunction* input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
-	Mer::SystemFunction* input_char = new SystemFunction(Mem::BasicType::CHAR, _input_char);
+
 #ifdef COMPILE_MERDOG_NEED_CXX17s
 	void set_file_operator_class()
 	{
@@ -215,17 +209,24 @@ namespace Mer
 #endif
 	void set_io()
 	{
+		Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
+		Mer::SystemFunction* str_size = new SystemFunction(Mem::BasicType::INT, _str_size);
+		Mer::SystemFunction* cout = new SystemFunction(Mem::BasicType::BVOID, _cout);
+		Mer::SystemFunction* input_int = new SystemFunction(Mem::BasicType::INT, _input_int);
+		Mer::SystemFunction* input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
+		Mer::SystemFunction* input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
+		Mer::SystemFunction* input_char = new SystemFunction(Mem::BasicType::CHAR, _input_char);
 		cout->dnt_check_param();
-		substr->set_param_types({  Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
+		// set string===========================================
+		substr->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ });
-		Mer::root_namespace->children.insert({ "std", mstd });
-		// set string
 		member_function_table[Mem::STRING]["substr"] = substr;
 		member_function_table[Mem::STRING]["size"] = str_size;
 		// string init
 		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
 		str_init->set_param_types({ Mem::INT,Mem::CHAR });
 		type_init_function_map[InitKey(Mem::STRING, std::vector<type_code_index>{ Mem::INT, Mem::CHAR })] = str_init;
+		//======================================================
 		mstd->set_new_func("cout", cout);
 		mstd->set_new_func("input_int", input_int);
 		mstd->set_new_func("input_real", input_real);

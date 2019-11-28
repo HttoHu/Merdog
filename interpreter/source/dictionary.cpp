@@ -137,7 +137,7 @@ namespace Mer
 		Mem::container_register.insert({ tc,register_set });
 		Mem::type_index.insert({ "set" ,tc });
 		auto set_type = new Mem::Type("set", tc, { tc });
-		set_type->type_kind = Mem::Type::container;
+		set_type->type_kind = Mem::Type::kind::container;
 		Mem::type_map.insert({ tc,
 			 set_type });
 	}
@@ -146,7 +146,7 @@ namespace Mer
 		type_code_index cur_type = Mem::merge(Container::Set::type_code, element_type);
 		type_init_map[cur_type] = std::make_shared<Container::Set>(element_type);
 		auto set_type = new Mem::Type("set<" + type_to_string(element_type) + ">", cur_type, { cur_type });
-		set_type->type_kind = Mem::Type::container;
+		set_type->type_kind = Mem::Type::kind::container;
 		Mem::type_map.insert({ cur_type, set_type });
 
 		if (compare_map.find(element_type) == compare_map.end())
@@ -166,7 +166,7 @@ namespace Mer
 		type_code_index cur_type = Mem::merge(Container::Map::type_code, element_type);
 		type_init_map[cur_type] = std::make_shared<Container::Map>(key_type);
 		auto map_type = new Mem::Type("map<" + type_to_string(key_type) + "," + type_to_string(value_type) + ">", cur_type, { cur_type });
-		map_type->type_kind = Mem::Type::container;
+		map_type->type_kind = Mem::Type::kind::container;
 		Mem::type_map.insert({ cur_type, map_type });
 
 		if (compare_map.find(key_type) == compare_map.end())
@@ -192,7 +192,7 @@ namespace Mer
 		Mem::container_register.insert({ tc,register_map });
 		Mem::type_index.insert({ "map" ,tc });
 		auto map_type = new Mem::Type("map", tc, { tc });
-		map_type->type_kind = Mem::Type::container;
+		map_type->type_kind = Mem::Type::kind::container;
 		Mem::type_map.insert({ tc,
 			 map_type });
 	}

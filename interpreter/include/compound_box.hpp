@@ -146,7 +146,7 @@ namespace Mer
 		ready to call its member function.
 	*/
 	extern std::vector<Mem::Object> parents_vec;
-	Mer::UStructure* find_ustructure_t(size_t type);
+	Mer::UStructure* find_ustructure_t(type_code_index type);
 	// the map which store the compare operator to 
 	extern std::map<type_code_index, FunctionBase*> comparison_map;
 }
