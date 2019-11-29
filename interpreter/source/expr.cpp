@@ -321,7 +321,7 @@ namespace Mer
 	}
 
 
-	InitList::InitList(size_t t):type(Mem::INIT_LIST)
+	InitList::InitList(type_code_index t):type(Mem::INIT_LIST)
 	{
 		token_stream.match(BEGIN);
 		while (token_stream.this_tag() != Tag::END)
@@ -340,7 +340,7 @@ namespace Mer
 		token_stream.match(END);
 	}
 
-	InitList::InitList(type_code_index t, size_t sz) :type(t), size(sz)
+	InitList::InitList(type_code_index t, int sz) :type(t), size(sz)
 	{
 		token_stream.match(BEGIN);
 		while (token_stream.this_tag() != Tag::END)
@@ -352,7 +352,10 @@ namespace Mer
 		token_stream.match(END);
 		if (init_v.size() == 1 && sz > 1)
 		{
-			init_v = std::vector<ParserNode*>(sz, init_v[0]);
+			for (int i = 1; i < sz; i++)
+			{
+				init_v.push_back(init_v[0]->clone());
+			}
 			return;
 		}
 		if (sz == -1)
@@ -400,10 +403,14 @@ namespace Mer
 		return v;
 	}
 
-	InitList::~InitList()
+	ParserNode* InitList::clone()
 	{
+		InitList* ret = new InitList;
+		ret->type = type;
+		ret->size = size;
 		for (auto& a : init_v)
-			delete a;
+			ret->init_v.push_back(a->clone());
+		return ret;
 	}
 
 	ImplicitConvertion::ImplicitConvertion(type_code_index _type) :type(_type) {}
@@ -422,6 +429,12 @@ namespace Mer
 	type_code_index ContainerIndex::get_type()
 	{
 		return type;
+	}
+
+	ContainerIndex::~ContainerIndex()
+	{
+		std::cout << "HAPPY AGAIN";
+		 delete expr; 
 	}
 
 	EmptyList::EmptyList(type_code_index t, size_t sz) :type_code(t), size(sz)
@@ -449,8 +462,10 @@ namespace Mer
 		return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
 	}
 
-	NewExpr::NewExpr()
+	NewExpr::NewExpr(bool init_nothing)
 	{
+		if (init_nothing)
+			return;
 		token_stream.match(NEW);
 		type_code_index type_code = Mem::get_type_code();
 		if (token_stream.this_tag() == LPAREN)
@@ -471,6 +486,13 @@ namespace Mer
 		{
 			throw Error("new-type not matched from " + type_to_string(expr->get_type()) + " to " + type_to_string(type_code));
 		}
+	}
+
+	ParserNode* NewExpr::clone()
+	{
+		NewExpr* ret = new NewExpr(true);
+		ret->expr = expr->clone();
+		return ret;
 	}
 
 	Mem::Object NewExpr::execute()
@@ -495,8 +517,10 @@ namespace Mer
 		return std::make_shared<Mem::Pointer>(id->execute());
 	}
 
-	RmRef::RmRef()
+	RmRef::RmRef(bool init_nothing)
 	{
+		if (init_nothing)
+			return;
 		token_stream.match(MUL);
 		id = Parser::parse_id();
 		type = id->get_type();
@@ -510,6 +534,13 @@ namespace Mer
 	{
 
 		return std::static_pointer_cast<Mem::Pointer>(id->execute())->rm_ref();
+	}
+	ParserNode* RmRef::clone()
+	{
+		RmRef* ret = new RmRef(true);
+		ret->id = id->clone();
+		ret->type = type;
+		return ret;
 	}
 	Mer::Index::Index(ParserNode* l, size_t _index, type_code_index _type) :left(std::move(l)), index(_index), type(_type)
 	{

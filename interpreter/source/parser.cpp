@@ -304,7 +304,7 @@ namespace Mer
 			// container init list
 			if (token_stream.this_tag() == BEGIN && type_info->second->type_kind == Mem::Type::kind::container)
 			{
-				size_t element_type = Mem::demerge(type_code).second;
+				type_code_index element_type = Mem::demerge(type_code).second;
 				auto ilist = new InitList(element_type);
 
 				auto result = type_init_function_map.find(InitKey(t, { Mem::INIT_LIST }));
@@ -403,6 +403,7 @@ namespace Mer
 			exprs.push_back(std::unique_ptr<LConV>(array_info));
 			for (auto it : arr)
 				exprs.push_back(UptrPNode(it));
+			delete a->get_expr();
 		}
 		else {
 			exprs.push_back(UptrPNode(a->get_expr()));
@@ -455,6 +456,7 @@ namespace Mer
 			exprs.push_back(std::unique_ptr<LConV>(array_info));
 			for (auto it : arr)
 				exprs.push_back(UptrPNode(it));
+			delete a->get_expr();
 		}
 		else {
 			exprs.push_back(UptrPNode(a->get_expr()));

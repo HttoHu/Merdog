@@ -42,23 +42,12 @@ namespace Mer
 	public:
 		LConV(Token *t);
 		LConV(Mem::Object _obj, type_code_index t) :obj(_obj), type(t) {}
-		type_code_index get_type()override
-		{
-			return type;
-		}
-		Mem::Object execute()override
-		{
-			return obj;
-		}
-		std::string to_string()override
-		{
-			return obj->to_string();//tok->to_string();
-		}
-		bool constant()const override
-		{
-			return true;
-		}
+		type_code_index get_type()override{return type;}
+		Mem::Object execute()override{return obj;}
+		std::string to_string()override{return obj->to_string();}
+		ParserNode* clone()override;
 	private:
+		LConV() {}
 		type_code_index type;
 		Mem::Object obj;
 	};
@@ -71,22 +60,10 @@ namespace Mer
 		GVar(type_code_index _type, size_t off_pos) :type(_type), pos(off_pos) {}
 		GVar(WordRecorder *result);
 		GVar(WordRecorder* result, size_t offset);
-		type_code_index get_type()override
-		{
-			return type;
-		}
-		size_t get_pos()override
-		{
-			return pos;
-		}
-		Mem::Object execute()override
-		{
-			return mem[pos];
-		}
-		bool constant()const override
-		{
-			return false;
-		}
+		type_code_index get_type()override{return type;}
+		size_t get_pos()override{return pos;}
+		Mem::Object execute()override{return mem[pos];}
+		ParserNode* clone()override { return new GVar(type, pos); }
 	private:
 		type_code_index type;
 		size_t pos;
@@ -98,13 +75,12 @@ namespace Mer
 		Variable(type_code_index _type, size_t _pos) :type(_type), pos(_pos) {}
 		type_code_index get_type()override;
 		size_t get_pos()override;
-		std::string to_string()override
-		{
-			return "(" + type_to_string(type) + ")" + std::to_string(pos);
-		}
+		std::string to_string()override{return "(" + type_to_string(type) + ")" + std::to_string(pos);}
 		Mem::Object execute()override;
 		bool& arr() { return is_arr; }
+		ParserNode* clone()override;
 	private:
+		Variable() {}
 		bool is_arr=false;
 		type_code_index type;
 		size_t pos;
@@ -117,8 +93,11 @@ namespace Mer
 		type_code_index get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;
+		ParserNode* clone()override;
+		~FunctionCall();
 	private:
-		FunctionBase * func;
+		FunctionCall() {}
+		FunctionBase * func=nullptr;
 		std::vector<ParserNode*> argument;
 	};
 	class MemberFunctionCall :public ParserNode
@@ -128,8 +107,10 @@ namespace Mer
 		type_code_index get_type()override;
 		Mem::Object execute()override;
 		std::string to_string()override;
+		ParserNode* clone()override;
 	private:
-		FunctionBase* func;
+		MemberFunctionCall() {}
+		FunctionBase* func=nullptr;
 		std::vector<ParserNode*> argument;
 		UptrPNode parent;
 		std::vector<Mem::Object> obj_vec;

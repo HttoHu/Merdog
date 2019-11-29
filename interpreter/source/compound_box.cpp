@@ -149,6 +149,15 @@ namespace Mer
 		return std::make_shared<USObject>(obj_vec);
 	}
 
+	ParserNode* StructureInitList::clone()
+	{
+		auto ret = new StructureInitList;
+		ret->type_code = type_code;
+		for (auto a : vec)
+			ret->vec.push_back(a->clone());
+		return ret;
+	}
+
 	Mer::StructureInitList::StructureInitList(UStructure *us, type_code_index _type_code) : type_code(_type_code)
 	{
 		const auto& type_info_map = us->STMapping;
@@ -192,6 +201,13 @@ namespace Mer
 		for (size_t i = 0; i < ret.size(); i++)
 			ret[i] = vec[i]->clone();
 		return std::make_shared<USObject>(ret);
+	}
+
+	ParserNode* DefaultInitList::clone()
+	{
+		auto ret = new DefaultInitList;
+		ret->vec = vec;
+		return ret;
 	}
 
 	Mem::Object USObject::operator=(Mem::Object v) {

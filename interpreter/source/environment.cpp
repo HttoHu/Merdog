@@ -49,7 +49,7 @@ namespace Mer
 				delete a;
 			}
 			Mer::rem_functions.clear();
-			//Mer::pre_stmt.clear();
+			Mer::pre_stmt.clear();
 
 			Mer::mem.get_current() = 0;
 			Mer::mem.get_index() = 0;
@@ -97,7 +97,7 @@ namespace Mer
 		try
 		{
 			Mer::build_token_stream(file_content);
-			Parser::program();
+			Parser::program()->execute();
 			clear();
 
 		}

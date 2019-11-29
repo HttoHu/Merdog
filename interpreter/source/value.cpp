@@ -28,6 +28,15 @@ Mer::Mem::Object Mer::Variable::execute()
 	return mem[mem.get_current() + pos];
 }
 
+Mer::ParserNode* Mer::Variable::clone()
+{
+	auto ret = new Variable;
+	ret->is_arr = is_arr;
+	ret->type = type;
+	ret->pos = pos;
+	return ret;
+}
+
 Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNode*>& exprs) : func(_func), argument(exprs)
 {
 	std::vector<type_code_index> type_vec;
@@ -64,6 +73,21 @@ std::string Mer::FunctionCall::to_string()
 		str += a->to_string();
 	str += ")";
 	return str;
+}
+
+Mer::ParserNode* Mer::FunctionCall::clone()
+{
+	auto ret = new FunctionCall;
+	for (auto a : argument)
+		ret->argument.push_back(a->clone());
+	ret->func = func;
+	return ret;
+}
+
+Mer::FunctionCall::~FunctionCall()
+{
+	for (auto a : argument)
+		delete a;
 }
 
 
@@ -269,6 +293,15 @@ Mer::LConV::LConV(Token* t)
 	}
 }
 
+Mer::ParserNode* Mer::LConV::clone()
+{
+	auto ret = new LConV;
+	ret->type = type;
+	ret->obj = obj->clone();
+	return ret;
+
+}
+
 Mer::GVar::GVar(WordRecorder* result)
 {
 	pos = static_cast<GVarIdRecorder*>(result)->pos;
@@ -329,4 +362,14 @@ std::string Mer::MemberFunctionCall::to_string()
 		str += a->to_string();
 	str += ")";
 	return str;
+}
+
+Mer::ParserNode* Mer::MemberFunctionCall::clone()
+{
+	auto ret = new MemberFunctionCall;
+	for (auto a : argument)
+		ret->argument.push_back(a->clone());
+	ret->func = func;
+	ret->parent =UptrPNode(parent->clone());
+	return ret;
 }

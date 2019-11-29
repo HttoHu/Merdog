@@ -105,7 +105,9 @@ namespace Mer
 	public:
 		DefaultInitList(type_code_index type);
 		Mem::Object execute()override;
+		ParserNode* clone()override;
 	private:
+		DefaultInitList() {}
 		std::vector<Mem::Object> vec;
 	};
 	// the purpose of two class t is to distinguish bewtween init_without argument and init_with argument.
@@ -118,7 +120,9 @@ namespace Mer
 		}
 		Mem::Object execute()override;
 		virtual ~StructureInitList() {}
+		ParserNode* clone()override;
 	private:
+		StructureInitList() {}
 		std::vector<ParserNode*> vec;
 		type_code_index type_code;
 	};
@@ -128,6 +132,9 @@ namespace Mer
 		MemberVar(size_t pos, type_code_index _type) :member_pos(pos), type(_type) {}
 		type_code_index get_type()override { return type; }
 		Mem::Object execute()override;
+		ParserNode* clone()override {
+			return new MemberVar(member_pos, type);
+		}
 	private:
 		size_t member_pos;
 		type_code_index type;

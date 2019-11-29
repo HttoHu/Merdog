@@ -114,6 +114,7 @@ namespace Mer
 		Cast(ParserNode* _expr, type_code_index type) :expr(_expr), to_type(type) {}
 		Mem::Object execute()override;
 		type_code_index get_type()override { return to_type; }
+		~Cast(){ delete expr; }
 	private:
 		ParserNode* expr;
 		type_code_index to_type;

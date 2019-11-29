@@ -33,7 +33,6 @@ namespace Mer
 	public:
 		ParserNode()
 		{
-			line_no = get_line_no();
 		}
 		virtual size_t get_pos() { return 0; }
 		virtual ~ParserNode() {}
@@ -53,7 +52,10 @@ namespace Mer
 		{
 			throw std::runtime_error("called by an indefinite var");
 		}
-		size_t line_no;
+		// clone is not overrided by all children. 
+		virtual ParserNode* clone() {
+			throw Error("cloned in ParserNode");
+		}
 	};
 	using UptrPNode = std::unique_ptr<ParserNode>;
 
