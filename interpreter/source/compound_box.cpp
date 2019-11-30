@@ -25,9 +25,11 @@ namespace Mer
 		token_stream.match(ID);
 		token_stream.match(BEGIN);
 		UStructure* us = new UStructure();
+		//register struct 
 		ustructure_map.insert({ name,us });
 		Mem::type_index.insert({ name,Mem::type_counter });
 		type_name_mapping.insert({ Mem::type_counter,name });
+
 		Mem::type_map.insert({ Mem::type_counter ,new Mem::Type(name,Mem::type_counter,{Mem::type_counter}) });
 		tsymbol_table->new_block();
 		while (token_stream.this_tag() != END)
@@ -63,10 +65,13 @@ namespace Mer
 			if (token_stream.this_tag() == ASSIGN)
 			{
 				token_stream.match(ASSIGN);
-				auto expr = new Expr(type);
+				auto expr = Expr(type).root();
 				us->push_init(expr->execute());
 				if (expr->get_type() != type)
+				{
+					delete expr;
 					throw Error("struct member type is not matched with init value");
+				}
 				delete expr;
 			}
 			else

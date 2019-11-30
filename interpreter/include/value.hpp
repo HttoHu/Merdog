@@ -108,6 +108,7 @@ namespace Mer
 		Mem::Object execute()override;
 		std::string to_string()override;
 		ParserNode* clone()override;
+		~MemberFunctionCall();
 	private:
 		MemberFunctionCall() {}
 		FunctionBase* func=nullptr;

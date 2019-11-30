@@ -413,12 +413,6 @@ namespace Mer
 		return ret;
 	}
 
-	ImplicitConvertion::ImplicitConvertion(type_code_index _type) :type(_type) {}
-
-	Mem::Object ImplicitConvertion::execute()
-	{
-		return tree->execute()->Convert(type);
-	}
 
 	Mem::Object ContainerIndex::execute()
 	{

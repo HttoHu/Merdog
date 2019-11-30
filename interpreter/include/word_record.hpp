@@ -75,6 +75,7 @@ namespace Mer
 		MVarRecorder(type_code_index type,size_t _pos) :pos(_pos), WordRecorder(MVAR,type) {}
 		size_t get_pos()override { return pos; }
 		std::string to_string()override { return "MVar :" + std::to_string(pos); }
+		~MVarRecorder() {  }
 		size_t pos;
 	};
 	struct StructRecorder :public WordRecorder

@@ -25,7 +25,7 @@
 #pragma once
 #include "expr.hpp"
 #include "function.hpp"
-#define tsymbol_table this_namespace->sl_table
+#define tsymbol_table root_namespace->sl_table
 namespace Mer
 {
 	class Structure;

@@ -1,6 +1,26 @@
 /*
-* MIT License
-* Copyright (c) 2019 Htto Hu
+	MIT License
+
+	Copyright (c) 2019 HttoHu
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
 */
 // file_stream
 /*
@@ -19,7 +39,7 @@
 #include "../include/compound_box.hpp"
 #include "../include/word_record.hpp"
 #include <fstream>
-#ifdef COMPILE_MERDOG_NEED_CXX17
+#ifdef USING_CXX17
 #include <filesystem>
 #endif
 namespace Mer
@@ -91,16 +111,16 @@ namespace Mer
 			std::cin >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}
-#ifdef COMPILE_MERDOG_NEED_CXX17
+#ifdef USING_CXX17
 		Mem::Object _open(std::vector<Mem::Object>& args)
 		{
-			auto arg1 = args[0];
+			auto arg1 = parents_vec.back();
 			auto ss = std::static_pointer_cast<USObject>(arg1);
 			std::ifstream ifs;
-			ifs.open(args[1]->to_string());
-			if (!std::filesystem::exists(args[1]->to_string()))
-				throw std::runtime_error("file " + args[1]->to_string() + " don't exist");
-			(*ss)[_make_int_obj(0)]->operator=(args[1]->clone());
+			ifs.open(args[0]->to_string());
+			if (!std::filesystem::exists(args[0]->to_string()))
+				throw std::runtime_error("file " + args[0]->to_string() + " don't exist");
+			(*ss)[_make_int_obj(0)]->operator=(args[0]->clone());
 			std::vector<std::string> str_vec;
 			std::string tmp = "";
 			while (std::getline(ifs, tmp))
@@ -111,32 +131,32 @@ namespace Mer
 		}
 		Mem::Object _read_line(std::vector<Mem::Object>& args)
 		{
-			auto arg1 = args[0];
+			auto arg1 = parents_vec.back();
 			auto ss = std::static_pointer_cast<USObject>(arg1);
 			return std::make_shared<Mem::String>((*std::static_pointer_cast<Mem::AnyObj>((*ss)[std::make_shared<Mem::Int>(1)])).
-				cast<std::vector<std::string>>()[Mem::get_raw<int>(args[1])]);
+				cast<std::vector<std::string>>()[Mem::get_raw<int>(args[0])]);
 		}
 		Mem::Object _set_line(std::vector<Mem::Object>& args)
 		{
-			auto ss = std::static_pointer_cast<USObject>(args[0]);
+			auto ss = std::static_pointer_cast<USObject>(parents_vec.back());
 			auto content = std::static_pointer_cast<Mem::AnyObj>(ss->operator[](std::make_shared<Mem::Int>(1)));
 			auto& file_content = content->cast<std::vector<std::string>>();
-			file_content[std::static_pointer_cast<Mem::Int>(args[1])->get_value()] = args[2]->to_string();
+			file_content[std::static_pointer_cast<Mem::Int>(args[0])->get_value()] = args[1]->to_string();
 			return nullptr;
 		}
 		Mem::Object _insert_line(std::vector<Mem::Object>& args)
 		{
-			auto fobj = std::static_pointer_cast<USObject>(args[0]);
-			int line_no = Mem::Int::get_val(args[1]);
+			auto fobj = std::static_pointer_cast<USObject>(parents_vec.back());
+			int line_no = Mem::Int::get_val(args[0]);
 			auto content = std::static_pointer_cast<Mem::AnyObj>(fobj->operator[](_make_int_obj(1)));
 			auto& file_content = content->cast<std::vector<std::string>>();
-			std::string insert_content = args[2]->to_string();
+			std::string insert_content = args[1]->to_string();
 			file_content.insert(file_content.begin() + line_no, insert_content);
 			return nullptr;
 		}
 		Mem::Object _write_into_file(std::vector<Mem::Object>& args)
 		{
-			auto fobj = std::static_pointer_cast<USObject>(args[0]);
+			auto fobj = std::static_pointer_cast<USObject>(parents_vec.back());
 			auto content = std::static_pointer_cast<Mem::AnyObj>(fobj->operator[](std::make_shared<Mem::Int>(1)));
 			auto& file_content = content->cast<std::vector<std::string>>();
 			std::string file_name = fobj->operator[](_make_int_obj(0))->to_string();
@@ -153,19 +173,20 @@ namespace Mer
 		}
 		Mem::Object _line_count(std::vector<Mem::Object>& args)
 		{
-			auto obj = std::static_pointer_cast<USObject>(args[0]);
+			auto obj = std::static_pointer_cast<USObject>(parents_vec.back());
 			auto ret = std::static_pointer_cast<Mem::AnyObj>((obj->operator[](_make_int_obj(1))))->cast<std::vector<std::string>>().size();
 			return _make_int_obj(ret);
 		}
 		Mem::Object _exists_file(std::vector<Mem::Object>& args)
 		{
-			return std::make_shared<Mem::Bool>(std::filesystem::exists(args[0]->to_string()));
+			return std::make_shared<Mem::Bool>(std::filesystem::exists(parents_vec.back()->to_string()));
 		}
-#endif 
+#endif
 	}
+
 	Namespace* mstd = new Namespace(nullptr);
 
-#ifdef COMPILE_MERDOG_NEED_CXX17s
+#ifdef USING_CXX17
 	void set_file_operator_class()
 	{
 

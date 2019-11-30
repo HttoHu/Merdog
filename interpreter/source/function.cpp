@@ -282,19 +282,6 @@ void Mer::FunctionBase::check_param(const std::vector<type_code_index>& types)
 	return;
 }
 
-void Mer::FunctionBase::convert_arg(std::vector<ParserNode*>& args)
-{
-	// ensure you have checked the args' type.
-	for (size_t i = 0; i < args.size(); i++)
-	{
-		if (args[i]->get_type() != param_types[i])
-		{
-			Expr* tmp = new ImplicitConvertion(param_types[i]);
-			tmp->tree = args[i];
-			args[i] = tmp;
-		}
-	}
-}
 std::string Mer::FunctionBase::to_string(std::string name) const
 {
 	return	"function " + name + param_feature_to_string(param_types);

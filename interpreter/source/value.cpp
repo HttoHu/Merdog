@@ -46,7 +46,6 @@ Mer::FunctionCall::FunctionCall( FunctionBase* _func, const std::vector<ParserNo
 	}
 	func->check_param(type_vec);
 	std::vector<ParserNode*> tmp;
-	func->convert_arg(argument);
 }
 
 type_code_index Mer::FunctionCall::get_type()
@@ -331,8 +330,6 @@ Mer::MemberFunctionCall::MemberFunctionCall(FunctionBase* _func, std::vector<Par
 		type_vec.push_back(a->get_type());
 	}
 	func->check_param(type_vec);
-	std::vector<ParserNode*> tmp;
-	func->convert_arg(argument);
 }
 
 type_code_index Mer::MemberFunctionCall::get_type()
@@ -372,4 +369,10 @@ Mer::ParserNode* Mer::MemberFunctionCall::clone()
 	ret->func = func;
 	ret->parent =UptrPNode(parent->clone());
 	return ret;
+}
+
+Mer::MemberFunctionCall::~MemberFunctionCall()
+{
+	for (auto a : argument)
+		delete a;
 }

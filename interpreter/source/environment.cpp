@@ -14,6 +14,7 @@
 #include "../include/clib/utility.hpp"
 #include "../include/function.hpp"
 #include "../include/memory.hpp"
+#include "../include/compound_box.hpp"
 std::map<std::string, void(*)()> Mer::repository{
 	{"vector",Mer::Container::using_vector},{"deque",Mer::Container::using_deque},
 	{"set",Mer::using_set},{"map",Mer::using_map}
@@ -27,6 +28,7 @@ std::vector<Mer::ParserNode*> Mer::structure_parent_stack;
 namespace Mer
 {
 	extern std::map<type_code_index, std::map<std::string, Mer::FunctionBase*>> member_function_table;
+	extern std::map<std::string, UStructure*> ustructure_map;
 	namespace Mem
 	{
 		void _clear_type_info();
@@ -68,6 +70,12 @@ namespace Mer
 					delete b.second;
 				}
 			}
+			member_function_table.clear();
+			for (auto &a : ustructure_map)
+			{
+				delete a.second;
+			}
+			ustructure_map.clear();
 		}
 		void _merdog_init_()
 		{

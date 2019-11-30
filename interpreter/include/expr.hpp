@@ -282,17 +282,4 @@ namespace Mer
 		ParserNode* expr;
 		
 	};
-	// !!! delete has been discarded
-	class ImplicitConvertion:public Expr
-	{
-	public:
-		ImplicitConvertion(type_code_index _type);
-		Mem::Object execute()override;
-		ParserNode* clone()override
-		{
-			return new ImplicitConvertion(type);
-		}
-	private:
-		type_code_index type;
-	};
 }

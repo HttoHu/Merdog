@@ -59,7 +59,6 @@ namespace Mer
 		FunctionBase();
 
 		virtual void check_param(const std::vector<type_code_index>& types);
-		virtual void convert_arg(std::vector<ParserNode*> &args);
 		void set_param_types(const std::vector<type_code_index>& types)
 		{
 			param_types = types;
@@ -102,7 +101,6 @@ namespace Mer
 		{
 			return func(objs);
 		}
-		void convert_arg(std::vector<ParserNode*> &args)override{}
 		type_code_index get_type()override
 		{
 			return type;

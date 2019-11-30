@@ -199,6 +199,12 @@ namespace Mer
 			type_op_type_map = {
 				{Mem::STRING,{{"[]",Mem::CHAR}}}
 			};
+			for (auto &a : type_map)
+			{
+				if (_init_type_map.find(a.first) != _init_type_map.end())
+					continue;
+				delete a.second;
+			}
 			type_map = _init_type_map;
 			type_counter = BASICTYPE_MAX_CODE;
 		}
