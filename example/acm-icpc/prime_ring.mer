@@ -1,3 +1,7 @@
+int n=0;
+bool is_p[1000] = { true };
+int arr[100];
+int vis[100] = { 0 };
 function bool is_prime(int x)
 {
 	for (int i = 2; i * i <= x; i+=1)
@@ -9,10 +13,6 @@ function bool is_prime(int x)
 	}
 	return true;
 }
-int n=0;
-bool is_p[1000] = { true };
-int arr[100];
-int vis[100] = { 0 };
 function void set_prime()
 {
 	for (int i = 2; i < 1000; i += 1)

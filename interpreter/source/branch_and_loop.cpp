@@ -145,6 +145,7 @@ namespace Mer
 			// new block
 			mem.new_block();
 			this_namespace->sl_table->new_block();
+
 			token_stream.match(BEGIN);
 			auto iwjt = new IfWithJmpTable(_pcs.back());
 			iwjt->end_pos = end_pos;
@@ -156,6 +157,7 @@ namespace Mer
 			token_stream.match(END);
 			mem.end_block();
 			this_namespace->sl_table->end_block();
+
 			while (token_stream.this_tag() == ELSE_IF)
 			{
 				token_stream.match(ELSE_IF);

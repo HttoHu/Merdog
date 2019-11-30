@@ -97,6 +97,7 @@ namespace Mer
 		try
 		{
 			Mer::build_token_stream(file_content);
+			token_stream.print();
 			Parser::program()->execute();
 			clear();
 
@@ -112,6 +113,7 @@ namespace Mer
 		{
 			auto ret = e.what();
 			std::cout << ret;
+
 			token_stream.clear();
 			clear();
 			return ret;

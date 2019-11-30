@@ -32,7 +32,22 @@ namespace Mer
 	}
 	std::string Program::to_string()
 	{
-		return identify->to_string();
+		std::string ret;
+		for (auto &a : pre_stmt)
+		{
+			ret += a->to_string()+'\n';
+		}
+		ret += "\n\n\n";
+		for (auto a : rem_functions)
+		{
+			ret += a->to_string()+"\n\n\n\n";
+		}
+		ret += "PROGRAM\n";
+		for (auto &a : stmts)
+		{
+			ret += a->to_string() + '\n';
+		}
+		return ret;
 	}
 	bool & global_stmt()
 	{

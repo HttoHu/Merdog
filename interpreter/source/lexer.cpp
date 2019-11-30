@@ -19,7 +19,7 @@ TagStrMap	Mer::TagStr{
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{ GET_ADD,"GET_ADD" },
 	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },{ LSB,"LSB" },{ RSB,"RSB" },
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
-	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },
+	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },{ CASE,"CASE" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"},{SIZEOF,"SIZEOF"},
 };
@@ -27,7 +27,7 @@ TokenMap	Mer::BasicToken{
 	{"+",new Token(PLUS)},{"-",new Token(MINUS)},{"*",new Token(MUL)},{"/",new Token(DIV)},{"=",new Token(ASSIGN)},
 	{"+=",new Token(SADD)},{"-=",new Token(SSUB)},{"*=",new Token(SMUL)},{"/=",new Token(SDIV)},
 	{"<",new Token(LT)},{"<=",new Token(LE)},{">",new Token(GT)},{">=",new Token(GE)},{"==",new Token(EQ)},
-	{"!=",new Token(NE)},{"!",new Token(NOT)},{"&&",new Token(AND)},{"||",new Token(OR)},
+	{"!=",new Token(NE)},{"!",new Token(NOT)},{"&&",new Token(AND)},{"||",new Token(OR)},{":",new Token(COLON)},
 	{",",new Token(COMMA)},{";",new Token(SEMI)},{".",new Token(DOT)},{"&",new Token(GET_ADD)},{"->",new Token(PTRVISIT)},
 	{"[",new Token(LSB)},{"]",new Token(RSB)},{"(",new Token(LPAREN)},{")",new Token(RPAREN)},
 	{"{",new Token(BEGIN)},{"}",new Token(END)},

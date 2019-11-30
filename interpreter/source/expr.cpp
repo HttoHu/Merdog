@@ -433,7 +433,6 @@ namespace Mer
 
 	ContainerIndex::~ContainerIndex()
 	{
-		std::cout << "HAPPY AGAIN";
 		 delete expr; 
 	}
 
