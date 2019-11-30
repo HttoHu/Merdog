@@ -46,6 +46,12 @@ namespace Mer
 	{
 		return stack_mem[in];
 	}
+	void Memory::reset()
+	{
+		glo_var_index = 0;
+		current = 0;
+		index = 0;
+	}
 	void Memory::alloc()
 	{
 		Mem::Object* tmp = new Mem::Object[capacity * 2];

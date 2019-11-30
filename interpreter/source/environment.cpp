@@ -50,9 +50,7 @@ namespace Mer
 			}
 			Mer::rem_functions.clear();
 			Mer::pre_stmt.clear();
-
-			Mer::mem.get_current() = 0;
-			Mer::mem.get_index() = 0;
+			mem.reset();
 
 			Mem::_clear_type_info();
 
@@ -97,7 +95,6 @@ namespace Mer
 		try
 		{
 			Mer::build_token_stream(file_content);
-			token_stream.print();
 			Parser::program()->execute();
 			clear();
 

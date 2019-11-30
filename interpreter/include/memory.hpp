@@ -70,6 +70,8 @@ namespace Mer
 		}
 		int function_block_size=0;
 		size_t get_capacity() { return capacity; }
+		size_t glo_var_index = 0;
+		void reset();
 	private:
 		void check()
 		{
