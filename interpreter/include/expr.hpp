@@ -110,11 +110,11 @@ namespace Mer
 	{
 	public:
 		LogicalBinOp(ParserNode* l, Token *tok, ParserNode* r);
-		LogicalBinOp(ParserNode* l, bool _lo, ParserNode* r) :left(l), ta(_lo), right(r) {}
+		LogicalBinOp(ParserNode* l, bool _lo, ParserNode* r) :left(l), is_and_op(_lo), right(r) {}
 		type_code_index get_type() override { return Mem::BOOL; }
 		Mem::Object execute()override;
 		ParserNode* clone()override {
-			return new LogicalBinOp(left->clone(),ta, right->clone());
+			return new LogicalBinOp(left->clone(),is_and_op, right->clone());
 		}
 		~LogicalBinOp() {
 			delete left;
@@ -122,7 +122,7 @@ namespace Mer
 		}
 	private:
 		// true ->and ,false ->or
-		bool ta = true;
+		bool is_and_op = true;
 		ParserNode* left;
 		ParserNode* right;
 	};

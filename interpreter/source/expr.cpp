@@ -566,17 +566,17 @@ namespace Mer
 	LogicalBinOp::LogicalBinOp(ParserNode* l, Token* tok, ParserNode* r) :left(l),right(r)
 	{
 		if (tok->get_tag() == AND)
-			ta = true;
+			is_and_op = true;
 		else if (tok->get_tag() == OR)
-			ta = false;
+			is_and_op = false;
 		else
 			throw Error("intern error");
 	}
 
 	Mem::Object LogicalBinOp::execute()
 	{
-		if (ta ^ Mem::get_raw<bool>(left->execute()))
-			return std::make_shared<Mem::Bool>(!ta);
+		if (is_and_op ^ Mem::get_raw<bool>(left->execute()))
+			return std::make_shared<Mem::Bool>(!is_and_op);
 		return std::make_shared<Mem::Bool>(Mem::get_raw<bool>(right->execute()));
 	}
 
