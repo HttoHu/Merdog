@@ -334,7 +334,7 @@ namespace Mer
 			// common condition 
 			expr = Expr(type_code).root();
 			if (expr->get_type() != type_code)
-				throw Error("::VarDeclUnit::VarDeclUnit(size_t t): type not matched, from " + std::to_string(type_code) + " to " + std::to_string(expr->get_type()));
+				throw Error("::VarDeclUnit::VarDeclUnit(type_code_index t): type not matched, from " + type_to_string(type_code) + " to " + type_to_string(expr->get_type()));
 			return;
 		}
 		// container var decl
@@ -343,7 +343,7 @@ namespace Mer
 			expr = new LConV(Mem::create_var_t(t), t);
 			return;
 		}
-		throw Error("::VarDeclUnit::VarDeclUnit(size_t t) : try to init a non-init variable");
+		throw Error("::VarDeclUnit::VarDeclUnit(type_code_index t) : try to init a non-init variable");
 	}
 
 	inline void _record_id(VarDeclUnit* var_unit, type_code_index type, size_t pos)

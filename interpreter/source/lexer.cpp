@@ -62,6 +62,7 @@ char _convert_escape(char c)
 //==========================================
 Token* Mer::END_TOKEN = new Token(ENDOF);
 TokenStream Mer::token_stream;
+
 Token* Mer::parse_number(const std::string& str, size_t& pos)
 {
 	int ret = 0;
@@ -392,7 +393,7 @@ void TokenStream::clear()
 		delete a;
 	_rem_tok_vec.clear();
 	remove_tokens();
-	
+
 	pos = 0;
 }
 

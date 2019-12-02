@@ -14,7 +14,7 @@
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
-#define MERDOG_VERSION "3.2.0"
+#define MERDOG_VERSION "Merdog Snake 0.9"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -29,13 +29,11 @@ std::string get_file_content(const std::string& filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-void _merdog_init_();
 #ifndef _DEBUG
 int main(int argc, char* argv[])
 {
 	try
 	{
-		_merdog_init_();
 		if (argc != 2)
 			throw std::runtime_error("argument error");
 		if (sizeof(argv[1]) >= 2)
@@ -70,9 +68,7 @@ int main()
 	{
 		time_t s = clock();
 		std::string input_content = get_file_content("test.mer");
-
-		for (int i = 0;true; i++)
-			Mer::run_interpreter(input_content);
+		Mer::run_interpreter(input_content);
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;
 	}
