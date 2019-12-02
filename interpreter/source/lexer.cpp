@@ -54,7 +54,7 @@ char _convert_escape(char c)
 	auto result = escape_character_table.find(c);
 	if (result == escape_character_table.end())
 	{
-		throw Error(" illegal escape char");
+		throw LexerError(" illegal escape char");
 	}
 	return result->second;
 }
@@ -150,7 +150,7 @@ Token* Mer::parse_string(const std::string& str, size_t& pos)
 		{
 			pos++;
 			if (pos >= str.size())
-				throw Error("out of range");
+				throw LexerError("out of range");
 			char tmp = _convert_escape(str[pos]);
 			value += tmp;
 		}
@@ -405,12 +405,12 @@ Token* Mer::parse_char(const std::string& str, size_t& pos)
 	{
 		char result = _convert_escape(str[++pos]);
 		if (str[++pos] != '\'')
-			throw Error("illegal escape character!");
+			throw LexerError("illegal escape character!");
 		return new CharToken(result);
 	}
 	char result = str[pos++];
 	if (str[pos] != '\'')
-		throw Error("illegal character!");
+		throw LexerError("illegal character!");
 	return new CharToken(result);
 }
 
@@ -425,5 +425,5 @@ size_t Endl::get_value(Token* tok)
 		return static_cast<Endl*>(tok)->line_no;
 	}
 	else
-		throw Error("convert failed");
+		throw LexerError("convert failed");
 }

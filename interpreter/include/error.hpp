@@ -36,27 +36,20 @@ namespace Mer
 	{
 	public:
 		Error(const std::string &str) :ems(str) {}
-		std::string what()
+		virtual std::string what()
 		{
 			const std::string error_msg = "<line " + std::to_string(get_line_no()) + ">" + ems;
 			return error_msg + "\n";
 		}
-	private:
+	protected:
 		std::string ems;
 	};
-	class LogTable
+	class LexerError:public Error
 	{
 	public:
-		void enable_log() { enable = true; }
-		void disable_log() { enable = false; }
-		void write(std::string str) {
-			if (enable) { infos.push_back(str); std::cout << str << std::endl; }
-		}
-		void clear() { infos.clear(); }
-		void print() { for (auto a : infos)std::cout << a<<std::endl; }
+		LexerError(const std::string& str);
+		std::string what()override;
 	private:
-		bool enable=false;
-		std::vector<std::string> infos;
+		int line_no=0;
 	};
-	extern LogTable mer_log;
 }

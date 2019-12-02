@@ -2,6 +2,7 @@
 #include "../include/memory.hpp"
 #include <time.h>
 #include <random>
+#include <cassert>
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -74,11 +75,6 @@ namespace Mer
 			static std::default_random_engine e(clock());
 			return std::make_shared<Mem::Int>(distributor(e));
 		}
-		Mem::Object _alloc_heap(const std::vector<Mem::Object>& args)
-		{
-			//mem.check_heap();
-			return nullptr;
-		}
 		Mem::Object _sleep(const std::vector<Mem::Object>& args)
 		{
 			int time = std::static_pointer_cast<Mem::Int>(args[0])->get_value();
@@ -92,6 +88,11 @@ namespace Mer
 		Mem::Object _to_string(const std::vector<Mem::Object>& args)
 		{
 			return std::make_shared<Mem::String>(args[0]->to_string());
+		}
+		Mem::Object _mer_exit(const std::vector<Mem::Object>& args)
+		{
+			std::exit(1);
+			return nullptr;
 		}
 		Mem::Object _system(const std::vector<Mem::Object>& args)
 		{
@@ -121,6 +122,7 @@ void Mer::set_utility()
 	SystemFunction* my_to_string = new SystemFunction(Mem::STRING, _to_string);
 	SystemFunction* to_int = new SystemFunction(Mem::INT, _convert_to_int);
 	SystemFunction* to_real = new SystemFunction(Mem::DOUBLE, _convert_to_real);
+	SystemFunction* mer_exit = new SystemFunction(Mem::BVOID, _mer_exit);
 	//======================================================================================
 	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 	sleep->set_param_types({ Mer::Mem::BasicType::INT });
@@ -128,10 +130,12 @@ void Mer::set_utility()
 	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
 	to_int->set_param_types({ Mer::Mem::BasicType::STRING });
 	to_real->set_param_types({ Mer::Mem::BasicType::STRING });
+	mer_exit->set_param_types({ });
 	//======================================================================================
 	mstd->set_new_func("clock",  time_record);
 	mstd->set_new_func("rand_int",  random_int);
 	mstd->set_new_func("sleep",  sleep);
+	root_namespace->set_new_func("exit", mer_exit);
 	root_namespace->set_new_func("to_string", my_to_string);
 	root_namespace->set_new_func("system",  csystem);
 	root_namespace->set_new_func("to_int", to_int);
