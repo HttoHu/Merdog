@@ -17,6 +17,7 @@ merdog member_function_test.mer
 merdog function_reload.mer
 merdog pointer/test1.mer
 merdog container/deque_test.mer
+merdog container/set_test.mer
 merdog demo.mer
 merdog member_manager.mer
 

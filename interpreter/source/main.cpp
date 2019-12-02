@@ -14,7 +14,7 @@
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
-#define MERDOG_VERSION "Merdog Snake 0.9.1"
+#define MERDOG_VERSION "Merdog Snake 0.9.2"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -45,8 +45,7 @@ int main(int argc, char* argv[])
 			}
 		}
 		std::string input_content = get_file_content(argv[1]);
-		Mer::build_token_stream(input_content);
-		Mer::Parser::program()->execute();
+		Mer::run_interpreter(input_content);
 	}
 	catch (std::exception & e)
 	{
