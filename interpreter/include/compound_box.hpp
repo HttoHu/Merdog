@@ -124,7 +124,7 @@ namespace Mer
 	private:
 		StructureInitList() {}
 		std::vector<ParserNode*> vec;
-		type_code_index type_code;
+		type_code_index type_code=0;
 	};
 	class MemberVar :public ParserNode
 	{

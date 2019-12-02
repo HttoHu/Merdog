@@ -162,14 +162,8 @@ namespace Mer
 			return result->second;
 		}
 		WordRecorder* find(std::string id);
-		void push_glo(std::string id, WordRecorder *wr)
-		{
-			data.back().insert({ id,wr });
-		}
-		void push(std::string id, WordRecorder *wr)
-		{
-			data.front().insert({ id,wr });
-		}
+		void push_glo(std::string id, WordRecorder* wr);
+		void push(std::string id, WordRecorder* wr);
 		void print();
 		~SymbolTable();
 	private:

@@ -25,6 +25,18 @@ WordRecorder* Mer::SymbolTable::find(std::string id)
 	}
 	return nullptr;
 }
+void Mer::SymbolTable::push_glo(std::string id, WordRecorder* wr)
+{
+	if (data.back().find(id) != data.back().end())
+		throw Error("id " + id + " redefined!");
+	data.back().insert({ id,wr });
+}
+void Mer::SymbolTable::push(std::string id, WordRecorder* wr)
+{
+	if (data.front().find(id) != data.front().end())
+		throw Error("id " + id + " redefined!");
+	data.front().insert({ id,wr });
+}
 void Mer::SymbolTable::print()
 {
 	for (const auto& a : data)
@@ -66,7 +78,7 @@ Mer::FuncIdRecorder::FuncIdRecorder(FunctionBase* fb) :WordRecorder(ESymbol::SFU
 
 Mer::FuncIdRecorder::~FuncIdRecorder()
 {
-	for (auto &a : functions)
+	for (auto& a : functions)
 	{
 		rem_functions.insert(a.second);
 	}

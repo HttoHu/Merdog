@@ -48,7 +48,7 @@ namespace Mer
 		ParserNode* clone()override;
 	private:
 		LConV() {}
-		type_code_index type;
+		type_code_index type=0;
 		Mem::Object obj;
 	};
 
@@ -82,7 +82,7 @@ namespace Mer
 	private:
 		Variable() {}
 		bool is_arr=false;
-		type_code_index type;
+		type_code_index type=0;
 		size_t pos;
 	};
 
