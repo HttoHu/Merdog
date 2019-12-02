@@ -65,7 +65,8 @@ namespace Mer
 		Mem::Object _vec_resize(const std::vector < Mem::Object >& args)
 		{
 			auto& vec = std::static_pointer_cast<Container::Vector>(parents_vec.back())->content;
-			return std::make_shared<Mem::Int>(vec.size());
+			vec.resize(Mem::get_raw<int>(args[0]),vec[0]->clone());
+			return nullptr;
 		}
 		Mem::Object _vec_clear(const std::vector < Mem::Object >& args)
 		{
@@ -123,6 +124,11 @@ namespace Mer
 			vec->content.pop_back();
 			return nullptr;
 		}
+		Mem::Object _vec_back(const std::vector < Mem::Object >& args)
+		{
+			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
+			return vec->content.back();
+		}
 		Mem::Object _vec_size(const std::vector < Mem::Object >& args)
 		{
 			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
@@ -135,8 +141,7 @@ namespace Mer
 		Mem::Object _deque_resize(const std::vector < Mem::Object >& args)
 		{
 			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
-			int count = Mem::get_raw<int>(args[0]);
-			deq->content.resize(count);
+			deq->content.resize(Mem::get_raw<int>(args[0]));
 			return nullptr;
 		}
 		Mem::Object _deque_clear(const std::vector < Mem::Object >& args)
@@ -191,6 +196,16 @@ namespace Mer
 			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
 			deq->content.pop_front();
 			return nullptr;
+		}
+		Mem::Object _deq_back(const std::vector < Mem::Object >& args)
+		{
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			return deq->content.back();
+		}
+		Mem::Object _deq_front(const std::vector < Mem::Object >& args)
+		{
+			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			return deq->content.front();
 		}
 		Mem::Object _deq_size(const std::vector < Mem::Object >& args)
 		{
@@ -285,6 +300,8 @@ namespace Mer
 			_register_member_function("push_front", cur_type, Mem::BVOID, { element_type }, _deq_push_front);
 			_register_member_function("pop_back", cur_type, Mem::BVOID, { }, _deq_pop_back);
 			_register_member_function("pop_front", cur_type, Mem::BVOID, {  }, _deq_pop_front);
+			_register_member_function("front", cur_type, element_type, {  }, _deq_front);
+			_register_member_function("back", cur_type, element_type, {  }, _deq_back);
 			_register_member_function("size", cur_type, Mem::INT, { }, _deq_size);
 			_register_member_function("resize", cur_type, Mem::BVOID, { Mem::INT }, _deque_resize);
 			_register_member_function("clear", cur_type, Mem::BVOID, {}, _deque_clear);
@@ -311,6 +328,7 @@ namespace Mer
 			// set member functions==================================================
 			_register_member_function("push_back", cur_type, Mem::BVOID, { element_type }, _vec_push_back);
 			_register_member_function("pop_back", cur_type, Mem::BVOID, { }, _vec_pop_back);
+			_register_member_function("back", cur_type, element_type, {  }, _vec_back);
 			_register_member_function("clear", cur_type, Mem::BVOID, {}, _vec_clear);
 			_register_member_function("size", cur_type, Mem::INT, {  }, _vec_size);
 			_register_member_function("resize", cur_type, Mem::BVOID, { Mem::INT }, _vec_resize);

@@ -1,0 +1,34 @@
+using set;
+struct coor
+{
+	int x=0;
+	int y=0;
+	function int get_distance()
+	{
+		return cast<int>(sqrt(cast<real>(x*x+y*y)));
+	}
+	function void print()
+	{
+		std.cout("(",x,',',y,')');
+	}
+}
+function bool compare(coor a1,coor a2)
+{
+	bool tmp=a1.get_distance()<(a2.get_distance());
+	return tmp;
+}
+function coor make_coor(int a,int b)
+{
+	coor ret{x:a,y:b};
+	return ret;
+}
+program main
+{
+	set<coor> tmp;
+	tmp.insert(make_coor(3,4));
+	tmp.insert(make_coor(1,2));
+	std.cout(tmp.exists(make_coor(1,2)));
+	tmp[make_coor(3,4)].print();
+	tmp.clear();
+
+}

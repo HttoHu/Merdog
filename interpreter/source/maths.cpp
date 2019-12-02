@@ -80,7 +80,7 @@ namespace Mer
 			return std::make_shared<Mem::Double>(d);
 		}
 	}
-	Namespace* maths = new Namespace(nullptr);
+	Namespace* maths;
 	void set_maths()
 	{
 		Mer::SystemFunction* min = new SystemFunction(Mem::DOUBLE, _min);
