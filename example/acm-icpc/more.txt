@@ -1,0 +1,2 @@
+I am trying to use the merdog to practice competation problems
+more in www.github.com/HttoHu/MyACM
