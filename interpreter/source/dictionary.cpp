@@ -45,6 +45,17 @@ namespace Mer
 			set_content.erase(result);
 			return std::make_shared<Mem::Bool>(true);
 		}
+		Mem::Object _set_index_by_number(const std::vector < Mem::Object >& args)
+		{
+			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			int pos = Mem::get_raw<int>(args[0]);
+			auto tmp = set_content.begin();
+			// tmp+=pos is illegal of C++
+			for (int i = 0; i < pos; i++)
+				tmp++;
+			return *tmp;
+		}
+
 	}
 	//map method
 	namespace {
@@ -83,6 +94,16 @@ namespace Mer
 			map_content.clear();
 			return nullptr;
 
+		}
+		Mem::Object _map_index_by_number(const std::vector < Mem::Object >& args)
+		{
+			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			int pos = Mem::get_raw<int>(args[0]);
+			auto tmp = map_content.begin();
+			// tmp+=pos is illegal of C++
+			for (int i = 0; i < pos; i++)
+				tmp++;
+			return tmp->second;
 		}
 	}
 	namespace Container
@@ -157,6 +178,7 @@ namespace Mer
 		_register_member_function("clear", cur_type, Mem::INT,{}, _set_clear);
 		_register_member_function("exists", cur_type, Mem::BOOL, { element_type }, _set_exists);
 		_register_member_function("erase", cur_type, Mem::BOOL, { element_type }, _set_erase);
+		_register_member_function("pos_visit", cur_type, element_type, { Mem::INT }, _set_index_by_number);
 	}
 	void register_map(type_code_index element_type)
 	{
@@ -177,6 +199,7 @@ namespace Mer
 		_register_member_function("clear", cur_type, Mem::INT,{}, _map_clear);
 		_register_member_function("exists", cur_type, Mem::BOOL, { key_type }, _map_exists);
 		_register_member_function("erase", cur_type, Mem::BOOL, { key_type }, _map_erase);
+		_register_member_function("pos_visit", cur_type, element_type, { Mem::INT }, _map_index_by_number);
 	}
 	void using_map()
 	{
