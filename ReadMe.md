@@ -15,7 +15,7 @@ Merdog is a mini C-Like interpreter
 3. basic control statement **if / else / elif / while / do while / for / switch**
 4. support the declaration and defination of a function
 5. support defining struct, and member function
-6. support array and *(The feature will be added after v3.1.9)some STL containers (vector, deque, map,set,multiset,multimap)*
+6. support array and vector, deque, map,set
 7. some basic and useful functions
   
 ## Example

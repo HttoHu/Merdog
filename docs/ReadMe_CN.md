@@ -12,7 +12,7 @@ Merdog 是一个简单的开源解释器C-Like 语言语法
 3. 基本语句 **if / else / elif / while / do while / for / switch**
 4. 支持函数的声明和定义
 5. 支持 struct，且支持在struct里定义成员函数
-6. 支持数组，*(将在3.1.9版本中加入)基本的容器(vector, deque, map,set,multiset,multimap)*
+6. 支持数组，vector, set,map, deque
 7. 内置基本的IO库和数学函数库（std函数的封装）和一些实用函数
 ```c++
 function int sum (int x, int y)
