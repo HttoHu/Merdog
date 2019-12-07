@@ -28,9 +28,12 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include "error.hpp"
 namespace Mer
 {
+	extern std::string input_buf;
+	extern std::stringstream my_stringsteam;
 	void build_token_stream(const std::string& content);
 	//=========================================================================
 	enum Tag:unsigned char
@@ -287,6 +290,7 @@ namespace Mer
 	private:
 		char ch;
 	};
+	void preprocess(const std::string &str,size_t & pos);
 	//=======================================================
 	Token* parse_number(const std::string& str, size_t& pos);
 	Token* parse_word(const std::string& str, size_t& pos);

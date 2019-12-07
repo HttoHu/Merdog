@@ -27,6 +27,8 @@ std::vector<Mer::ParserNode*> Mer::structure_parent_stack;
 
 namespace Mer
 {
+	std::string input_buf = "";
+	std::stringstream my_stringsteam;
 	extern std::map<type_code_index, std::map<std::string, Mer::FunctionBase*>> member_function_table;
 	extern std::map<std::string, UStructure*> ustructure_map;
 	namespace Mem
@@ -100,6 +102,7 @@ namespace Mer
 		output_buff = "";
 
 		_merdog_init_();
+		
 		try
 		{
 			Mer::build_token_stream(file_content);
@@ -107,7 +110,7 @@ namespace Mer
 			clear();
 
 		}
-		catch (std::exception & e)
+		catch (const std::exception & e)
 		{
 			auto ret = e.what();
 			token_stream.clear();

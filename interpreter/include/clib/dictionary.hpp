@@ -41,6 +41,7 @@ namespace Mer
 		class Set :public Mem::Value
 		{
 		public:
+			Set(SetContent&& sc) :data(sc) {}
 			Set(const SetContent& sc) :data(sc) {}
 			Set(type_code_index element_type);
 			static type_code_index type_code;

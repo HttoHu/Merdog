@@ -8,6 +8,7 @@ using TokenMap = std::map<std::string, Token*>;
 using TagStrMap = std::map<Tag, std::string>;
 //==========================================
 size_t Mer::Endl::current_line = 0;
+
 TagStrMap	Mer::TagStr{
 	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},{PTRVISIT,"PTRVISIT"},
 	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
@@ -62,6 +63,34 @@ char _convert_escape(char c)
 //==========================================
 Token* Mer::END_TOKEN = new Token(ENDOF);
 TokenStream Mer::token_stream;
+//get a word from content
+std::string retrive_word(const std::string& str, size_t& pos)
+{
+	std::string ret;
+	while (isalnum(str[pos]) || str[pos] == '_') ret += str[pos++];
+	return ret;
+}
+
+void Mer::preprocess(const std::string& str, size_t& pos)
+{
+	// skip $
+	pos++;
+	std::string ins = retrive_word(str, pos);
+	if (ins == "pre_input")
+	{
+		do
+		{
+			input_buf += str[pos++];
+		} while (str[pos] != '$');
+	}
+	else
+		throw  LexerError("pre_ins: "+ ins+" not defined yet.");
+	pos++;
+	std::string end_ins = retrive_word(str, pos);
+	if (end_ins != "end")
+		throw LexerError("illegal terminal word of end preprocess "+end_ins);
+	my_stringsteam.str(input_buf);
+}
 
 Token* Mer::parse_number(const std::string& str, size_t& pos)
 {
@@ -166,6 +195,9 @@ void Mer::build_token_stream(const std::string& content) {
 	{
 		switch (content[i])
 		{
+		case '$':
+			preprocess(content,i);
+			break;
 		case '\'':
 			token_stream.push_back(parse_char(content, i));
 			break;

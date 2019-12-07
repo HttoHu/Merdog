@@ -33,6 +33,7 @@
  => string read(int), read line_no text;
  => void write(), write the content to the file.
 */
+#include <sstream>
 #include "../include/basic_objects.hpp"
 #include "../include/environment.hpp"
 #include "../include/clib/merdog_io.hpp"
@@ -44,6 +45,13 @@
 #endif
 namespace Mer
 {
+
+	void _register_internal_function
+	(std::string name,  type_code_index ret_type, const std::vector<type_code_index>& param_list, std::function<Mem::Object(const std::vector<Mem::Object>&)> mf,Namespace* _nsp=this_namespace) {
+		SystemFunction* tmp = new SystemFunction(ret_type, mf);
+		tmp->set_param_types(param_list);
+		_nsp->set_new_func(name, tmp);
+	}
 	namespace
 	{
 		std::shared_ptr<Mem::Int> _make_int_obj(int n)
@@ -81,34 +89,50 @@ namespace Mer
 
 		Mem::Object _input_int(const std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 0)
-				throw Error("argument size error");
 			int obj = 0;
-			std::cin >> obj;
+			if (input_buf.empty())
+				std::cin >> obj;
+			else
+				my_stringsteam >> obj;
 			return std::make_shared<Mem::Int>(obj);
 		}
 		Mem::Object _input_char(const std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 0)
-				throw Error("argument size error");
 			char obj;
-			std::cin >> obj;
+			if (input_buf.empty())
+				std::cin >> obj;
+			else
+				my_stringsteam >> obj;
 			return std::make_shared<Mem::Char>(obj);
+		}
+		Mem::Object _get_line(const std::vector<Mem::Object>& args)
+		{
+			std::string obj;
+			if (input_buf.empty())
+				std::getline(std::cin, obj);
+			else
+				std::getline(my_stringsteam, obj);
+			return std::make_shared<Mem::String>(obj);
+
 		}
 		Mem::Object _input_real(const std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 0)
-				throw Error("argument size error");
+
 			double obj = 0;
-			std::cin >> obj;
+			if (input_buf.empty())
+				std::cin >> obj;
+			else
+				my_stringsteam >> obj;
 			return std::make_shared<Mem::Double>(obj);
 		}
 		Mem::Object _input_string(const std::vector<Mem::Object>& args)
 		{
-			if (args.size() != 0)
-				throw Error("argument size error");
+
 			std::string obj = "";
-			std::cin >> obj;
+			if (input_buf.empty())
+				std::cin >> obj;
+			else
+				my_stringsteam >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}
 #ifdef USING_CXX17
@@ -226,33 +250,30 @@ namespace Mer
 		auto line_count = new SystemFunction(Mem::BVOID, _line_count);
 		line_count->set_param_types({ (size_t)Mem::type_counter });
 		member_function_table[Mem::type_counter].insert({ "line_count",line_count });
-	}
+}
 #endif
 	void set_io()
 	{
 		Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
 		Mer::SystemFunction* str_size = new SystemFunction(Mem::BasicType::INT, _str_size);
 		Mer::SystemFunction* cout = new SystemFunction(Mem::BasicType::BVOID, _cout);
-		Mer::SystemFunction* input_int = new SystemFunction(Mem::BasicType::INT, _input_int);
-		Mer::SystemFunction* input_real = new SystemFunction(Mem::BasicType::DOUBLE, _input_real);
-		Mer::SystemFunction* input_string = new SystemFunction(Mem::BasicType::STRING, _input_string);
-		Mer::SystemFunction* input_char = new SystemFunction(Mem::BasicType::CHAR, _input_char);
 		cout->dnt_check_param();
 		// set string===========================================
 		substr->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ });
 		member_function_table[Mem::STRING]["substr"] = substr;
 		member_function_table[Mem::STRING]["size"] = str_size;
-		// string init
+		// string init==================================================================
 		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
 		str_init->set_param_types({ Mem::INT,Mem::CHAR });
 		type_init_function_map[InitKey(Mem::STRING, std::vector<type_code_index>{ Mem::INT, Mem::CHAR })] = str_init;
 		//======================================================
 		mstd->set_new_func("cout", cout);
-		mstd->set_new_func("input_int", input_int);
-		mstd->set_new_func("input_real", input_real);
-		mstd->set_new_func("input_char", input_char);
-		mstd->set_new_func("input_string", input_string);
+		_register_internal_function("input_int", Mem::INT, {}, _input_int, mstd);
+		_register_internal_function("input_char", Mem::CHAR, {}, _input_char, mstd);
+		_register_internal_function("input_string", Mem::STRING, {}, _input_string, mstd);
+		_register_internal_function("input_real", Mem::DOUBLE, {}, _input_real, mstd);
+		_register_internal_function("getline", Mem::STRING, {}, _get_line, mstd);
 #ifdef COMPILE_MERDOG_NEED_CXX17
 		auto exists_file = new SystemFunction(Mem::BOOL, _exists_file);
 		exists_file->set_param_types({ Mem::STRING });
@@ -260,7 +281,6 @@ namespace Mer
 		set_file_operator_class();
 		mstd->set_new_func("exist_file", exists_file);
 #endif
-
 
 	}
 }

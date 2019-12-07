@@ -10,6 +10,8 @@
 #endif
 namespace Mer
 {
+	void _register_internal_function
+	(std::string name, type_code_index ret_type, const std::vector<type_code_index>& param_list, std::function<Mem::Object(const std::vector<Mem::Object>&)> mf, Namespace* _nsp = this_namespace);
 	namespace
 	{
 		int my_string_to_int(const std::string& str)
@@ -115,30 +117,17 @@ namespace Mer
 }
 void Mer::set_utility()
 {
-	SystemFunction* time_record = new SystemFunction(Mem::INT, _time_record);
-	SystemFunction* random_int = new SystemFunction(Mem::INT, _random_int);
-	SystemFunction* sleep = new SystemFunction(Mem::BVOID, _sleep);
-	SystemFunction* csystem = new SystemFunction(Mem::BVOID, _system);
 	SystemFunction* my_to_string = new SystemFunction(Mem::STRING, _to_string);
-	SystemFunction* to_int = new SystemFunction(Mem::INT, _convert_to_int);
-	SystemFunction* to_real = new SystemFunction(Mem::DOUBLE, _convert_to_real);
-	SystemFunction* mer_exit = new SystemFunction(Mem::BVOID, _mer_exit);
 	//======================================================================================
-	random_int->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
-	sleep->set_param_types({ Mer::Mem::BasicType::INT });
 	my_to_string->dnt_check_param();
-	csystem->set_param_types({ Mer::Mem::BasicType::STRING });
-	to_int->set_param_types({ Mer::Mem::BasicType::STRING });
-	to_real->set_param_types({ Mer::Mem::BasicType::STRING });
-	mer_exit->set_param_types({ });
 	//======================================================================================
-	mstd->set_new_func("clock",  time_record);
-	mstd->set_new_func("rand_int",  random_int);
-	mstd->set_new_func("sleep",  sleep);
-	root_namespace->set_new_func("exit", mer_exit);
+	_register_internal_function("clock", Mem::INT, {}, _time_record, mstd);
+	_register_internal_function("rand_int", Mem::INT, {Mem::INT,Mem::INT}, _random_int, mstd);
+	_register_internal_function("sleep", Mem::BVOID, {Mem::INT}, _sleep, mstd);
+	_register_internal_function("exit", Mem::BVOID, {}, _mer_exit);
+	_register_internal_function("system", Mem::BVOID, {Mem::STRING}, _system);
+	_register_internal_function("to_int", Mem::INT, {Mem::STRING}, _convert_to_int);
+	_register_internal_function("to_real", Mem::DOUBLE, { Mem::STRING }, _convert_to_real);
 	root_namespace->set_new_func("to_string", my_to_string);
-	root_namespace->set_new_func("system",  csystem);
-	root_namespace->set_new_func("to_int", to_int);
-	root_namespace->set_new_func("to_real", to_real);
 
 }

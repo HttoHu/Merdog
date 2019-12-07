@@ -6,6 +6,10 @@ namespace Mer
 	using __member_function = std::function<Mem::Object(const std::vector<Mem::Object>&)>;
 	void _register_member_function
 	(std::string name, type_code_index type, type_code_index ret_type, const std::vector<type_code_index>& param_list, __member_function mf);
+
+	void _register_type_init
+	(type_code_index type, const std::vector<type_code_index>& param_list, __member_function mf);
+
 	extern std::vector<Mem::Object> parents_vec;
 
 	//set method
@@ -29,6 +33,7 @@ namespace Mer
 				return std::make_shared<Mem::Bool>(false);
 			return std::make_shared<Mem::Bool>(true);
 		}
+
 		Mem::Object _set_clear(const std::vector<Mem::Object>& args)
 		{
 			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
@@ -137,9 +142,12 @@ namespace Mer
 	_compare_operator find_compare_operator(type_code_index s)
 	{
 		auto result = compare_map.find(s);
+
 		// it should checked at parser phase.
 		if (result == compare_map.end())
-			throw std::runtime_error("merdog is broken!");
+		{
+			throw Error(type_to_string(s)+" doesn't have compare operator!");
+		}
 		return result->second;
 	}
 	void using_set()
