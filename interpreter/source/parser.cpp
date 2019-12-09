@@ -431,8 +431,7 @@ namespace Mer
 		{
 			sum += a->get_size();
 		}
-		pos = mem.glo_var_index;
-		mem.glo_var_index += sum;
+		pos = mem.reserve_glo_pos(sum) - sum;
 
 		size_t tmp_pos = pos;
 		_record_glo_id(vec[0], type, pos);

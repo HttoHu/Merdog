@@ -70,19 +70,19 @@ namespace Mer
 		}
 		int function_block_size=0;
 		size_t get_capacity() { return capacity; }
-		size_t glo_var_index = 0;
+
+		size_t reserve_glo_pos(size_t size);
 		void reset();
-	private:
 		void check()
 		{
-			while (index + current > capacity/2)
-			{ 
-				std::cout << "ALLOC MEM Current: "<<current<<"\n";
+			while (index + current > capacity / 2)
+			{
 				alloc();
 				capacity *= 2;
-				current = capacity -1;
 			}
 		}
+	private:
+		size_t glo_var_index = 0;
 		//alloc for memory
 		void alloc();
 		// how many var's the funciton contains;

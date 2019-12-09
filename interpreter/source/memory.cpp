@@ -46,6 +46,16 @@ namespace Mer
 	{
 		return stack_mem[in];
 	}
+	size_t Memory::reserve_glo_pos(size_t size)
+	{
+		glo_var_index += size;
+		while (glo_var_index > capacity / 2)
+		{
+			alloc();
+			capacity *= 2;
+		}
+		return glo_var_index;
+	}
 	void Memory::reset()
 	{
 		glo_var_index = 0;

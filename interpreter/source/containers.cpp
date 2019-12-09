@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "../include/clib/containers.hpp"
 #include "../include/namespace.hpp"
 #include "../include/word_record.hpp"

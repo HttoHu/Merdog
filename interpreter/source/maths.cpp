@@ -79,6 +79,14 @@ namespace Mer
 			d = std::abs(d);
 			return std::make_shared<Mem::Double>(d);
 		}
+		Mem::Object _pow(const std::vector<Mem::Object>& args)
+		{
+			auto obj = args.front();
+			auto obj2 = args[1];
+			auto v = std::static_pointer_cast<Mem::Double>(obj)->get_value();
+			auto v2 = std::static_pointer_cast<Mem::Double>(obj2)->get_value();
+			return std::make_shared<Mem::Double>(pow(v,v2));
+		}
 	}
 	Namespace* maths;
 	void set_maths()
@@ -93,6 +101,7 @@ namespace Mer
 		Mer::SystemFunction* mod = new SystemFunction(Mem::INT, _mod);
 		Mer::SystemFunction* sqrt = new SystemFunction(Mem::DOUBLE, _sqrt);
 		Mer::SystemFunction* abs = new SystemFunction(Mem::DOUBLE, _abs);
+		Mer::SystemFunction* my_pow = new SystemFunction(Mem::DOUBLE, _pow);
 		maths = root_namespace;
 		min->set_param_types({ Mem::DOUBLE,Mem::DOUBLE });
 		sqrt->set_param_types({ Mem::DOUBLE });
@@ -104,6 +113,7 @@ namespace Mer
 		arcos->set_param_types({ Mem::DOUBLE });
 		artan->set_param_types({ Mem::DOUBLE });
 		abs->set_param_types({ Mem::DOUBLE });
+		my_pow->set_param_types({ Mem::DOUBLE,Mem::DOUBLE });
 		maths->set_new_func("min2", min);
 		maths->set_new_func("sqrt",sqrt);
 		maths->set_new_func("mod", mod);
@@ -114,5 +124,6 @@ namespace Mer
 		maths->set_new_func("arcos", arcos);
 		maths->set_new_func("artan",  artan);
 		maths->set_new_func("abs", abs);
+		maths->set_new_func("pow", my_pow);
 	}
 }
