@@ -1,7 +1,10 @@
 // haha Just a toy.
-#define function
 #include <iostream>
 #include <string>
+#include <vector>
+#include <deque>
+//============================
+#define function
 class merdog_io
 {
 public:
@@ -50,11 +53,11 @@ int msizeof(ArrType (&arr)[count])
 {
 	return count;
 }
+
 #define sizeof msizeof
 #define vector std::vector
 #define deque std::deque
 #define string std::string
-#include <vector>
-#include <deque>
+
 #define std mstd
 //=====================COPY YOUR MERDOG PROGRAM HERE AND BUILD IT WITH CPP COMPILER=================
