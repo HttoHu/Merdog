@@ -63,7 +63,7 @@ namespace Mer
 			// remove initialization function
 			for (auto a : type_init_function_map)
 				delete a.second;
-	
+			type_init_function_map.clear();
 			// remove member function call
 			for (auto& a : member_function_table)
 			{
