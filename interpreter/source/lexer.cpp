@@ -89,7 +89,7 @@ void Mer::preprocess(const std::string& str, size_t& pos)
 	std::string end_ins = retrive_word(str, pos);
 	if (end_ins != "end")
 		throw LexerError("illegal terminal word of end preprocess "+end_ins);
-	my_stringsteam.str(input_buf);
+	my_stringstream.str(input_buf);
 }
 
 Token* Mer::parse_number(const std::string& str, size_t& pos)

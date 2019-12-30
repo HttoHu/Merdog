@@ -16,36 +16,6 @@ namespace Mer
 	example
 		next_permutation(vec,0,vec.size()-1);
 	*/
-	bool next_permutation(Mem::Object* from, Mem::Object* to,std::function<bool(Mem::Object,Mem::Object)> comparator)
-	{
-		if (from == to)
-			return false;
-		Mem::Object* tmp = from;
-		tmp ++;
-		if (tmp == to)
-			return false;
-		tmp = to;
-		tmp --;
-
-		while (true) {
-			Mem::Object* cur = tmp;
-			tmp --;
-			if (comparator(*tmp, *cur)) {
-				Mem::Object* j = to;
-				while (!comparator(*tmp, *(--j)));
-				Mem::Object t = (*tmp)->clone();
-				(*tmp)->operator=(*j);
-				(*j)->operator=(t);
-				std::reverse(cur, to);
-				return true;
-			}
-			if (tmp == from) {
-				std::reverse(from, to);
-				return false;
-			}
-		}
-	}
-
 	extern std::vector<Mem::Object> parents_vec;
 
 	void _register_member_function
@@ -109,7 +79,7 @@ namespace Mer
 				int range_from = Mem::get_raw<int>(args[1]);
 				int range_to = Mem::get_raw<int>(args[2]);
 				return std::make_shared<Mem::Bool>
-					(Mer::next_permutation(&*(vec.begin() + range_from), &*(vec.begin() + range_to), comparator));
+					(std::next_permutation(vec.begin() + range_from, vec.begin() + range_to, comparator));
 			};
 			return lam;
 		}
@@ -222,7 +192,7 @@ namespace Mer
 				int range_from = Mem::get_raw<int>(args[1]);
 				int range_to = Mem::get_raw<int>(args[2]);
 				return std::make_shared<Mem::Bool>
-					(Mer::next_permutation(&*(deq.begin() + range_from), &*(deq.begin() + range_to), comparator));
+					(std::next_permutation(deq.begin() + range_from, deq.begin() + range_to, comparator));
 			};
 			return lam;
 		}

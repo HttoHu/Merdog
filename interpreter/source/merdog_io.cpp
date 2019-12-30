@@ -93,7 +93,7 @@ namespace Mer
 			if (input_buf.empty())
 				std::cin >> obj;
 			else
-				my_stringsteam >> obj;
+				my_stringstream >> obj;
 			return std::make_shared<Mem::Int>(obj);
 		}
 		Mem::Object _input_char(const std::vector<Mem::Object>& args)
@@ -102,7 +102,7 @@ namespace Mer
 			if (input_buf.empty())
 				std::cin >> obj;
 			else
-				my_stringsteam >> obj;
+				my_stringstream >> obj;
 			return std::make_shared<Mem::Char>(obj);
 		}
 		Mem::Object _get_line(const std::vector<Mem::Object>& args)
@@ -111,7 +111,7 @@ namespace Mer
 			if (input_buf.empty())
 				std::getline(std::cin, obj);
 			else
-				std::getline(my_stringsteam, obj);
+				std::getline(my_stringstream, obj);
 			return std::make_shared<Mem::String>(obj);
 
 		}
@@ -122,7 +122,7 @@ namespace Mer
 			if (input_buf.empty())
 				std::cin >> obj;
 			else
-				my_stringsteam >> obj;
+				my_stringstream >> obj;
 			return std::make_shared<Mem::Double>(obj);
 		}
 		Mem::Object _input_string(const std::vector<Mem::Object>& args)
@@ -132,7 +132,7 @@ namespace Mer
 			if (input_buf.empty())
 				std::cin >> obj;
 			else
-				my_stringsteam >> obj;
+				my_stringstream >> obj;
 			return std::make_shared<Mem::String>(obj);
 		}
 #ifdef USING_CXX17

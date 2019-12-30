@@ -28,7 +28,7 @@ std::vector<Mer::ParserNode*> Mer::structure_parent_stack;
 namespace Mer
 {
 	std::string input_buf = "";
-	std::stringstream my_stringsteam;
+	std::stringstream my_stringstream;
 	extern std::map<type_code_index, std::map<std::string, Mer::FunctionBase*>> member_function_table;
 	extern std::map<std::string, UStructure*> ustructure_map;
 	namespace Mem
@@ -78,6 +78,9 @@ namespace Mer
 				delete a.second;
 			}
 			ustructure_map.clear();
+			// pre_input clear
+			my_stringstream.clear();
+			my_stringstream.str(input_buf);
 		}
 		void _merdog_init_()
 		{

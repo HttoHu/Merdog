@@ -12,6 +12,12 @@
 
 namespace Mer
 {
+	void Mem::swap(Object rhs, Object lhs)
+	{
+		auto tmp = rhs->clone();
+		rhs->operator=(lhs);
+		lhs->operator=(tmp);
+	}
 	std::string Mem::type_to_string(BasicType bt)
 	{
 		std::string ret;

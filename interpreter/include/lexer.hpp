@@ -33,7 +33,7 @@
 namespace Mer
 {
 	extern std::string input_buf;
-	extern std::stringstream my_stringsteam;
+	extern std::stringstream my_stringstream;
 	void build_token_stream(const std::string& content);
 	//=========================================================================
 	enum Tag:unsigned char

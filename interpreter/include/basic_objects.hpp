@@ -54,6 +54,7 @@ namespace Mer
 
 		extern Namespace* this_namespace;
 		using Object = std::shared_ptr<Value>;
+		void swap(Object rhs, Object lhs);
 		class Value
 		{
 		public:

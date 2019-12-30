@@ -14,7 +14,7 @@
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
-#define MERDOG_VERSION "Merdog Snake 1.1"
+#define MERDOG_VERSION "Merdog Snake 1.3.1"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -67,8 +67,6 @@ int main()
 	{
 		time_t s = clock();
 		std::string input_content = get_file_content("test.mer");
-		Mer::run_interpreter(input_content);
-		input_content = get_file_content("test2.mer");
 		Mer::run_interpreter(input_content);
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;
