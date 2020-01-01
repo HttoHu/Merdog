@@ -80,6 +80,9 @@ void Mer::preprocess(const std::string& str, size_t& pos)
 	{
 		do
 		{
+			if (str[pos] == '\n'||str[pos]=='\r') {
+				token_stream.push_back(new Endl());
+			}
 			input_buf += str[pos++];
 		} while (str[pos] != '$');
 	}
@@ -90,6 +93,8 @@ void Mer::preprocess(const std::string& str, size_t& pos)
 	if (end_ins != "end")
 		throw LexerError("illegal terminal word of end preprocess "+end_ins);
 	my_stringstream.str(input_buf);
+	// back to the last char in case of the lexer eating \n or \r which may lead to the wrong line number.
+	pos--;
 }
 
 Token* Mer::parse_number(const std::string& str, size_t& pos)
@@ -289,7 +294,7 @@ void Mer::build_token_stream(const std::string& content) {
 				i += 2;
 				while (i < content.size())
 				{
-					if (content[i] == '\n')
+					if (content[i] == '\n'||content[i]=='\r')
 					{
 						token_stream.push_back(new Endl());
 					}
