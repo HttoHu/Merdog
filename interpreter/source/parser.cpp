@@ -73,6 +73,30 @@ namespace Mer
 	{
 		return ret->clone();
 	}
+	std::vector<ParserNode*> Parser::linearized_array()
+	{
+		std::vector<ParserNode*> ret;
+		create_array_init_list(ret); return ret;
+	}
+
+	void Parser::create_array_init_list(std::vector<ParserNode*>& product)
+	{
+		token_stream.match(BEGIN);
+		while (token_stream.this_tag() == BEGIN) {
+			create_array_init_list(product);
+			if (token_stream.this_tag() == END)
+				break;
+			token_stream.match(COMMA);
+		}
+		while (token_stream.this_tag() != END) {
+			product.push_back(Expr().root());
+			while (token_stream.this_tag != END) {
+				token_stream.match(COMMA);
+				product.push_back(Expr().root());
+			}
+		}
+		token_stream.match(END);
+	}
 	std::unique_ptr<Program> Parser::program()
 	{
 		int programe_num = 0;
@@ -229,7 +253,7 @@ namespace Mer
 		}
 		id = token_stream.this_token();
 		token_stream.match(ID);
-		if (token_stream.this_tag() == LSB)
+		while (token_stream.this_tag() == LSB)
 		{
 			arr = true;
 			token_stream.match(LSB);
@@ -241,9 +265,25 @@ namespace Mer
 			}
 			auto c = token_stream.this_token();
 			// get element count
-			count = (size_t)Integer::get_value(c) + (size_t)1;
+			int ele_count= (size_t)Integer::get_value(c);
+			count += ele_count;
+			array_indexs.push_back(ele_count);
 			token_stream.match(INTEGER);
 			token_stream.match(RSB);
+		}
+		// if it is multidimensional array, count the size it needs to reserve
+		if (array_indexs.size() > 1) {
+			int f = array_indexs[0], s = 1;
+			for(int i=1;i<array_indexs.size();i++){
+				f *= array_indexs[i];
+				int last_f=1;
+				for (int j = 1; j <= i; j++) {
+
+					last_f *= array_indexs[j];
+				}
+				s += last_f;
+			}
+			count = f + s;
 		}
 
 	}
@@ -497,5 +537,4 @@ namespace Mer
 	{
 		return expr->execute()->Convert(to_type);
 	}
-
 }

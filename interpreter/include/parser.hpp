@@ -33,17 +33,17 @@ namespace Mer
 
 	struct WordRecorder;
 	class Expr;
-	class Program:public ParserNode
+	class Program :public ParserNode
 	{
 	public:
-		Program(Token *id):identify(id) {}
+		Program(Token* id) :identify(id) {}
 		Mem::Object execute()override;
 		std::string to_string()override;
 		std::vector<UptrPNode> stmts;
 		size_t* pc = new size_t(0);
 		~Program() { delete pc; }
 		size_t off = 0;
-		Token *identify;
+		Token* identify;
 	};
 	class NamePart
 	{
@@ -57,10 +57,11 @@ namespace Mer
 	private:
 		Token* id;
 		// int a[]={1,2,3};
-		bool auto_array=false;
+		bool auto_array = false;
 		bool arr = false;
 		bool pointer = false;
-		size_t count=1;
+		std::vector<size_t> array_indexs;
+		size_t count = 1;
 	};
 	class VarDeclUnit
 	{
@@ -74,7 +75,7 @@ namespace Mer
 	private:
 		bool is_arr = false;
 		bool is_p = false;
-		size_t size=1;
+		size_t size = 1;
 		type_code_index type_code;
 		Token* id;
 		ParserNode* expr;
@@ -90,7 +91,7 @@ namespace Mer
 	private:
 		void process_unit(VarDeclUnit* a, size_t c_pos);
 		type_code_index pos;
-		type_code_index sum=0;
+		type_code_index sum = 0;
 		std::vector<UptrPNode> exprs;
 		type_code_index type;
 	};
@@ -101,8 +102,8 @@ namespace Mer
 		Mem::Object execute()override;
 	private:
 		void process_unit(VarDeclUnit* a, size_t c_pos);
-		type_code_index pos=0;
-		int sum=0;
+		type_code_index pos = 0;
+		int sum = 0;
 		std::vector<UptrPNode> exprs;
 		type_code_index type;
 	};
@@ -114,7 +115,7 @@ namespace Mer
 		Cast(ParserNode* _expr, type_code_index type) :expr(_expr), to_type(type) {}
 		Mem::Object execute()override;
 		type_code_index get_type()override { return to_type; }
-		~Cast(){ delete expr; }
+		~Cast() { delete expr; }
 	private:
 		ParserNode* expr;
 		type_code_index to_type;
@@ -147,11 +148,14 @@ namespace Mer
 	};
 	namespace Parser
 	{
+		std::vector<ParserNode*> linearized_array();
+		// DFS 
+		void create_array_init_list(std::vector<ParserNode*> & product);
 		std::unique_ptr<Program> program();
-		ParserNode *statement();
-		ParserNode *var_decl();
+		ParserNode* statement();
+		ParserNode* var_decl();
 		type_code_index get_type();
 		ParserNode* make_var();
-		WordRecorder *get_current_info();
+		WordRecorder* get_current_info();
 	}
 }
