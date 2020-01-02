@@ -126,6 +126,9 @@ namespace Mer
 		ParserNode* parse_glo(WordRecorder* var_info);
 		ParserNode *parse_id();
 		ParserNode *parse_var(WordRecorder* var_info);
+		// global array and local array
+		template<typename ARR_TYPE>
+		ParserNode* parse_array(WordRecorder* var_info);
 		// parse id with namespace.
 		ParserNode *_parse_id_wn(Namespace *names);
 		FunctionCall* parse_initializer(type_code_index type);

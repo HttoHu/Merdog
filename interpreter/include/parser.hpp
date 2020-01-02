@@ -54,13 +54,13 @@ namespace Mer
 		bool is_auto_array() { return auto_array; }
 		bool is_pointer() { return pointer; }
 		Token* get_id() { return id; }
+		std::vector<size_t> array_indexs;
 	private:
 		Token* id;
 		// int a[]={1,2,3};
 		bool auto_array = false;
 		bool arr = false;
 		bool pointer = false;
-		std::vector<size_t> array_indexs;
 		size_t count = 1;
 	};
 	class VarDeclUnit
@@ -71,8 +71,10 @@ namespace Mer
 		Token* get_id() { return id; }
 		size_t& get_size() { return size; }
 		bool arr() { return is_arr; }
-		bool pointer() { return is_p; }
+		bool pointer() { return is_p; }		
+		std::vector<size_t> array_indexs;
 	private:
+
 		bool is_arr = false;
 		bool is_p = false;
 		size_t size = 1;
@@ -146,11 +148,23 @@ namespace Mer
 	private:
 		Mem::Object obj;
 	};
+	struct ArrayInitList {
+		ArrayInitList(const std::vector<ParserNode*> _leaves);
+		ArrayInitList(const std::vector<ArrayInitList*> _children);
+		std::vector<ArrayInitList*> children;
+		std::vector<ParserNode*> leaves;
+		~ArrayInitList() {
+			for (auto a : children)
+				delete a;
+		}
+		bool leaves_parent() { return leaves.size() != 0; }
+		size_t size() { if (leaves_parent())return leaves.size(); return children.size(); }
+	};
 	namespace Parser
 	{
-		std::vector<ParserNode*> linearized_array();
+		std::pair<std::vector<size_t> ,std::vector<ParserNode*>> linearized_array();
 		// DFS 
-		void create_array_init_list(std::vector<ParserNode*> & product);
+		ArrayInitList* build_array_initlist_tree();
 		std::unique_ptr<Program> program();
 		ParserNode* statement();
 		ParserNode* var_decl();

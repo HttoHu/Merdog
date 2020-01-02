@@ -225,6 +225,7 @@ namespace Mer
 	class InitList:public ParserNode
 	{
 	public:
+		InitList() {}
 		InitList(type_code_index);
 		// if sz is -1, the size will get from init_v.size();
 		InitList(type_code_index t,int sz);
@@ -237,11 +238,11 @@ namespace Mer
 		}
 		int get_ele_count() { return size; }
 		ParserNode* clone()override;
+		type_code_index type = 0;		
+		int size = 0;
 	private:
-		InitList() {}
 		std::vector<ParserNode*> init_v;
-		type_code_index type=0;
-		int size=0;
+
 	};
 	class GetAdd :public ParserNode
 	{

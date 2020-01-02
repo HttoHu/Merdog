@@ -31,16 +31,16 @@ namespace Mer
 
 	enum ESymbol
 	{
-		SFUN,SVAR,SNAME,
-		SGVAR,SGARR,
-		SSTRUCTURE,SARRAY,
-		STYPE,USVAR,MVAR,
+		SFUN, SVAR, SNAME,
+		SGVAR, SGARR,
+		SSTRUCTURE, SARRAY,
+		STYPE, USVAR, MVAR,
 		SCONTAINER,
 	};
 	struct WordRecorder
 	{
 	public:
-		WordRecorder(ESymbol e, type_code_index tc = 0) :es(e),type_code(tc) {}
+		WordRecorder(ESymbol e, type_code_index tc = 0) :es(e), type_code(tc) {}
 		ESymbol es;
 		int count = 1;
 		virtual size_t get_pos() { return 0; }
@@ -53,8 +53,8 @@ namespace Mer
 	struct VarIdRecorder :public Mer::WordRecorder
 	{
 	public:
-		VarIdRecorder(type_code_index type,size_t p,WordRecorder wr=SVAR)
-			:WordRecorder(wr),pos(p)
+		VarIdRecorder(type_code_index type, size_t p, WordRecorder wr = SVAR)
+			:WordRecorder(wr), pos(p)
 		{
 			type_code = type;
 		}
@@ -66,13 +66,25 @@ namespace Mer
 		{
 			return "pos:" + std::to_string(pos);
 		}
-		~VarIdRecorder();
-		// to get array size;
 	private:
+	};
+	struct ArrayRecorder :public Mer::WordRecorder {
+	public:
+		ArrayRecorder(type_code_index type, size_t p, const std::vector<size_t>& arr_indxs) :
+			WordRecorder(SARRAY), pos(p),array_indexs(arr_indxs) {}
+		size_t get_pos()override {
+			return pos + mem.get_current();
+		}
+		std::string to_string()override
+		{
+			return "pos:" + std::to_string(pos);
+		}
+		size_t pos;
+		std::vector<size_t> array_indexs;
 	};
 	struct MVarRecorder :public WordRecorder
 	{
-		MVarRecorder(type_code_index type,size_t _pos) :pos(_pos), WordRecorder(MVAR,type) {}
+		MVarRecorder(type_code_index type, size_t _pos) :pos(_pos), WordRecorder(MVAR, type) {}
 		size_t get_pos()override { return pos; }
 		std::string to_string()override { return "MVar :" + std::to_string(pos); }
 		~MVarRecorder() {  }
@@ -83,16 +95,30 @@ namespace Mer
 	public:
 		StructRecorder() :WordRecorder(ESymbol::SSTRUCTURE)
 		{
-			 Mem::type_counter+=2;
-			 type_code = Mem::type_counter;
+			Mem::type_counter += 2;
+			type_code = Mem::type_counter;
 		}
 
 	};
 	class Namespace;
-	struct GVarIdRecorder:public WordRecorder
+	struct GArrayRecorder :public Mer::WordRecorder {
+	public:
+		GArrayRecorder(type_code_index type, size_t p, const std::vector<size_t>& arr_indxs) :
+			WordRecorder(SGARR), pos(p), array_indexs(arr_indxs) {}
+		size_t get_pos()override {
+			return pos;
+		}
+		std::string to_string()override
+		{
+			return "gpos:" + std::to_string(pos);
+		}
+		size_t pos;
+		std::vector<size_t> array_indexs;
+	};
+	struct GVarIdRecorder :public WordRecorder
 	{
 	public:
-		GVarIdRecorder(type_code_index t,size_t _pos,ESymbol e=SGVAR) :WordRecorder(e,t), pos(_pos) {
+		GVarIdRecorder(type_code_index t, size_t _pos, ESymbol e = SGVAR) :WordRecorder(e, t), pos(_pos) {
 		}
 		bool& is_arr() { return arr; }
 		size_t get_pos()override
@@ -104,18 +130,18 @@ namespace Mer
 			return mem[pos];
 		}
 		size_t pos;
-		bool arr=false;
+		bool arr = false;
 	};
 	struct FuncIdRecorder :public WordRecorder
 	{
 	public:
-		FuncIdRecorder(type_code_index type) :WordRecorder(ESymbol::SFUN),functions(compare_param_feature){
+		FuncIdRecorder(type_code_index type) :WordRecorder(ESymbol::SFUN), functions(compare_param_feature) {
 			type_code = type;
 		}
 		FunctionBase* find(const std::vector<type_code_index>& pf);
 		bool dnt_check = false;
 		FuncIdRecorder(FunctionBase* fb);
-		std::map<std::vector<type_code_index>,FunctionBase*,decltype(compare_param_feature)*> functions;
+		std::map<std::vector<type_code_index>, FunctionBase*, decltype(compare_param_feature)*> functions;
 
 		~FuncIdRecorder();
 	private:
@@ -124,12 +150,12 @@ namespace Mer
 	struct ContainerTypeRecorder :public WordRecorder
 	{
 	public:
-		ContainerTypeRecorder(const std::string &str):WordRecorder(SCONTAINER)
+		ContainerTypeRecorder(const std::string& str) :WordRecorder(SCONTAINER)
 		{
 			type_code = Mem::type_counter += 2;
 		}
-		std::string to_string() override { 
-			return "type:"+type_name; 
+		std::string to_string() override {
+			return "type:" + type_name;
 		}
 	private:
 		std::string type_name;
@@ -146,7 +172,7 @@ namespace Mer
 			data.push_front(std::map<std::string, WordRecorder*>());
 		}
 		void end_block();
-		void type_check(Token *id, ESymbol e)
+		void type_check(Token* id, ESymbol e)
 		{
 			auto result = find(Id::get_value(id));
 			if (result == nullptr)

@@ -71,7 +71,7 @@ int main()
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;
 	}
-	catch (std::exception & e)
+	catch (const std::runtime_error & e)
 	{
 		std::cout << e.what();
 	}

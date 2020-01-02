@@ -83,7 +83,3 @@ Mer::FuncIdRecorder::~FuncIdRecorder()
 		rem_functions.insert(a.second);
 	}
 }
-
-Mer::VarIdRecorder::~VarIdRecorder()
-{
-}

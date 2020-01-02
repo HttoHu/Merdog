@@ -104,7 +104,7 @@ Mer::ParserNode* Mer::Parser::parse_id()
 	}
 	switch (result->es)
 	{
-	case ESymbol::SGARR:
+
 	case ESymbol::SGVAR:
 		return parse_glo(result);
 	case ESymbol::SSTRUCTURE:
@@ -112,7 +112,10 @@ Mer::ParserNode* Mer::Parser::parse_id()
 		return var_decl();
 	case ESymbol::SFUN:
 		return parse_function_call(this_namespace);
+	case ESymbol::SGARR:
+		return parse_array<GArrayRecorder>(result);
 	case ESymbol::SARRAY:
+		return parse_array<ArrayRecorder>(result);
 	case ESymbol::SVAR:
 	case ESymbol::MVAR:
 		return parse_var(result);
@@ -140,6 +143,40 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 	if (var_info->es == SARRAY)
 		ret->arr() = true;
 	return ret;
+}
+
+namespace {
+
+	Mer::ParserNode* _make_l_conv(int n) {
+		return new Mer::LConV(std::make_shared< Mer::Mem::Int>(n),Mer::Mem::BasicType::INT);
+	}
+}
+template<typename ARR_TYPE>
+Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
+{
+	token_stream.match(ID);
+	auto array_indexs = static_cast<ARR_TYPE*>(var_info)->array_indexs;
+	std::vector<ParserNode*> indexs;
+	while (token_stream.this_tag() == Tag::LSB) {
+		token_stream.match(LSB);
+		indexs.push_back(Expr().root());
+		token_stream.match(RSB);
+	}
+	// obtain the a index from the indexs
+	ParserNode* ret = _make_l_conv(0);
+	for (int i = 0; i < indexs.size()-1; i++) {
+		int p = 1;
+		for (int j = 0; j <= i; j++)
+		{
+			p *= array_indexs[indexs.size() - 1 - i];
+		}
+		ParserNode* tmp = new BinOp(indexs[i], BasicToken["*"], _make_l_conv(p));
+		ret = new BinOp(ret, BasicToken["+"], tmp);
+	}
+	ret = new BinOp(ret, BasicToken["+"], indexs.back());
+	if(typeid(ARR_TYPE)==typeid(ArrayRecorder))
+		return new SubScript(new Variable(var_info), ret);
+	return new SubScript(new GVar(var_info), ret);
 }
 
 
