@@ -30,6 +30,9 @@ namespace Mer
 {
 	namespace optimizer
 	{
+		ParserNode* optimize_bin_op(ParserNode* left, ParserNode* right, Token* tok);
+		ParserNode* optimize_unary_op(ParserNode* left, Token* tok);
+		// try to obtain the address directly
 		ParserNode* optimize_array_subscript(ParserNode* arr, ParserNode* subscript);
 	}
 }

@@ -65,7 +65,7 @@ namespace Mer
 		{
 			auto tok = token_stream.this_token();
 			token_stream.next();
-			result = new BinOp(result, tok, term());
+			result = optimizer::optimize_bin_op(result, term(), tok);
 		}
 		return result;
 	}
@@ -90,7 +90,7 @@ namespace Mer
 			default:
 				return result;
 			}
-			result = new BinOp(result, tok, expr());
+			result = optimizer::optimize_bin_op(result, expr(),tok);
 		}
 		return result;
 	}
@@ -102,7 +102,7 @@ namespace Mer
 		{
 			auto tok = token_stream.this_token();
 			token_stream.next();
-			result = new BinOp(result, tok, member_visit());
+			result = optimizer::optimize_bin_op(result, member_visit(),tok);
 		}
 		return result;
 	}
@@ -202,17 +202,12 @@ namespace Mer
 		case INTEGER:
 			token_stream.next();
 			return new LConV(result);
+		case PLUS:
 		case NOT:
 		case MINUS:
 		{
 			token_stream.next();
-			ParserNode* n = new UnaryOp(result, member_visit());
-			return n;
-		}
-		case PLUS:
-		{
-			token_stream.match(PLUS);
-			ParserNode* n = new UnaryOp(result, member_visit());
+			ParserNode* n = optimizer::optimize_unary_op(member_visit(),result);
 			return n;
 		}
 		case SIZEOF:

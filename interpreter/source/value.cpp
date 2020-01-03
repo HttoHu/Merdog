@@ -7,7 +7,14 @@
 #include "../include/namespace.hpp"
 #include "../include/environment.hpp"
 #include "../include/compound_box.hpp"
-
+namespace Mer {
+	namespace optimizer
+	{
+		ParserNode* optimize_bin_op(ParserNode* left, ParserNode* right, Token* tok);
+		ParserNode* optimize_unary_op(ParserNode* left, Token* tok);
+		ParserNode* optimize_array_subscript(ParserNode* arr, ParserNode* subscript);
+	}
+}
 Mer::Variable::Variable(WordRecorder* wr)
 {
 	pos = static_cast<VarIdRecorder*>(wr)->pos;
@@ -170,13 +177,13 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 		{
 			p *= array_indexs[indexs.size() - 1 - i];
 		}
-		ParserNode* tmp = new BinOp(indexs[i], BasicToken["*"], _make_l_conv(p));
-		ret = new BinOp(ret, BasicToken["+"], tmp);
+		ParserNode* tmp = optimizer::optimize_bin_op(indexs[i], _make_l_conv(p), BasicToken["*"]);
+		ret = optimizer::optimize_bin_op(ret, tmp, BasicToken["+"]);
 	}
-	ret = new BinOp(ret, BasicToken["+"], indexs.back());
+	ret = optimizer::optimize_bin_op(ret, indexs.back(), BasicToken["+"]);
 	if(typeid(ARR_TYPE)==typeid(ArrayRecorder))
-		return new SubScript(new Variable(var_info), ret);
-	return new SubScript(new GVar(var_info), ret);
+		return optimizer::optimize_array_subscript(new Variable(var_info), ret);
+	return optimizer::optimize_array_subscript(new GVar(var_info), ret);
 }
 
 

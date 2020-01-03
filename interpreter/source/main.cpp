@@ -14,7 +14,7 @@
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
-#define MERDOG_VERSION "Merdog Snake 1.3.1"
+#define MERDOG_VERSION "Merdog Snake 1.3.2"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
