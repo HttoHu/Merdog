@@ -20,4 +20,6 @@ merdog container/deque_test.mer
 merdog container/set_test.mer
 merdog demo.mer
 merdog member_manager.mer
+merdog muldarray_test.mer
+
 
