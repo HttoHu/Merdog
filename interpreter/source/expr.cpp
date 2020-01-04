@@ -222,8 +222,12 @@ namespace Mer
 		}
 	}
 
-	BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r) :left(l), op(o), right(r)
+	BinOp::BinOp(ParserNode* l, Token* o, ParserNode* r) :left(l), right(r),op_tok(o)
 	{
+		auto result = optimizer::op_table.find(o->get_tag());
+		if (result == optimizer::op_table.end())
+			throw Error(o->to_string() + " invalid operation");
+		op = result->second;
 		if (o->get_tag() != LSB && l->get_type() != r->get_type())
 		{
 			if (!(l->get_type() % 2 && r->get_type() % 2))
@@ -234,48 +238,12 @@ namespace Mer
 
 	Mem::Object BinOp::execute()
 	{
-		auto left_v = left->execute();
-		auto right_v = right->execute();
-		switch (op->get_tag())
-		{
-		case SADD:
-			return left_v->operator+=(right_v);
-		case SSUB:
-			return left_v->operator-=(right_v);
-		case SDIV:
-			return left_v->operator/=(right_v);
-		case SMUL:
-			return left_v->operator*=(right_v);
-		case ASSIGN:
-			return left_v->operator=(right_v);
-		case PLUS:
-			return left_v->operator+(right_v);
-		case MINUS:
-			return left_v->operator-(right_v);
-		case MUL:
-			return left_v->operator*(right_v);
-		case DIV:
-			return left_v->operator/(right_v);
-		case EQ:
-			return left_v->operator==(right_v);
-		case NE:
-			return left_v->operator!=(right_v);
-		case GT:
-			return left_v->operator>(right_v);
-		case GE:
-			return left_v->operator>=(right_v);
-		case LT:
-			return left_v->operator<(right_v);
-		case LE:
-			return left_v->operator<=(right_v);
-		default:
-			throw Error("Undefined operator");
-		}
+		return op(left->execute(), right->execute());
 	}
 
 	type_code_index BinOp::get_type()
 	{
-		switch (op->get_tag())
+		switch (op_tok->get_tag())
 		{
 		case AND:
 		case OR:
@@ -294,7 +262,7 @@ namespace Mer
 
 	std::string BinOp::to_string()
 	{
-		return left->to_string() + op->to_string() + right->to_string();
+		return left->to_string() + op_tok->to_string() + right->to_string();
 	}
 
 	Mer::Mem::Object UnaryOp::execute()

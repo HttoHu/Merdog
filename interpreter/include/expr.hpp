@@ -134,7 +134,7 @@ namespace Mer
 		type_code_index get_type()override;
 		std::string to_string()override;
 		ParserNode* clone()override {
-			return new BinOp(left->clone(), op, right->clone());
+			return new BinOp(left->clone(), op_tok, right->clone());
 		}
 		~BinOp()
 		{
@@ -142,8 +142,9 @@ namespace Mer
 			delete right;
 		}
 	private:
+		Token* op_tok;
 		ParserNode* left;
-		Token *op;
+		Mem::Object(*op)(const Mem::Object&, const Mem::Object&);
 		ParserNode* right;
 	};
 	class UnaryOp :public ParserNode
