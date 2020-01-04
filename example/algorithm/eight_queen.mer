@@ -1,5 +1,5 @@
 int n=0;
-int vec[11]={0};
+int vec[11];
 
 function void search(int cur) {
 	if (cur == n)

@@ -82,6 +82,7 @@ namespace Mer
 		Token* id;
 		ParserNode* expr;
 	};
+	//create local variable
 	class LocalVarDecl :public ParserNode
 	{
 	public:
@@ -97,6 +98,7 @@ namespace Mer
 		std::vector<UptrPNode> exprs;
 		type_code_index type;
 	};
+	//create global variable
 	class GloVarDecl :public ParserNode
 	{
 	public:

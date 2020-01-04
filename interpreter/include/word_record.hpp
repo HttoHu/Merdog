@@ -71,7 +71,9 @@ namespace Mer
 	struct ArrayRecorder :public Mer::WordRecorder {
 	public:
 		ArrayRecorder(type_code_index type, size_t p, const std::vector<size_t>& arr_indxs) :
-			WordRecorder(SARRAY), pos(p),array_indexs(arr_indxs) {}
+			WordRecorder(SARRAY), pos(p), array_indexs(arr_indxs) {
+			type_code = type;
+		}
 		size_t get_pos()override {
 			return pos + mem.get_current();
 		}
@@ -104,7 +106,9 @@ namespace Mer
 	struct GArrayRecorder :public Mer::WordRecorder {
 	public:
 		GArrayRecorder(type_code_index type, size_t p, const std::vector<size_t>& arr_indxs) :
-			WordRecorder(SGARR), pos(p), array_indexs(arr_indxs) {}
+			WordRecorder(SGARR), pos(p), array_indexs(arr_indxs) {
+			type_code = type;
+		}
 		size_t get_pos()override {
 			return pos;
 		}

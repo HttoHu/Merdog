@@ -365,8 +365,19 @@ namespace Mer
 				{
 					token_stream.match(ASSIGN);
 					auto right_value = Parser::linearized_array();
-					for (int i = 0; i < right_value.first.size(); i++) {
-						if (i>=array_indexs.size()||right_value.first[i] != array_indexs[i])
+					/*
+						One-dimensional array can be init by one element for example:
+						int arr[100]={1}; and a[0] to a[99] is 1, note that this is different from C/C++.
+					*/
+					if (array_indexs.size() == 1 && right_value.first.size() == 1 && right_value.first.front() == 1) {
+						for (int j = 0; j < array_indexs.front() - 1; j++) {
+							right_value.second.push_back(right_value.second.front()->clone());
+						}
+					}
+					// common condition check the dimension and size
+					else for (int i = 0; i < right_value.first.size(); i++) {
+
+						if (i >= array_indexs.size() || right_value.first[i] != array_indexs[i])
 							throw Error("distinct between declaration and array init list!");
 					}
 					// set initlist 
@@ -378,13 +389,14 @@ namespace Mer
 					expr = tmp;
 
 				}
+				// array default init
 				else {
 					expr = new EmptyList(type_code, size - 1);
 				}
 			}
 			return;
 		}
-
+		// try to find if the type is a structure type
 		if (type_name_mapping.find(type_code) != type_name_mapping.end())
 		{
 			Mer::UStructure* result = find_ustructure_t(type_code);

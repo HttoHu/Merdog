@@ -1,7 +1,7 @@
-merdog acm-icpc/premutation.mer
-merdog acm-icpc/eight_queen.mer
-merdog acm-icpc/krypton_factor.mer
-merdog acm-icpc/prime_ring.mer
+merdog algorithm/premutation.mer
+merdog algorithm/eight_queen.mer
+merdog algorithm/krypton_factor.mer
+merdog algorithm/prime_ring.mer
 merdog array.mer
 merdog draw_heart_shape.mer
 merdog draw_sin.mer

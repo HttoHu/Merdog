@@ -272,7 +272,7 @@ namespace Mer
 		{
 			throw std::overflow_error("array overflow!");
 		}
-		return mem[pos + i + 1];
+		return mem[pos + i + 1u];
 	}
 
 	Mem::Object Mem::GArray::clone() const
