@@ -201,7 +201,7 @@ namespace Mer
 
 		if (compare_map.find(key_type) == compare_map.end())
 			throw Error("type map<" + type_to_string(key_type) + "," + type_to_string(value_type) + ">" + " don't exist compare operator!");
-		Mem::type_op_type_map.insert({ cur_type, {{"[]",key_type}} });
+		Mem::type_op_type_map.insert({ cur_type, {{"[]",value_type}} });
 		_register_member_function("insert", cur_type, Mem::BVOID, { key_type,value_type }, _map_insert);
 		_register_member_function("size", cur_type, Mem::INT, {  }, _map_size);
 		_register_member_function("clear", cur_type, Mem::INT,{}, _map_clear);
