@@ -372,6 +372,10 @@ namespace Mer
 			{
 				return std::make_shared<String>(str);
 			}
+			Object operator+=(Object v)override
+			{
+				return std::make_shared<String>(str += std::static_pointer_cast<String>(v)->str);
+			}
 			Object operator>(Object v)override
 			{
 				return std::make_shared<Bool>(str > std::static_pointer_cast<String>(v)->str);

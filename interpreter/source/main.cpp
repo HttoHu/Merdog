@@ -14,7 +14,8 @@
 #include "../include/branch_and_loop.hpp"
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
-#define MERDOG_VERSION "Merdog Snake 1.3.2"
+const std::string update_info = "1. fixed a bug about map\n2. string supports += now.\n3. added a new member function of string .find(ch,StartPos), return the position where the first char matches the ch.";
+#define MERDOG_VERSION "Merdog Snake 1.3.3"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -40,8 +41,20 @@ int main(int argc, char* argv[])
 		{
 			if (argv[1][0] == '-' && argv[1][1] == 'v')
 			{
-				std::cout << MERDOG_VERSION;
-				return 0;
+				if (argv[1][1] == 'v')
+				{
+					std::cout << MERDOG_VERSION;
+					return 0;
+				}
+				else if (argv[1][1] == 'i')
+				{
+					std::cout << update_info;
+					return 0;
+				}
+				else
+				{
+					std::cout << "invaild instruction";
+				}
 			}
 		}
 		std::string input_content = get_file_content(argv[1]);

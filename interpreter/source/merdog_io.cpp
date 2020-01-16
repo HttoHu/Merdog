@@ -76,6 +76,13 @@ namespace Mer
 			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
 			return std::make_shared<Mem::Int>(tmp->to_string().size());
 		}
+		Mem::Object _str_find(const std::vector<Mem::Object> &args) {
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
+			std::string tmp_str = tmp->str;
+			char ch = std::static_pointer_cast<Mem::Char>(args[0])->get_value();
+			int startPos = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
+			return std::make_shared<Mem::Int>(tmp->str.find(ch, startPos));
+		}
 		Mem::Object _cout(const std::vector<Mem::Object>& args)
 		{
 			for (const auto& a : args)
@@ -256,13 +263,16 @@ namespace Mer
 	{
 		Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
 		Mer::SystemFunction* str_size = new SystemFunction(Mem::BasicType::INT, _str_size);
+		Mer::SystemFunction* find_ch = new SystemFunction(Mem::BasicType::INT,_str_find);
 		Mer::SystemFunction* cout = new SystemFunction(Mem::BasicType::BVOID, _cout);
 		cout->dnt_check_param();
 		// set string===========================================
 		substr->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ });
+		find_ch->set_param_types({ Mem::BasicType::CHAR,Mem::BasicType::INT });
 		member_function_table[Mem::STRING]["substr"] = substr;
 		member_function_table[Mem::STRING]["size"] = str_size;
+		member_function_table[Mem::STRING]["find"] = find_ch;
 		// string init==================================================================
 		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
 		str_init->set_param_types({ Mem::INT,Mem::CHAR });
