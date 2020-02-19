@@ -80,18 +80,18 @@ void Mer::preprocess(const std::string& str, size_t& pos)
 	{
 		do
 		{
-			if (str[pos] == '\n'||str[pos]=='\r') {
+			if (str[pos] == '\n' || str[pos] == '\r') {
 				token_stream.push_back(new Endl());
 			}
 			input_buf += str[pos++];
 		} while (str[pos] != '$');
 	}
 	else
-		throw  LexerError("pre_ins: "+ ins+" not defined yet.");
+		throw  LexerError("pre_ins: " + ins + " not defined yet.");
 	pos++;
 	std::string end_ins = retrive_word(str, pos);
 	if (end_ins != "end")
-		throw LexerError("illegal terminal word of end preprocess "+end_ins);
+		throw LexerError("illegal terminal word of end preprocess " + end_ins);
 	my_stringstream.str(input_buf);
 	// back to the last char in case of the lexer eating \n or \r which may lead to the wrong line number.
 	pos--;
@@ -201,7 +201,7 @@ void Mer::build_token_stream(const std::string& content) {
 		switch (content[i])
 		{
 		case '$':
-			preprocess(content,i);
+			preprocess(content, i);
 			break;
 		case '\'':
 			token_stream.push_back(parse_char(content, i));
@@ -250,6 +250,8 @@ void Mer::build_token_stream(const std::string& content) {
 			}
 			break;
 		case '+':
+			if (i + 1 < content.size() && content[i + 1] == '+')
+				throw LexerError("merdog doesn't support inc operation, please replaced it with +=1");
 		case '>':
 		case '<':
 		case '=':
@@ -294,7 +296,7 @@ void Mer::build_token_stream(const std::string& content) {
 				i += 2;
 				while (i < content.size())
 				{
-					if (content[i] == '\n'||content[i]=='\r')
+					if (content[i] == '\n' || content[i] == '\r')
 					{
 						token_stream.push_back(new Endl());
 					}
@@ -324,12 +326,14 @@ void Mer::build_token_stream(const std::string& content) {
 				i++;
 				break;
 			}
-			else if (content[i + 1] == '>')
+			else if (i + 1 < content.size() && content[i + 1] == '>')
 			{
 				token_stream.push_back(BasicToken["->"]);
 				i++;
 				break;
 			}
+			else if (i + 1 < content.size() && content[i + 1] == '-')
+				throw LexerError("merdog doesn't support dec operation, please replaced it with -=1");
 			token_stream.push_back(BasicToken["-"]);
 			break;
 		case '0':case '1':case '2':case '3':case '4':case '5':case '6':
