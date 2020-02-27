@@ -14,6 +14,10 @@ namespace Mer
 
 	//set method
 	namespace {
+		Mem::Object _set_list_init(const std::vector<Mem::Object>& args) {
+			auto list = std::static_pointer_cast<Mem::InitListObj> (args[0]);
+			return std::make_shared<Container::Set>(list->get_ele_type(),std::vector<Mem::Object>(list->elems.begin(), list->elems.end()));
+		}
 		Mem::Object _set_insert(const std::vector<Mem::Object>& args)
 		{
 			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
@@ -115,6 +119,11 @@ namespace Mer
 	{
 		type_code_index Map::type_code=0;
 		type_code_index Set::type_code = 0;
+		Set::Set(type_code_index element_type, const std::vector<Mem::Object>& vec):Set(element_type)
+		{
+			for (const auto& a : vec)
+				data.insert(a->clone());
+		}
 		Set::Set(type_code_index element_type) :data(find_compare_operator(element_type))
 		{
 		}
@@ -180,7 +189,7 @@ namespace Mer
 
 		if (compare_map.find(element_type) == compare_map.end())
 			throw Error("type set<" + type_to_string(element_type) + ">" + " don't exist compare operator!");
-		Mem::type_op_type_map.insert({ cur_type, {{"[]",element_type}} });
+		_register_type_init(cur_type, { Mem::INIT_LIST }, _set_list_init);
 		_register_member_function("insert", cur_type, Mem::BVOID, { element_type }, _set_insert);
 		_register_member_function("size", cur_type, Mem::INT, {  }, _set_size);
 		_register_member_function("clear", cur_type, Mem::INT,{}, _set_clear);

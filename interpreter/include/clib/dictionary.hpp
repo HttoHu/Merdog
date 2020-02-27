@@ -43,6 +43,7 @@ namespace Mer
 		public:
 			Set(SetContent&& sc) :data(sc) {}
 			Set(const SetContent& sc) :data(sc) {}
+			Set(type_code_index element_type,const std::vector<Mem::Object>& vec);
 			Set(type_code_index element_type);
 			static type_code_index type_code;
 			Mem::Object operator[](Mem::Object)override;

@@ -235,7 +235,7 @@ namespace Mer
 		std::vector<ParserNode*>& exprs() { return init_v; }
 		type_code_index get_type()override
 		{
-			return type;
+			return Mem::INIT_LIST;
 		}
 		int get_ele_count() { return size; }
 		ParserNode* clone()override;

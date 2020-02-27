@@ -167,9 +167,7 @@ namespace Mer
 		case NEW:
 			return new NewExpr();
 		case MUL:
-		{
 			return new RmRef();
-		}
 		case GET_ADD:
 			return new GetAdd();
 		case BEGIN:
@@ -284,7 +282,7 @@ namespace Mer
 	}
 
 
-	InitList::InitList(type_code_index t):type(Mem::INIT_LIST)
+	InitList::InitList(type_code_index t):type(t)
 	{
 		token_stream.match(BEGIN);
 		while (token_stream.this_tag() != Tag::END)

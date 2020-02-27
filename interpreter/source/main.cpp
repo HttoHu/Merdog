@@ -15,7 +15,7 @@
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
 const std::string update_info = "1. fixed a bug about map\n2. string supports += now.\n3. added a new member function of string .find(ch,StartPos), return the position where the first char matches the ch.";
-#define MERDOG_VERSION "Merdog Snake 1.3.3"
+#define MERDOG_VERSION "Merdog Snake 1.4.1"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -96,11 +96,11 @@ int main()
 	{
 		std::cout << "internal error!";
 	}
+	std::cout << "\nThe program has exited";
 #ifdef _WIN32
 	Sleep(10000000);
 #endif
 	std::cin.get();
-	std::cout << "\nThe program has exited";
 	return 0;
 }
 #endif

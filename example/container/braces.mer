@@ -1,0 +1,26 @@
+// By Htto 2020
+using set;
+using map;
+using vector;
+struct HTTO{
+	int x;
+	int y;
+	int z;
+	int d;
+	int un_init;
+	function void print(){
+		std.cout("x:",x," y:",y," z:",z," d:",d," un_init",un_init,'\n');
+	}
+}
+program main
+{
+	set<int> s={5,3,4,5};
+	int tmp[]={1,1,2,3,4};
+	vector <int> vec={1,2,3,4,6};
+	int a[3][3]={{1,2,3},{1,2,3},{4,5,6}};
+	std.cout(cast<int>(s.exists(5)),'\n');
+	std.cout(sizeof(tmp),'\n');
+	HTTO htto{x:1,z:3,d:4,y:34};
+	std.cout(vec[3],'\n');
+	htto.print();
+}
