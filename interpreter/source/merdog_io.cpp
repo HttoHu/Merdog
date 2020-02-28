@@ -34,6 +34,7 @@
  => void write(), write the content to the file.
 */
 #include <sstream>
+#include <algorithm>
 #include "../include/basic_objects.hpp"
 #include "../include/environment.hpp"
 #include "../include/clib/merdog_io.hpp"
@@ -64,6 +65,12 @@ namespace Mer
 			char c = std::static_pointer_cast<Mem::Char>(args[1])->get_value();
 			return std::make_shared<Mem::String>(std::string(count, c));
 		}
+		Mem::Object _str_find_str(const std::vector<Mem::Object>& args) {
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back())->str;
+			std::string str = std::static_pointer_cast<Mem::String> (args[0])->str;
+			int spos = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
+			return std::make_shared<Mem::Int>(tmp.find(str,spos));
+		}
 		Mem::Object _substr(const std::vector<Mem::Object>& args)
 		{
 			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
@@ -82,6 +89,16 @@ namespace Mer
 			char ch = std::static_pointer_cast<Mem::Char>(args[0])->get_value();
 			int startPos = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
 			return std::make_shared<Mem::Int>(tmp->str.find(ch, startPos));
+		}
+		Mem::Object _str_to_lower_case(const std::vector<Mem::Object>& args) {
+			std::string str = std::static_pointer_cast<Mem::String>(parents_vec.back())->str;
+			std::transform(str.begin(), str.end(), str.begin(), tolower);
+			return std::make_shared<Mem::String>(str);
+		}
+		Mem::Object _str_to_upper_case(const std::vector<Mem::Object>& args) {
+			std::string str = std::static_pointer_cast<Mem::String>(parents_vec.back())->str;
+			std::transform(str.begin(), str.end(), str.begin(), toupper);
+			return std::make_shared<Mem::String>(str);
 		}
 		Mem::Object _cout(const std::vector<Mem::Object>& args)
 		{
@@ -264,15 +281,23 @@ namespace Mer
 		Mer::SystemFunction* substr = new SystemFunction(Mem::BasicType::STRING, _substr);
 		Mer::SystemFunction* str_size = new SystemFunction(Mem::BasicType::INT, _str_size);
 		Mer::SystemFunction* find_ch = new SystemFunction(Mem::BasicType::INT,_str_find);
+		Mer::SystemFunction* find_str = new SystemFunction(Mem::BasicType::INT, _str_find_str);
+		Mer::SystemFunction* to_lower = new SystemFunction(Mem::BasicType::STRING, _str_to_lower_case);
+		Mer::SystemFunction* to_upper = new SystemFunction(Mem::BasicType::STRING, _str_to_upper_case);
+
 		Mer::SystemFunction* cout = new SystemFunction(Mem::BasicType::BVOID, _cout);
 		cout->dnt_check_param();
 		// set string===========================================
 		substr->set_param_types({ Mer::Mem::BasicType::INT, Mer::Mem::BasicType::INT });
 		str_size->set_param_types({ });
 		find_ch->set_param_types({ Mem::BasicType::CHAR,Mem::BasicType::INT });
+		find_str->set_param_types({ Mem::BasicType::STRING,Mem::BasicType::INT});
 		member_function_table[Mem::STRING]["substr"] = substr;
 		member_function_table[Mem::STRING]["size"] = str_size;
 		member_function_table[Mem::STRING]["find"] = find_ch;
+		member_function_table[Mem::STRING]["find_str"] = find_str;
+		member_function_table[Mem::STRING]["to_lower"] = to_lower;
+		member_function_table[Mem::STRING]["to_upper"] = to_upper;
 		// string init==================================================================
 		auto str_init = new SystemFunction(Mem::STRING, _init_str_n);
 		str_init->set_param_types({ Mem::INT,Mem::CHAR });
