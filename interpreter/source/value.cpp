@@ -147,8 +147,15 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 		return new MemberVar(mv_r->pos, mv_r->get_type());
 	}
 	auto ret = new Variable(var_info);
-	if (var_info->es == SARRAY)
-		ret->arr() = true;
+	/*if (var_info->es == SARRAY)
+		if (token_stream.this_tag() != LSB)
+		{
+			std::cout << "CUT";
+			delete ret;
+			return new ArrayDecay(var_info->get_pos(), var_info->get_type() + 1);
+		}
+		else
+			ret->arr() = true;*/
 	return ret;
 }
 
@@ -164,6 +171,13 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 	token_stream.match(ID);
 	auto array_indexs = static_cast<ARR_TYPE*>(var_info)->array_indexs;
 	std::vector<ParserNode*> indexs;
+	// if the following of the array is not [, then the array will decay to a pointer which points to the first elements
+	if (token_stream.this_tag() != Tag::LSB)
+		if(typeid(ARR_TYPE)== typeid(ArrayRecorder))
+			return new ArrayDecay(var_info->get_pos(), var_info->get_type() + 1);
+		else
+			return new GloArrayDecay(var_info->get_pos(), var_info->get_type() + 1);
+
 	while (token_stream.this_tag() == Tag::LSB) {
 		token_stream.match(LSB);
 		indexs.push_back(Expr().root());

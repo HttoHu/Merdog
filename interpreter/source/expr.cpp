@@ -541,4 +541,13 @@ namespace Mer
 		return std::make_shared<Mem::Bool>(Mem::get_raw<bool>(right->execute()));
 	}
 
+	Mem::Object ArrayDecay::execute() {
+		return std::make_shared<Mem::Pointer>(mem[pos + mem.get_current()+1]);
+	}
+
+	Mem::Object GloArrayDecay::execute()
+	{
+		return std::make_shared<Mem::Pointer>(mem[pos+1]);
+	}
+
 }

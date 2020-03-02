@@ -259,6 +259,31 @@ namespace Mer
 		ParserNode* id;
 		type_code_index type;
 	};
+	// to decay the array's name to an address
+	class ArrayDecay :public ParserNode {
+	public:
+		ArrayDecay(int p, type_code_index ty):pos(p),type(ty){ }
+		type_code_index get_type()override { return type; }
+		Mem::Object execute()override;
+		ParserNode* clone() {
+			return new ArrayDecay(pos,type);
+		}
+	private:
+		type_code_index type;
+		int pos;
+	};
+	class GloArrayDecay :public ParserNode {
+	public:
+		GloArrayDecay(int p, type_code_index ty) :pos(p), type(ty) { }
+		type_code_index get_type()override { return type; }
+		Mem::Object execute()override;
+		ParserNode* clone() {
+			return new ArrayDecay(pos, type);
+		}
+	private:
+		type_code_index type;
+		int pos;
+	};
 	class RmRef :public ParserNode
 	{
 	public:
