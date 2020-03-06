@@ -15,48 +15,48 @@ namespace Mer
 	//set method
 	namespace {
 		Mem::Object _set_list_init(const std::vector<Mem::Object>& args) {
-			auto list = std::static_pointer_cast<Mem::InitListObj> (args[0]);
-			return std::make_shared<Container::Set>(list->get_ele_type(),std::vector<Mem::Object>(list->elems.begin(), list->elems.end()));
+			auto list = static_cast<Mem::InitListObj*> (args[0]);
+			return Mem::make_object<Container::Set>(list->get_ele_type(),std::vector<Mem::Object>(list->elems.begin(), list->elems.end()));
 		}
 		Mem::Object _set_insert(const std::vector<Mem::Object>& args)
 		{
-			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			auto& set_content =static_cast<Container::Set*>(parents_vec.back())->data;
 			set_content.insert(args[0]);
 			return nullptr;
 		}
 		Mem::Object _set_size(const std::vector < Mem::Object >& args)
 		{
-			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
-			return std::make_shared<Mem::Int>(set_content.size());
+			auto& set_content = static_cast<Container::Set*>(parents_vec.back())->data;
+			return Mem::make_object<Mem::Int>(set_content.size());
 		}
 		Mem::Object _set_exists(const std::vector<Mem::Object>& args)
 		{
-			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			auto& set_content =static_cast<Container::Set*>(parents_vec.back())->data;
 			auto result = set_content.find(args[0]);
 			if (result == set_content.end())
-				return std::make_shared<Mem::Bool>(false);
-			return std::make_shared<Mem::Bool>(true);
+				return Mem::make_object<Mem::Bool>(false);
+			return Mem::make_object<Mem::Bool>(true);
 		}
 
 		Mem::Object _set_clear(const std::vector<Mem::Object>& args)
 		{
-			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			auto& set_content = static_cast<Container::Set*>(parents_vec.back())->data;
 			set_content.clear();
 			return nullptr;
 		}
 		Mem::Object _set_erase(const std::vector < Mem::Object >& args)
 		{
-			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			auto& set_content = static_cast<Container::Set*>(parents_vec.back())->data;
 			auto result = set_content.find(args[0]);
 			if (result == set_content.end()) {
-				return std::make_shared<Mem::Bool>(false);
+				return Mem::make_object<Mem::Bool>(false);
 			}
 			set_content.erase(result);
-			return std::make_shared<Mem::Bool>(true);
+			return Mem::make_object<Mem::Bool>(true);
 		}
 		Mem::Object _set_index_by_number(const std::vector < Mem::Object >& args)
 		{
-			auto& set_content = std::static_pointer_cast<Container::Set>(parents_vec.back())->data;
+			auto& set_content = static_cast<Container::Set*>(parents_vec.back())->data;
 			int pos = Mem::get_raw<int>(args[0]);
 			auto tmp = set_content.begin();
 			// tmp+=pos is illegal of C++
@@ -70,43 +70,43 @@ namespace Mer
 	namespace {
 		Mem::Object _map_insert(const std::vector<Mem::Object>& args)
 		{
-			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			auto& map_content = static_cast<Container::Map*>(parents_vec.back())->data;
 			map_content.insert({ args[0],args[1] });
 			return nullptr;
 		}
 		Mem::Object _map_exists(const std::vector<Mem::Object>& args)
 		{
-			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			auto& map_content = static_cast<Container::Map*>(parents_vec.back())->data;
 			auto result = map_content.find(args[0]);
 			if (result == map_content.end())
-				return std::make_shared<Mem::Bool>(false);
-			return std::make_shared<Mem::Bool>(true);
+				return Mem::make_object<Mem::Bool>(false);
+			return Mem::make_object<Mem::Bool>(true);
 		}
 		Mem::Object _map_erase(const std::vector < Mem::Object >& args)
 		{
-			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			auto& map_content = static_cast<Container::Map*>(parents_vec.back())->data;
 			auto result = map_content.find(args[0]);
 			if (result == map_content.end()) {
-				return std::make_shared<Mem::Bool>(false);
+				return Mem::make_object<Mem::Bool>(false);
 			}
 			map_content.erase(result);
-			return std::make_shared<Mem::Bool>(true);
+			return Mem::make_object<Mem::Bool>(true);
 		}
 		Mem::Object _map_size(const std::vector < Mem::Object >& args)
 		{
-			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
-			return std::make_shared<Mem::Int>(map_content.size());
+			auto& map_content = static_cast<Container::Map*>(parents_vec.back())->data;
+			return Mem::make_object<Mem::Int>(map_content.size());
 		}
 		Mem::Object _map_clear(const std::vector < Mem::Object >& args)
 		{
-			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			auto& map_content = static_cast<Container::Map*>(parents_vec.back())->data;
 			map_content.clear();
 			return nullptr;
 
 		}
 		Mem::Object _map_index_by_number(const std::vector < Mem::Object >& args)
 		{
-			auto& map_content = std::static_pointer_cast<Container::Map>(parents_vec.back())->data;
+			auto& map_content = static_cast<Container::Map*>(parents_vec.back())->data;
 			int pos = Mem::get_raw<int>(args[0]);
 			auto tmp = map_content.begin();
 			// tmp+=pos is illegal of C++
@@ -134,7 +134,7 @@ namespace Mer
 		}
 		Mem::Object Set::clone() const
 		{
-			return std::make_shared<Set>(data);
+			return Mem::make_object<Set>(data);
 		}
 		Map::Map(type_code_index key) :data(find_compare_operator(key)) {}
 
@@ -145,7 +145,7 @@ namespace Mer
 		}
 		Mem::Object Map::clone() const
 		{
-			return std::make_shared<Map>(data);
+			return Mem::make_object<Map>(data);
 		}
 	}
 	_compare_operator find_compare_operator(type_code_index s)
@@ -164,7 +164,7 @@ namespace Mer
 		// when you create an ContainerTypeRecorder the type_counter will be added two. So you need to sub 2 to
 		// get the vector's type;
 		auto compare_op = [](Mem::Object a, Mem::Object b) {
-			return std::static_pointer_cast<Mem::Bool>(a->operator<(b))->_value();
+			return static_cast<Mem::Bool*>(a->operator<(b))->_value();
 		};
 
 
@@ -182,7 +182,7 @@ namespace Mer
 	void register_set(type_code_index element_type)
 	{
 		type_code_index cur_type = Mem::merge(Container::Set::type_code, element_type);
-		type_init_map[cur_type] = std::make_shared<Container::Set>(element_type);
+		type_init_map[cur_type] = Mem::make_object<Container::Set>(element_type);
 		auto set_type = new Mem::Type("set<" + type_to_string(element_type) + ">", cur_type, { cur_type });
 		set_type->type_kind = Mem::Type::kind::container;
 		Mem::type_map.insert({ cur_type, set_type });
@@ -203,7 +203,7 @@ namespace Mer
 		type_code_index key_type = pair_type.first;
 		type_code_index value_type = pair_type.second;
 		type_code_index cur_type = Mem::merge(Container::Map::type_code, element_type);
-		type_init_map[cur_type] = std::make_shared<Container::Map>(key_type);
+		type_init_map[cur_type] = Mem::make_object<Container::Map>(key_type);
 		auto map_type = new Mem::Type("map<" + type_to_string(key_type) + "," + type_to_string(value_type) + ">", cur_type, { cur_type });
 		map_type->type_kind = Mem::Type::kind::container;
 		Mem::type_map.insert({ cur_type, map_type });
@@ -221,7 +221,7 @@ namespace Mer
 	void using_map()
 	{
 		auto compare_op = [](Mem::Object a, Mem::Object b) {
-			return std::static_pointer_cast<Mem::Bool>(a->operator<(b))->_value();
+			return static_cast<Mem::Bool*>(a->operator<(b))->_value();
 		};
 
 
@@ -233,9 +233,6 @@ namespace Mer
 		Mem::type_index.insert({ "map" ,tc });
 		auto map_type = new Mem::Type("map", tc, { tc });
 		map_type->type_kind = Mem::Type::kind::container;
-		Mem::type_map.insert({ tc,
-			 map_type });
+		Mem::type_map.insert({ tc,map_type });
 	}
-
-
 }

@@ -16,6 +16,7 @@ namespace Mer {
 		public:
 			Object(Mem::Value *raw) :raw_ptr(raw) {}
 			Object& operator=(Object &obj) {
+				delete raw_ptr;
 				raw_ptr = obj.raw_ptr;
 				obj.raw_ptr = nullptr;
 			}

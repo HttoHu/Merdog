@@ -8,7 +8,7 @@ namespace Mer
 {
 	bool _conver_to_bool(Mem::Object obj)
 	{
-		return std::static_pointer_cast<Mem::Bool>(obj)->_value();
+		return static_cast<Mem::Bool*>(obj)->_value();
 	}
 	using __member_function = std::function<Mem::Object(const std::vector<Mem::Object>&)>;
 	// imitate std::next_permutation 
@@ -35,19 +35,19 @@ namespace Mer
 	{
 		Mem::Object _vec_resize(const std::vector < Mem::Object >& args)
 		{
-			auto& vec = std::static_pointer_cast<Container::Vector>(parents_vec.back())->content;
+			auto& vec = static_cast<Container::Vector*>(parents_vec.back())->content;
 			vec.resize(Mem::get_raw<int>(args[0]),vec[0]->clone());
 			return nullptr;
 		}
 		Mem::Object _vec_clear(const std::vector < Mem::Object >& args)
 		{
-			auto& vec = std::static_pointer_cast<Container::Vector>(parents_vec.back())->content;
+			auto& vec = static_cast<Container::Vector*>(parents_vec.back())->content;
 			vec.clear();
 			return nullptr;
 		}
 		Mem::Object _vec_insert(const std::vector<Mem::Object>& args)
 		{
-			auto& vec = std::static_pointer_cast<Container::Vector>(parents_vec.back())->content;
+			auto& vec = static_cast<Container::Vector*>(parents_vec.back())->content;
 			int startIndex = Mem::get_raw<int>(args[0]);
 			vec.insert(vec.begin() + startIndex, args[2]);
 			return nullptr;
@@ -55,18 +55,18 @@ namespace Mer
 		// vector<int> vec={1,2,3,4,5,6};
 		Mem::Object _init_vec_list(const std::vector<Mem::Object>& args)
 		{
-			auto list = std::static_pointer_cast<Mem::InitListObj> (args[0]);
-			return std::make_shared<Container::Vector>(list->elems);
+			auto list = static_cast<Mem::InitListObj*>(args[0]);
+			return Mem::make_object<Container::Vector>(list->elems);
 		}
 		Mem::Object _init_vec_n(const std::vector < Mem::Object >& args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
-			return std::make_shared<Container::Vector>(count);
+			return Mem::make_object<Container::Vector>(count);
 		}
 		Mem::Object _init_vec(const std::vector < Mem::Object >& args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
-			return std::make_shared<Container::Vector>(count, args[0]);
+			return Mem::make_object<Container::Vector>(count, args[0]);
 		}
 		__member_function _vec_next_permuatation(type_code_index type)
 		{
@@ -75,35 +75,35 @@ namespace Mer
 
 			auto lam = [=](const std::vector<Mem::Object>& args) {
 				auto comparator = compare_map[type];
-				auto& vec = std::static_pointer_cast<Container::Vector>(args[0])->content;
+				auto& vec = static_cast<Container::Vector*>(args[0])->content;
 				int range_from = Mem::get_raw<int>(args[1]);
 				int range_to = Mem::get_raw<int>(args[2]);
-				return std::make_shared<Mem::Bool>
+				return Mem::make_object<Mem::Bool>
 					(std::next_permutation(vec.begin() + range_from, vec.begin() + range_to, comparator));
 			};
 			return lam;
 		}
 		Mem::Object _vec_push_back(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
+			auto vec = static_cast<Container::Vector*>(parents_vec.back());
 			vec->content.push_back(args[0]);
 			return nullptr;
 		}
 		Mem::Object _vec_pop_back(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
+			auto vec = static_cast<Container::Vector*>(parents_vec.back());
 			vec->content.pop_back();
 			return nullptr;
 		}
 		Mem::Object _vec_back(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
+			auto vec = static_cast<Container::Vector*>(parents_vec.back());
 			return vec->content.back();
 		}
 		Mem::Object _vec_size(const std::vector < Mem::Object >& args)
 		{
-			auto vec = std::static_pointer_cast<Container::Vector>(parents_vec.back());
-			return std::make_shared<Mem::Int>(vec->content.size());
+			auto vec = static_cast<Container::Vector*>(parents_vec.back());
+			return Mem::make_object<Mem::Int>(vec->content.size());
 		}
 	}
 	//deque
@@ -111,19 +111,19 @@ namespace Mer
 	{
 		Mem::Object _deque_resize(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			deq->content.resize(Mem::get_raw<int>(args[0]));
 			return nullptr;
 		}
 		Mem::Object _deque_clear(const std::vector < Mem::Object >& args)
 		{
-			auto& deq = std::static_pointer_cast<Container::Deque>(parents_vec.back())->content;
+			auto& deq = static_cast<Container::Deque*>(parents_vec.back())->content;
 			deq.clear();
 			return nullptr;
 		}
 		Mem::Object _deque_insert(const std::vector<Mem::Object>& args)
 		{
-			auto& deq = std::static_pointer_cast<Container::Deque>(parents_vec.back())->content;
+			auto& deq = static_cast<Container::Deque*>(parents_vec.back())->content;
 			int startIndex = Mem::get_raw<int>(args[0]);
 			deq.insert(deq.begin() + startIndex, args[2]);
 			return nullptr;
@@ -131,67 +131,67 @@ namespace Mer
 		// vector<int> vec={1,2,3,4,5,6};
 		Mem::Object _init_deq_list(const std::vector<Mem::Object>& args)
 		{
-			auto list = std::static_pointer_cast<Mem::InitListObj> (args[0]);
-			return std::make_shared<Container::Deque>(std::deque<Mem::Object>(list->elems.begin(), list->elems.end()));
+			auto list = static_cast<Mem::InitListObj*> (args[0]);
+			return Mem::make_object<Container::Deque>(std::deque<Mem::Object>(list->elems.begin(), list->elems.end()));
 		}
 		Mem::Object _init_deq_n(const std::vector < Mem::Object >& args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
-			return std::make_shared<Container::Deque>(count);
+			return Mem::make_object<Container::Deque>(count);
 		}
 		Mem::Object _init_deq(const std::vector < Mem::Object >& args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
-			return std::make_shared<Container::Deque>(count, args[0]);
+			return Mem::make_object<Container::Deque>(count, args[0]);
 		}
 		Mem::Object _deq_push_back(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			deq->content.push_back(args[0]);
 			return nullptr;
 		}
 		Mem::Object _deq_pop_back(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			deq->content.pop_back();
 			return nullptr;
 		}
 		Mem::Object _deq_push_front(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			deq->content.push_front(args[0]);
 			return nullptr;
 		}
 		Mem::Object _deq_pop_front(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			deq->content.pop_front();
 			return nullptr;
 		}
 		Mem::Object _deq_back(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			return deq->content.back();
 		}
 		Mem::Object _deq_front(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
 			return deq->content.front();
 		}
 		Mem::Object _deq_size(const std::vector < Mem::Object >& args)
 		{
-			auto deq = std::static_pointer_cast<Container::Deque>(parents_vec.back());
-			return std::make_shared<Mem::Int>(deq->content.size());
+			auto deq = static_cast<Container::Deque*>(parents_vec.back());
+			return Mem::make_object<Mem::Int>(deq->content.size());
 		}
 		__member_function _deq_next_permuatation(type_code_index type)
 		{
 			using DeqIt = std::deque<Mem::Object>::iterator;
 			auto lam = [=](const std::vector<Mem::Object>& args) {
 				auto comparator = compare_map[type];
-				auto& deq = std::static_pointer_cast<Container::Deque>(args[0])->content;
+				auto& deq = static_cast<Container::Deque*>(args[0])->content;
 				int range_from = Mem::get_raw<int>(args[1]);
 				int range_to = Mem::get_raw<int>(args[2]);
-				return std::make_shared<Mem::Bool>
+				return Mem::make_object<Mem::Bool>
 					(std::next_permutation(deq.begin() + range_from, deq.begin() + range_to, comparator));
 			};
 			return lam;
@@ -215,7 +215,7 @@ namespace Mer
 
 		Mem::Object Vector::clone() const
 		{
-			return std::make_shared<Vector>(content);
+			return Mem::make_object<Vector>(content);
 		}
 
 		void using_vector()
@@ -254,7 +254,7 @@ namespace Mer
 			_register_type_init(cur_type, { Mem::INT }, _init_deq_n);
 			_register_type_init(cur_type, { Mem::INIT_LIST }, _init_deq_list);
 			_register_type_init(cur_type, { Mem::INT,element_type }, _init_deq);
-			type_init_map[cur_type] = std::make_shared<Deque>();
+			type_init_map[cur_type] = Mem::make_object<Deque>();
 			// set type============================================================
 			auto deq_type = new Mem::Type("deque", cur_type, { cur_type });
 			deq_type->type_kind = Mem::Type::kind::container;
@@ -285,7 +285,7 @@ namespace Mer
 			_register_type_init(cur_type, { Mem::INT }, _init_vec_n);
 			_register_type_init(cur_type, { Mem::INIT_LIST }, _init_vec_list);
 			_register_type_init(cur_type, { Mem::INT,element_type }, _init_vec);
-			type_init_map[cur_type] = std::make_shared<Vector>();
+			type_init_map[cur_type] = Mem::make_object<Vector>();
 			// set type===========================================================
 			auto vec_type = new Mem::Type("vector", cur_type, { cur_type });
 			vec_type->type_kind = Mem::Type::kind::container;
@@ -321,7 +321,7 @@ namespace Mer
 
 		Mem::Object Deque::clone() const
 		{
-			return std::make_shared<Deque>(content);
+			return Mem::make_object<Deque>(content);
 		}
 
 	}

@@ -162,7 +162,7 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 namespace {
 
 	Mer::ParserNode* _make_l_conv(int n) {
-		return new Mer::LConV(std::make_shared< Mer::Mem::Int>(n),Mer::Mem::BasicType::INT);
+		return new Mer::LConV(Mer::Mem::make_object<Mer::Mem::Int>(n),Mer::Mem::BasicType::INT);
 	}
 }
 template<typename ARR_TYPE>
@@ -323,27 +323,27 @@ Mer::LConV::LConV(Token* t)
 	{
 	case TTRUE:
 		type = Mem::BOOL;
-		obj = std::make_shared<Mem::Bool>(true);
+		obj = Mem::make_object<Mem::Bool>(true);
 		break;
 	case TFALSE:
 		type = Mem::BOOL;
-		obj = std::make_shared<Mem::Bool>(false);
+		obj = Mem::make_object<Mem::Bool>(false);
 		break;
 	case INTEGER:
 		type = Mem::INT;
-		obj = std::make_shared<Mem::Int>(Integer::get_value(t));
+		obj = Mem::make_object<Mem::Int>(Integer::get_value(t));
 		break;
 	case REAL:
 		type = Mem::DOUBLE;
-		obj = std::make_shared <Mem::Double >(Real::get_value(t));
+		obj = Mem::make_object <Mem::Double >(Real::get_value(t));
 		break;
 	case STRING:
 		type = Mem::STRING;
-		obj = std::make_shared<Mem::String>(String::get_value(t));
+		obj = Mem::make_object<Mem::String>(String::get_value(t));
 		break;
 	case CHAR_LIT:
 		type = Mem::CHAR;
-		obj = std::make_shared<Mem::Char>(CharToken::get_value(t));
+		obj = Mem::make_object<Mem::Char>(CharToken::get_value(t));
 		break;
 	default:
 		throw Error("syntax error");

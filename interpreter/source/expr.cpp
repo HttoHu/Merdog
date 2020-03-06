@@ -2,6 +2,7 @@
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
+#include "../include/basic_objects.hpp"
 #include "../include/expr.hpp"
 #include "../include/value.hpp"
 #include "../include/compound_box.hpp"
@@ -214,7 +215,7 @@ namespace Mer
 			return Parser::parse_id();
 		case NULLPTR:
 			token_stream.match(NULLPTR);
-			return new LConV(std::make_shared<Mem::Pointer>(nullptr), expr_type);
+			return new LConV(Mem::make_object<Mem::Pointer>(nullptr), expr_type);
 		default:
 			return new NonOp();
 		}
@@ -342,7 +343,7 @@ namespace Mer
 		{
 			 v[i]=init_v[i]->execute()->clone();
 		}
-		auto ret= std::make_shared<Mem::InitListObj>(std::move(v), type);
+		auto ret= Mem::make_object<Mem::InitListObj>(std::move(v), type);
 		return ret;
 	}
 
@@ -378,7 +379,7 @@ namespace Mer
 	Mem::Object ContainerIndex::execute()
 	{
 		auto tmp = expr->execute();
-		return mem[mem.get_current() + pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+		return mem[mem.get_current() + pos + static_cast<Mem::Int*>(tmp)->get_value()];
 	}
 
 	type_code_index ContainerIndex::get_type()
@@ -413,7 +414,7 @@ namespace Mer
 	Mem::Object ContainerGloIndex::execute()
 	{
 		auto tmp = expr->execute();
-		return mem[pos + std::static_pointer_cast<Mem::Int>(tmp)->get_value()];
+		return mem[pos + static_cast<Mem::Int*>(tmp)->get_value()];
 	}
 
 	NewExpr::NewExpr(bool init_nothing)
@@ -451,7 +452,7 @@ namespace Mer
 
 	Mem::Object NewExpr::execute()
 	{
-		return std::make_shared<Mem::Pointer>(expr->execute()->clone());
+		return Mem::make_object<Mem::Pointer>(expr->execute()->untagged_clone());
 	}
 
 	GetAdd::GetAdd()
@@ -468,7 +469,7 @@ namespace Mer
 
 	Mem::Object Mer::GetAdd::execute()
 	{
-		return std::make_shared<Mem::Pointer>(id->execute());
+		return Mem::make_object<Mem::Pointer>(id->execute());
 	}
 
 	RmRef::RmRef(bool init_nothing)
@@ -487,7 +488,7 @@ namespace Mer
 	Mem::Object Mer::RmRef::execute()
 	{
 
-		return std::static_pointer_cast<Mem::Pointer>(id->execute())->rm_ref();
+		return static_cast<Mem::Pointer*>(id->execute())->rm_ref();
 	}
 	ParserNode* RmRef::clone()
 	{
@@ -503,7 +504,7 @@ namespace Mer
 	}
 	Mem::Object Index::execute()
 	{
-		return left->execute()->operator[](std::make_shared<Mem::Int>(index));
+		return left->execute()->operator[](Mem::make_object<Mem::Int>(index));
 	}
 
 	type_code_index Mer::Index::get_type()
@@ -537,17 +538,17 @@ namespace Mer
 	Mem::Object LogicalBinOp::execute()
 	{
 		if (is_and_op ^ Mem::get_raw<bool>(left->execute()))
-			return std::make_shared<Mem::Bool>(!is_and_op);
-		return std::make_shared<Mem::Bool>(Mem::get_raw<bool>(right->execute()));
+			return Mem::make_object<Mem::Bool>(!is_and_op);
+		return Mem::make_object<Mem::Bool>(Mem::get_raw<bool>(right->execute()));
 	}
 
 	Mem::Object ArrayDecay::execute() {
-		return std::make_shared<Mem::Pointer>(mem[pos + mem.get_current()+1]);
+		return Mem::make_object<Mem::Pointer>(mem[pos + mem.get_current()+1]);
 	}
 
 	Mem::Object GloArrayDecay::execute()
 	{
-		return std::make_shared<Mem::Pointer>(mem[pos+1]);
+		return Mem::make_object<Mem::Pointer>(mem[pos+1]);
 	}
 
 }
