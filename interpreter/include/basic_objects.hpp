@@ -55,6 +55,8 @@ namespace Mer
 		extern Namespace* this_namespace;
 		// the table stories the tmp object or local-unstatic objects. when the block ended, the objs will destoryed.
 		extern std::vector<std::vector<Value*>> del_obj_table;
+		void new_del_range();
+		void end_cur_del_range();
 
 		using Object = Value*;
 		template<typename T, typename ...Args>

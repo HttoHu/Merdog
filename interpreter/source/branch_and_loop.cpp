@@ -87,6 +87,7 @@ namespace Mer
 		}
 		void do_while()
 		{
+			current_ins_table->push_back(std::make_unique<NewDelRange>());
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
 			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
@@ -109,9 +110,11 @@ namespace Mer
 			mem.end_block();
 			this_namespace->sl_table->end_block();
 			token_stream.match(SEMI);
+			current_ins_table->push_back(std::make_unique<NewDelRange>());
 		}
 		void build_while()
 		{
+			current_ins_table->push_back(std::make_unique<NewDelRange>());
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
 			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
@@ -126,6 +129,7 @@ namespace Mer
 			token_stream.match(BEGIN);
 			current_ins_table->push_back(std::make_unique<IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(*start_pos + 1), end_pos, node));
 			public_part();
+			current_ins_table->push_back(std::make_unique<EndCurDelRange>());
 			current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), start_pos));
 			token_stream.match(END);
 			*end_pos = current_ins_table->size();
@@ -133,6 +137,7 @@ namespace Mer
 			end_loop();
 			mem.end_block();
 			this_namespace->sl_table->end_block();
+			current_ins_table->push_back(std::make_unique<EndCurDelRange>());
 		}
 		void build_if()
 		{
@@ -315,7 +320,6 @@ namespace Mer
 		void build_for()
 		{
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
-
 			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
 			ParserNode* compare_part;
@@ -350,20 +354,22 @@ namespace Mer
 			token_stream.match(RPAREN);
 
 			token_stream.match(BEGIN);
-
 			current_ins_table->push_back(std::make_unique <IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1), end_pos, compare_part));
 			public_part();
 			current_ins_table->push_back(std::make_unique <Goto>(_pcs.back(), start_pos));
 			token_stream.match(END);
+
 			*end_pos = current_ins_table->size();
 			// end_block, block;
 			end_loop();
 			mem.end_block();
 			this_namespace->sl_table->end_block();
+
 		}
 	}
 	Mem::Object IfTrueToAOrB::execute()
 	{
+		Mem::new_del_range();
 		if (static_cast<Mem::Bool*>(expr->execute())->_value())
 			*pc = *true_tag - 1;
 		else

@@ -551,4 +551,16 @@ namespace Mer
 		return Mem::make_object<Mem::Pointer>(mem[pos+1]);
 	}
 
+	Mem::Object NewDelRange::execute()
+	{
+		Mem::new_del_range();
+		return nullptr;
+	}
+
+	Mem::Object EndCurDelRange::execute()
+	{
+		Mem::end_cur_del_range();
+		return nullptr;
+	}
+
 }

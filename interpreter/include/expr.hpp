@@ -259,6 +259,15 @@ namespace Mer
 		ParserNode* id;
 		type_code_index type;
 	};
+	class NewDelRange :public ParserNode {
+	public:
+		Mem::Object execute()override;
+	private:
+	};
+	class EndCurDelRange:public ParserNode {
+	public :
+		Mem::Object execute()override;
+	};
 	// to decay the array's name to an address
 	class ArrayDecay :public ParserNode {
 	public:

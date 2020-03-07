@@ -12,7 +12,20 @@
 
 namespace Mer
 {
-	std::vector<std::vector<Mem::Value*>> Mem::del_obj_table(1);
+	std::vector<std::vector<Mem::Value*>> Mem::del_obj_table(2);
+	void Mem::new_del_range()
+	{
+		del_obj_table.push_back({});
+	}
+	void Mem::end_cur_del_range()
+	{
+		auto &a = del_obj_table.back();
+		for (auto cur_obj : a)
+		{
+			delete cur_obj;
+		}
+		del_obj_table.pop_back();
+	}
 	void Mem::swap(Object rhs, Object lhs)
 	{
 		auto tmp = rhs->clone();
