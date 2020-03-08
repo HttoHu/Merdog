@@ -27,7 +27,7 @@ void Mer::Namespace::set_new_func(const std::string& name, FunctionBase* func)
 		if (func->param_types.size() == 2 && func->param_types[0] == func->param_types[1] && func->get_type() == Mem::BOOL)
 		{
 			auto lam = [=](Mem::Object obj1, Mem::Object obj2) {
-				return static_cast<Mem::Bool*>(func->run(std::vector<Mem::Object>{ obj1, obj2 }))->_value();
+				return std::static_pointer_cast<Mem::Bool>(func->run(std::vector<Mem::Object>{ obj1, obj2 }))->_value();
 			};
 			compare_map.insert({ func->param_types[0],lam });
 		}

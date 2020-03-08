@@ -77,7 +77,7 @@ namespace Mer
 		}
 		void build_function_block()
 		{
-			this_block_size = std::shared_ptr<size_t>(0);
+			this_block_size = std::make_shared<size_t>(0);
 			token_stream.match(BEGIN);
 			public_part();
 			*this_block_size = current_ins_table->size();
@@ -87,7 +87,6 @@ namespace Mer
 		}
 		void do_while()
 		{
-			current_ins_table->push_back(std::make_unique<NewDelRange>());
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
 			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
@@ -110,11 +109,9 @@ namespace Mer
 			mem.end_block();
 			this_namespace->sl_table->end_block();
 			token_stream.match(SEMI);
-			current_ins_table->push_back(std::make_unique<NewDelRange>());
 		}
 		void build_while()
 		{
-			current_ins_table->push_back(std::make_unique<NewDelRange>());
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
 			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
@@ -129,7 +126,6 @@ namespace Mer
 			token_stream.match(BEGIN);
 			current_ins_table->push_back(std::make_unique<IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(*start_pos + 1), end_pos, node));
 			public_part();
-			current_ins_table->push_back(std::make_unique<EndCurDelRange>());
 			current_ins_table->push_back(std::make_unique<Goto>(_pcs.back(), start_pos));
 			token_stream.match(END);
 			*end_pos = current_ins_table->size();
@@ -137,7 +133,6 @@ namespace Mer
 			end_loop();
 			mem.end_block();
 			this_namespace->sl_table->end_block();
-			current_ins_table->push_back(std::make_unique<EndCurDelRange>());
 		}
 		void build_if()
 		{
@@ -182,7 +177,7 @@ namespace Mer
 			if (token_stream.this_tag() == ELSE)
 			{
 				have_else = true;
-				iwjt->jmp_table.push_back({ std::make_unique <LConV>(Mem::make_object<Mem::Bool>(true), (size_t)Mem::BOOL), std::make_shared<size_t>(current_ins_table->size()) });
+				iwjt->jmp_table.push_back({ std::make_unique <LConV>(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), std::make_shared<size_t>(current_ins_table->size()) });
 				token_stream.match(ELSE);
 				mem.new_block();
 				this_namespace->sl_table->new_block();
@@ -193,7 +188,7 @@ namespace Mer
 				this_namespace->sl_table->end_block();
 			}
 			if(!have_else)
-				iwjt->jmp_table.push_back({ std::make_unique <LConV>(Mem::make_object<Mem::Bool>(true), (size_t)Mem::BOOL), end_pos});
+				iwjt->jmp_table.push_back({ std::make_unique <LConV>(std::make_shared<Mem::Bool>(true), (size_t)Mem::BOOL), end_pos});
 			*end_pos = current_ins_table->size();
 		}
 		template<typename KeyType>
@@ -320,6 +315,7 @@ namespace Mer
 		void build_for()
 		{
 			PosPtr start_pos = std::make_shared<size_t>(current_ins_table->size());
+
 			PosPtr end_pos = std::make_shared<size_t>(0);
 			// register the start_pos and end_pos to environment
 			ParserNode* compare_part;
@@ -337,7 +333,7 @@ namespace Mer
 			token_stream.match(SEMI);
 			if (token_stream.this_tag() == SEMI)
 			{
-				compare_part = new LConV(Mem::make_object<Mem::Bool>(true), Mem::BOOL);
+				compare_part = new LConV(std::make_shared<Mem::Bool>(true), Mem::BOOL);
 			}
 			else
 			{
@@ -354,23 +350,21 @@ namespace Mer
 			token_stream.match(RPAREN);
 
 			token_stream.match(BEGIN);
+
 			current_ins_table->push_back(std::make_unique <IfTrueToAOrB>(_pcs.back(), std::make_shared<size_t>(current_ins_table->size() + 1), end_pos, compare_part));
 			public_part();
 			current_ins_table->push_back(std::make_unique <Goto>(_pcs.back(), start_pos));
 			token_stream.match(END);
-
 			*end_pos = current_ins_table->size();
 			// end_block, block;
 			end_loop();
 			mem.end_block();
 			this_namespace->sl_table->end_block();
-
 		}
 	}
 	Mem::Object IfTrueToAOrB::execute()
 	{
-		Mem::new_del_range();
-		if (static_cast<Mem::Bool*>(expr->execute())->_value())
+		if (std::static_pointer_cast<Mem::Bool>(expr->execute())->_value())
 			*pc = *true_tag - 1;
 		else
 			*pc = *false_tag - 1;
@@ -384,7 +378,7 @@ namespace Mer
 	{
 		for (auto& a : jmp_table)
 		{
-			if (static_cast<Mem::Bool*>(a.first->execute())->_value())
+			if (std::static_pointer_cast<Mem::Bool>(a.first->execute())->_value())
 			{
 				*pc = *a.second - 1;
 				return nullptr;
@@ -486,7 +480,7 @@ namespace Mer
 	}
 	Mem::Object CharCaseSet::execute()
 	{
-		auto result = jmp_table.find(static_cast<Mem::Char*>(expr->execute())->get_value());
+		auto result = jmp_table.find(std::static_pointer_cast<Mem::Char>(expr->execute())->get_value());
 		if (result == jmp_table.end())
 			* pc = *default_pos - 1;
 		else

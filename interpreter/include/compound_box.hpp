@@ -81,7 +81,7 @@ namespace Mer
 		std::string to_string()const override;
 		Mem::Object operator[](Mem::Object v)override
 		{
-			return vec[static_cast<Mem::Int*>(v)->get_value()];
+			return vec[std::static_pointer_cast<Mem::Int>(v)->get_value()];
 		}
 	private:
 		std::vector<Mem::Object> vec;

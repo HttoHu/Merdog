@@ -151,7 +151,7 @@ namespace Mer
 		{
 			obj_vec[i] = vec[i]->execute();
 		}
-		return Mem::make_object<USObject>(obj_vec);
+		return std::make_shared<USObject>(obj_vec);
 	}
 
 	ParserNode* StructureInitList::clone()
@@ -205,7 +205,7 @@ namespace Mer
 		std::vector<Mem::Object> ret(vec.size());
 		for (size_t i = 0; i < ret.size(); i++)
 			ret[i] = vec[i]->clone();
-		return Mem::make_object<USObject>(ret);
+		return std::make_shared<USObject>(ret);
 	}
 
 	ParserNode* DefaultInitList::clone()
@@ -218,7 +218,7 @@ namespace Mer
 	Mem::Object USObject::operator=(Mem::Object v) {
 		// I am trying to do as much as possible check before runtime
 		auto a = v->clone();
-		this->vec = static_cast<USObject*>(v)->vec;
+		this->vec = std::static_pointer_cast<USObject>(v)->vec;
 		return a;
 	}
 
@@ -229,7 +229,7 @@ namespace Mer
 		{
 			ret_vec[i] = vec[i]->clone();
 		}
-		return Mem::make_object<USObject>(ret_vec);
+		return std::make_shared<USObject>(ret_vec);
 	}
 
 	std::string USObject::to_string() const
@@ -243,6 +243,6 @@ namespace Mer
 	}
 	Mem::Object MemberVar::execute()
 	{
-		return parents_vec.back()->operator[](Mem::make_object<Mem::Int>(member_pos));
+		return parents_vec.back()->operator[](std::make_shared<Mem::Int>(member_pos));
 	}
 }

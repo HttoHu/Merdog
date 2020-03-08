@@ -12,20 +12,6 @@
 
 namespace Mer
 {
-	std::vector<std::vector<Mem::Value*>> Mem::del_obj_table(2);
-	void Mem::new_del_range()
-	{
-		del_obj_table.push_back({});
-	}
-	void Mem::end_cur_del_range()
-	{
-		auto &a = del_obj_table.back();
-		for (auto cur_obj : a)
-		{
-			delete cur_obj;
-		}
-		del_obj_table.pop_back();
-	}
 	void Mem::swap(Object rhs, Object lhs)
 	{
 		auto tmp = rhs->clone();
@@ -80,27 +66,27 @@ namespace Mer
 		// pointer
 		if (type % 2 == 0)
 		{
-			return make_object<Pointer>(nullptr);
+			return std::make_shared<Pointer>(nullptr);
 		}
 		switch (type)
 		{
 		case CHAR:
-			return make_object<Char>(0);
+			return std::make_shared<Char>(0);
 		case INT:
-			return make_object<Int>(0);
+			return std::make_shared<Int>(0);
 		case DOUBLE:
-			return make_object<Double>(0.0);
+			return std::make_shared<Double>(0.0);
 		case BOOL:
-			return make_object<Bool>(true);
+			return std::make_shared<Bool>(true);
 		case STRING:
-			return make_object<String>("");
+			return std::make_shared<String>("");
 		default:
 		{
 			auto result = type_init_map.find(type);
 			if (result == type_init_map.end())
 			{
 
-				return make_object<USObject>(find_ustructure_t(type)->init());
+				return std::make_shared<USObject>(find_ustructure_t(type)->init());
 			}
 			return result->second->clone();
 		}
@@ -110,7 +96,7 @@ namespace Mer
 	Mem::Object Mem::Int::operator=(Object v)
 	{
 		auto tmp = v;
-		value = static_cast<Int*>(v)->value;
+		value = std::static_pointer_cast<Int>(v)->value;
 		return tmp;
 	}
 
@@ -119,13 +105,13 @@ namespace Mer
 		switch (type)
 		{
 		case INT:
-			return make_object<Int>(value);
+			return std::make_shared<Int>(value);
 		case DOUBLE:
-			return make_object<Double>(value);
+			return std::make_shared<Double>(value);
 		case BOOL:
-			return make_object<Bool>(value);
+			return std::make_shared<Bool>(value);
 		case CHAR:
-			return make_object<Char>(value);
+			return std::make_shared<Char>(value);
 		default:
 			throw Error("int_value:" + std::to_string(value) + " int cannot convert to " + type_to_string((BasicType)type));
 			break;
@@ -134,7 +120,7 @@ namespace Mer
 
 	Mem::Object Mem::Double::operator=(Object v) {
 
-		value = static_cast<Double*>(v)->value;
+		value = std::static_pointer_cast<Double>(v)->value;
 		return Convert(Mem::DOUBLE);
 	}
 
@@ -143,9 +129,9 @@ namespace Mer
 		switch (type)
 		{
 		case INT:
-			return make_object<Int>(value);
+			return std::make_shared<Int>(value);
 		case DOUBLE:
-			return make_object<Double>(value);
+			return std::make_shared<Double>(value);
 		default:
 			throw Error("double cannot convert to " + type_to_string((BasicType)type));
 		}
@@ -156,9 +142,9 @@ namespace Mer
 		switch (type)
 		{
 		case BOOL:
-			return make_object<Bool>(value);
+			return std::make_shared<Bool>(value);
 		case INT:
-			return make_object<Int>(value);
+			return std::make_shared<Int>(value);
 		default:
 			throw Error("type-convert error");
 		}
@@ -180,28 +166,23 @@ namespace Mer
 
 	Mem::Object Mem::Pointer::operator=(Object v)
 	{
-		obj = static_cast<Pointer*>(v)->obj;
-		return make_object<Pointer>(obj);
+		obj = std::static_pointer_cast<Pointer>(v)->obj;
+		return std::make_shared<Pointer>(obj);
 	}
 
 	Mem::Object Mem::Pointer::operator==(Object v)
 	{
-		return make_object<Mem::Bool>(static_cast<Pointer*>(v)->obj == obj);
+		return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->obj == obj);
 	}
 
 	Mem::Object Mem::Pointer::operator!=(Object v)
 	{
-		return make_object<Mem::Bool>(static_cast<Pointer*>(v)->obj != obj);
-	}
-
-	Mem::Object Mem::Pointer::untagged_clone() const
-	{
-		return new Mem::Pointer(obj);
+		return std::make_shared<Mem::Bool>(std::static_pointer_cast<Pointer>(v)->obj != obj);
 	}
 
 	Mem::Object Mem::Pointer::clone() const
 	{
-		return make_object<Mem::Pointer>(obj);
+		return std::make_shared<Mem::Pointer>(obj);
 	}
 
 	Mem::Object Mem::Pointer::operator[](Object v)
@@ -215,7 +196,7 @@ namespace Mer
 
 	Mem::Object Mem::String::operator[](Object v)
 	{
-		return make_object<Char>(&str[static_cast<Int*>(v)->get_value()]);
+		return std::make_shared<Char>(&str[std::static_pointer_cast<Int>(v)->get_value()]);
 	}
 
 	std::string type_to_string(size_t type_code)
@@ -226,7 +207,7 @@ namespace Mer
 	Mem::Object Mer::Mem::Char::operator=(Object v)
 	{
 		auto tmp = v;
-		*value = *static_cast<Char*>(v)->value;
+		*value = *std::static_pointer_cast<Char>(v)->value;
 		return tmp;
 	}
 
@@ -235,26 +216,21 @@ namespace Mer
 		switch (type)
 		{
 		case STRING:
-			return make_object<String>(*value);
+			return std::make_shared<String>(*value);
 		case BOOL:
-			return make_object<Bool>(*value);
+			return std::make_shared<Bool>(*value);
 		case INT:
-			return make_object<Int>(*value);
+			return std::make_shared<Int>(*value);
 		case CHAR:
-			return make_object<Char>(*value);
+			return std::make_shared<Char>(*value);
 		default:
 			throw Error("type-convert error");
 		}
 	}
 
-	Mem::Object Mem::AnyObj::untagged_clone() const
-	{
-		return new AnyObj(obj);
-	}
-
 	Mem::Object Mer::Mem::AnyObj::clone() const
 	{
-		return make_object<AnyObj>(obj);
+		return std::make_shared<AnyObj>(obj);
 	}
 
 	Mem::Object Mer::Mem::Array::operator[](Object index)
@@ -269,12 +245,7 @@ namespace Mer
 
 	Mem::Object Mem::Array::clone() const
 	{
-		return make_object<Array>(type, pos, length);
-	}
-
-	Mem::Object Mem::Array::untagged_clone() const
-	{
-		return new Array(type, pos, length);
+		return std::make_shared<Array>(type, pos, length);
 	}
 
 	Mem::Object Mem::Value::Convert(type_code_index type)
@@ -284,16 +255,6 @@ namespace Mer
 		throw Error("convert: syntax error from " + ls + " to " + rs);
 	}
 
-	Mem::Object Mem::InitListObj::untagged_clone() const
-	{
-		std::vector<Object> vec;
-		for (auto& a : elems)
-		{
-			vec.push_back(a->untagged_clone());
-		}
-		return new InitListObj(std::move(vec), type_code);
-	}
-
 	Mem::Object Mem::InitListObj::clone() const
 	{
 		std::vector<Object> vec;
@@ -301,7 +262,7 @@ namespace Mer
 		{
 			vec.push_back(a->clone());
 		}
-		return make_object<InitListObj>(std::move(vec), type_code);
+		return std::make_shared<InitListObj>(std::move(vec), type_code);
 	}
 
 	Mem::Object Mer::Mem::GArray::operator[](Object index)
@@ -316,7 +277,7 @@ namespace Mer
 
 	Mem::Object Mem::GArray::clone() const
 	{
-		return make_object<GArray>(type, pos, length);
+		return std::make_shared<GArray>(type, pos, length);
 	}
 
 }

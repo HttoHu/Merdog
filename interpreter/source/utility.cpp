@@ -67,19 +67,19 @@ namespace Mer
 
 		Mem::Object _time_record(const std::vector<Mem::Object>& args)
 		{
-			return Mem::make_object<Mem::Int>(clock());
+			return std::make_shared<Mem::Int>(clock());
 		}
 		Mem::Object _random_int(const std::vector<Mem::Object>& args)
 		{
-			int range_begin= static_cast<Mem::Int*>(args[0])->get_value();
-			int range_end = static_cast<Mem::Int*>(args[1])->get_value();
+			int range_begin= std::static_pointer_cast<Mem::Int>(args[0])->get_value();
+			int range_end = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
 			static std::uniform_int_distribution<int> distributor(range_begin,range_end);
 			static std::default_random_engine e(clock());
-			return Mem::make_object<Mem::Int>(distributor(e));
+			return std::make_shared<Mem::Int>(distributor(e));
 		}
 		Mem::Object _sleep(const std::vector<Mem::Object>& args)
 		{
-			int time = static_cast<Mem::Int*>(args[0])->get_value();
+			int time = std::static_pointer_cast<Mem::Int>(args[0])->get_value();
 #ifdef _WIN32
 			Sleep(time);
 #else
@@ -89,7 +89,7 @@ namespace Mer
 		}
 		Mem::Object _to_string(const std::vector<Mem::Object>& args)
 		{
-			return Mem::make_object<Mem::String>(args[0]->to_string());
+			return std::make_shared<Mem::String>(args[0]->to_string());
 		}
 		Mem::Object _mer_exit(const std::vector<Mem::Object>& args)
 		{
@@ -105,31 +105,28 @@ namespace Mer
 		Mem::Object _convert_to_int(const std::vector<Mem::Object>& args)
 		{
 			std::string str = args[0]->to_string();
-			return Mem::make_object<Mem::Int>(my_string_to_int(str));
+			return std::make_shared<Mem::Int>(my_string_to_int(str));
 		}
 		Mem::Object _convert_to_real(const std::vector<Mem::Object>& args)
 		{
 			std::string str = args[0]->to_string();
-			return Mem::make_object<Mem::Double>(my_string_to_double(str));
+			return std::make_shared<Mem::Double>(my_string_to_double(str));
 		}
-<<<<<<< HEAD
 		Mem::Object _isdigit(const std::vector<Mem::Object> &args) {
-			char ch = static_cast<Mem::Char*>(args[0])->get_value();
-			return Mem::make_object<Mem::Bool>(isdigit(ch));
+			char ch = std::static_pointer_cast<Mem::Char>(args[0])->get_value();
+			return std::make_shared<Mem::Bool>(isdigit(ch));
 		}
 		Mem::Object _isalpha(const std::vector<Mem::Object> &args) {
-			char ch = static_cast<Mem::Char*>(args[0])->get_value();
-			return Mem::make_object<Mem::Bool>(isalpha(ch));
+			char ch = std::static_pointer_cast<Mem::Char>(args[0])->get_value();
+			return std::make_shared<Mem::Bool>(isalpha(ch));
 		}
 		Mem::Object _isalnum(const std::vector<Mem::Object> &args) {
-			char ch = static_cast<Mem::Char*>(args[0])->get_value();
-			return Mem::make_object<Mem::Bool>(isalnum(ch));
+			char ch = std::static_pointer_cast<Mem::Char>(args[0])->get_value();
+			return std::make_shared<Mem::Bool>(isalnum(ch));
 		}
 		Mem::Object _max(const std::vector<Mem::Object> &args) {
 			return (*args[0])<args[1] ? args[1]->clone():args[0]->clone();
 		}
-=======
->>>>>>> parent of a3576fa... isdigit, isalpha,isnum and array can decay to pointer now.
 	}
 
 }
@@ -144,7 +141,12 @@ void Mer::set_utility()
 	_register_internal_function("sleep", Mem::BVOID, {Mem::INT}, _sleep, mstd);
 	_register_internal_function("exit", Mem::BVOID, {}, _mer_exit);
 	_register_internal_function("system", Mem::BVOID, {Mem::STRING}, _system);
+	_register_internal_function("isdigit", Mem::BOOL, { Mem::CHAR }, _isdigit);
+	_register_internal_function("isalpha", Mem::BOOL, { Mem::CHAR }, _isalpha);
+	_register_internal_function("isalnum", Mem::BOOL, { Mem::CHAR }, _isalnum);
 	_register_internal_function("to_int", Mem::INT, {Mem::STRING}, _convert_to_int);
+	_register_internal_function("max", Mem::DOUBLE, { Mem::DOUBLE,Mem::DOUBLE }, _max);
+	_register_internal_function("max", Mem::INT, { Mem::INT,Mem::INT }, _max);
 	_register_internal_function("to_real", Mem::DOUBLE, { Mem::STRING }, _convert_to_real);
 	root_namespace->set_new_func("to_string", my_to_string);
 

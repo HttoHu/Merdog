@@ -88,7 +88,7 @@ namespace Mer
 			using namespace Mem;
 			Mer::root_namespace->children.insert({ "std", mstd });
 			auto compare_op = [](Mem::Object a, Mem::Object b) {
-				return static_cast<Mem::Bool*>(a->operator<(b))->_value(); };
+				return std::static_pointer_cast<Mem::Bool>(a->operator<(b))->_value(); };
 			compare_map.insert({ Mem::INT,compare_op });
 			compare_map.insert({ Mem::BOOL,compare_op });
 			compare_map.insert({ Mem::DOUBLE,compare_op });

@@ -10,82 +10,82 @@ namespace Mer
 		Mem::Object _min(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
-			double d2 = static_cast<Mem::Double*>(args[1]->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d2 = std::static_pointer_cast<Mem::Double>(args[1]->Convert(Mem::BasicType::DOUBLE))->get_value();
 			double ret =std::fmin(d, d2);
-			return Mem::make_object<Mem::Double>(ret);
+			return std::make_shared<Mem::Double>(ret);
 		}
 		Mem::Object _sqrt(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::sqrt(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _mod(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			auto obj2 = args[1];
-			auto v = static_cast<Mem::Int*>(obj->Convert(Mem::BasicType::INT))->get_value();
-			auto v2= static_cast<Mem::Int*>(obj2->Convert(Mem::BasicType::INT))->get_value();
-			return Mem::make_object<Mem::Int>(v%v2);
+			auto v = std::static_pointer_cast<Mem::Int>(obj->Convert(Mem::BasicType::INT))->get_value();
+			auto v2= std::static_pointer_cast<Mem::Int>(obj2->Convert(Mem::BasicType::INT))->get_value();
+			return std::make_shared<Mem::Int>(v%v2);
 		}
 		Mem::Object _sin(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::sin(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _cos(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::cos(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _tan(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::tan(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _arsin(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::asin(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _arcos(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::acos(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _artan(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::atan(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _abs(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
-			double d = static_cast<Mem::Double*>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
+			double d = std::static_pointer_cast<Mem::Double>(obj->Convert(Mem::BasicType::DOUBLE))->get_value();
 			d = std::abs(d);
-			return Mem::make_object<Mem::Double>(d);
+			return std::make_shared<Mem::Double>(d);
 		}
 		Mem::Object _pow(const std::vector<Mem::Object>& args)
 		{
 			auto obj = args.front();
 			auto obj2 = args[1];
-			auto v = static_cast<Mem::Double*>(obj)->get_value();
-			auto v2 = static_cast<Mem::Double*>(obj2)->get_value();
-			return Mem::make_object<Mem::Double>(pow(v,v2));
+			auto v = std::static_pointer_cast<Mem::Double>(obj)->get_value();
+			auto v2 = std::static_pointer_cast<Mem::Double>(obj2)->get_value();
+			return std::make_shared<Mem::Double>(pow(v,v2));
 		}
 	}
 	Namespace* maths;

@@ -259,16 +259,6 @@ namespace Mer
 		ParserNode* id;
 		type_code_index type;
 	};
-<<<<<<< HEAD
-	class NewDelRange :public ParserNode {
-	public:
-		Mem::Object execute()override;
-	private:
-	};
-	class EndCurDelRange:public ParserNode {
-	public :
-		Mem::Object execute()override;
-	};
 	// to decay the array's name to an address
 	class ArrayDecay :public ParserNode {
 	public:
@@ -294,8 +284,6 @@ namespace Mer
 		type_code_index type;
 		int pos;
 	};
-=======
->>>>>>> parent of a3576fa... isdigit, isalpha,isnum and array can decay to pointer now.
 	class RmRef :public ParserNode
 	{
 	public:

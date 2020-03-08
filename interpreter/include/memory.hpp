@@ -34,13 +34,10 @@
 #include <stack>
 #include <map>
 #include <set>
+#include "basic_objects.hpp"
 
 namespace Mer
 {
-	namespace Mem {
-		class Value;
-		using Object = Value*;
-	}
 	const int mem_max_size = 4096;
 	class Memory
 	{

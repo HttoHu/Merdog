@@ -55,50 +55,50 @@ namespace Mer
 	}
 	namespace
 	{
-		Mem::Int* _make_int_obj(int n)
+		std::shared_ptr<Mem::Int> _make_int_obj(int n)
 		{
-			return (Mem::Int*)Mem::make_object<Mem::Int>(n);
+			return std::make_shared<Mem::Int>(n);
 		}
 		Mem::Object _init_str_n(const std::vector<Mem::Object>& args)
 		{
 			int count = Mem::get_raw<int>(args[0]);
-			char c = static_cast<Mem::Char*>(args[1])->get_value();
-			return Mem::make_object<Mem::String>(std::string(count, c));
+			char c = std::static_pointer_cast<Mem::Char>(args[1])->get_value();
+			return std::make_shared<Mem::String>(std::string(count, c));
 		}
 		Mem::Object _str_find_str(const std::vector<Mem::Object>& args) {
-			auto tmp = static_cast<Mem::String*>(parents_vec.back())->str;
-			std::string str = static_cast<Mem::String*> (args[0])->str;
-			int spos = static_cast<Mem::Int*>(args[1])->get_value();
-			return Mem::make_object<Mem::Int>(tmp.find(str,spos));
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back())->str;
+			std::string str = std::static_pointer_cast<Mem::String> (args[0])->str;
+			int spos = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
+			return std::make_shared<Mem::Int>(tmp.find(str,spos));
 		}
 		Mem::Object _substr(const std::vector<Mem::Object>& args)
 		{
-			auto tmp = static_cast<Mem::String*>(parents_vec.back());
-			auto off = static_cast<Mem::Int*>(args[0]);
-			auto size = static_cast<Mem::Int*>(args[1]);
-			return Mem::make_object<Mem::String>(tmp->to_string().substr(off->get_value(), size->get_value()));
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
+			auto off = std::static_pointer_cast<Mem::Int>(args[0]);
+			auto size = std::static_pointer_cast<Mem::Int>(args[1]);
+			return std::make_shared<Mem::String>(tmp->to_string().substr(off->get_value(), size->get_value()));
 		}
 		Mem::Object _str_size(const std::vector<Mem::Object>& args)
 		{
-			auto tmp = static_cast<Mem::String*>(parents_vec.back());
-			return Mem::make_object<Mem::Int>(tmp->to_string().size());
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
+			return std::make_shared<Mem::Int>(tmp->to_string().size());
 		}
 		Mem::Object _str_find(const std::vector<Mem::Object> &args) {
-			auto tmp = static_cast<Mem::String*>(parents_vec.back());
+			auto tmp = std::static_pointer_cast<Mem::String>(parents_vec.back());
 			std::string tmp_str = tmp->str;
-			char ch = static_cast<Mem::Char*>(args[0])->get_value();
-			int startPos = static_cast<Mem::Int*>(args[1])->get_value();
-			return Mem::make_object<Mem::Int>(tmp->str.find(ch, startPos));
+			char ch = std::static_pointer_cast<Mem::Char>(args[0])->get_value();
+			int startPos = std::static_pointer_cast<Mem::Int>(args[1])->get_value();
+			return std::make_shared<Mem::Int>(tmp->str.find(ch, startPos));
 		}
 		Mem::Object _str_to_lower_case(const std::vector<Mem::Object>& args) {
-			std::string str = static_cast<Mem::String*>(parents_vec.back())->str;
+			std::string str = std::static_pointer_cast<Mem::String>(parents_vec.back())->str;
 			std::transform(str.begin(), str.end(), str.begin(), tolower);
-			return Mem::make_object<Mem::String>(str);
+			return std::make_shared<Mem::String>(str);
 		}
 		Mem::Object _str_to_upper_case(const std::vector<Mem::Object>& args) {
-			std::string str = static_cast<Mem::String*>(parents_vec.back())->str;
+			std::string str = std::static_pointer_cast<Mem::String>(parents_vec.back())->str;
 			std::transform(str.begin(), str.end(), str.begin(), toupper);
-			return Mem::make_object<Mem::String>(str);
+			return std::make_shared<Mem::String>(str);
 		}
 		Mem::Object _cout(const std::vector<Mem::Object>& args)
 		{
@@ -118,7 +118,7 @@ namespace Mer
 				std::cin >> obj;
 			else
 				my_stringstream >> obj;
-			return Mem::make_object<Mem::Int>(obj);
+			return std::make_shared<Mem::Int>(obj);
 		}
 		Mem::Object _input_char(const std::vector<Mem::Object>& args)
 		{
@@ -127,7 +127,7 @@ namespace Mer
 				std::cin >> obj;
 			else
 				my_stringstream >> obj;
-			return Mem::make_object<Mem::Char>(obj);
+			return std::make_shared<Mem::Char>(obj);
 		}
 		Mem::Object _get_line(const std::vector<Mem::Object>& args)
 		{
@@ -136,7 +136,7 @@ namespace Mer
 				std::getline(std::cin, obj);
 			else
 				std::getline(my_stringstream, obj);
-			return Mem::make_object<Mem::String>(obj);
+			return std::make_shared<Mem::String>(obj);
 
 		}
 		Mem::Object _input_real(const std::vector<Mem::Object>& args)
@@ -147,7 +147,7 @@ namespace Mer
 				std::cin >> obj;
 			else
 				my_stringstream >> obj;
-			return Mem::make_object<Mem::Double>(obj);
+			return std::make_shared<Mem::Double>(obj);
 		}
 		Mem::Object _input_string(const std::vector<Mem::Object>& args)
 		{
@@ -157,7 +157,7 @@ namespace Mer
 				std::cin >> obj;
 			else
 				my_stringstream >> obj;
-			return Mem::make_object<Mem::String>(obj);
+			return std::make_shared<Mem::String>(obj);
 		}
 #ifdef USING_CXX17
 		Mem::Object _open(std::vector<Mem::Object>& args)
@@ -174,22 +174,22 @@ namespace Mer
 			while (std::getline(ifs, tmp))
 				str_vec.push_back(tmp);
 			ifs.close();
-			*std::static_pointer_cast<Mem::AnyObj>((*ss)[Mem::make_object<Mem::Int>(1)]) = std::move(str_vec);
+			*std::static_pointer_cast<Mem::AnyObj>((*ss)[std::make_shared<Mem::Int>(1)]) = std::move(str_vec);
 			return nullptr;
 		}
 		Mem::Object _read_line(std::vector<Mem::Object>& args)
 		{
 			auto arg1 = parents_vec.back();
 			auto ss = std::static_pointer_cast<USObject>(arg1);
-			return Mem::make_object<Mem::String>((*std::static_pointer_cast<Mem::AnyObj>((*ss)[Mem::make_object<Mem::Int>(1)])).
+			return std::make_shared<Mem::String>((*std::static_pointer_cast<Mem::AnyObj>((*ss)[std::make_shared<Mem::Int>(1)])).
 				cast<std::vector<std::string>>()[Mem::get_raw<int>(args[0])]);
 		}
 		Mem::Object _set_line(std::vector<Mem::Object>& args)
 		{
 			auto ss = std::static_pointer_cast<USObject>(parents_vec.back());
-			auto content = std::static_pointer_cast<Mem::AnyObj>(ss->operator[](Mem::make_object<Mem::Int>(1)));
+			auto content = std::static_pointer_cast<Mem::AnyObj>(ss->operator[](std::make_shared<Mem::Int>(1)));
 			auto& file_content = content->cast<std::vector<std::string>>();
-			file_content[static_cast<Mem::Int*>(args[0])->get_value()] = args[1]->to_string();
+			file_content[std::static_pointer_cast<Mem::Int>(args[0])->get_value()] = args[1]->to_string();
 			return nullptr;
 		}
 		Mem::Object _insert_line(std::vector<Mem::Object>& args)
@@ -205,7 +205,7 @@ namespace Mer
 		Mem::Object _write_into_file(std::vector<Mem::Object>& args)
 		{
 			auto fobj = std::static_pointer_cast<USObject>(parents_vec.back());
-			auto content = std::static_pointer_cast<Mem::AnyObj>(fobj->operator[](Mem::make_object<Mem::Int>(1)));
+			auto content = std::static_pointer_cast<Mem::AnyObj>(fobj->operator[](std::make_shared<Mem::Int>(1)));
 			auto& file_content = content->cast<std::vector<std::string>>();
 			std::string file_name = fobj->operator[](_make_int_obj(0))->to_string();
 			if (!std::filesystem::exists(file_name))
@@ -227,7 +227,7 @@ namespace Mer
 		}
 		Mem::Object _exists_file(std::vector<Mem::Object>& args)
 		{
-			return Mem::make_object<Mem::Bool>(std::filesystem::exists(parents_vec.back()->to_string()));
+			return std::make_shared<Mem::Bool>(std::filesystem::exists(parents_vec.back()->to_string()));
 		}
 #endif
 	}
@@ -243,8 +243,8 @@ namespace Mer
 		Mem::type_counter += 2;
 		Mer::this_namespace->sl_table->push(class_name, new WordRecorder(ESymbol::SSTRUCTURE, Mem::type_counter));
 		// set the structure of the class
-		filestream->init_vec.push_back(Mem::make_object<Mem::String>(""));
-		filestream->init_vec.push_back(Mem::make_object<Mem::AnyObj>(0));
+		filestream->init_vec.push_back(std::make_shared<Mem::String>(""));
+		filestream->init_vec.push_back(std::make_shared<Mem::AnyObj>(0));
 		// register the information of file_stream
 		ustructure_map.insert({ class_name,filestream });
 		Mem::type_index.insert({ class_name,Mem::type_counter });

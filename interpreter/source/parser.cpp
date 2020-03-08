@@ -60,7 +60,7 @@ namespace Mer
 		token_stream.match(SIZEOF);
 		token_stream.match(LPAREN);
 		auto result = this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
-		obj = Mem::make_object<Mem::Int>(result->count);
+		obj = std::make_shared<Mem::Int>(result->count);
 		token_stream.next();
 		token_stream.match(RPAREN);
 
@@ -519,7 +519,7 @@ namespace Mer
 			else
 				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
 			// the info of the array.
-			auto array_info = new LConV(Mem::make_object<Mem::Array>(type, c_pos, arr.size()), type);
+			auto array_info = new LConV(std::make_shared<Mem::Array>(type, c_pos, arr.size()), type);
 			exprs.push_back(std::unique_ptr<LConV>(array_info));
 			for (auto it : arr)
 			{
@@ -575,7 +575,7 @@ namespace Mer
 			else
 				arr = static_cast<EmptyList*>(a->get_expr())->exprs();
 			// the info of the array.
-			auto array_info = new LConV(Mem::make_object<Mem::GArray>(type, c_pos, arr.size()), type);
+			auto array_info = new LConV(std::make_shared<Mem::GArray>(type, c_pos, arr.size()), type);
 			exprs.push_back(std::unique_ptr<LConV>(array_info));
 			for (auto it : arr)
 				exprs.push_back(UptrPNode(it));

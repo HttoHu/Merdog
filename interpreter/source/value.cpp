@@ -147,15 +147,22 @@ Mer::ParserNode* Mer::Parser::parse_var(WordRecorder* var_info)
 		return new MemberVar(mv_r->pos, mv_r->get_type());
 	}
 	auto ret = new Variable(var_info);
-	if (var_info->es == SARRAY)
-		ret->arr() = true;
+	/*if (var_info->es == SARRAY)
+		if (token_stream.this_tag() != LSB)
+		{
+			std::cout << "CUT";
+			delete ret;
+			return new ArrayDecay(var_info->get_pos(), var_info->get_type() + 1);
+		}
+		else
+			ret->arr() = true;*/
 	return ret;
 }
 
 namespace {
 
 	Mer::ParserNode* _make_l_conv(int n) {
-		return new Mer::LConV(Mer::Mem::make_object<Mer::Mem::Int>(n),Mer::Mem::BasicType::INT);
+		return new Mer::LConV(std::make_shared< Mer::Mem::Int>(n),Mer::Mem::BasicType::INT);
 	}
 }
 template<typename ARR_TYPE>
@@ -164,6 +171,13 @@ Mer::ParserNode* Mer::Parser::parse_array(WordRecorder* var_info)
 	token_stream.match(ID);
 	auto array_indexs = static_cast<ARR_TYPE*>(var_info)->array_indexs;
 	std::vector<ParserNode*> indexs;
+	// if the following of the array is not [, then the array will decay to a pointer which points to the first elements
+	if (token_stream.this_tag() != Tag::LSB)
+		if(typeid(ARR_TYPE)== typeid(ArrayRecorder))
+			return new ArrayDecay(var_info->get_pos(), var_info->get_type() + 1);
+		else
+			return new GloArrayDecay(var_info->get_pos(), var_info->get_type() + 1);
+
 	while (token_stream.this_tag() == Tag::LSB) {
 		token_stream.match(LSB);
 		indexs.push_back(Expr().root());
@@ -309,27 +323,27 @@ Mer::LConV::LConV(Token* t)
 	{
 	case TTRUE:
 		type = Mem::BOOL;
-		obj = Mem::make_object<Mem::Bool>(true);
+		obj = std::make_shared<Mem::Bool>(true);
 		break;
 	case TFALSE:
 		type = Mem::BOOL;
-		obj = Mem::make_object<Mem::Bool>(false);
+		obj = std::make_shared<Mem::Bool>(false);
 		break;
 	case INTEGER:
 		type = Mem::INT;
-		obj = Mem::make_object<Mem::Int>(Integer::get_value(t));
+		obj = std::make_shared<Mem::Int>(Integer::get_value(t));
 		break;
 	case REAL:
 		type = Mem::DOUBLE;
-		obj = Mem::make_object <Mem::Double >(Real::get_value(t));
+		obj = std::make_shared <Mem::Double >(Real::get_value(t));
 		break;
 	case STRING:
 		type = Mem::STRING;
-		obj = Mem::make_object<Mem::String>(String::get_value(t));
+		obj = std::make_shared<Mem::String>(String::get_value(t));
 		break;
 	case CHAR_LIT:
 		type = Mem::CHAR;
-		obj = Mem::make_object<Mem::Char>(CharToken::get_value(t));
+		obj = std::make_shared<Mem::Char>(CharToken::get_value(t));
 		break;
 	default:
 		throw Error("syntax error");

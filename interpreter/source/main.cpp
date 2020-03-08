@@ -78,7 +78,6 @@ int main()
 {
 	try
 	{
-		using namespace Mer;
 		time_t s = clock();
 		std::string input_content = get_file_content("test.mer");
 		Mer::run_interpreter(input_content);
