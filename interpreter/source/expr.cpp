@@ -542,6 +542,7 @@ namespace Mer
 		return Mem::make_object<Mem::Bool>(Mem::get_raw<bool>(right->execute()));
 	}
 
+<<<<<<< HEAD
 	Mem::Object ArrayDecay::execute() {
 		return Mem::make_object<Mem::Pointer>(mem[pos + mem.get_current()+1]);
 	}
@@ -563,4 +564,6 @@ namespace Mer
 		return nullptr;
 	}
 
+=======
+>>>>>>> parent of a3576fa... isdigit, isalpha,isnum and array can decay to pointer now.
 }
