@@ -11,7 +11,7 @@ size_t Mer::Endl::current_line = 0;
 
 TagStrMap	Mer::TagStr{
 	{ IMPORT,"IMPORT" },{ NAMESPACE,"NAMESPACE" },{ STRUCT,"struct" },{NEW,"new"},{PTRVISIT,"PTRVISIT"},
-	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },
+	{ REF,"REF" },{ PROGRAM,"PROGRAME" },{ COMMA,"COMMA" },{ COLON,"COLON" },{QUE,"QUE"},
 	{ ID,"ID" },{ INTEGER,"INTEGER" },{ REAL,"REAL" } ,{ FUNCTION,"FUNCTION" },{ RETURN,"RETURN" },
 	{ IF,"IF" },{ ELSE_IF,"ELSE_IF" },{ ELSE,"ELSE" },{ WHILE,"WHILE" },{ DO,"DO" } ,{ FOR,"FOR" },{ BREAK,"BREAK" },{ CONTINUE,"CONTINUE" },{SWITCH,"SWITCH"},
 	{ INTEGER_DECL,"INTEGER_DECL" },{ REAL_DECL,"REAL_DECL" },{ STRING_DECL,"STRING_DECL" },{ BOOL_DECL,"BOOL_DECL" },{ VOID_DECL,"VOID_DECL" },{CHAR_DECL,"CHAR_DECL"},
@@ -30,6 +30,7 @@ TokenMap	Mer::BasicToken{
 	{"<",new Token(LT)},{"<=",new Token(LE)},{">",new Token(GT)},{">=",new Token(GE)},{"==",new Token(EQ)},
 	{"!=",new Token(NE)},{"!",new Token(NOT)},{"&&",new Token(AND)},{"||",new Token(OR)},{":",new Token(COLON)},
 	{",",new Token(COMMA)},{";",new Token(SEMI)},{".",new Token(DOT)},{"&",new Token(GET_ADD)},{"->",new Token(PTRVISIT)},
+	{"?",new Token(QUE)},
 	{"[",new Token(LSB)},{"]",new Token(RSB)},{"(",new Token(LPAREN)},{")",new Token(RPAREN)},
 	{"{",new Token(BEGIN)},{"}",new Token(END)},
 	{ "using",new Token(IMPORT) },{ "namespace",new Token(NAMESPACE) },{ "struct",new Token(STRUCT) },
@@ -266,6 +267,7 @@ void Mer::build_token_stream(const std::string& content) {
 			token_stream.push_back(BasicToken[str]);
 			break;
 		}
+		case '?':
 		case ';':
 		case ':':
 		case '.':

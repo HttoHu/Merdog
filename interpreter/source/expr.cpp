@@ -34,12 +34,25 @@ namespace Mer
 	}
 	ParserNode* Expr::assign()
 	{
-		auto result = and_or();
+		auto result = conditional_expr();
 		while (token_stream.this_tag() == ASSIGN || token_stream.this_tag() == SADD || token_stream.this_tag() == SSUB || token_stream.this_tag() == SMUL || token_stream.this_tag() == SDIV)
 		{
 			auto tok = token_stream.this_token();
 			token_stream.next();
-			result = new BinOp(result, tok, and_or());
+			result = new BinOp(result, tok, conditional_expr());
+		}
+		return result;
+	}
+	ParserNode * Expr::conditional_expr()
+	{
+		auto result = and_or();
+		if (token_stream.this_tag() == QUE)
+		{
+			token_stream.next();
+			auto true_cond_expr = assign();
+			token_stream.match(COLON);
+			auto false_cond_expr = assign();
+			return new ConditionalOperator(result, true_cond_expr, false_cond_expr);
 		}
 		return result;
 	}
@@ -54,7 +67,6 @@ namespace Mer
 			result = new LogicalBinOp(result, tok, nexpr());
 		}
 		return result;
-
 	}
 
 	ParserNode* Expr::expr()
@@ -548,6 +560,14 @@ namespace Mer
 	Mem::Object GloArrayDecay::execute()
 	{
 		return std::make_shared<Mem::Pointer>(mem[pos+1]);
+	}
+
+	Mem::Object ConditionalOperator::execute()
+	{
+		bool cond = std::static_pointer_cast<Mem::Bool>(condition->execute()->Convert(Mem::BOOL))->_value();
+		if (cond)
+			return true_expr->execute();
+		return false_expr->execute();
 	}
 
 }
