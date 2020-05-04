@@ -283,7 +283,7 @@ namespace Mer
 		ArrayDecay(int p, type_code_index ty):pos(p),type(ty){ }
 		type_code_index get_type()override { return type; }
 		Mem::Object execute()override;
-		ParserNode* clone() {
+		ParserNode* clone()override {
 			return new ArrayDecay(pos,type);
 		}
 	private:
@@ -295,7 +295,7 @@ namespace Mer
 		GloArrayDecay(int p, type_code_index ty) :pos(p), type(ty) { }
 		type_code_index get_type()override { return type; }
 		Mem::Object execute()override;
-		ParserNode* clone() {
+		ParserNode* clone()override {
 			return new ArrayDecay(pos, type);
 		}
 	private:

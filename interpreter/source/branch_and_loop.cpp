@@ -2,11 +2,12 @@
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
+#include <ctime>
+#include <typeinfo>
 #include "../include/branch_and_loop.hpp"
 #include "../include/namespace.hpp"
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
-#include <ctime>
 #include "../include/environment.hpp"
 namespace Mer
 {

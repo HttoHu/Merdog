@@ -2,6 +2,7 @@
 * MIT License
 * Copyright (c) 2019 Htto Hu
 */
+#include <typeinfo>
 #include "../include/parser.hpp"
 #include "../include/expr.hpp"
 #include "../include/word_record.hpp"

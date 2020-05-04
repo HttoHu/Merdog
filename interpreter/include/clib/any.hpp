@@ -25,7 +25,7 @@
 #pragma once
 #include <string>
 #include <iostream>
-
+#include <typeinfo>
 //#define COMPILE_MERDOG_NEED_CXX17
 #ifndef USING_CXX17
 namespace mer

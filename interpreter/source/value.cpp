@@ -2,6 +2,7 @@
 *	MIT License
 *	Copyright (c) 2019 Htto Hu
 */
+#include <typeinfo>
 #include "../include/memory.hpp"
 #include "../include/word_record.hpp"
 #include "../include/namespace.hpp"

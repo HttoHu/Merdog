@@ -23,12 +23,12 @@
 
 */
 #pragma once
+#include <typeinfo>
 #include <iostream>
 #include "parser_node.hpp"
-
+#include "lexer.hpp"
 namespace Mer
 {
-	enum Tag;
 	namespace optimizer
 	{
 		extern std::map<Mer::Tag, Mem::Object(*) (const Mem::Object&, const Mem::Object&)> op_table;
