@@ -45,6 +45,8 @@ void Mer::Namespace::set_new_func(const std::string& name, FunctionBase* func)
 		recorder->functions.insert({ std::vector<type_code_index>(),func });
 		return;
 	}
+	if (recorder->functions.find(func->param_types) != recorder->functions.end())
+		throw Error("function " + name + " redefined");
 	recorder->functions.insert({ func->param_types,func });
 }
 void Mer::Namespace::set_new_var(const std::string& name, size_t type, Mem::Object obj)

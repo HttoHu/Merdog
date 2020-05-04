@@ -51,6 +51,7 @@ namespace Mer
 	(std::string name,  type_code_index ret_type, const std::vector<type_code_index>& param_list, std::function<Mem::Object(const std::vector<Mem::Object>&)> mf,Namespace* _nsp=this_namespace) {
 		SystemFunction* tmp = new SystemFunction(ret_type, mf);
 		tmp->set_param_types(param_list);
+		tmp->is_completed = true;
 		_nsp->set_new_func(name, tmp);
 	}
 	namespace

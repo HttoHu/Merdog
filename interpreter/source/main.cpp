@@ -15,7 +15,7 @@
 #include "../include/clib/containers.hpp"
 #include "../include/environment.hpp"
 const std::string update_info = "1. fixed a bug about map\n2. string supports += now.\n3. added a new member function of string .find(ch,StartPos), return the position where the first char matches the ch.";
-#define MERDOG_VERSION "Merdog Snake 1.4.1"
+#define MERDOG_VERSION "Merdog 3.9"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
