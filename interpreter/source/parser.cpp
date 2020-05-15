@@ -256,10 +256,6 @@ namespace Mer
 			auto info = Mer::this_namespace->sl_table->find(Id::get_value(token_stream.this_token()));
 			if (info == nullptr)
 				throw Error("id: " + Id::get_value(token_stream.this_token()) + "no found");
-			if (info->es == ESymbol::SCONTAINER)
-			{
-
-			}
 			token_stream.next();
 			return info->get_type();
 		}

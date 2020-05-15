@@ -1,13 +1,1 @@
-struct Node
-{
-	int v=123;
-	Node *next=nullptr;
-}
-program main
-{
-	Node *node=new Node;
-	node->next=new Node;
-	node->next->v=134;
-	node->next->next=node;
-	std.cout(node->next->next->next->next->next->next->next->v);
-}
+struct Node{	int v=123;	Node *next=nullptr;}program main{	Node *node=new Node;	node->next=new Node;	node->next->v=134;	node->next->next=node;	std.cout(node->next->next->next->next->next->next->next->v);}

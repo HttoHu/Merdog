@@ -1,39 +1,1 @@
-int n=0;
-int vec[11];
-
-function void search(int cur) {
-	if (cur == n)
-	{
-		for (int i = 0; i < n; i+=1)
-		{
-			std.cout("(",i,",",vec[i],")");
-		}
-		std.cout('\n');
-	}
-	else
-    { 
-        for (int i = 0; i < n; i+=1)
-        {
-            bool ok = true;
-            vec[cur] = i;
-            for (int j = 0; j < cur; j+=1)
-            {
-                if (vec[cur] == vec[j] || cur - vec[cur] == j - vec[j] || cur + vec[cur] == j + vec[j])
-                {
-                    ok = false;
-                    break;
-                }
-            }
-            if (ok)
-            {
-                search(cur + 1);
-            }
-        }
-    }
-}
-
-program main
-{
-	n=8;
-	search(0);
-}
+int n=0;int vec[11];function void search(int cur) {	if (cur == n)	{		for (int i = 0; i < n; i+=1)		{			std.cout("(",i,",",vec[i],")");		}		std.cout('\n');	}	else    {         for (int i = 0; i < n; i+=1)        {            bool ok = true;            vec[cur] = i;            for (int j = 0; j < cur; j+=1)            {                if (vec[cur] == vec[j] || cur - vec[cur] == j - vec[j] || cur + vec[cur] == j + vec[j])                {                    ok = false;                    break;                }            }            if (ok)            {                search(cur + 1);            }        }    }}program main{	std.cout("Eight Queen problem\noutput the possible result\n each coordinate represent the position of one queen!\n");	n=8;	search(0);}

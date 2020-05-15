@@ -228,13 +228,12 @@ namespace Mer
 		auto ctr = new ContainerTypeRecorder("map");
 		Container::Map::type_code = ctr->get_type();
 		type_code_index tc = Container::Map::type_code;
-		this_namespace->sl_table->push("map", ctr);
+		root_namespace->sl_table->push("map", ctr);
 		Mem::container_register.insert({ tc,register_map });
 		Mem::type_index.insert({ "map" ,tc });
 		auto map_type = new Mem::Type("map", tc, { tc });
 		map_type->type_kind = Mem::Type::kind::container;
-		Mem::type_map.insert({ tc,
-			 map_type });
+		Mem::type_map.insert({ tc, map_type });
 	}
 
 

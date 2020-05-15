@@ -1,8 +1,1 @@
-program arr_test
-{
-	int arr[10]={1,2,3,4,5,6,7,8,9,0};
-	arr[3]=12;
-	std.cout(arr[3],"\n\a");
-	string arr2[3]={"you","are","silly"};
-	std.cout(arr2[1]);
-}
+// array_test // by htto huprogram arr_test{	int arr[10]={1,2,31,4,5,612,-7,8,9,0};	int max_v=arr[0];	for(int i=1;i<sizeof(arr);i+=1)	{		if(max_v < arr[i])		{			max_v=arr[i];		}	}	std.cout(max_v,"\n");	string arr2[3]={"you","are","R2D2"};	std.cout(arr2[1]);}

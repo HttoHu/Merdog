@@ -1,21 +1,1 @@
-function int max(int i,int m);
-function int max(int i,int j,int z)
-{
-	return max(i,max(j,z));
-}
-function int max(int i,int m)
-{
-	if(m<i)
-	{
-		return i;
-	}
-	return m;
-}
-function int max(int i,int j,int k,int z)
-{
-	return max(i,max(j,k,z));
-}
-program main
-{
-	std.cout(max(3,72,113,83));
-}
+function int my_max(int i,int m);function int my_max(int i,int j,int z){	return my_max(i,max(j,z));}function int my_max(int i,int m){	if(m<i)	{		return i;	}	return m;}function int my_max(int i,int j,int k,int z){	return max(i,my_max(j,k,z));}program main{	std.cout(my_max(3,72,113,83));}

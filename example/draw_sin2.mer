@@ -1,20 +1,1 @@
-// Milo Yip https://www.zhihu.com/question/52187430/answer/483568196
-program main
-{
-    real dx = 1.0 / 16.0, dy=1.0 / 16.0;
-    for (real y = 1.0; y >= -1.0; y -= dy)
-    {
-	    std.cout("\n");
-        for (real x = 0.0; x < 6.28; x += dx)
-        {
-            if(min2(abs(sin(x)-y),abs(y))<(dy/2.0))
-            {
-                std.cout("*");
-            }
-            else 
-		    {
-			    std.cout(" ");
-			}
-        }
-    }
-}
+// Milo Yip https://www.zhihu.com/question/52187430/answer/483568196program main{    std.cout("使用Merdog解释\nDraw Sin..\n");    real dx = 1.0 / 16.0, dy=1.0 / 16.0;    for (real y = 1.0; y >= -1.0; y -= dy)    {	    std.cout("\n");        for (real x = 0.0; x < 6.28; x += dx)        {            if(min2(abs(sin(x)-y),abs(y))<(dy/2.0))            {                std.cout("*");            }            else 		    {			    std.cout(" ");			}        }    }}
