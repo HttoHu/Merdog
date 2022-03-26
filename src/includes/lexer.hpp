@@ -28,6 +28,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include "./defs.hpp"
 #include "./error.hpp"
 namespace Mer
 {
@@ -154,9 +155,9 @@ namespace Mer
 	class Integer :public Token
 	{
 	public:
-		Integer(int n) :Token(INTEGER), 
+		Integer(int_default n) :Token(INTEGER),
 			value(n) {}
-		static int get_value(Token *tok)
+		static int_default get_value(Token *tok)
 		{
 			if (tok->check(INTEGER))
 				return static_cast<Integer*>(tok)->value;
@@ -166,7 +167,7 @@ namespace Mer
 			return "<Integer:" + std::to_string(value) + ">";
 		}
 	private:
-		int value;
+		int_default value;
 	};
 	class Real :public Token
 	{
