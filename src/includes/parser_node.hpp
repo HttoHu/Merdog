@@ -20,7 +20,6 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-
 */
 #pragma once
 #include <string>
@@ -42,6 +41,9 @@ namespace Mer
 	public:
 		ParserNode(NodeType nt) :node_type(nt) {}
 		NodeType get_node_type() { return node_type; }
+		size_t node_size() {
+			return type_tab[get_type()]->type_length();
+		}
 	public:
 
 		virtual size_t get_pos() { throw Error("no pos node"); }

@@ -28,6 +28,7 @@ int main() {
 		auto node = Mer::Parser::parse_expr();
 		node->execute(buf);
 		std::cout << node->to_string() << "\n\n";
+		std::cout << node->need_space() << "\n";
 		std::cout << *(int_default*)(buf);
 	}
 	catch (Mer::Error& e)

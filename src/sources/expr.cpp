@@ -1,6 +1,7 @@
 #include "../includes/expr.hpp"
 #include "../includes/operator.hpp"
 #include "../includes/unit.hpp"
+#include <vector>
 
 namespace Mer {
 
@@ -17,7 +18,14 @@ namespace Mer {
 		res_type = it.first;
 		op_func = it.second;
 
-		left_size = left->need_space();
+		left_size = left->node_size();
+	}
+
+	size_t BinOp::need_space()
+	{
+		std::vector <size_t> vec = { left->node_size() + right->node_size(),node_size(),left->need_space(),left_size + right->need_space() };
+		sort(vec.begin(), vec.end());
+		return vec.back();
 	}
 
 	void BinOp::execute(char* src)

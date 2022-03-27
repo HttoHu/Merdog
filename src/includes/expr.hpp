@@ -8,9 +8,7 @@ namespace Mer {
 	class BinOp :public ParserNode {
 	public:
 		BinOp(Token* tok, ParserNode* _left, ParserNode* _right);
-		size_t need_space()override {
-			return std::max(left_size+ right->need_space(),type_tab[res_type]->type_length());
-		}
+		size_t need_space()override;
 		bool constant()const override { return left->constant() && right->constant(); }
 		type_code_index get_type()override { return res_type; }
 		// run left node and right node first, and merge the result by op_func.
