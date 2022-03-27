@@ -31,7 +31,7 @@
 namespace Mer
 {
 	enum class NodeType :int {
-		BIN_OP, LConV
+		BIN_OP, LConV,LOGICAL_BIN,
 	};
 	// the node of an AST, every node is excutable.
 	// 

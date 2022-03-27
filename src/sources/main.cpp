@@ -18,6 +18,15 @@ std::string get_file_content(const std::string& filename)
 	return file_content;
 }
 char buf[512];
+void test() {
+	using namespace std;
+	vector<pair<string, string>> vec = { {"LSH","left_shift"},{"RSH","right_shift"}
+	,{"EQ","eq"},{"NE","ne"},{"GE","ge"},{"LE","le"},{"GT","gt"}, {"LT","lt"} };
+	for (auto [f, s] : vec)
+	{
+		cout << "{{" + f + ",int_tag,int_tag},{int_tag," + s + "<int_default,int_default,int_default>}},\n";
+	}
+}
 int main() {
 	using namespace Mer;
 	auto src = get_file_content("test.mer");
@@ -28,7 +37,7 @@ int main() {
 		auto node = Mer::Parser::parse_expr();
 		node->execute(buf);
 		std::cout << node->to_string() << "\n\n";
-		std::cout << node->need_space() << "\n";
+		//std::cout << node->need_space() << "\n";
 		std::cout << *(int_default*)(buf);
 	}
 	catch (Mer::Error& e)

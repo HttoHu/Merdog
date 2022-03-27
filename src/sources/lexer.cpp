@@ -3,6 +3,8 @@
 * Copyright (c) 2022 Htto Hu
 */
 #include "../includes/lexer.hpp"
+#include "../includes/defs.hpp"
+
 using namespace Mer;
 using TokenMap = std::map<std::string, Token*>;
 using TagStrMap = std::map<Tag, std::string>;
@@ -18,6 +20,7 @@ TagStrMap	Mer::TagStr{
 	{ PLUS,"PLUS" },{ MINUS,"MINUS" },{ MUL,"MUL" },{ DIV,"DIV" },{MOD,"MOD"},
 	{ GE,"GE" },{ GT,"GT" },{ LE,"LE" },{ LT,"LT" },{ EQ,"EQ" },{ NE,"NE" },
 	{ AND,"AND" },{ OR,"OR" },{ NOT,"NOT" },{BXOR,"BXOR"},{BAND,"BAND"},{BOR,"BOR"},{BNOT,"BNOT"},
+	{ RSH,"RSH"},{LSH,"LSH"},{SRSH,"SRSH"},{SLSH,"SLSH"},
 	{ GET_ADD,"GET_ADD" },
 	{ LPAREN,"LPAREN" },{ RPAREN,"RPAREN" },{ LSB,"LSB" },{ RSB,"RSB" },
 	{ DOT,"DOT" },{ BEGIN,"BEGIN" },{ END,"END" },
@@ -27,14 +30,23 @@ TagStrMap	Mer::TagStr{
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULL"},{SIZEOF,"SIZEOF"},
 };
 TokenMap	Mer::BasicToken{
-	{"+",new Token(PLUS)},{"-",new Token(MINUS)},{"*",new Token(MUL)},{"/",new Token(DIV)},{"%",new Token(MOD)},
+	{",",new Token(COMMA)},
 	{"=",new Token(ASSIGN)},{"+=",new Token(SADD)},{"-=",new Token(SSUB)},{"*=",new Token(SMUL)},{"/=",new Token(SDIV)},
-	{"%=",new Token(SMOD)},{"&=",new Token(SAND)},{"|=",new Token(SOR)},{"^=",new Token(SXOR)},
-	{"<",new Token(LT)},{"<=",new Token(LE)},{">",new Token(GT)},{">=",new Token(GE)},{"==",new Token(EQ)},
-	{"!=",new Token(NE)},{"!",new Token(NOT)},
-	{"&&",new Token(AND)},{"||",new Token(OR)},
-	{"^",new Token(BXOR)},{"&",new Token(BAND)},{"|",new Token(BOR)},{"~",new Token(BNOT)},
-	{":",new Token(COLON)},{",",new Token(COMMA)},{";",new Token(SEMI)},{".",new Token(DOT)},{"->",new Token(ARROW)},
+	{"%=",new Token(SMOD)},{"&=",new Token(SAND)},{"|=",new Token(SOR)},{"^=",new Token(SXOR)},{">>=",new Token(SRSH)},{"<<=",new Token(SLSH)},
+	{"||",new Token(OR)},
+	{"&&",new Token(AND)},
+	{"|",new Token(BOR)},
+	{"^",new Token(BXOR)},
+	{"&",new Token(BAND)},
+	{"==",new Token(EQ)},{"!=",new Token(NE)},
+	{"<",new Token(LT)},{"<=",new Token(LE)},{">",new Token(GT)},{">=",new Token(GE)},
+	{"<<",new Token(LSH)},{">>",new Token(RSH)},
+	{"+",new Token(PLUS)},{"-",new Token(MINUS)},
+	{"*",new Token(MUL)},{"/",new Token(DIV)},{"%",new Token(MOD)},
+	{"!",new Token(NOT)},{"~",new Token(BNOT)},
+	{".",new Token(DOT)},{"->",new Token(ARROW)},
+
+	{":",new Token(COLON)},{";",new Token(SEMI)},
 	{"?",new Token(QUE)},
 	{"[",new Token(LSB)},{"]",new Token(RSB)},{"(",new Token(LPAREN)},{")",new Token(RPAREN)},
 	{"{",new Token(BEGIN)},{"}",new Token(END)},
@@ -46,7 +58,7 @@ TokenMap	Mer::BasicToken{
 	{ "new",new Token(NEW)},{"make",new Token(MAKE)},
 	{ "cast",new Token(CAST) },{ "true",new Token(TTRUE) },
 	{ "false",new Token(TFALSE) },
-	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
+	{ "string",new Token(STRING_DECL) },{ "bool",new Token(INTEGER_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
 	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },{"char",new Token(CHAR_DECL)},
 	{ "int",new Token(INTEGER_DECL) },{ "entry",new Token(ENTRY) },{"null",new Token(NULLPTR)}
@@ -76,10 +88,88 @@ std::string retrive_word(const std::string& str, size_t& pos)
 	while (isalnum(str[pos]) || str[pos] == '_') ret += str[pos++];
 	return ret;
 }
-
+namespace {
+	Token* parse_bin_number(const std::string& str, size_t& pos)
+	{
+		int_default ret = 0;
+		while (pos < str.size() && isdigit(str[pos]))
+		{
+			int dig = str[pos] - '0';
+			if (dig > 1)
+				throw LexerError("invalid binary number eg. 0b10011");
+			ret *= 2;
+			ret += dig;
+			pos++;
+		}
+		return new Integer(ret);
+	}
+	bool is_good_hex_bit(char ch) {
+		if (ch >= '0' && ch <= '9')
+			return true;
+		ch = tolower(ch);
+		if (ch > 'f' || ch < 'a')
+			return false;
+		return true;
+	}
+	int _hbit(char ch) {
+		if (ch >= '0' && ch <= '9')
+			return ch - '0';
+		ch = tolower(ch);
+		if (!is_good_hex_bit(ch))
+			throw LexerError("invalid hex number");
+		return 10 + ch - 'a';
+	}
+	// the number of every bit, convert to dec. 
+	int _obit(char ch) {
+		if (ch > '7' || ch < '0')
+			throw LexerError("invalid oct number");
+		return ch - '0';
+	}
+	Token* hex_to_dec(const std::string& str, size_t& pos) {
+		int_default ret = 0;
+		for (; pos < str.size(); pos++) {
+			if (!is_good_hex_bit(str[pos]))
+				break;
+			ret *= 16;
+			ret += _hbit(str[pos]);
+		}
+		// int32
+		return new Integer(ret);
+	}
+	Token* oct_to_dec(const std::string& str, size_t& pos) {
+		int_default ret = 0;
+		for (; pos < str.size(); pos++) {
+			if (str[pos] < '0' || str[pos]>'7')
+				break;
+			ret *= 8;
+			ret += _obit(str[pos]);
+		}
+		return new Integer(ret);
+	}
+}
 Token* Mer::parse_number(const std::string& str, size_t& pos)
 {
-	int ret = 0;
+	int_default ret = 0;
+	if (str[pos] == '0')
+	{
+		if (pos + 1 < str.size())
+		{
+			if (tolower(str[pos+1]) == 'b')
+			{
+				pos += 2;
+				return parse_bin_number(str, pos);
+			}
+			else if (tolower(str[pos+1]) == 'x')
+			{
+				pos += 2;
+				return hex_to_dec(str, pos);
+			}
+			else
+				return oct_to_dec(str, pos);
+		}
+		return new Integer(0);
+	}
+
 	for (; pos < str.size(); pos++)
 	{
 		if (isdigit(str[pos]))
@@ -223,7 +313,7 @@ void Mer::build_token_stream(const std::string& content) {
 		case '*':
 		{
 			std::string str = std::string(1, content[i]);
-			if (i + 1 < content.size())	
+			if (i + 1 < content.size())
 			{
 				str.push_back(content[i + 1]);
 				if (BasicToken.count(str))

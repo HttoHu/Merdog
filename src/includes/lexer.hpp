@@ -60,6 +60,8 @@ namespace Mer
 		NEW, MAKE,
 		// !, &&, ||, ^ & | ~
 		NOT, AND, OR,BXOR,BAND,BOR,BNOT,
+		// <<, >>, <<= ,>>=
+		LSH,RSH,SLSH,SRSH,
 		// & { } ; . ,
 		REF, BEGIN, END, SEMI, DOT, COMMA,
 		// ID integer real char : "
