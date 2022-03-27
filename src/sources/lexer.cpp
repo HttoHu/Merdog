@@ -218,6 +218,7 @@ void Mer::build_token_stream(const std::string& content) {
 		case '>':
 		case '<':
 		case '=':
+		case '%':
 		case '!':
 		case '*':
 		{

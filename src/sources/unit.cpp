@@ -1,7 +1,7 @@
 #include "../includes/unit.hpp"
 #include "../includes/defs.hpp"
 namespace Mer {
-	LConV::LConV(Token* tok)
+	LConV::LConV(Token* tok) :ParserNode(NodeType::LConV)
 	{
 		switch (tok->get_tag())
 		{
@@ -30,6 +30,12 @@ namespace Mer {
 			throw Error("syntax error");
 		}
 		len = type_tab[type]->type_length();
+	}
+	std::string LConV::to_string() const
+	{
+		if (type == (int)BasicTypeTag::INT)
+			return std::to_string(*(int_default*)val);
+		return "unkonwn LConV";
 	}
 }
 

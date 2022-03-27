@@ -27,6 +27,11 @@ namespace Mer {
 		{
 			*(RT*)ret = *(T1*)l * *(T2*)r;
 		}
+		template<typename RT, typename T1, typename T2>
+		void mod(char* l, char* r, char* ret)
+		{
+			*(RT*)ret = (*(T1*)l) % (*(T2*)r);
+		}
 		// return the function and the function ret type
 		std::pair<type_code_index, op_type> get_bin_op(Tag op, type_code_index lt, type_code_index rt);
 	}

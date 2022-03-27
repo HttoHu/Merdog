@@ -39,7 +39,8 @@ namespace Mer {
 		size_t need_space()override { return len; }
 		bool constant()const override { return true; }
 		void execute(char* ret)override {memcpy(ret, val, len);}
-		ParserNode* clone()override {}
+		ParserNode* clone()override { return nullptr; }
+		std::string to_string()const override;
 		~LConV() { delete[] val; }
 	private:
 		type_code_index type = 0;

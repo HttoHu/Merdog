@@ -20,7 +20,7 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-		
+
 */
 #pragma once
 #include <string>
@@ -31,21 +31,26 @@
 
 namespace Mer
 {
+	enum class NodeType :int {
+		BIN_OP, LConV
+	};
 	// the node of an AST, every node is excutable.
 	// 
 	// if you want to run the code ,just do a dfs execution.
 	class ParserNode
 	{
 	public:
-		ParserNode(){}
+		ParserNode(NodeType nt) :node_type(nt) {}
+		NodeType get_node_type() { return node_type; }
 	public:
+
 		virtual size_t get_pos() { throw Error("no pos node"); }
 		// the space to calculate the node, the data may write to memory temporary..
 		virtual size_t need_space() { return 0; }
 		// if you decl a var, the node will occupy the space not temporary.
 		virtual size_t actual_space() { return 0; }
 		virtual ~ParserNode() {}
-		virtual std::string to_string()
+		virtual std::string to_string()const 
 		{
 			return "<empty_node>";
 		}
@@ -60,7 +65,7 @@ namespace Mer
 			return 0;
 		}
 		// write the result to the specified place.
-		virtual void execute(char *ret) 
+		virtual void execute(char* ret)
 		{
 			throw std::runtime_error("runtime error: called by an indefinite var");
 		}
@@ -68,6 +73,8 @@ namespace Mer
 		virtual ParserNode* clone() {
 			throw Error("cloned in ParserNode");
 		}
+	public:
+		NodeType node_type;
 	};
 	using UptrPNode = std::unique_ptr<ParserNode>;
 }

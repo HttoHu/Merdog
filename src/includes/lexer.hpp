@@ -249,6 +249,7 @@ namespace Mer
 		{
 			for (const auto &a : content)
 				std::cout << a->to_string();
+			std::cout << std::endl;
 		}
 		std::vector<Token*>& _get_content()
 		{

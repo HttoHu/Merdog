@@ -6,7 +6,6 @@ namespace Mer {
 
 		class Memory {
 		public:
-
 			size_t bp;
 			size_t sp;
 		private:
