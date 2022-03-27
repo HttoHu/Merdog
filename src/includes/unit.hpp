@@ -27,6 +27,8 @@
 * Const Value , Value , Vars ,Function Call
 */
 #include "./parser_node.hpp"
+
+#include <cstring>
 #include "./lexer.hpp"
 
 namespace Mer {
@@ -34,8 +36,9 @@ namespace Mer {
 	public:
 		LConV(Token* tok);
 		type_code_index get_type()override { return type; }
+		size_t need_space()override { return len; }
 		bool constant()const override { return true; }
-		char* execute()override { return val; }
+		void execute(char* ret)override {memcpy(ret, val, len);}
 		ParserNode* clone()override {}
 		~LConV() { delete[] val; }
 	private:

@@ -24,6 +24,7 @@
 */
 #pragma once
 #include <string>
+#include <memory>
 #include <iostream>
 #include "./error.hpp"
 #include "./type.hpp"
@@ -31,27 +32,35 @@
 namespace Mer
 {
 	// the node of an AST, every node is excutable.
+	// 
 	// if you want to run the code ,just do a dfs execution.
 	class ParserNode
 	{
 	public:
 		ParserNode(){}
-		virtual size_t get_pos() { return 0; }
+	public:
+		virtual size_t get_pos() { throw Error("no pos node"); }
+		// the space to calculate the node, the data may write to memory temporary..
+		virtual size_t need_space() { return 0; }
+		// if you decl a var, the node will occupy the space not temporary.
+		virtual size_t actual_space() { return 0; }
 		virtual ~ParserNode() {}
-
 		virtual std::string to_string()
 		{
 			return "<empty_node>";
 		}
+		// to known if the node can get result before code running.
 		virtual bool constant()const
 		{
 			return false;
 		}
-		virtual int get_type()
+		// every node has a type in order to do static type check.
+		virtual type_code_index get_type()
 		{
 			return 0;
 		}
-		virtual char* execute() 
+		// write the result to the specified place.
+		virtual void execute(char *ret) 
 		{
 			throw std::runtime_error("runtime error: called by an indefinite var");
 		}
