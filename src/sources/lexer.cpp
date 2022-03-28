@@ -61,7 +61,8 @@ TokenMap	Mer::BasicToken{
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(INTEGER_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
 	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },{"char",new Token(CHAR_DECL)},
-	{ "int",new Token(INTEGER_DECL) },{ "entry",new Token(ENTRY) },{"null",new Token(NULLPTR)}
+	{ "int",new Token(INTEGER_DECL) },{ "entry",new Token(ENTRY) },{"null",new Token(NULLPTR)},
+	{"print",new Token(PRINT)}
 };
 bool				is_function_args = false;
 
@@ -324,6 +325,7 @@ void Mer::build_token_stream(const std::string& content) {
 			token_stream.push_back(BasicToken[str]);
 			break;
 		}
+		case '~':
 		case '?':
 		case ';':
 		case ':':

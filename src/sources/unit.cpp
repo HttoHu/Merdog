@@ -37,5 +37,22 @@ namespace Mer {
 			return std::to_string(*(int_default*)val);
 		return "unkonwn LConV";
 	}
+	void Print::execute(char* ret)
+	{
+		node->execute(ret);
+		switch ((BasicTypeTag)node->get_type())
+		{
+		case BasicTypeTag::BYTE:
+			std::cout << *ret << std::endl;
+		case BasicTypeTag::INT:
+			std::cout << *(int_default*)ret << std::endl;
+		default:
+			break;
+		}
+	}
+	std::string Print::to_string() const
+	{
+		return "(print " + node->to_string() + ")";
+	}
 }
 

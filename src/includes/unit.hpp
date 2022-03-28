@@ -47,4 +47,12 @@ namespace Mer {
 		int len;
 		char* val;
 	};
+	class Print : public ParserNode{
+	public:
+		Print(ParserNode* _node) :ParserNode(NodeType::PRINT),node(_node) {}
+		void execute(char* ret)override;
+		std::string to_string()const override;
+	private:
+		ParserNode* node;
+	};
 }
