@@ -35,6 +35,8 @@ namespace Mer {
 	{
 		if (type == (int)BasicTypeTag::INT)
 			return std::to_string(*(int_default*)val);
+		else if (type == (int)BasicTypeTag::REAL)
+			return std::to_string(*(real_default*)val);
 		return "unkonwn LConV";
 	}
 	void Print::execute(char* ret)
@@ -44,8 +46,13 @@ namespace Mer {
 		{
 		case BasicTypeTag::BYTE:
 			std::cout << *ret << std::endl;
+			break;
 		case BasicTypeTag::INT:
 			std::cout << *(int_default*)ret << std::endl;
+			break;
+		case BasicTypeTag::REAL:
+			std::cout << *(real_default*)ret << std::endl;
+			break;
 		default:
 			break;
 		}

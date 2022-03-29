@@ -144,7 +144,7 @@ namespace Mer {
 			case MINUS:
 			case BNOT:
 				token_stream.next();
-				ret = new UnaryOp(result, parse_unit());
+				ret = new UnaryOp(result->get_tag(), parse_unit());
 				return ret;
 			// Debug
 			case PRINT:

@@ -104,9 +104,12 @@ namespace Mer {
 			}
 			// return the function and the function ret type
 			std::pair<type_code_index, bop_type> get_bin_op(Tag op, type_code_index lt, type_code_index rt);
+			// to make the type same between the left and right of the operation.
+			std::pair<type_code_index, type_code_index> op_type_converter(type_code_index t1, type_code_index t2, Tag op);
 		}
 		namespace UnaryOp {
 			using uop_type = void (*) (char*);
+			using TabRes = std::pair<type_code_index, uop_type>;
 			template<typename RT, typename T>
 			void not_op(char* v) {
 				*(RT*)v = !*(T*)v;
@@ -119,7 +122,13 @@ namespace Mer {
 			void bitwise_not(char* v) {
 				*(RT*)v = ~*(T*)v;
 			}
-			std::pair<type_code_index, uop_type> get_unary_op(Tag op, type_code_index ty);
+			template<typename RT,typename T>
+			void cast_type(char* v) {
+				*(RT*)v = *(T*)v;
+			}
+
+			uop_type get_cast_op(type_code_index src, type_code_index dest);
+			TabRes get_unary_op(Tag op, type_code_index ty);
 		}
 	}
 }

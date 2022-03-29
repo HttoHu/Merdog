@@ -35,8 +35,11 @@ int main() {
 		Mer::build_token_stream(src);
 		Mer::token_stream.print();
 		auto node = Mer::Parser::parse_expr();
+		std::cout << node->to_string() << "\n\n";
+		std::cout << "\n\nres:\n-----------------------\n";
 		node->execute(buf);
-		//std::cout << node->to_string() << "\n\n";
+		
+		
 		//std::cout << node->need_space() << "\n";
 		//std::cout << *(int_default*)(buf);
 	}
