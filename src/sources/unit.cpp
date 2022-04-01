@@ -1,5 +1,7 @@
 #include "../includes/unit.hpp"
 #include "../includes/defs.hpp"
+#include "../includes/memory.hpp"
+
 namespace Mer {
 	LConV::LConV(Token* tok) :ParserNode(NodeType::LConV)
 	{
@@ -39,6 +41,11 @@ namespace Mer {
 			return std::to_string(*(real_default*)val);
 		return "unkonwn LConV";
 	}
+	Print::Print(ParserNode* _node) :ParserNode(NodeType::PRINT), node(_node) 
+	{
+		if (node->get_type() == 0)
+			throw Error("print a void val");
+	}
 	void Print::execute(char* ret)
 	{
 		node->execute(ret);
@@ -60,6 +67,20 @@ namespace Mer {
 	std::string Print::to_string() const
 	{
 		return "(print " + node->to_string() + ")";
+	}
+
+	Variable::Variable(const std::string& _var_name, type_code_index _type, size_t _pos, size_t* _base_ptr) 
+		:ParserNode(NodeType::VAR), var_name(_var_name), type(_type), pos(_pos), base_ptr(_base_ptr)
+	{
+		len = get_type_size(type);
+	}
+	void Variable::execute(char* ret)
+	{
+		memcpy(ret, Mem::default_mem.buf + *base_ptr + pos, len);
+	}
+	std::string Variable::to_string() const
+	{
+		return "(var " + var_name+")";
 	}
 }
 

@@ -5,7 +5,23 @@ namespace Mer {
 	/*
 		precedence table: https://en.cppreference.com/w/cpp/language/operator_precedence
 	*/
+	class Expr :public ParserNode {
+	public:
+		Expr(size_t _pos,ParserNode* _node) :ParserNode(NodeType::EXPR), pos(_pos),node(_node) {}
+		type_code_index get_type()const override {
+			return node->get_type();
+		}
+		size_t get_pos()override { return node->get_pos(); }
+		void execute(char*)override;
+		bool constant()const override { return node->actual_space(); }
+		size_t need_space() { return node->need_space(); }
+		size_t actual_space() { return node->actual_space(); }
+		std::string to_string()const { return node->to_string(); }
 
+	private:
+		ParserNode* node;
+		size_t pos;
+	};
 	namespace Parser {
 		ParserNode* parse_expr();
 		// ||

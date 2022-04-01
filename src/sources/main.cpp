@@ -1,10 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
 #include "../includes/lexer.hpp"
-#include "../includes/error.hpp"
-#include "../includes/expr.hpp"
+#include "../includes/environment.hpp"
 
 std::string get_file_content(const std::string& filename)
 {
@@ -32,16 +30,7 @@ int main() {
 	auto src = get_file_content("test.mer");
 	try
 	{
-		Mer::build_token_stream(src);
-		Mer::token_stream.print();
-		auto node = Mer::Parser::parse_expr();
-		std::cout << node->to_string() << "\n\n";
-		std::cout << "\n\nres:\n-----------------------\n";
-		node->execute(buf);
-		
-		
-		//std::cout << node->need_space() << "\n";
-		//std::cout << *(int_default*)(buf);
+		run_interpreter(src);
 	}
 	catch (Mer::Error& e)
 	{

@@ -10,7 +10,7 @@ namespace Mer {
 		UnaryOp(Tag tag, ParserNode* _node);
 		size_t need_space()override { return node->need_space(); }
 		bool constant()const override { return node->constant(); }
-		type_code_index get_type()override { return res_type; }
+		type_code_index get_type()const override { return res_type; }
 		// run left node and right node first, and merge the result by op_func.
 		void execute(char*)override;
 		std::string to_string()const override;
@@ -26,7 +26,7 @@ namespace Mer {
 		CastOp(ParserNode* _node, type_code_index _dest_type);
 		size_t need_space()override { return node->need_space(); }
 		bool constant()const override { return node->constant(); }
-		type_code_index get_type()override { return res_type; }
+		type_code_index get_type()const override { return res_type; }
 		// run left node and right node first, and merge the result by op_func.
 		void execute(char*)override;
 		std::string to_string()const override;

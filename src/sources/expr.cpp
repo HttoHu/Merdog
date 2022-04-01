@@ -1,7 +1,11 @@
 #include "../includes/expr.hpp"
 #include "../includes/binary_op.hpp"
 #include "../includes/unary_op.hpp"
+#include "../includes/memory.hpp"
 #include "../includes/unit.hpp"
+#include "../includes/symbols.hpp"
+#include "../includes/environment.hpp"
+
 #include <vector>
 
 namespace Mer {
@@ -9,7 +13,7 @@ namespace Mer {
 	namespace Parser {
 		ParserNode* parse_expr()
 		{
-			return parse_or();
+			return new Expr(Mem::default_mem.var_idx, parse_or());
 		}
 		ParserNode* parse_or()
 		{
@@ -144,18 +148,34 @@ namespace Mer {
 			case MINUS:
 			case BNOT:
 				token_stream.next();
-				ret = new UnaryOp(result->get_tag(), parse_unit());
-				return ret;
-			// Debug
+				return new UnaryOp(result->get_tag(), parse_unit());
+				// Debug
 			case PRINT:
 				token_stream.match(PRINT);
-				ret = new Print(parse_expr());
-				return ret;
+				return new Print(parse_expr());
+			case ID:
+			{
+				std::string var_name = Id::get_value(result);
+				token_stream.match(ID);
+				auto var_info =static_cast<Symbol::VarRecorder*>(Env::symbol_table.find(var_name));
+				size_t* base_ptr;
+				if (var_info->is_global)
+					base_ptr = &Mem::default_mem.bp;
+				else
+					base_ptr = &Mem::default_mem.sp;
+				return new Variable(var_name, var_info->get_type(), var_info->get_pos(), base_ptr);
+			}
 			default:
-				throw Error("invalid expression, unexpected token: "+token_stream.this_token()->to_string());
+				throw Error("invalid expression, unexpected token: " + token_stream.this_token()->to_string());
 			}
 		}
 
+	}
+
+	void Expr::execute(char* dat)
+	{
+		dat = Mem::default_mem.buf + Mem::default_mem.sp + pos;
+		node->execute(dat);
 	}
 
 }

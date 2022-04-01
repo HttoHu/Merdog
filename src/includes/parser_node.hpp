@@ -33,6 +33,8 @@ namespace Mer
 	enum class NodeType :int {
 		BIN_OP, LConV,LOGICAL_BIN,UNARY_OP,
 		PRINT,CAST,
+		VAR_DECL,
+		EXPR,VAR,
 	};
 	// the node of an AST, every node is excutable.
 	// 
@@ -47,7 +49,7 @@ namespace Mer
 		}
 	public:
 
-		virtual size_t get_pos() { throw Error("no pos node"); }
+		virtual size_t get_pos() { return -1; }
 		// the space to calculate the node, the data may write to memory temporary..
 		virtual size_t need_space() { return 0; }
 		// if you decl a var, the node will occupy the space not temporary.
@@ -63,7 +65,7 @@ namespace Mer
 			return false;
 		}
 		// every node has a type in order to do static type check.
-		virtual type_code_index get_type()
+		virtual type_code_index get_type()const
 		{
 			return 0;
 		}

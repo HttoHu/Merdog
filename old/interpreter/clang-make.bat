@@ -1,1 +1,1 @@
-clang source/*.cpp -o merdog.exe
+g++ -O2 ./source/*.cpp -o merdog.exe 

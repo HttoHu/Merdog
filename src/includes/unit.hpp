@@ -35,7 +35,7 @@ namespace Mer {
 	class LConV :public ParserNode {
 	public:
 		LConV(Token* tok);
-		type_code_index get_type()override { return type; }
+		type_code_index get_type()const override { return type; }
 		size_t need_space()override { return len; }
 		bool constant()const override { return true; }
 		void execute(char* ret)override {memcpy(ret, val, len);}
@@ -47,9 +47,23 @@ namespace Mer {
 		int len;
 		char* val;
 	};
+	class Variable:public ParserNode {
+	public:
+		Variable(const std::string &_var_name,type_code_index _type, size_t _pos, size_t* _base_ptr);
+		void execute(char* ret) override;
+		size_t get_pos() override { return pos; }
+		type_code_index get_type()const override { return type; }
+		std::string to_string()const override;
+	private:
+		size_t len;
+		std::string var_name;
+		type_code_index type;
+		size_t pos;
+		size_t* base_ptr;
+	};
 	class Print : public ParserNode{
 	public:
-		Print(ParserNode* _node) :ParserNode(NodeType::PRINT),node(_node) {}
+		Print(ParserNode* _node);
 		void execute(char* ret)override;
 		std::string to_string()const override;
 	private:

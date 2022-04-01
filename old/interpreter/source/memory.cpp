@@ -22,7 +22,6 @@ namespace Mer
 	{
 		current +=call_stack.top();
 		call_stack.pop();
-
 	}
 	size_t Memory::push(int size)
 	{

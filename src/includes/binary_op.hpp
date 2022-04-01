@@ -10,7 +10,7 @@ namespace Mer {
 		BinOp(Token* tok, ParserNode* _left, ParserNode* _right);
 		size_t need_space()override;
 		bool constant()const override { return left->constant() && right->constant(); }
-		type_code_index get_type()override { return res_type; }
+		type_code_index get_type()const override { return res_type; }
 		// run left node and right node first, and merge the result by op_func.
 		void execute(char*)override;
 		std::string to_string()const override;
@@ -29,7 +29,7 @@ namespace Mer {
 		LogicalBinOp(Token* tok, ParserNode* _left, ParserNode* _right);
 		size_t need_space()override;
 		bool constant()const override { return left->constant() && right->constant(); }
-		type_code_index get_type()override { return (type_code_index)BasicTypeTag::INT; }
+		type_code_index get_type()const override { return (type_code_index)BasicTypeTag::INT; }
 		// run left node and right node first, and merge the result by op_func.
 		void execute(char*)override;
 		std::string to_string()const override;

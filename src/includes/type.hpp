@@ -20,8 +20,9 @@ namespace Mer {
 		VOID = 0, INT, REAL, BYTE
 	};
 
+	size_t get_type_size(type_code_index ty);
+
 	type_code_index set_type(Type* ty);
-	Type* get_type(int type_id);
 
 	class Type {
 	public:
@@ -46,5 +47,7 @@ namespace Mer {
 		std::set<type_code_index> conv_tab;
 		type_len_t len;
 	};
-
+	namespace Parser {
+		type_code_index parse_type();
+	}
 }

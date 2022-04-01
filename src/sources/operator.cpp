@@ -11,6 +11,7 @@ namespace Mer
 				using Info = std::tuple<Tag, type_code_index, type_code_index>;
 				constexpr type_code_index int_tag = (type_code_index)BasicTypeTag::INT;
 				constexpr type_code_index real_tag = (type_code_index)BasicTypeTag::REAL;
+				constexpr type_code_index byte_tag = (type_code_index)BasicTypeTag::BYTE;
 				static std::map<Info, std::pair<type_code_index, bop_type>> tab = {
 					// integer
 					{{PLUS, int_tag, int_tag}, {int_tag, add<int_default, int_default, int_default>}},
@@ -40,6 +41,28 @@ namespace Mer
 					{{MINUS, real_tag, real_tag}, {real_tag, sub<real_default, real_default, real_default>}},
 					{{MUL, real_tag, real_tag}, {real_tag, mul<real_default, real_default, real_default>}},
 					{{DIV, real_tag, real_tag}, {real_tag, div<real_default, real_default, real_default>}},
+
+					// char
+					{{PLUS, byte_tag, byte_tag}, {byte_tag, add<byte_default, byte_default, byte_default>}},
+					{{MINUS, byte_tag, byte_tag}, {byte_tag, sub<byte_default, byte_default, byte_default>}},
+					{{MUL, byte_tag, byte_tag}, {byte_tag, mul<byte_default, byte_default, byte_default>}},
+					{{DIV, byte_tag, byte_tag}, {byte_tag, div<byte_default, byte_default, byte_default>}},
+					{{MOD, byte_tag, byte_tag}, {byte_tag, mod<byte_default, byte_default, byte_default>}},
+					{{AND, byte_tag, byte_tag}, {byte_tag, logical_and<byte_default, byte_default, byte_default>}},
+					{{OR, byte_tag, byte_tag}, {byte_tag, logical_or<byte_default, byte_default, byte_default>}},
+
+					{{BAND, byte_tag, byte_tag}, {byte_tag, bitwise_and<byte_default, byte_default, byte_default>}},
+					{{BOR, byte_tag, byte_tag}, {byte_tag, bitwise_or<byte_default, byte_default, byte_default>}},
+					{{BXOR, byte_tag, byte_tag}, {byte_tag, bitwise_xor<byte_default, byte_default, byte_default>}},
+					{{LSH, byte_tag, byte_tag}, {byte_tag, left_shift<byte_default, byte_default, byte_default>}},
+					{{RSH, byte_tag, byte_tag}, {byte_tag, right_shift<byte_default, byte_default, byte_default>}},
+
+					{{EQ, byte_tag, byte_tag}, {byte_tag, eq<byte_default, byte_default, byte_default>}},
+					{{NE, byte_tag, byte_tag}, {byte_tag, ne<byte_default, byte_default, byte_default>}},
+					{{GE, byte_tag, byte_tag}, {byte_tag, ge<byte_default, byte_default, byte_default>}},
+					{{LE, byte_tag, byte_tag}, {byte_tag, le<byte_default, byte_default, byte_default>}},
+					{{GT, byte_tag, byte_tag}, {byte_tag, gt<byte_default, byte_default, byte_default>}},
+					{{LT, byte_tag, byte_tag}, {byte_tag, lt<byte_default, byte_default, byte_default>}},
 				};
 
 				auto it = tab.find({ op, left_type, right_type });
