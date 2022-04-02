@@ -41,4 +41,20 @@ namespace Mer {
 
 		size_t left_size;
 	};
+	
+	class AssignOp :public ParserNode {
+	public:
+		AssignOp(Token* tok, ParserNode* _left, ParserNode* _right);
+		char* get_runtime_pos()override { return left->get_runtime_pos(); }
+		size_t need_space()override { return right->need_space(); }
+		void execute(char*)override;
+		bool constant()const override { return false; }
+		type_code_index get_type()const override { return left->get_type(); }
+		std::string to_string()const override;
+	private:
+		Token* op;
+		ParserNode* left;
+		ParserNode* right;
+		Op::Assign::aop_type op_func;
+	};
 }

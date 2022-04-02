@@ -13,7 +13,21 @@ namespace Mer {
 	namespace Parser {
 		ParserNode* parse_expr()
 		{
-			return new Expr(Mem::default_mem.var_idx, parse_or());
+			return new Expr(Mem::default_mem.var_idx, parse_assign());
+		}
+		ParserNode* parse_assign()
+		{
+			std::set<Tag> assign_set = {
+				ASSIGN,SADD,SSUB,SMUL,SDIV,SMOD,SLSH,SRSH,SAND,SOR,SXOR
+			};
+			auto node = parse_or();
+			while (assign_set.count(token_stream.this_tag()))
+			{
+				auto tok = token_stream.this_token();
+				token_stream.next();
+				node = new AssignOp(tok,node, parse_or());
+			}
+			return node;
 		}
 		ParserNode* parse_or()
 		{

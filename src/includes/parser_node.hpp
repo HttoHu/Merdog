@@ -34,7 +34,7 @@ namespace Mer
 		BIN_OP, LConV,LOGICAL_BIN,UNARY_OP,
 		PRINT,CAST,
 		VAR_DECL,
-		EXPR,VAR,
+		EXPR,ASSIGN,VAR,
 	};
 	// the node of an AST, every node is excutable.
 	// 

@@ -13,6 +13,7 @@ namespace Mer {
 		}
 		size_t get_pos()override { return node->get_pos(); }
 		void execute(char*)override;
+		char* get_runtime_pos()override { return node->get_runtime_pos(); }
 		bool constant()const override { return node->actual_space(); }
 		size_t need_space()override { return node->need_space(); }
 		size_t actual_space()override { return node->actual_space(); }
@@ -24,6 +25,8 @@ namespace Mer {
 	};
 	namespace Parser {
 		ParserNode* parse_expr();
+		// =,+=,-=,/=,*=,%=, >>= ,<<= ,&=,^=,|=
+		ParserNode* parse_assign();
 		// ||
 		ParserNode* parse_or();
 		// &&

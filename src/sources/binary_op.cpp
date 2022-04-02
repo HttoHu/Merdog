@@ -81,4 +81,27 @@ namespace Mer {
 		return "(LOGBIN " + std::string(1, "&|"[is_and_op]) + left->to_string() + " " + right->to_string() + ")";
 	}
 
+	AssignOp::AssignOp(Token* tok, ParserNode* _left, ParserNode* _right) :ParserNode(NodeType::ASSIGN),left(_left), right(_right), op(tok)
+	{
+		if (left->get_pos() == -1)
+			throw Error("only left value can be assigned");
+		if (right->get_type() != left->get_type())
+			right = new CastOp( right,left->get_type());
+		op_func = Op::Assign::get_assign_op(tok->get_tag(), left->get_type());
+		if (op_func == nullptr)
+			throw Error("invalid assign expression(type not supported): " + left->to_string() + " " + TagStr[tok->get_tag()] + " " + right->to_string());
+	}
+
+	void AssignOp::execute(char* ret)
+	{
+		right->execute(ret);
+		char* p = left->get_runtime_pos();
+		op_func(p, ret);
+	}
+
+	std::string AssignOp::to_string() const
+	{
+		return "(" + TagStr[op->get_tag()] +" "+left->to_string()+","+right->to_string()+")";
+	}
+
 }

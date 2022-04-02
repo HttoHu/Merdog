@@ -161,6 +161,35 @@ namespace Mer
 				return it->second;
 			}
 		}
+		namespace Assign {
+			aop_type get_assign_op(Tag op, type_code_index type)
+			{
+				const type_code_index int_type =(type_code_index) BasicTypeTag::INT;
+				const type_code_index char_type = (type_code_index)BasicTypeTag::BYTE;
+				const type_code_index real_type = (type_code_index)BasicTypeTag::REAL;
+
+				static std::map<std::pair<Tag, type_code_index>, aop_type> tab = {
+					// integer
+					{{ASSIGN,int_type},assign<int_default>},{{SADD,int_type},sadd<int_default>},{{SSUB,int_type},ssub<int_default>},
+					{{SMUL,int_type},smul<int_default>},{{SDIV,int_type},sdiv<int_default>},{{SMOD,int_type},smod<int_default>},
+					{{SLSH,int_type},slsh<int_default>},{{SRSH,int_type},srsh<int_default>},{{SAND,int_type},sand<int_default>},
+					{{SOR,int_type},sor<int_default>},{{SXOR,int_type},sxor<int_default>},
+					// real
+					{{ASSIGN,real_type},assign<real_default>},{{SADD,real_type},sadd<real_default>},{{SSUB,real_type},ssub<real_default>},
+					{{SMUL,real_type},smul<real_default>},{{SDIV,real_type},sdiv<real_default>},
+					// char
+					{{ASSIGN,char_type},assign<byte_default>},{{SADD,char_type},sadd<byte_default>},{{SSUB,char_type},ssub<byte_default>},
+					{{SMUL,char_type},smul<byte_default>},{{SDIV,char_type},sdiv<byte_default>},{{SMOD,char_type},smod<byte_default>},
+					{{SLSH,char_type},slsh<byte_default>},{{SRSH,char_type},srsh<byte_default>},{{SAND,char_type},sand<byte_default>},
+					{{SOR,char_type},sor<byte_default>},{{SXOR,char_type},sxor<byte_default>},
+				};
+			
+				auto it = tab.find({ op,type });
+				if (it == tab.end())
+					return nullptr;
+				return it->second;
+			}
+
+		}
 	}
 }
-

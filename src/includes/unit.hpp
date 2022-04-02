@@ -52,6 +52,7 @@ namespace Mer {
 		Variable(const std::string &_var_name,type_code_index _type, size_t _pos, size_t* _base_ptr);
 		void execute(char* ret) override;
 		size_t get_pos() override { return pos; }
+		char* get_runtime_pos()override;
 		type_code_index get_type()const override { return type; }
 		std::string to_string()const override;
 	private:

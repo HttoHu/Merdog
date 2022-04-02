@@ -53,7 +53,7 @@ namespace Mer {
 				}
 				return { var_name,Mer::get_type_size(type) ,expr };
 			}
-			throw Error("uninit var");
+			throw Error("uninit var "+var_name);
 		}
 
 		ParserNode* parse_var_decl()

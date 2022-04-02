@@ -78,6 +78,10 @@ namespace Mer {
 	{
 		memcpy(ret, Mem::default_mem.buf + *base_ptr + pos, len);
 	}
+	char* Variable::get_runtime_pos()
+	{
+		return Mem::default_mem.buf + *base_ptr + pos;
+	}
 	std::string Variable::to_string() const
 	{
 		return "(var " + var_name+")";

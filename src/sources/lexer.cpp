@@ -314,6 +314,21 @@ void Mer::build_token_stream(const std::string& content) {
 		case '*':
 		{
 			std::string str = std::string(1, content[i]);
+			if (i + 2 < content.size())
+			{
+				str.push_back(content[i + 1]);
+				str.push_back(content[i + 2]);
+				if (BasicToken.count(str))
+				{ 
+					i += 2;
+					token_stream.push_back(BasicToken[str]);
+					break;
+				}
+				else
+					str.pop_back(),str.pop_back();
+	
+			}
+
 			if (i + 1 < content.size())
 			{
 				str.push_back(content[i + 1]);
@@ -324,6 +339,7 @@ void Mer::build_token_stream(const std::string& content) {
 			}
 			token_stream.push_back(BasicToken[str]);
 			break;
+
 		}
 		case '~':
 		case '?':

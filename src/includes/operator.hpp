@@ -122,13 +122,34 @@ namespace Mer {
 			void bitwise_not(char* v) {
 				*(RT*)v = ~*(T*)v;
 			}
-			template<typename RT,typename T>
+			template<typename RT, typename T>
 			void cast_type(char* v) {
 				*(RT*)v = *(T*)v;
 			}
 
 			uop_type get_cast_op(type_code_index src, type_code_index dest);
 			TabRes get_unary_op(Tag op, type_code_index ty);
+		}
+		namespace Assign {
+			using aop_type = void(*)(char*, char*);
+			// =
+			template<typename T> void assign(char* src, char* dst) { *(T*)src = *(T*)dst; }
+			template<typename T> void sadd(char* src, char* dst) { *(T*)src += *(T*)dst; }
+			template<typename T> void ssub(char* src, char* dst) { *(T*)src -= *(T*)dst; }
+			template<typename T> void smul(char* src, char* dst) { *(T*)src *= *(T*)dst; }
+			template<typename T> void sdiv(char* src, char* dst) { *(T*)src /= *(T*)dst; }
+			template<typename T> void smod(char* src, char* dst) { *(T*)src %= *(T*)dst; }
+			// <<=
+			template<typename T> void slsh(char* src, char* dst) { *(T*)src <<= *(T*)dst; }
+			// >>=
+			template<typename T> void srsh(char* src, char* dst) { *(T*)src >>= *(T*)dst; }
+			// &=
+			template<typename T> void sand(char* src, char* dst) { *(T*)src &= *(T*)dst; }
+			template<typename T> void sor(char* src, char* dst) { *(T*)src |= *(T*)dst; }
+			template<typename T> void sxor(char* src, char* dst) { *(T*)src ^= *(T*)dst; }
+
+			aop_type get_assign_op(Tag op, type_code_index type);
+
 		}
 	}
 }

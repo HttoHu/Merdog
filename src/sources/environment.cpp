@@ -50,6 +50,7 @@ namespace Mer {
 	void run_interpreter(const std::string& content)
 	{
 		Mer::build_token_stream(content);
+		Mer::token_stream.print();
 		auto ins_tab = parse_block();
 		for (auto node : ins_tab)
 		{
