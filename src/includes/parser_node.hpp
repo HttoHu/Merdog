@@ -47,14 +47,15 @@ namespace Mer
 		size_t node_size() {
 			return type_tab[get_type()]->type_length();
 		}
+        virtual ~ParserNode() {}
 	public:
-
+        virtual char* get_runtime_pos(){return nullptr;}
 		virtual size_t get_pos() { return -1; }
 		// the space to calculate the node, the data may write to memory temporary..
 		virtual size_t need_space() { return 0; }
 		// if you decl a var, the node will occupy the space not temporary.
 		virtual size_t actual_space() { return 0; }
-		virtual ~ParserNode() {}
+		
 		virtual std::string to_string()const 
 		{
 			return "<empty_node>";

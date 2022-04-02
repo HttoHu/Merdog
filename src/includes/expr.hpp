@@ -14,9 +14,9 @@ namespace Mer {
 		size_t get_pos()override { return node->get_pos(); }
 		void execute(char*)override;
 		bool constant()const override { return node->actual_space(); }
-		size_t need_space() { return node->need_space(); }
-		size_t actual_space() { return node->actual_space(); }
-		std::string to_string()const { return node->to_string(); }
+		size_t need_space()override { return node->need_space(); }
+		size_t actual_space()override { return node->actual_space(); }
+		std::string to_string()const override { return node->to_string(); }
 
 	private:
 		ParserNode* node;
