@@ -20,5 +20,6 @@ namespace Mer {
 	};
 	namespace Parser {
 		ParserNode* parse_var_decl();
+		void parse_const_decl();
 	}
 }

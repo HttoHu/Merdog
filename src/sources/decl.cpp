@@ -1,4 +1,5 @@
 #include "../includes/decl.hpp"
+#include "../includes/unit.hpp"
 #include "../includes/memory.hpp"
 #include "../includes/type.hpp"
 #include "../includes/environment.hpp"
@@ -55,7 +56,31 @@ namespace Mer {
 			}
 			throw Error("uninit var "+var_name);
 		}
+		void parse_const_decl_unit(type_code_index type) {
+			auto tok = token_stream.this_token();
+			token_stream.next();
+			if (tok->get_tag() != ID)
+				throw Error("expect an ID token but got a " + tok->to_string());
+			std::string var_name = Id::get_value(tok);
 
+			if (token_stream.this_tag() == ASSIGN)
+			{
+				token_stream.match(ASSIGN);
+				auto expr = parse_expr();
+
+				if (expr->get_type() != type) {
+					expr = new CastOp(expr, type);
+				}
+				if (!expr->constant())
+					throw Error("const symbol must can be caculated before runtime!");
+				expr->execute(Mem::default_mem.buf);
+				delete expr;
+				expr = new LConV(Mem::default_mem.buf, type);
+				Env::symbol_table.push_word(var_name, new Symbol::ConstRecorder(type, expr));
+				return;
+			}
+			throw Error("uninit const " + var_name);
+		}
 		ParserNode* parse_var_decl()
 		{
 			type_code_index var_type = Parser::parse_type();
@@ -84,6 +109,18 @@ namespace Mer {
 				register_var_decl_unit();
 			}
 			return new VarDecl(ids, nodes, &Mem::default_mem.sp, cur_pos);
+		}
+
+		void parse_const_decl()
+		{
+			token_stream.match(CONST_DECL);
+			type_code_index var_type = Parser::parse_type();
+			parse_const_decl_unit(var_type);
+			while (token_stream.this_tag() == COMMA)
+			{
+				token_stream.match(COMMA);
+				parse_const_decl_unit(var_type);
+			}
 		}
 	}
 }

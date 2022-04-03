@@ -9,6 +9,7 @@ namespace Mer {
 	namespace Parser {
 		ParserNode* parse_var_decl();
 		ParserNode* parse_expr();
+		void parse_const_decl();
 	}
 	namespace Env {
 		Symbol::SymbleTable symbol_table;
@@ -26,6 +27,9 @@ namespace Mer {
 			ParserNode* node = nullptr;
 			switch (token_stream.this_token()->get_tag())
 			{
+			case CONST_DECL:
+				Parser::parse_const_decl();
+				break;
 			case CHAR_DECL:
 			case BOOL_DECL:
 			case INTEGER_DECL:
@@ -38,8 +42,8 @@ namespace Mer {
 				break;
 			}
 			token_stream.match(SEMI);
-
-			ins_tab.push_back(node);
+			if (node != nullptr)
+				ins_tab.push_back(node);
 		}
 		token_stream.match(END);
 		Mem::default_mem.end_block();

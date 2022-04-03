@@ -47,7 +47,7 @@ namespace Mer
 		// &,->
 		GET_ADD, ARROW,
 		// void,int,real,string,bool,char
-		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL, CHAR_DECL,
+		VOID_DECL, INTEGER_DECL, REAL_DECL, STRING_DECL, BOOL_DECL, CHAR_DECL,CONST_DECL,
 		// entry
 		ENTRY,
 		//function ,return

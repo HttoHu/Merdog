@@ -32,14 +32,31 @@
 #include "./lexer.hpp"
 
 namespace Mer {
+	size_t get_type_size(type_code_index ty);
+
 	class LConV :public ParserNode {
 	public:
+		LConV(char* _val, type_code_index ty) :ParserNode(NodeType::LConV), len(get_type_size(ty)), type(ty) { val = new char[len]; memcpy(val, _val, len); }
 		LConV(Token* tok);
+		template<typename T>
+		LConV(const T& t) {
+			if (t == typeid(int_default))
+				type = (int)BasicTypeTag::INT;
+			else if (t == typeid(real_default))
+				type = (int)BasicTypeTag::REAL;
+			else if (t == typeid(byte_default))
+				type = (int)BasicTypeTag::BYTE;
+			else
+				throw Error("invalid literal-const value type");
+			val = new char[sizeof(t)];
+			*(T*)(val) = t;
+			len = sizeof(t);
+		}
 		type_code_index get_type()const override { return type; }
 		size_t need_space()override { return len; }
 		bool constant()const override { return true; }
 		void execute(char* ret)override {memcpy(ret, val, len);}
-		ParserNode* clone()override { return nullptr; }
+		ParserNode* clone()override { return new LConV(val, type); }
 		std::string to_string()const override;
 		~LConV() { delete[] val; }
 	private:

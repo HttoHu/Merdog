@@ -139,6 +139,7 @@ namespace Mer {
 			}
 			return result;
 		}
+		ParserNode* parse_id();
 		ParserNode* parse_unit()
 		{
 			auto result = token_stream.this_token();
@@ -169,9 +170,18 @@ namespace Mer {
 				return new Print(parse_expr());
 			case ID:
 			{
-				std::string var_name = Id::get_value(result);
-				token_stream.match(ID);
-				auto var_info =static_cast<Symbol::VarRecorder*>(Env::symbol_table.find(var_name));
+				return parse_id();
+			}
+			default:
+				throw Error("invalid expression, unexpected token: " + token_stream.this_token()->to_string());
+			}
+		}
+		ParserNode* parse_id() {
+			std::string var_name = Id::get_value(token_stream.this_token());
+			token_stream.match(ID);
+			auto symbol_info = Env::symbol_table.find(var_name);
+			if (symbol_info->get_word_type() == Symbol::Variable) {
+				auto var_info = static_cast<Symbol::VarRecorder*>(symbol_info);
 				size_t* base_ptr;
 				if (var_info->is_global)
 					base_ptr = &Mem::default_mem.bp;
@@ -179,11 +189,10 @@ namespace Mer {
 					base_ptr = &Mem::default_mem.sp;
 				return new Variable(var_name, var_info->get_type(), var_info->get_pos(), base_ptr);
 			}
-			default:
-				throw Error("invalid expression, unexpected token: " + token_stream.this_token()->to_string());
+			else if(symbol_info->get_word_type()==Symbol::Const){
+				return Symbol::ConstRecorder::get_node(symbol_info)->clone();
 			}
 		}
-
 	}
 
 	void Expr::execute(char* dat)

@@ -33,6 +33,11 @@ namespace Mer {
 	{
 		return type_tab[ty]->type_length();
 	}
+	bool is_basic_type(type_code_index ty)
+	{
+		BasicTypeTag bt = (BasicTypeTag)ty;
+		return bt == BasicTypeTag::VOID || bt == BasicTypeTag::INT || bt == BasicTypeTag::REAL || bt == BasicTypeTag::BYTE;
+	}
 	type_code_index set_type(Type* ty)
 	{
 		type_tab.push_back(ty);

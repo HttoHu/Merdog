@@ -22,6 +22,8 @@ namespace Mer {
 
 	size_t get_type_size(type_code_index ty);
 
+	bool is_basic_type(type_code_index ty);
+
 	type_code_index set_type(Type* ty);
 
 	class Type {
