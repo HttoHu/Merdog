@@ -13,7 +13,6 @@ void Mer::SymbolTable::end_block()
 	data.pop_front();
 }
 WordRecorder* Mer::SymbolTable::find(std::string id)
-
 {
 	for (size_t i = 0; i < data.size(); i++)
 	{

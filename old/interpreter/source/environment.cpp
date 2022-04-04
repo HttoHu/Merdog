@@ -111,7 +111,6 @@ namespace Mer
 			Mer::build_token_stream(file_content);
 			Parser::program()->execute();
 			clear();
-
 		}
 		catch (const std::exception & e)
 		{

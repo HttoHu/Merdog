@@ -306,8 +306,9 @@ namespace Mer
 		/*
 			var_part;
 			goto t;
-		start	    step expr;
-		t	if.... x:y
+		start	    
+			step expr;
+		t:	if.... x:y
 			node;
 			node;
 			goto start;
