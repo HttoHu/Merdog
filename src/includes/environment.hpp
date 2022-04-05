@@ -4,9 +4,9 @@
 
 namespace Mer {
 	class ParserNode;
-
+    using PosPtr = std::shared_ptr<size_t>;
 	namespace Env {
-		using PosPtr = std::unique_ptr<size_t>;
+		
 
 		extern Symbol::SymbleTable symbol_table;
 
@@ -15,6 +15,13 @@ namespace Mer {
 		extern std::vector<UptrPNode> cur_ins_table;
 		// every function 
 		extern size_t* cur_pc;
+        // pos start and end
+        extern std::vector<std::pair<PosPtr,PosPtr>> nearest_loop_pos;
+
+        void new_loop(PosPtr start,PosPtr end);
+        void end_loop();
+        PosPtr loop_start();
+        PosPtr loop_end();
 	}
 
 	void run_interpreter(const std::string& content);

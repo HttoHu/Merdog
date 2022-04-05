@@ -9,6 +9,7 @@ include_directories("./src/includes")
 add_executable(merdog
     ./src/sources/binary_op.cpp
     ./src/sources/block.cpp
+    ./src/sources/branch_loop.cpp
     ./src/sources/decl.cpp 
     ./src/sources/environment.cpp 
     ./src/sources/error.cpp 
