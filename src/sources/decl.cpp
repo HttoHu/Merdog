@@ -76,7 +76,7 @@ namespace Mer {
 				expr->execute(Mem::default_mem.buf);
 				delete expr;
 				expr = new LConV(Mem::default_mem.buf, type);
-				Env::symbol_table.push_word(var_name, new Symbol::ConstRecorder(type, expr));
+				Env::symbol_table->push_word(var_name, new Symbol::ConstRecorder(type, expr));
 				return;
 			}
 			throw Error("uninit const " + var_name);
@@ -96,7 +96,7 @@ namespace Mer {
 
 				ids.push_back(var_name);
 				nodes.push_back({ var_size,std::get<2>(cur) });
-				Env::symbol_table.push_word(var_name, new Symbol::VarRecorder(false, Mem::default_mem.var_idx,var_type));
+				Env::symbol_table->push_word(var_name, new Symbol::VarRecorder(false, Mem::default_mem.var_idx,var_type));
 				Mem::default_mem.push_var(var_size);
 			};
 			// push info
@@ -121,6 +121,25 @@ namespace Mer {
 				token_stream.match(COMMA);
 				parse_const_decl_unit(var_type);
 			}
+		}
+		ParserNode* Parser::statement()
+		{
+			ParserNode* node = nullptr;
+			switch (token_stream.this_token()->get_tag())
+			{
+			case CHAR_DECL:
+			case BOOL_DECL:
+			case INTEGER_DECL:
+			case REAL_DECL:
+			case STRING_DECL:
+				node = parse_var_decl();
+				break;
+			default:
+				node = parse_expr();
+				break;
+			}
+			token_stream.match(SEMI);
+			return node;
 		}
 	}
 }

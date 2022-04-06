@@ -10,55 +10,76 @@ namespace Mer {
 		ParserNode* parse_var_decl();
 		ParserNode* parse_expr();
 		void parse_const_decl();
+		void public_part(bool is_single = false);
 	}
 	namespace Env {
-		Symbol::SymbleTable symbol_table;
-	}
+		Symbol::SymbleTable* symbol_table=nullptr;
+		std::vector<UptrPNode>* cur_ins_table = nullptr;
+		size_t* cur_pc;
+		std::vector<std::pair<PosPtr, PosPtr>> nearest_loop_pos;
+		bool skip_block_begin;
 
-	//temporary function...
-	std::vector<ParserNode*> parse_block() {
-		std::vector<ParserNode*> ins_tab;
 
-		Mem::default_mem.new_block();
-		Env::symbol_table.new_block();
-		token_stream.match(BEGIN);
-		while (token_stream.this_tag() != END)
+		void new_loop(PosPtr start, PosPtr end)
 		{
-			ParserNode* node = nullptr;
-			switch (token_stream.this_token()->get_tag())
-			{
-			case CONST_DECL:
-				Parser::parse_const_decl();
-				break;
-			case CHAR_DECL:
-			case BOOL_DECL:
-			case INTEGER_DECL:
-			case REAL_DECL:
-			case STRING_DECL:
-				node = Parser::parse_var_decl();
-				break;
-			default:
-				node = Parser::parse_expr();
-				break;
-			}
-			token_stream.match(SEMI);
-			if (node != nullptr)
-				ins_tab.push_back(node);
+			nearest_loop_pos.push_back({ start,end });
 		}
-		token_stream.match(END);
-		Mem::default_mem.end_block();
-		Env::symbol_table.end_block();
-
-		return ins_tab;
+		void end_loop()
+		{
+			if (nearest_loop_pos.empty())
+				throw Error("invalid loop scope");
+			nearest_loop_pos.pop_back();
+		}
+		PosPtr loop_start()
+		{
+			if (nearest_loop_pos.empty())
+				throw Error("invalid loop scope");
+			return nearest_loop_pos.back().first;
+		}
+		PosPtr loop_end()
+		{
+			if (nearest_loop_pos.empty())
+				throw Error("invalid loop scope");
+			return nearest_loop_pos.back().second;
+		}
+		void new_block()
+		{
+			Mem::default_mem.new_block();
+			symbol_table->new_block();
+		}
+		void end_block()
+		{
+			Mem::default_mem.end_block();
+			symbol_table->end_block();
+		}
+	}
+	void init_interpreter() {
+		Env::symbol_table = new Symbol::SymbleTable();
+		Env::cur_ins_table = new std::vector<UptrPNode>();
+		Env::cur_pc = new size_t(0);
 	}
 	void run_interpreter(const std::string& content)
 	{
+		init_interpreter();
+
 		Mer::build_token_stream(content);
-		Mer::token_stream.print();
-		auto ins_tab = parse_block();
-		for (auto node : ins_tab)
+		//Mer::token_stream.print();
+		token_stream.match(BEGIN);
+		Env::new_block();
+		Parser::public_part();
+		Env::end_block();
+
+		auto &ins = *Env::cur_ins_table;
+		int idx = 0;
+		for (auto& i : ins)
 		{
-			node->execute(nullptr);
+			std::cout <<idx++<<" : "<< i->to_string() << std::endl;
+		}
+		size_t& pc = *Env::cur_pc;
+		while (pc < ins.size())
+		{
+			ins[pc]->execute(nullptr);
+			pc++;
 		}
 	}
 }

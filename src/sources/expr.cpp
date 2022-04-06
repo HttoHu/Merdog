@@ -179,7 +179,7 @@ namespace Mer {
 		ParserNode* parse_id() {
 			std::string var_name = Id::get_value(token_stream.this_token());
 			token_stream.match(ID);
-			auto symbol_info = Env::symbol_table.find(var_name);
+			auto symbol_info = Env::symbol_table->find(var_name);
 			if (symbol_info->get_word_type() == Symbol::Variable) {
 				auto var_info = static_cast<Symbol::VarRecorder*>(symbol_info);
 				size_t* base_ptr;
@@ -199,6 +199,13 @@ namespace Mer {
 	{
 		dat = Mem::default_mem.buf + Mem::default_mem.sp + pos;
 		node->execute(dat);
+	}
+
+	bool Expr::get_bool_value()
+	{
+		char *dat  = Mem::default_mem.buf + Mem::default_mem.sp + pos;
+		node->execute(dat);
+		return *(int_default*)(dat);
 	}
 
 }
