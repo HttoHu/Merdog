@@ -35,12 +35,25 @@ namespace Mer
 		class IfFalseJmp : public ParserNode
 		{
 		public:
-			IfFalseJmp(size_t* _pc, ParserNode* _expr) :ParserNode(NodeType::IFTF), pc(_pc), expr(_expr) {}
+			IfFalseJmp(size_t* _pc, ParserNode* _expr) :ParserNode(NodeType::IFFJ), pc(_pc), expr(_expr) {}
 			void execute(char*) override;
 			std::string to_string() const override;
 			~IfFalseJmp() { delete expr; }
 
 			PosPtr false_tag;
+		private:
+			size_t* pc;
+			ParserNode* expr;
+		};
+		class IfTrueJmp : public ParserNode
+		{
+		public:
+			IfTrueJmp(size_t* _pc, ParserNode* _expr,PosPtr _pos) :ParserNode(NodeType::IFTJ), pc(_pc), expr(_expr),true_pos(_pos) {}
+			void execute(char*) override;
+			std::string to_string() const override;
+			~IfTrueJmp() { delete expr; }
+
+			PosPtr true_pos;
 		private:
 			size_t* pc;
 			ParserNode* expr;

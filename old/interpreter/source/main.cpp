@@ -30,7 +30,7 @@ std::string get_file_content(const std::string& filename)
 	std::string file_content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return file_content;
 }
-#ifndef _DEBUG
+#ifdef _DEBUG
 int main(int argc, char* argv[])
 {
 	try
@@ -60,11 +60,11 @@ int main(int argc, char* argv[])
 		std::string input_content = get_file_content(argv[1]);
 		Mer::run_interpreter(input_content);
 	}
-	catch (std::exception & e)
+	catch (std::exception& e)
 	{
 		std::cout << e.what();
 	}
-	catch (Mer::Error & e)
+	catch (Mer::Error& e)
 	{
 		std::cout << e.what();
 	}
@@ -79,16 +79,16 @@ int main()
 	try
 	{
 		time_t s = clock();
-		std::string input_content = get_file_content("test.mer");
+		std::string input_content = get_file_content("./tmp.mer");
 		Mer::run_interpreter(input_content);
 		time_t e = clock();
 		std::cout << "\ntime:" << (double)(e - s) / CLK_TCK;
 	}
-	catch (const std::runtime_error & e)
+	catch (const std::runtime_error& e)
 	{
 		std::cout << e.what();
 	}
-	catch (Mer::Error & e)
+	catch (Mer::Error& e)
 	{
 		std::cout << e.what();
 	}

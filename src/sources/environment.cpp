@@ -63,6 +63,7 @@ namespace Mer {
 		init_interpreter();
 
 		Mer::build_token_stream(content);
+		time_t s = clock();
 		//Mer::token_stream.print();
 		token_stream.match(BEGIN);
 		Env::new_block();
@@ -81,5 +82,7 @@ namespace Mer {
 			ins[pc]->execute(nullptr);
 			pc++;
 		}
+		time_t e = clock();
+		std::cout << "Time: " << 1000 * (e - s) / CLK_TCK <<" ms";
 	}
 }
