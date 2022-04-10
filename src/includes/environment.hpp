@@ -19,7 +19,7 @@ namespace Mer {
         extern std::vector<std::pair<PosPtr,PosPtr>> nearest_loop_pos;
 		// in 'funciton' or 'for' etc. their var decls should defined in their block.
 		extern bool skip_block_begin;
-
+        size_t get_cur_block_pos();
         void new_loop(PosPtr start,PosPtr end);
         void end_loop();
         PosPtr loop_start();

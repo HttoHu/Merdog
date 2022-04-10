@@ -122,7 +122,7 @@ namespace Mer {
 				parse_const_decl_unit(var_type);
 			}
 		}
-		ParserNode* Parser::statement()
+		ParserNode* statement()
 		{
 			ParserNode* node = nullptr;
 			switch (token_stream.this_token()->get_tag())

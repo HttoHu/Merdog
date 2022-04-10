@@ -19,7 +19,9 @@ namespace Mer {
 		std::vector<std::pair<PosPtr, PosPtr>> nearest_loop_pos;
 		bool skip_block_begin;
 
-
+        size_t get_cur_block_pos(){
+            return cur_ins_table->size();
+        }
 		void new_loop(PosPtr start, PosPtr end)
 		{
 			nearest_loop_pos.push_back({ start,end });

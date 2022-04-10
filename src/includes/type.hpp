@@ -17,7 +17,7 @@ namespace Mer {
 		BasicType, FuncType, ClassType, RefType
 	};
 	enum class BasicTypeTag :int {
-		VOID = 0, INT, REAL, BYTE
+		VOID = 0, INT, REAL, BYTE,STRING
 	};
 
 	size_t get_type_size(type_code_index ty);

@@ -146,6 +146,7 @@ namespace Mer {
 			ParserNode* ret = nullptr;
 			switch (result->get_tag())
 			{
+            case STRING:
 			case CHAR_LIT:
 			case REAL:
 			case INTEGER:
@@ -192,6 +193,7 @@ namespace Mer {
 			else if(symbol_info->get_word_type()==Symbol::Const){
 				return Symbol::ConstRecorder::get_node(symbol_info)->clone();
 			}
+            return nullptr;
 		}
 	}
 
