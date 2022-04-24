@@ -60,18 +60,19 @@ namespace Mer
         class ArrayRecorder : public WordRecorder
         {
         public:
-            ArrayRecorder(type_code_index _type, const std::vector<int> &v, size_t _pos, bool _is_global)
-                : WordRecorder(Array), type(_type), params(v), pos(_pos), is_global(_is_global) {}
+            ArrayRecorder(type_code_index _type, const std::vector<int> &v, size_t _pos, bool _is_global);
             type_code_index get_type() const override { return type; }
             size_t get_pos() override { return pos; }
             size_t calc_cnt();
-            // get pos by index 
-            size_t index(const std::vector<int> &vec);
+            // get pos by index
+            std::vector<int> suffix_prod;
+
             bool is_global;
 
         private:
             size_t pos;
             type_code_index type;
+            size_t type_len;
             std::vector<int> params;
         };
         class SymbleTable

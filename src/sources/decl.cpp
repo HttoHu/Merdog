@@ -80,24 +80,27 @@ namespace Mer
             NamePart name_part;
             std::string var_name = Id::get_value(name_part.get_id());
 
-            if (token_stream.this_tag() == ASSIGN)
+            if (name_part.is_array())
             {
-                token_stream.match(ASSIGN);
-                auto expr = parse_expr();
-
-                if (expr->get_type() != type)
+                
+            }
+            else
+            {
+                if (token_stream.this_tag() == ASSIGN)
                 {
-                    expr = new CastOp(expr, type);
-                }
-                return {var_name, Mer::get_type_size(type), expr};
-            }
-            else if (token_stream.this_tag() == LSB)
-            {
-                token_stream.match(LSB);
+                    token_stream.match(ASSIGN);
+                    auto expr = parse_expr();
 
-                token_stream.match(RSB);
+                    if (expr->get_type() != type)
+                    {
+                        expr = new CastOp(expr, type);
+                    }
+                    Env::symbol_table->push_word(var_name, new Symbol::VarRecorder(false, Mem::default_mem.var_idx, type));
+
+                    return {var_name, Mer::get_type_size(type), expr};
+                }
+                throw Error("invalid decl " + var_name);
             }
-            throw Error("invalid decl " + var_name);
         }
         void parse_const_decl_unit(type_code_index type)
         {
@@ -143,7 +146,6 @@ namespace Mer
 
                 ids.push_back(var_name);
                 nodes.push_back({var_size, std::get<2>(cur)});
-                Env::symbol_table->push_word(var_name, new Symbol::VarRecorder(false, Mem::default_mem.var_idx, var_type));
                 Mem::default_mem.push_var(var_size);
             };
             // push info

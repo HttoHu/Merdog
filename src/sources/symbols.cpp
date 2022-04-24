@@ -34,6 +34,15 @@ namespace Mer
             throw Error("undefined symbol :" + id);
         }
 
+        ArrayRecorder::ArrayRecorder(type_code_index _type, const std::vector<int> &v, size_t _pos, bool _is_global)
+            : WordRecorder(Array), type(_type), params(v), pos(_pos), is_global(_is_global)
+        {
+            type_len = get_type_size(type);
+            suffix_prod.resize(params.size() + 1);
+            suffix_prod.back() = 1;
+            for (int i = suffix_prod.size() - 1; i >= 0; i--)
+                suffix_prod[i] = suffix_prod[i + 1] * params[i];
+        }
         // ArrayRecorder
         size_t ArrayRecorder::calc_cnt()
         {
@@ -41,21 +50,6 @@ namespace Mer
             for (auto cnt : params)
                 res *= cnt;
             return res;
-        }
-        size_t ArrayRecorder::index(const std::vector<int> &vec)
-        {
-            size_t count = calc_cnt();
-            size_t type_len = get_type_size(type);
-            if (vec.size() == 0 || vec.size() > params.size())
-                throw Error("invalid array index");
-            std::vector<int> suffix_times(params.size() + 1);
-            suffix_times.back() = 1;
-            for (int i = suffix_times.size() - 1; i >= 0; i--)
-                suffix_times[i] = suffix_times[i + 1] * params[i];
-            int ans = 0;
-            for (int i = 0; i < vec.size(); i++)
-                ans += vec[i] * suffix_times[i + 1];
-            return ans * type_len;
         }
     }
 }
