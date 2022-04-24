@@ -39,6 +39,7 @@ namespace Mer
                                                                                is_global(_is_glo), pos(_pos), type(_type_no) {}
             size_t get_pos() override { return pos; }
             type_code_index get_type() const override { return type; }
+            std::string to_string()override { return "<var, pos " + std::to_string(pos) + " type:" + std::to_string(type) + ">"; }
             bool is_global;
 
         private:
@@ -60,20 +61,21 @@ namespace Mer
         class ArrayRecorder : public WordRecorder
         {
         public:
-            ArrayRecorder(type_code_index _type, const std::vector<int> &v, size_t _pos, bool _is_global);
+            ArrayRecorder(type_code_index _type, const std::vector<size_t> &v, size_t _pos, bool _is_global);
             type_code_index get_type() const override { return type; }
             size_t get_pos() override { return pos; }
             size_t calc_cnt();
             // get pos by index
-            std::vector<int> suffix_prod;
-
+            std::vector<size_t> suffix_prod;
+            std::string to_string()override;
+            
             bool is_global;
 
         private:
             size_t pos;
             type_code_index type;
             size_t type_len;
-            std::vector<int> params;
+            std::vector<size_t> params;
         };
         class SymbleTable
         {
@@ -85,7 +87,7 @@ namespace Mer
             void push_glo_word(const std::string &name, WordRecorder *sym);
             void push_word(const std::string &name, WordRecorder *sym);
             WordRecorder *find(const std::string &name);
-
+            void print();
         private:
             std::deque<std::map<std::string, WordRecorder *>> sym_tab;
         };

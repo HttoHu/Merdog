@@ -1,6 +1,7 @@
 #pragma once
 #include "./parser_node.hpp"
 #include "./defs.hpp"
+#include "./lexer.hpp"
 #include <vector>
 
 namespace Mer
@@ -14,6 +15,12 @@ namespace Mer
         bool is_auto_array() { return auto_array; }
         bool is_pointer() { return pointer; }
         Token *get_id() { return id; }
+        size_t get_array_element_cnt() {
+            size_t prod = 1;
+            for (auto num : array_indexs)
+                prod *= num;
+            return prod;
+        }
         std::vector<size_t> array_indexs;
 
     private:

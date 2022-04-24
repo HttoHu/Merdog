@@ -35,7 +35,8 @@ namespace Mer
 		PRINT,CAST,
 		VAR_DECL,
 		EXPR,ASSIGN,VAR,
-		GOTO,CONTINUE,IFFJ,IFTJ
+		GOTO,CONTINUE,IFFJ,IFTJ,
+		NON_OP,
 	};
 	// the node of an AST, every node is excutable.
 	// 

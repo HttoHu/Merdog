@@ -35,4 +35,12 @@ namespace Mer {
 		ParserNode* node;
 		Op::UnaryOp::uop_type op_func;
 	};
+
+	class NonOp : public ParserNode {
+	public:
+		NonOp() : ParserNode(NodeType::NON_OP) {}
+		std::string to_string()const override { return "(no op)"; }
+		void execute(char*)override {}
+	private:
+	};
 }

@@ -23,7 +23,7 @@ namespace Mer
             char *buf = new char[node->need_space() + 5];
             node->execute(buf);
             int_default val = *(int_default *)buf;
-            delete buf;
+            delete[] buf;
             delete node;
             return val;
         }
@@ -32,7 +32,10 @@ namespace Mer
     {
         ParserNode *parse_expr()
         {
-            return new Expr(Mem::default_mem.var_idx, parse_assign());
+            auto node = parse_assign();
+            if (node->get_node_type() == NodeType::LConV)
+                return node;
+            return new Expr(Mem::default_mem.var_idx,node);
         }
         ParserNode *parse_assign()
         {
