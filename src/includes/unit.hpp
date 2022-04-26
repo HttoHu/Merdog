@@ -87,4 +87,23 @@ namespace Mer {
 	private:
 		ParserNode* node;
 	};
+	class ArrayIndex : public ParserNode {
+	public:
+		// take place the ownership of origins elements
+		ArrayIndex(size_t _pos,type_code_index _ty,size_t*_base_ptr, const std::vector<size_t> & suffix,
+			const std::vector<ParserNode*> &origins);
+		type_code_index get_type()const override { return type; }
+		std::string to_string()const override;
+		void execute(char*)override;
+		size_t get_pos()override;
+		size_t need_space()override;
+		size_t actual_space()override;
+
+	private:
+		size_t pos;
+		size_t* base_ptr;
+		ParserNode* index;
+		type_code_index type;
+		size_t type_len;
+	};
 }

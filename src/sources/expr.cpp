@@ -37,6 +37,7 @@ namespace Mer
                 return node;
             return new Expr(Mem::default_mem.var_idx,node);
         }
+
         ParserNode *parse_assign()
         {
             std::set<Tag> assign_set = {
@@ -198,6 +199,10 @@ namespace Mer
                 throw Error("invalid expression, unexpected token: " + token_stream.this_token()->to_string());
             }
         }
+        ParserNode* parse_array() {
+
+        }
+        
         ParserNode *parse_id()
         {
             std::string var_name = Id::get_value(token_stream.this_token());
@@ -216,6 +221,10 @@ namespace Mer
             else if (symbol_info->get_word_type() == Symbol::Const)
             {
                 return Symbol::ConstRecorder::get_node(symbol_info)->clone();
+            }
+            else  if (symbol_info->get_word_type() == Symbol::Array)
+            {
+
             }
             return nullptr;
         }

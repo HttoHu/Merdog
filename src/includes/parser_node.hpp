@@ -37,6 +37,7 @@ namespace Mer
 		EXPR,ASSIGN,VAR,
 		GOTO,CONTINUE,IFFJ,IFTJ,
 		NON_OP,
+		ARRAY_INDEX,
 	};
 	// the node of an AST, every node is excutable.
 	// 
