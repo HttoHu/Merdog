@@ -45,7 +45,7 @@ namespace Mer {
 	class AssignOp :public ParserNode {
 	public:
 		AssignOp(Token* tok, ParserNode* _left, ParserNode* _right);
-		char* get_runtime_pos()override { return left->get_runtime_pos(); }
+		void get_runtime_pos(char *mem)override { return left->get_runtime_pos(mem); }
 		size_t need_space()override { return right->need_space(); }
 		void execute(char*)override;
 		bool constant()const override { return false; }

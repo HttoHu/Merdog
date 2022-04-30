@@ -1,7 +1,7 @@
 #include "../includes/unit.hpp"
 #include "../includes/defs.hpp"
 #include "../includes/binary_op.hpp"
-
+#include "../includes/utils.hpp"
 #include "../includes/memory.hpp"
 
 namespace Mer
@@ -99,20 +99,20 @@ namespace Mer
 	{
 		memcpy(ret, Mem::default_mem.buf + *base_ptr + pos, len);
 	}
-	char* Variable::get_runtime_pos()
+	void Variable::get_runtime_pos(char* mem)
 	{
-		return Mem::default_mem.buf + *base_ptr + pos;
+		Utils::buffer_write(mem, 0, Mem::default_mem.buf + *base_ptr + pos);
 	}
 	std::string Variable::to_string() const
 	{
 		return "(var " + var_name + ")";
 	}
 
-	ArrayIndex::ArrayIndex(size_t _pos, type_code_index _ty, size_t* _base_ptr, const std::vector<size_t>& vec, const std::vector<ParserNode*>& origins) 
-		:ParserNode(NodeType::ARRAY_INDEX),type(_ty),pos(_pos),base_ptr(_base_ptr) {
+	ArrayIndex::ArrayIndex(size_t _pos, type_code_index _ty, size_t* _base_ptr, const std::vector<size_t>& vec, const std::vector<ParserNode*>& origins)
+		:ParserNode(NodeType::ARRAY_INDEX), type(_ty), pos(_pos), base_ptr(_base_ptr) {
 		type_len = get_type_size(type);
 		if (vec.size() != origins.size())
-			throw Error("invalid array index");
+			throw Error("invalid array index expected " + std::to_string(vec.size()) + " but got " + std::to_string(origins.size()));
 		index = nullptr;
 
 		for (int i = vec.size() - 1; i >= 0; i--)
@@ -127,12 +127,33 @@ namespace Mer
 	}
 	std::string ArrayIndex::to_string() const
 	{
-		return "(array_index )";
+		return "(array_index " + std::to_string(pos) + " : " + index->to_string() + ")";
+	}
+	void ArrayIndex::get_runtime_pos(char* mem)
+	{
+		index->execute(mem);
+
+		int_default idx = Utils::buffer_read<int_default>(mem) * type_len;
+
+		Utils::buffer_write(mem, Mem::default_mem.buf + *base_ptr + pos + idx);
 	}
 	void ArrayIndex::execute(char* mem)
 	{
 		index->execute(mem);
 		int_default p = *(int_default*)mem * type_len;
-		memcpy(mem, Mem::default_mem.buf + *base_ptr, type_len);
+
+		memcpy(mem, Mem::default_mem.buf + *base_ptr + p, type_len);
+	}
+	size_t ArrayIndex::get_pos()
+	{
+		return 0;
+	}
+	size_t ArrayIndex::need_space()
+	{
+		return index->need_space();
+	}
+	size_t ArrayIndex::actual_space()
+	{
+		return type_len;
 	}
 }

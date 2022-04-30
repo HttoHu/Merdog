@@ -52,7 +52,7 @@ namespace Mer
 		}
         virtual ~ParserNode() {}
 	public:
-        virtual char* get_runtime_pos(){return nullptr;}
+        virtual void get_runtime_pos(char * mem){}
 		virtual size_t get_pos() { return -1; }
 		// the space to calculate the node, the data may write to memory temporary..
 		virtual size_t need_space() { return 0; }

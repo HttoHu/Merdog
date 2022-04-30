@@ -39,12 +39,12 @@ namespace Mer {
 		LConV(char* _val, type_code_index ty) :ParserNode(NodeType::LConV), len(get_type_size(ty)), type(ty) { val = new char[len]; memcpy(val, _val, len); }
 		LConV(Token* tok);
 		template<typename T>
-		LConV(const T& t) {
-			if (t == typeid(int_default))
+		LConV(const T& t):ParserNode(NodeType::LConV) {
+			if (typeid(T) == typeid(int_default))
 				type = (int)BasicTypeTag::INT;
-			else if (t == typeid(real_default))
+			else if (typeid(T) == typeid(real_default))
 				type = (int)BasicTypeTag::REAL;
-			else if (t == typeid(byte_default))
+			else if (typeid(T) == typeid(byte_default))
 				type = (int)BasicTypeTag::BYTE;
 			else
 				throw Error("invalid literal-const value type");
@@ -69,7 +69,7 @@ namespace Mer {
 		Variable(const std::string &_var_name,type_code_index _type, size_t _pos, size_t* _base_ptr);
 		void execute(char* ret) override;
 		size_t get_pos() override { return pos; }
-		char* get_runtime_pos()override;
+		void get_runtime_pos(char *)override;
 		type_code_index get_type()const override { return type; }
 		std::string to_string()const override;
 	private:
@@ -94,6 +94,8 @@ namespace Mer {
 			const std::vector<ParserNode*> &origins);
 		type_code_index get_type()const override { return type; }
 		std::string to_string()const override;
+		void get_runtime_pos(char *)override;
+
 		void execute(char*)override;
 		size_t get_pos()override;
 		size_t need_space()override;

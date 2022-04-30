@@ -1,5 +1,7 @@
 #include "../includes/binary_op.hpp"
 #include "../includes/unary_op.hpp"
+#include "../includes/utils.hpp"
+#include "../includes/memory.hpp"
 
 namespace Mer {
 
@@ -94,8 +96,9 @@ namespace Mer {
 
 	void AssignOp::execute(char* ret)
 	{
+		left->get_runtime_pos(ret);
+		char* p = Utils::buffer_read<char*>(ret);
 		right->execute(ret);
-		char* p = left->get_runtime_pos();
 		op_func(p, ret);
 	}
 

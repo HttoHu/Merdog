@@ -49,9 +49,9 @@ namespace Mer
 			: WordRecorder(Array), type(_type), params(v), pos(_pos), is_global(_is_global)
 		{
 			type_len = get_type_size(type);
-			suffix_prod.resize(params.size() + 1);
+			suffix_prod.resize(params.size());
 			suffix_prod.back() = 1;
-			for (int i = suffix_prod.size() - 1; i >= 0; i--)
+			for (int i = suffix_prod.size() - 2; i >= 0; i--)
 				suffix_prod[i] = suffix_prod[i + 1] * params[i];
 		}
 		// ArrayRecorder

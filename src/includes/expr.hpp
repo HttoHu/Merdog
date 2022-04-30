@@ -13,7 +13,7 @@ namespace Mer {
 		}
 		size_t get_pos()override { return node->get_pos(); }
 		void execute(char*)override;
-		char* get_runtime_pos()override { return node->get_runtime_pos(); }
+		void get_runtime_pos(char *mem)override { return node->get_runtime_pos(mem); }
 		bool constant()const override { return node->constant(); }
 		size_t need_space()override { return node->need_space(); }
 		size_t actual_space()override { return node->actual_space(); }
