@@ -12,6 +12,7 @@
 #include "../include/compound_box.hpp"
 #include "../include/branch_and_loop.hpp"
 #include "../include/namespace.hpp"
+#include "../include/shared_object.hpp"
 namespace Mer
 {
 	std::vector<UptrPNode> pre_stmt;
@@ -165,6 +166,12 @@ namespace Mer
 			case FUNCTION:
 				build_function();
 				break;
+            case LOAD_SHARED:
+                so_env->parse_load();
+                break;
+            case SHARED:
+                so_env->parse_shared();
+                break;
 			case PROGRAM:
 			{
 				global_stmt() = false;

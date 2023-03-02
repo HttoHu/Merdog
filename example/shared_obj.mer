@@ -1,0 +1,8 @@
+loadso lib1 = "lib1.so"
+
+shared function int add(int a,int b) = lib1.add
+
+program main {
+    int a = 34,b=23;
+    std.cout(add(a,b));
+}

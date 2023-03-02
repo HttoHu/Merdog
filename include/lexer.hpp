@@ -59,6 +59,7 @@ namespace Mer
 		LPAREN, RPAREN,LSB,RSB,
 		ENDOF, ENDL,
 		STRING,NULLPTR,
+        LOAD_SHARED,SHARED,
 	};
 	extern std::map<Tag, std::string> TagStr;
 	class Token

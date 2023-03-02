@@ -23,6 +23,7 @@ TagStrMap	Mer::TagStr{
 	{ SEMI,"SEMI" },{ ASSIGN,"ASSIGN" },{ SADD,"SADD" },{ CASE,"CASE" },
 	{ ENDL,"ENDL" },{ PRINT,"PRINT" },{ CAST,"CAST" },
 	{ TTRUE,"TTRUE" },{ TFALSE,"TFALSE" },{NULLPTR,"NULLPTR"},{SIZEOF,"SIZEOF"},
+    { LOAD_SHARED,"LOAD_SHAORED"},{SHARED,"SHARED"}
 };
 TokenMap	Mer::BasicToken{
 	{"+",new Token(PLUS)},{"-",new Token(MINUS)},{"*",new Token(MUL)},{"/",new Token(DIV)},{"=",new Token(ASSIGN)},
@@ -44,7 +45,8 @@ TokenMap	Mer::BasicToken{
 	{ "string",new Token(STRING_DECL) },{ "bool",new Token(BOOL_DECL) },
 	{ "ref",new Token(REF) },{ "begin",new Token(BEGIN) },
 	{ "end",new Token(END) },{ "real",new Token(REAL_DECL) },{ "void",new Token(VOID_DECL) },{"char",new Token(CHAR_DECL)},
-	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) },{"nullptr",new Token(NULLPTR)}
+	{ "int",new Token(INTEGER_DECL) },{ "program",new Token(PROGRAM) },{"nullptr",new Token(NULLPTR)},
+    {"loadso",new Token(LOAD_SHARED)},{"shared",new Token(SHARED)}
 };
 bool				is_function_args = false;
 

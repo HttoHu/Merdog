@@ -27,7 +27,7 @@
 #include <utility>
 #include <memory>
 namespace Mer
-{
+{   class SharedObjEnv;
 	class ParserNode;
 	using UptrPNode = std::unique_ptr<ParserNode>;
 	using PosPtr = std::shared_ptr<size_t>;
@@ -44,8 +44,11 @@ namespace Mer
 		* sps.pop_back();
 	*/
 	extern std::vector<ParserNode*> structure_parent_stack;
-	void new_loop(PosPtr a,PosPtr b);
+    // shared object environment
+	extern std::unique_ptr<SharedObjEnv> so_env;
+    void new_loop(PosPtr a,PosPtr b);
 	void end_loop();
 	PosPtr& loop_start();
 	PosPtr& loop_end();
+
 }

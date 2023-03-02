@@ -48,7 +48,6 @@ namespace Mer
 	std::string type_to_string(size_t type_code);
 	namespace Mem
 	{
-
 		class Type;
 		class Value;
 
